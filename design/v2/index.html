@@ -35,9 +35,10 @@
   .note { position: absolute; z-index: 16; padding: 4px 9px; background: rgba(255, 255, 255, 0.94); border-radius: 6px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.16); font-size: 12px; white-space: nowrap; pointer-events: none; animation: fadeIn 180ms ease-out both; }
 
   /* Keeping a color: the loupe, the ring, the name beside the cursor */
-  .loupe { position: absolute; z-index: 60; width: 54px; height: 54px; border-radius: 50%; background: var(--c, #ccc); transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.28); }
-  .loupe::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.45); }
-  .loupe .hx { position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%); padding: 2px 7px; border-radius: 5px; background: rgba(29, 29, 31, 0.82); color: #fff; font-size: 11px; white-space: nowrap; }
+  /* v2-loupe, not loupe: the shared stylesheet's .loupe (v1's) starts hidden */
+  .v2-loupe { position: absolute; z-index: 60; width: 54px; height: 54px; border-radius: 50%; background: var(--c, #ccc); transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.28); }
+  .v2-loupe::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.45); }
+  .v2-loupe .hx { position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%); padding: 2px 7px; border-radius: 5px; background: rgba(29, 29, 31, 0.82); color: #fff; font-size: 11px; white-space: nowrap; }
   .ring { position: absolute; z-index: 59; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); pointer-events: none; animation: ring 560ms ease-out forwards; }
   @keyframes ring { from { opacity: 1; transform: translate(-50%, -50%) scale(0.7); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.7); } }
   .namer { position: absolute; z-index: 61; display: grid; grid-template-columns: 22px 220px; gap: 8px; align-items: center; padding: 8px 10px; background: rgba(255, 255, 255, 0.97); border-radius: 8px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); animation: fadeIn 160ms ease-out both; }
@@ -441,7 +442,7 @@
   function startPicking() {
     closeWindow();
     st.picking = true; stage.classList.add("picking"); $("mbi").classList.add("picking");
-    loupe = el("div", { class: "loupe", "aria-hidden": "true" }, [el("span", { class: "hx num" })]);
+    loupe = el("div", { class: "v2-loupe", "aria-hidden": "true" }, [el("span", { class: "hx num" })]);
     stage.appendChild(loupe); moveLoupe(pointer.x, pointer.y);
   }
   function stopPicking() {

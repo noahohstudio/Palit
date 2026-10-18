@@ -1757,6 +1757,20 @@ window.PALIT.decisions = {
       status: "approved",
       links: [{ label: "Work page, v2", href: "#work/v2" }],
       by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "v1 and v2 in Figma, for Daeun",
+      video: ["process", "visual"],
+      to: "Five new pages in Palette Ideation: v1 to v2: what changed (for Daeun to read first: 13 changes, each with v1 beside v2, Noah's reasons quoted exactly, and what could be tweaked as Claude's drafts), v1 Design system (22 components), v1 Screens, v2 Design system (21 components, with the Days zoom as three variable modes) and v2 Screens (17 captures and 13 editable rebuilds). No logo anywhere; existing pages untouched. Built in its own session.",
+      why: "In the figma file, can we begin to import our v1 design system and screens, then our newly built v2 system and screens?\n\nWrite what changed, why, and what could be tweaked.\n\nI need this to be presentable for my teammate, Daeun, who will give us an opinion, and a logo.",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "done",
+      links: [{ label: "v1 to v2: what changed", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=122-2" }, { label: "v2 Screens", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=111-2" }],
+      by: "Claude Code, in a separate session"
     }
   ]
 };
