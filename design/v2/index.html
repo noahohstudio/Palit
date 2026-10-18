@@ -460,13 +460,13 @@
     var r = st.run; st.run = null;
     if (r && r.members.length < 2) { palettes = palettes.filter(function (p) { return p !== r; }); r.members.forEach(function (n) { byNo(n).palette = null; }); }
   }
-  function nameBeside(c, x, y) {
+  function nameBeside(c, x, y, quiet) {
     if (namer) namer.remove();
     var input = el("input", { type: "text", placeholder: c.placeholder, "aria-label": "Name " + no(c.number) });
     namer = el("div", { class: "namer", style: "--c:" + c.hex }, [el("i"), input, el("p", { text: "Return names it. Esc leaves it for later." })]);
     namer.style.left = Math.min(x + 18, W - 290) + "px"; namer.style.top = Math.min(y + 18, H - 90) + "px";
     stage.appendChild(namer);
-    setTimeout(function () { input.focus(); }, 0);
+    if (!quiet) setTimeout(function () { input.focus(); }, 0);   // a scene in an iframe must not pull focus from the page around it
     input.addEventListener("keydown", function (e) {
       e.stopPropagation();
       if (e.key === "Enter") { var v = input.value.trim(); if (v) c.name = v; finish(); }
@@ -829,9 +829,12 @@
     seedSample();
     seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); });
   }
-  /* Scenes, for the dashboard's Work page: ?scene=picking, landed, desk, days, zoom-out, zoom-in, spectrum, pins, palettes, shared, card, share */
+  /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, days, zoom-out, zoom-in,
+     spectrum, pins, palettes, shared, card, share; add &band=R (or O Y G B I V) to filter by a letter. */
   function scene(name) {
     var sd = screen().seeds[0];
+    if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
+    if (name === "naming") { var c0 = pick(sd.x, sd.y, {}); nameBeside(c0, sd.x, sd.y, true); namer.querySelector("input").value = "Crocoite"; return; }
     if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
     if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
     if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }

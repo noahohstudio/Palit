@@ -1698,6 +1698,21 @@ window.PALIT.decisions = {
       refs: ["A23"],
       links: [{ label: "Interview log", href: "#research/interviews" }],
       by: "Noah"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "The demo storyboard moves onto prototype v2",
+      video: ["demo"],
+      from: "Fourteen shots on the first prototype's playback, on the drawn desk (entry 92).",
+      to: "Eleven shots on prototype v2 in one click path: the real desktop, the loupe, it lands, naming or a palette, Days, the zoom, the ROYGBIV letters, Spectrum, the specimen card, pins into palettes, and a share card. Every line is a draft for Noah, at no more than 2.5 words a second.",
+      why: "The demo shows the final product, and v2 is the look Noah picked to show the breakthrough (D14).",
+      whyStatus: "rule",
+      whySource: "D14 and A56",
+      status: "approved",
+      links: [{ label: "Storyboards", href: "#video/storyboards" }],
+      by: "Noah, asking Claude Code"
     }
   ]
 };
