@@ -395,7 +395,15 @@ window.PALIT.research = {
     {"theme": "The surface colors sit on", "text": "Across 85 pairs on three gray backgrounds, crispening was largest for gray samples (50%) and smallest for purple (4%), and stronger for lightness differences than for differences in hue and chroma.", "bears": "How much the surface matters depends on the colors: most for near-neutrals and lightness", "cred": "high", "sources": [{"label": "Karimipour & Kandi, Color Research & Application, 2017", "url": "https://onlinelibrary.wiley.com/doi/10.1002/col.22110"}]},
     {"theme": "The surface colors sit on", "text": "Colors look more vivid against a low-contrast gray surround than against a varied, multicolored one with the same average.", "bears": "Give swatches neutral space", "cred": "high", "note": "A follow-up (Faul, Ekroll & Wendt, 2008) found surround variance plays only a limited role.", "sources": [{"label": "Brown & MacLeod, Current Biology, 1997", "url": "https://doi.org/10.1016/S0960-9822(06)00372-1"}]},
     {"theme": "The surface colors sit on", "text": "A colored surround pushes a color's hue away from the surround's hue, most strongly along the blue–yellow axis.", "bears": "Neighboring colors change what you see (A43), though there's no clean headline number", "cred": "high", "sources": [{"label": "Klauke & Wachtler, Journal of Vision, 2015", "url": "https://doi.org/10.1167/15.13.17"}]},
-    {"theme": "The surface colors sit on", "text": "134 people read charts in light and dark modes. The better mode varied from person to person, and what people preferred didn't reliably match the mode that helped them.", "bears": "Letting people choose a surface may not help them", "cred": "high", "note": "Chart reading, not color judgment.", "sources": [{"label": "While & Sarvghad, IEEE VIS, 2024", "url": "https://arxiv.org/abs/2409.10841"}]}
+    {"theme": "The surface colors sit on", "text": "134 people read charts in light and dark modes. The better mode varied from person to person, and what people preferred didn't reliably match the mode that helped them.", "bears": "Letting people choose a surface may not help them", "cred": "high", "note": "Chart reading, not color judgment.", "sources": [{"label": "While & Sarvghad, IEEE VIS, 2024", "url": "https://arxiv.org/abs/2409.10841"}]},
+    {"theme": "Ideation and inspiration", "text": "Designers remember examples by where they came from, and since language has few agreed color names, only a direct example pins a color down. Some firms build their own color vocabulary.", "bears": "Supports keeping each color's source, and naming colors yourself (A24)", "cred": "high", "sources": [{"label": "Eckert & Stacey, Design Studies, 2000 (authors' copy)", "url": "https://www.tech.dmu.ac.uk/~mstacey/pubs/source-lang/soi-lod.htm"}]},
+    {"theme": "Ideation and inspiration", "text": "Of 51 professional designers surveyed, 33 save inspiration. Saved bookmarks pile up until they're hard to see as a whole, and designers distrust sources that are poorly documented.", "bears": "Supports keeping the source with every color, and designing for archives that grow large", "cred": "medium-high", "sources": [{"label": "Koch, László, Lucero & Oulasvirta, DRS, 2018", "url": "https://userinterfaces.aalto.fi/inspiration-in-design/resources/DRS%202018%20final.pdf"}]},
+    {"theme": "Ideation and inspiration", "text": "Mood boards frame the task, align stakeholders, hold conflicting ideas, abstract and set direction, and designers expect the final design to carry the board's colors.", "bears": "Supports palettes as the thing a team aligns on: keeping palettes consistent", "cred": "high", "sources": [{"label": "Lucero, DIS, 2012", "url": "https://users.aalto.fi/~luceroa1/publications/2012/lucero12_moodboards.pdf"}]},
+    {"theme": "Ideation and inspiration", "text": "Making several designs in parallel before feedback produced better and more varied work than refining one design at a time (33 novice designers).", "bears": "Supports explore wide, then keep few: keeping a color cheap, keeping a palette deliberate", "cred": "high", "sources": [{"label": "Dow et al., ACM TOCHI, 2010", "url": "https://hci.stanford.edu/publications/2010/parallel-prototyping/ParallelPrototyping2010.pdf"}, {"label": "Design Council, the Double Diamond", "url": "https://www.designcouncil.org.uk/our-resources/framework-for-innovation/"}]},
+    {"theme": "From the first use to mastery", "text": "Tools for creative thinking should support exploration (easy to try things and back out) and have a low threshold, a high ceiling and wide walls; kits built around one model are compared to painting by numbers.", "bears": "Supports refusing to generate palettes, and one window that serves new and longtime users", "cred": "high", "sources": [{"label": "Resnick, Myers, Nakakoji, Shneiderman, Pausch, Selker & Eisenberg, 2005", "url": "https://www.cs.umd.edu/hcil/CST/Papers/designprinciples.pdf"}, {"label": "Shneiderman, Communications of the ACM, 2007", "url": "https://www.cs.umd.edu/~ben/papers/Shneiderman2007Creativity.pdf"}]},
+    {"theme": "From the first use to mastery", "text": "New users skip the manual and start working; they read a new tool through the ones they already know, and experienced users plateau.", "bears": "Supports making the first pick the lesson, and showing advanced features in context", "cred": "high", "sources": [{"label": "Carroll & Rosson, 1987, in Nielsen's summary", "url": "https://www.nngroup.com/articles/paradox-of-the-active-user/"}]},
+    {"theme": "From the first use to mastery", "text": "An empty state should show what the system does, teach in context and give a direct path to the main task, rather than a forced tutorial. Apple's guidelines also say to teach by doing and keep tutorials optional.", "bears": "Supports a first run that is the first pick, not a tour", "cred": "high", "sources": [{"label": "Kaplan, Nielsen Norman Group, 2021", "url": "https://www.nngroup.com/articles/empty-state-interface-design/"}, {"label": "Apple Human Interface Guidelines, onboarding", "url": "https://developer.apple.com/design/human-interface-guidelines/onboarding"}]},
+    {"theme": "Finding things again", "text": "Elaborate folders didn't help people find email again; search and threads did, and scrolling was the most common way people looked (345 users). In another deployment, time and people were the key cues, and people sorted by date.", "bears": "Supports search and folding days into months for longtime users, and not asking anyone to file colors", "cred": "high", "sources": [{"label": "Whittaker et al., CHI, 2011", "url": "https://research.ibm.com/publications/am-i-wasting-my-time-organizing-email-a-study-of-email-refinding"}, {"label": "Dumais et al., SIGIR, 2003", "url": "https://www.cs.odu.edu/~sampath/courses/w17/cs599/papers/SISCore-SIGIR2003-Final.pdf"}]}
   ],
 
   headline: {
@@ -813,6 +821,55 @@ window.PALIT.research = {
       text: "From manual to automatic: Palit's hotkey and highlights you make yourself; Apple Journal's suggestions; Day One's prompts and Granola's notes with a transcript; Wispr's context awareness; and at the far end, Recall, Rewind and Limitless.",
       lesson: "Palit sits at the manual end on purpose. Any automation should come as a suggestion you confirm with the same hotkey, never as background capture.",
       sources: []
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Werner's Nomenclature of Colours (1814, 1821)",
+      text: "Each color sits in one ruled row: a number, a name, a hand-painted chip, then where it's found in animals, vegetables and minerals. Darwin took the 1821 edition on the Beagle to name his specimens' colors before they faded.",
+      lesson: "The source is part of the entry, not metadata. A model for a catalogue row, and a story for the video.",
+      sources: [{ label: "Darwin Online", url: "https://darwin-online.org.uk/converted/Ancillary/BeagleLibrary/1821_Werner_A704/1821_Werner_A704.html", date: "2011" }, { label: "Linda Hall Library", url: "https://www.lindahall.org/patrick-syme/", date: "2015" }, { label: "Smithsonian Libraries scan", url: "https://archive.org/details/wernersnomencla00wern" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Vanderpoel, Color Problems (1902)",
+      text: "Plates titled “Color analysis from” a rug, a mummy case, a butterfly: the object is the headline, its colors shown in proportion on a grid, with a ledger of each color's share.",
+      lesson: "The source as the headline; a day's captures could read as one analysis of where you were.",
+      sources: [{ label: "Public Domain Review", url: "https://publicdomainreview.org/collection/colour-analysis-charts-by-emily-noyes-vanderpoel-1902/", date: "2016" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Ridgway, Color Standards and Color Nomenclature (1912)",
+      text: "1,115 named colors on 53 plates; a name under every chip and a short code beside it, with a mark on the names he kept from his earlier book.",
+      lesson: "One short label at every size, and a label that carries provenance.",
+      sources: [{ label: "Smithsonian Libraries", url: "https://library.si.edu/digital-library/book/colorstandardsco00ridg" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Wada, A Dictionary of Color Combinations (1933–34)",
+      text: "348 combinations, numbered: sets of two, then three, then four colors, each color named underneath.",
+      lesson: "The numbered unit is the combination: a model for kept palettes.",
+      sources: [{ label: "Seigensha", url: "https://www.seigensha.com/books/978-4-86152-247-5/", date: "2010" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "The Pantone Matching System (1963)",
+      text: "Numbered ink formulas, so the same color matches anywhere: CBS cites ads that wouldn't match between Chicago and New York.",
+      lesson: "The precedent for keeping palettes consistent, and Palit's foil: a number, and no story.",
+      sources: [{ label: "CBS News", url: "https://www.cbsnews.com/news/taming-colors-chaos/", date: "2005" }, { label: "Encyclopedia.com", url: "https://encyclopedia.com/books/politics-and-business-magazines/pantone-inc" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Cooper Hewitt's collection, by color (2013)",
+      text: "Each object got up to five colors from its photo; an object shows its palette, and a color opens every object that shares it.",
+      lesson: "Links run both ways, between a color and where it came from.",
+      sources: [{ label: "Cooper Hewitt Labs", url: "https://labs.cooperhewitt.org/2013/giv-do/", date: "2013" }]
+    },
+    {
+      theme: "Colors kept with their story",
+      title: "Herbarium labels",
+      text: "One short label under each specimen: name, collector, number, date and place. Collector and number identify it for good.",
+      lesson: "A model for one label line under every color.",
+      sources: [{ label: "University of Arizona Herbarium", url: "https://herbarium.arizona.edu/labels" }]
     }
   ],
 

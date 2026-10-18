@@ -1822,6 +1822,86 @@ window.PALIT.decisions = {
       refs: ["A69", "A58"],
       links: [{ label: "Pinned in v2", href: "../v2/index.html?scene=pins" }],
       by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "The Figma v2 pages catch up with entries 116 to 118",
+      video: ["process", "visual"],
+      from: "Figma's v2 pages still showed v2 as it was imported (entry 115): the zoom slider with three sizes, Group as a palette on Pinned, no right-click menu, and no letters on Pinned.",
+      to: "Palette Ideation's v2 pages now match prototype v2. v2 Design system: new components for the menu (Menu, Menu item, Menu separator, Menu header), Add to palette (Add to palette menu, and Submenu row with its check, dash and highlight), the Selection bar, the Toast and Pinned nav; the Days tile gains a Selected state (a 2 px ink edge with a white line inside); the Zoom control is only − and +, greyed at either end; the specimen card has Pin, Add to palette and Share and a row for every palette the color is in. The v2 Days zoom variables grow from three modes to seven stops (Stop 4, the middle, stays first because Figma makes the first mode the default), and the zoom specimen shows all seven. New tokens: shell/menu, shell/menu-highlight, shell/divider, shell/outline, shell/toast, zoom/greyed, radius/floating, radius/menu-row. v2 Screens: every capture of the window retaken, four new captures (the menu, Add to palette from the card, gathering, the quiet line), Pinned rebuilt with its letters and without Group, four new rebuilt screens, and capture 17 now shows the Harlem photo's color, as its title says. v1 to v2: what changed gets a section for entries 116 to 118, with Noah's words quoted exactly and Claude's calls marked as drafts. No logo anywhere; moodboard untouched. Built in its own session.",
+      why: "Keeps the Figma file Daeun reads in step with prototype v2 after Noah's changes in entries 116 to 118, continuing his request for the v1 and v2 import (entry 115).",
+      whyStatus: "agent",
+      status: "done",
+      refs: ["A67", "A68", "A69"],
+      links: [
+        { label: "v1 to v2: entries 116 to 118", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=149-2" },
+        { label: "v2 Design system", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=112-2" },
+        { label: "v2 Screens", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=111-2" }
+      ],
+      by: "Claude Code, in a separate session"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "Still boring, and detached: the story and look workshop",
+      video: ["process", "visual"],
+      from: "Prototype v2: a wall of color, with each color's story in the card (entries 105, 116 to 118).",
+      to: "An audit of v2 against the brief and the concept, then a workshop with ten questions: which diagnosis fits; how the opinion shows on screen; what the archive centers on; how much shows before a click; how it shows both jobs (exploring, and keeping palettes consistent); new, in-between and longtime users; the window's structure; and what makes it feel built. Plus eight edge cases and five precedents (Werner's Nomenclature of Colours, Vanderpoel, Ridgway, Wada, Pantone). The audit: Days shows 2 of the 9 parts of a color's story before a click, the card all 9; Pinned is 11% color; and a new user sees “Nothing under this letter yet.” Every mockup uses v2's 34 real colors; the longtime ones use a labeled simulation.",
+      why: "v2 looks so much better, but still feels quite boring. Whats going on? And, it feels a little detached from our goal for the audience and the research we're doing - why do I feel this way? Why does the dashboard feel so empty? And how can we solve it?\n\nWith edge cases for new users, experienced longtime users, and for users in between. It needs to be strikingly clear that this app is for exploration and ideation, and for keeping consistent palettes. What is the opinion behind this product, that may divide people?\n\nCan we begin really drilling down on the look of the product, and making sure it is exactly corresponding with the concept we've built thus far?\n\nThis could be a lengthy workshop",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "working",
+      refs: ["A65", "A57", "A62"],
+      links: [{ label: "Story and look workshop", href: "../workshop/story.html" }],
+      by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "The brief, word for word: storytelling is the one constraint",
+      video: ["process"],
+      from: "Only Noah's notes from the brief session were in the project (docs/06-svsd-brief.md). The brief's own text, and its one constraint, weren't written down anywhere.",
+      to: "The brief sits word for word at the top of docs/06-svsd-brief.md, and CLAUDE.md now leads with its constraint: the product must center on storytelling. It's judged on product thinking, depth of thinking and communication, and craft. The story workshop checks the look against it.",
+      why: "A constraint the docs don't hold can't be designed for: CLAUDE.md sends every session to docs/ first. Noah pasted the brief again on October 18.",
+      whyStatus: "rule",
+      whySource: "CLAUDE.md: read docs/ before building anything",
+      status: "done",
+      links: [{ label: "The brief", href: "../../docs/06-svsd-brief.md" }],
+      by: "Noah, saved by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "A key challenge: functional, yet visible and accessible",
+      video: ["process"],
+      to: "On the Video page as a deep dive candidate, in Noah's words, with the arc behind it (entries 93 to 123) and the precedents. The story workshop is built on its three tests: functional, visible, accessible.",
+      why: "Lets also list this as one of the key challenges of our project process - how do we present our tool to be as functional, yet visible and accessible as possible?",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      links: [{ label: "Deep dive candidates", href: "#video/dives" }, { label: "Story and look workshop", href: "../workshop/story.html" }],
+      by: "Noah"
+    },
+    {
+      date: "2026-10-18",
+      kind: "decision",
+      area: "product",
+      title: "The opinion, in Noah's words: no palette generation, no AI; you go and find it",
+      video: ["opinion"],
+      from: "D6, in Claude's words until now: Palit is against relying on AI to explore and decide color for you (entry 41).",
+      to: "No palette generation and no AI assistance. Your palettes come from your own collection, and a color that isn't in it yet, you go out and find. The story workshop's question 2 is now how that shows on screen. Noah's one line for the video is still to write.",
+      why: "There is no palette generation feature, much like other products. You sift through your own collection for the colors you own and love, and if it doesn't already exist, you go out of your way to discover and find it. There is no AI assistance - you learn to truly value and appreciate the colors you have found through time",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      refs: ["A70", "D6"],
+      links: [{ label: "Question 2 in the story workshop", href: "../workshop/story.html#item-opinion" }],
+      by: "Noah"
     }
   ]
 };

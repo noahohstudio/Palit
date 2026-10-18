@@ -1,5 +1,39 @@
 # SVSD design brief
 
+The brief itself comes first, word for word, as Noah pasted it on October 18, 2026. **Its one constraint: the product must center on storytelling.** Noah's notes from the brief session follow it.
+
+## The brief, word for word
+
+> **Design Brief:**
+> **The Search for Top Young Design Talent**
+>
+> **The Challenge**
+> The way we build software has changed.
+> In the past, building a profitable software product often meant designing for a large group of people. Today, it's possible to build for much smaller, more specific audiences.
+> Pick a specific group of people and design a product they'll love, even if others might hate it.
+> There's just one constraint: Your product must center around the theme of “storytelling.”
+> Interpret storytelling however you like. It could be a reading experience, a tool for creating presentations, a motion graphics editor, a way to preserve family stories across generations, or something entirely different.
+> I’m leaving this intentionally open-ended because I want everyone to come out of this with their own unique portfolio project.
+>
+> **Criteria**
+> 1. Product Thinking
+> How you frame the problem, identify a compelling solution, and recognize which deeper problems within your product are worth exploring and solving
+> 2. Depth of Thinking & Communication
+> How rigorously do you explore your ideas, what are the decisions you make along the way, and how clearly do you communicate your reasoning.
+> 3. Craft
+> The quality of your execution. Everything from the visual and interaction design of your product to its motion, details, and the presentation itself.
+>
+> **Your Submission**
+> Your final submission should tell the story of your project in a video
+> (7 mins max, 10 mins if you believe you have something super interesting to say for that long – but it better be an entertaining 10mins)
+> Show us the problem, your solution, and most importantly – how you explored it, and the interesting challenges you identified and solved along the way.
+> Beyond that, how you present your work is entirely up to you – could be a video of you presenting a deck, prototype, website, or whatever combination of things
+> Use your own judgment and creativity. The way you communicate your work is part of the work.
+
+---
+
+## Noah's notes from the brief session
+
 Noah's notes from the competition brief session on Friday, October 16, 2026, kept as he wrote them. The process hub (`design/history/index.html`) summarizes them under Sessions and answers the brief's seven questions under Compass.
 
 - Meeting transcript (Granola): https://notes.granola.ai/t/4a982e87-e1c9-4330-a3cd-f5a2d90d3288-00demib2

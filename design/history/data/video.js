@@ -52,6 +52,15 @@ window.PALIT.video = {
         open: "Pure white stays (A36), so the surface is the question to tell, not a feature to build. No interviews yet, so “what this tool means to users” rests on desk research and your own words so far."
       },
       {
+        id: "visible", title: "Functional, yet visible and accessible",
+        q: "How do we present our tool to be as functional, yet visible and accessible as possible?",
+        noah: { text: "Lets also list this as one of the key challenges of our project process - how do we present our tool to be as functional, yet visible and accessible as possible?", why: "v2 looks so much better, but still feels quite boring. Whats going on? And, it feels a little detached from our goal for the audience and the research we're doing - why do I feel this way? Why does the dashboard feel so empty?" },
+        arc: [[93, "v1 felt stagnant"], [94, "It read like a document"], [95, "Nothing on it but color"], [100, "A zoom: only color, then names"], [103, "Clean, functional, considered"], [113, "Spectrum's cards are just the color"], [117, "No slider, just − and +"], [120, "Still boring: the story is one click deep"], [123, "The opinion, in Noah's words"]],
+        show: "v1 the document, v2 the wall, then the audit: Days shows 2 of the 9 parts of a color's story, Pinned is 11% color, and the brief's one constraint is storytelling. Then the precedents (Werner's Nomenclature, which Darwin took on the Beagle; Vanderpoel; Wada; Pantone), the options from the story workshop, and the one Noah lands on.",
+        research: [{ from: "evidence", find: "by where they came from" }, { from: "evidence", find: "Cues people write themselves" }, { from: "precedent", find: "Werner's Nomenclature" }],
+        open: "The story and look workshop's picks. It's also the brief's first criterion: recognizing which deeper problems are worth solving."
+      },
+      {
         id: "capture", title: "How little the capture moment can be",
         q: "What's the least Palit can show when you keep a color, and still have it feel kept?",
         arc: [[2, "v0: a ring pulse and a toast"], [17, "A ticket chip, proposed"], [28, "Too loud"], [56, "A loupe ring and a chip"], [68, "Picking copies nothing"], [72, "Do we even need the chip?"], [84, "No chip: it lands in the palette, with a sound"]],
