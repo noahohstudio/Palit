@@ -303,16 +303,17 @@
     if (canvases[sc.id]) { done(canvases[sc.id]); return; }
     var img = new Image();
     img.onload = function () {
-      var c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight;
-      var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0);
-      canvases[sc.id] = { canvas: c, ctx: ctx, k: img.naturalWidth / W }; done(canvases[sc.id]);
+      // Colors are read from a 1440 x 900 canvas; crops come from the full image, so they stay sharp.
+      var c = document.createElement("canvas"); c.width = W; c.height = H;
+      var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, W, H);
+      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W }; done(canvases[sc.id]);
     };
     img.src = sc.data || "screens/" + sc.file;
   }
-  function px(cv, x, y) { var d = cv.ctx.getImageData(Math.round(x * cv.k), Math.round(y * cv.k), 1, 1).data; return toHex(d[0], d[1], d[2]); }
+  function px(cv, x, y) { var d = cv.ctx.getImageData(Math.min(W - 1, Math.round(x)), Math.min(H - 1, Math.round(y)), 1, 1).data; return toHex(d[0], d[1], d[2]); }
   function cropOf(cv, x, y) {
     var r = 90, c = document.createElement("canvas"); c.width = 360; c.height = 360;
-    c.getContext("2d").drawImage(cv.canvas, (x - r) * cv.k, (y - r) * cv.k, 2 * r * cv.k, 2 * r * cv.k, 0, 0, 360, 360);
+    c.getContext("2d").drawImage(cv.img, (x - r) * cv.k, (y - r) * cv.k, 2 * r * cv.k, 2 * r * cv.k, 0, 0, 360, 360);
     try { return c.toDataURL("image/jpeg", 0.86); } catch (e) { return null; }
   }
   function sourceOf(sc, x, y) {

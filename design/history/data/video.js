@@ -35,7 +35,8 @@ window.PALIT.video = {
         q: "How do we build a color palette and design system for a tool that collects color?",
         crux: { text: "This is truly the crux of our deepdive 1: how do colors sit on a surface that shows them as they are? How do they change when you have a different background color or lightness? How does that inform our design decisions?", where: "Noah's note on the surface question, feature workshop" },
         noah: { text: "how do we build a color palette/design system for a tool that collects color?", why: "I think this ties in nicely with the process we're following - competitor research, UXR, what this tool means to users, our baseline, foundational reasoning. This ties into our design system, which we can then use to introduce features and problem solving" },
-        arc: [[47, "Sip, documented as a whole"], [40, "For visual designers, in the ideation phase"], [8, "The foundations workshop"], [9, "A neutral canvas"], [10, "No accent color"], [48, "A native shell, a raw heart"], [53, "The design system, from atoms up"], [56, "Six calls"], [80, "Research: the most neutral surface"], [87, "Pure white stays"], [58, "The prototype, built from it"], [74, "The dashboard, built from it too"]],
+        also: [{ text: "I'm loving this minimal direction we're following, with extreme detail to what we keep and cut. The ROYGBIV nav is so stunning to me - totally something we need to integrate into deep dive #1 - how we choose elements that don't distract our eyes from the color itself", where: "October 18, after the look workshop (entry 104)" }],
+        arc: [[47, "Sip, documented as a whole"], [40, "For visual designers, in the ideation phase"], [8, "The foundations workshop"], [9, "A neutral canvas"], [10, "No accent color"], [48, "A native shell, a raw heart"], [53, "The design system, from atoms up"], [56, "Six calls"], [80, "Research: the most neutral surface"], [87, "Pure white stays"], [58, "The prototype, built from it"], [74, "The dashboard, built from it too"], [93, "v1 felt stagnant"], [103, "Clean, functional, considered"], [95, "Nothing on it but color"], [104, "What stays out of the color's way"]],
         beats: [
           "A tool for color can't bring a color of its own. Sip puts its blue and violet right next to the colors you're judging.",
           "Who it's for, and what it means to them: visual designers in the ideation phase, keeping colors with their names and their sources.",
@@ -43,7 +44,8 @@ window.PALIT.video = {
           "The crux: how colors sit on a surface that shows them as they are, and how they change on another color or lightness. Pure white, and why, with the research (up to 8 times different on one gray than another).",
           "The reasons that follow: a native shell around a raw, archival heart, square and ruled, captured colors as the only color.",
           "The system: atoms to organisms, each piece with the decision behind it.",
-          "Solving problems with it: the chip, Similar, the desktop palette, and this dashboard, all built from the same system."
+          "Solving problems with it: the chip, Similar, the desktop palette, and this dashboard, all built from the same system.",
+          "What we keep and what we cut: every element earns its place by not pulling the eye off the color. Numbers off the tiles, two rows of filter chips down to seven ROYGBIV letters, a ring for a capture, a strip for a palette."
         ],
         show: "Sip's own colors around your colors, the v0 canvas and the lofi rounds, the foundations workshop, the design system page from atoms up, then the prototype and this dashboard.",
         research: [{ from: "sip", find: "Judging color honestly" }, { from: "evidence", find: "changed by a factor of up to 8" }, { from: "evidence", find: "The CIE's reference conditions" }, { from: "evidence", find: "For judging prints, ISO 3664" }, { from: "evidence", find: "Albers taught color" }, { from: "sip", find: "One visual language" }],
@@ -282,8 +284,8 @@ window.PALIT.video = {
       storyboard: {
         note: "In Naheel's format: the question, the ways we tried, where we landed and why, and what didn't make the cut. The shot where it lands still needs your reason for pure white, in your words.",
         shots: [
-          { at: 0, to: 8, title: "The question", frame: { scene: "spectrum" },
-            shows: "The archive sorted by hue, a wall of colors kept from everywhere, with the question over it.",
+          { at: 0, to: 8, title: "The question", frame: { page: "../v2/index.html?clean&scene=zoom-out", focus: [207, 56, 1008], label: "Prototype v2, Days zoomed out" },
+            shows: "Days zoomed all the way out: a wall of colors kept from everywhere, nothing but color, with the question over it.",
             says: "How do we build a color palette and a design system for a tool that collects color?", source: "Noah's own question (entry 79)", refs: [79] },
           { at: 8, to: 20, title: "The closest competitor", frame: { img: "../references/competitors/sip/01-docs-color-formats.webp", href: "#inspiration/sip", label: "Sip" },
             shows: "Sip, the main competitor: a dark window, palettes as strips, named colors and a long menu of developer formats.",
@@ -300,15 +302,15 @@ window.PALIT.video = {
           { at: 51, to: 63, title: "No surface is neutral", frame: { img: "shots/dive1-twin.jpg", href: "../workshop/features.html", label: "Feature workshop" },
             shows: "The same Pool tile teal on white and on black, and the research underneath.",
             says: "No surface is neutral for every color. With only the gray behind them changed, the visible difference between the same two colors changed by up to eight times (Xin, Lam and Luo, 2004).", refs: [80] },
-          { at: 63, to: 73, title: "Where we landed, and why", frame: { scene: "archive" },
-            shows: "The archive on pure white paper, where the captured colors are the only color on screen.",
+          { at: 63, to: 73, title: "Where we landed, and why", frame: { page: "../v2/index.html?clean&scene=spectrum", focus: [207, 56, 1008], label: "Prototype v2, Spectrum" },
+            shows: "Spectrum on pure white paper: every color fanned by hue, the only color on screen.",
             says: "We kept pure white.", needs: "Your reason for white over the grays, in your words. The standard for judging prints rules out surrounds this light (ISO 3664), so your reason carries this shot.", refs: [87] },
-          { at: 73, to: 84, title: "What didn't make the cut", frame: { imgs: ["shots/lofi-04.jpg", "shots/lofi-06.jpg", "shots/lofi-08.jpg", "shots/lofi-10.jpg"], href: "../explorations/lofi-round-2/", label: "Lofi round 2" },
-            shows: "A fast cut through lofi round 2's four directions: minimal, editorial, structural remix and expressive. None caught Noah's eye; expressive was too loud, but its cards let the color take the room.",
-            says: "Not everything made it. Twelve sheets in one round, and none of them felt right. The loudest one taught us to let the color take the room.", refs: [11] },
-          { at: 84, to: 95, title: "One system, every feature", frame: { img: "shots/system-02.jpg", href: "../system/index.html", label: "Design system" },
-            shows: "The design system from atoms up, then the prototype and this dashboard, all built from it.",
-            says: "What we kept became the system: a native Mac shell around a raw, archival heart. Every feature since is built from the same pieces.", refs: [48, 53, 58, 74] }
+          { at: 73, to: 84, title: "What we cut", frame: { img: "../workshop/shots/archive-now.jpg", href: "../journey/index.html#/archive", label: "The v1 archive" },
+            shows: "The v1 archive: the same tile for every color, the label under each, two rows of filter chips, an inspector full of small gray text.",
+            says: "Then we cut. Numbers off the tiles, two rows of filters down to seven letters, and the names onto the colors.", source: "Noah called v1 “very stagnant and boring” (entry 93); the cuts are from his look workshop picks (entries 94 and 95)", refs: [93, 94, 95] },
+          { at: 84, to: 95, title: "Nothing distracts from the color", frame: { page: "../v2/index.html?clean&scene=days", focus: [207, 56, 684], label: "Prototype v2, Days" },
+            shows: "Prototype v2: the seven ROYGBIV letters above a wall of today's colors, names set on the colors, nothing else on the first view.", framing: "Push in on the letters, then pull back to the wall.",
+            says: "Seven letters for a nav. A ring for a capture. A strip for a palette. The colors themselves tell the stories, not how we present them.", source: "The last line is Noah's (entry 102); what stays out of the color's way is his direction for this deep dive (entry 104)", refs: [104, 95, 102, 103] }
         ]
       }
     },

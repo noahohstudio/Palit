@@ -215,6 +215,9 @@
   ul.research .rl { display: block; font-size: 11px; color: var(--ink-2); }
   ul.research .rs { display: block; font-size: 11px; color: var(--ink-2); }
 
+  .v2-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; padding: 18px 20px; margin-bottom: 18px; background: var(--paper); border: 1px solid var(--rule-soft); }
+  .v2-q .quote + .quote { margin-top: 14px; }
+  @media (max-width: 860px) { .v2-top { grid-template-columns: 1fr; } }
   .rounds { list-style: none; }
   .round { background: var(--paper); border: 1px solid var(--rule); padding: 12px 14px 14px; }
   .round + .round { border-top: 0; }
@@ -590,6 +593,7 @@
     var f = s.frame || {};
     var open = f.href ? el("a", { class: "pv-open", href: f.href, target: f.href.charAt(0) === "#" ? null : "_blank", rel: "noopener", text: "Open " + (f.label || s.title) }) : null;
     if (f.scene) return preview("../journey/index.html?clean&keys=0&sound=0#/" + f.scene, s.title, true, f.focus);
+    if (f.page) return preview(f.page, f.label || s.title, true, f.focus);
     if (f.img) return el("div", { class: "pv wide" }, [el("img", { class: "pv-img", src: f.img, alt: "Frame: " + (f.label || s.title), loading: "lazy" }), open]);
     if (f.imgs) return el("div", { class: "pv wide" }, [el("div", { class: "sb-grid4" }, f.imgs.map(function (src) { return el("img", { src: src, alt: "", loading: "lazy" }); })), open]);
     if (f.card) return el("div", { class: "pv wide" }, [el("p", { class: "sb-card", text: f.card })]);
@@ -819,17 +823,48 @@
   function saveNotes(list) { try { localStorage.setItem(notesKey, JSON.stringify(list)); } catch (e) {} }
 
   function renderWork(view) {
-    view.appendChild(head("Work", "The screens and prototypes first, with the reasoning and research one click under each. Feedback and the full research sit at the bottom.", [
-      ["Prototypes", "#work/protos"], ["The journey", "#screens/journey"], ["How we got here", "#screens/rounds"], ["Feedback", "#work/feedback"], ["Research", "#work/research"]
+    view.appendChild(head("Work", "Prototype v2 first, then everything you can open, the first prototype, and every round that led here. The reasoning and research sit one click under each screen.", [
+      ["Prototype v2", "#work/v2"], ["Prototypes", "#work/protos"], ["Prototype v1", "#screens/journey"], ["How we got here", "#screens/rounds"], ["Feedback", "#work/feedback"], ["Research", "#work/research"]
     ]));
     var J = SC.journey || {}, steps = J.steps || [], rounds = SC.rounds || [];
     var main = el("div"), notes = notesPanel(steps, rounds);
     view.appendChild(el("div", { class: "work" }, [main, notes.panel]));
 
+    // Prototype v2 first: the new look (entries 94 to 109), each step live, with Noah's reason and the research under it
+    var V2S = SC.v2;
+    if (V2S) {
+      var top = el("div", { class: "v2-top" }, [
+        el("div", { class: "v2-q" }, [
+          el("blockquote", { class: "quote" }, [V2S.before[0], el("cite", { text: V2S.before[1] })]),
+          el("blockquote", { class: "quote" }, [V2S.after[0], el("cite", { text: V2S.after[1] })])
+        ]),
+        el("div", null, [el("span", { class: "k", text: "What changed from v1" }), el("ul", { class: "bullets" }, V2S.changes.map(function (c) { return el("li", null, [c[0] + " ", entryChips(c[1])]); }))])
+      ]);
+      var vgroups = [];
+      V2S.steps.forEach(function (st) { var g = vgroups[vgroups.length - 1]; if (g && g.name === st.group) g.list.push(st); else vgroups.push({ name: st.group, list: [st] }); });
+      var vwrap = el("div"), vn = 0;
+      vgroups.forEach(function (g) {
+        vwrap.appendChild(el("div", { class: "grp" }, [el("h3", { text: g.name }), el("ol", { class: "scrs" }, g.list.map(function (st) {
+          vn++;
+          var w = (st.entries || []).map(function (k) { return byNo[k]; }).filter(function (e) { return e && e.whyStatus === "noah"; })[0];
+          var more = el("details", { class: "more" }, [el("summary", { text: "Why and research" }), el("div", null, [
+            w ? el("p", { class: "quote" }, [w.why, el("cite", { text: "Entry " + pad(w.no) + ", " + (w.whySource || "Noah") })]) : el("p", { class: "s", text: "Your reason isn't recorded yet." }),
+            (st.research || []).length ? el("ul", { class: "research" }, st.research.map(researchItem)) : el("p", { class: "s", style: "margin-top:6px", text: "No research behind this one yet." })
+          ])]);
+          return el("li", { class: "scr", id: "v2-" + st.scene }, [
+            preview(V2S.href + "?clean&scene=" + st.scene, st.title, false, st.focus),
+            el("div", { class: "sb" }, [el("span", { class: "sn num", text: "Step " + vn }), el("h4", { text: st.title }), el("p", { class: "sd", text: st.does }), el("div", { class: "sf" }, [entryChips(st.entries)]), more])
+          ]);
+        }))]));
+      });
+      main.appendChild(sec("work-v2", "Prototype v2", "The new look on real pages and a real Mac wallpaper. Every frame is live; open “Why and research” under any of them.", [top, vwrap], [openLink("Open v2", V2S.href, "btn")]));
+    }
+
     // Prototypes you can open
     var protos = [
-      { title: "The prototype", text: "The core journey on a Mac desktop. P plays it for recording.", href: "../journey/index.html", preview: "../journey/index.html?clean&keys=0#/archive", wide: true, links: [["Open", "../journey/index.html"], ["Play", "../journey/index.html?play"], ["Clean, for recording", "../journey/index.html?clean"]] },
-      { title: "Look and flow workshop", text: "The archive's direction, what it opens on, how a color opens, type, motion and the capture moment, all live. Pick, then press “I'm done”.", href: "../workshop/look.html", links: [["Open", "../workshop/look.html"]] },
+      { title: "Prototype v2", text: "The new look on real pages and a real Mac wallpaper: Days, Collections and Spectrum, the specimen card, share cards, and three duller sounds to try.", href: "../v2/index.html", preview: "../v2/index.html?clean&scene=days", links: [["Open", "../v2/index.html"], ["Clean, for recording", "../v2/index.html?clean"]] },
+      { title: "Prototype v1", text: "The core journey on a drawn desk, before the look workshop. P plays it for recording.", href: "../journey/index.html", preview: "../journey/index.html?clean&keys=0#/archive", wide: true, links: [["Open", "../journey/index.html"], ["Play", "../journey/index.html?play"], ["Clean, for recording", "../journey/index.html?clean"]] },
+      { title: "Look and flow workshop", text: "Done October 18: the wall, today first, the specimen card, your name as the hero, motion that answers you, the ring and slim strips (entries 94 to 102).", href: "../workshop/look.html", links: [["Open", "../workshop/look.html"]] },
       { title: "Feature workshop", text: "Done October 18: the desktop palette, no chip, Similar and the surface (entries 81–88).", href: "../workshop/features.html", links: [["Open", "../workshop/features.html"]] },
       { title: "Design system", text: "Atoms to templates, each with the decision behind it.", href: "../system/index.html", links: [["Open", "../system/index.html"], ["Calls", "../system/index.html#calls"]] },
       { title: "v0 prototype", text: "The first canvas, October 4. Reference now.", href: "https://claude.ai/artifact/B6hBpSpGPZenBxRx6iYZYY", noPreview: true, links: [["Open on claude.ai", "https://claude.ai/artifact/B6hBpSpGPZenBxRx6iYZYY"]] }
@@ -871,7 +906,7 @@
         ]);
       }))]));
     });
-    main.appendChild(sec("screens-journey", "The journey", "The prototype paused at each step. Related screens sit side by side; open “Why and research” under any of them.", [gwrap], [openLink("Play the journey", "../journey/index.html?play", "btn")]));
+    main.appendChild(sec("screens-journey", "Prototype v1, before the look workshop", "The first prototype on a drawn desk, paused at each step: the before for the video. Open “Why and research” under any of them.", [gwrap], [openLink("Play the journey", "../journey/index.html?play", "btn")]));
 
     // How we got here
     var rl = el("ol", { class: "rounds" }, rounds.map(function (r) {
@@ -1229,7 +1264,7 @@
           el("p", { class: "s", text: c.q }),
           c.noah ? el("blockquote", { class: "quote" }, ["“" + c.noah.text + "” " + c.noah.why, el("cite", { text: "Noah" })]) : null,
           c.crux ? el("blockquote", { class: "quote", style: "font-size:15px" }, [c.crux.text, el("cite", { text: "Noah, " + c.crux.where })]) : null
-        ];
+        ].concat((c.also || []).map(function (q) { return el("blockquote", { class: "quote", style: "font-size:15px" }, [q.text, el("cite", { text: "Noah, " + q.where })]); }));
         if (c.pick) return el("article", { class: "dive picked", id: "dive-" + c.id }, [el("div", { class: "dive-l" }, headBits.concat([arc])), el("div", { class: "dive-r" }, rest)]);
         return el("article", { class: "dive", id: "dive-" + c.id }, headBits.concat([arc]).concat(rest));
       }));
