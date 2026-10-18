@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit design system</title>
+<link rel="stylesheet" href="components.css">
+<style>
+  /* Page layout only. Tokens and components live in components.css, shared with the prototype. */
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--chrome);
+    color: var(--ink);
+    font: 15px/1.5 var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p { margin: 0; }
+  h1, h2, h3 { margin: 0; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  /* Top */
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
+  .top .mark { font-weight: 400; letter-spacing: -0.01em; text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .back { margin-left: auto; font-size: 13px; }
+
+  /* Hero: the name is the hero. */
+  .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0; margin-top: 48px; border: 1px solid var(--rule); background: var(--paper); }
+  .hero-swatch { aspect-ratio: 1; border-right: 1px solid var(--rule); }
+  .hero-text { padding: 32px 40px 32px; display: flex; flex-direction: column; min-width: 0; }
+  .hero-no { font-size: 13px; color: var(--ink-2); }
+  .name-edit {
+    font-size: clamp(44px, 7.2vw, 104px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    font-weight: 400;
+    margin: 12px 0 0;
+    outline: none;
+    min-height: 1em;
+    overflow-wrap: anywhere;
+    cursor: text;
+  }
+  .name-edit:empty::before { content: attr(data-placeholder); color: var(--ink-2); font-weight: 400; }
+  .name-edit:focus-visible { box-shadow: inset 0 -2px 0 var(--ink); }
+  .hero-hint { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+  .hero-foot { margin-top: auto; padding-top: 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: 1px solid var(--rule-soft); }
+  .meta-label { font-size: 11px; color: var(--ink-2); }
+
+  /* Principles */
+  .principles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 48px; border-top: 1px solid var(--rule); }
+  .principles > div { padding: 20px 24px 0 0; }
+  .principles > div + div { padding-left: 24px; border-left: 1px solid var(--rule-soft); }
+  .principles h2 { font-size: 20px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 400; }
+  .principles p { margin-top: 8px; font-size: 13px; color: var(--ink-2); max-width: 32ch; }
+
+  /* Levels */
+  .level { margin-top: 96px; }
+  .level-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; padding-bottom: 16px; border-bottom: 1px solid var(--rule); }
+  .level-head h2 { font-size: clamp(36px, 5vw, 56px); line-height: 1; letter-spacing: -0.03em; font-weight: 400; }
+  .level-head h2 .step { font-size: 15px; letter-spacing: 0; font-weight: 400; color: var(--ink-2); vertical-align: top; margin-right: 12px; }
+  .level-head p { font-size: 15px; color: var(--ink-2); max-width: 46ch; }
+
+  .spec { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 28px 0; border-bottom: 1px solid var(--rule-soft); }
+  .spec h3 { font-size: 17px; letter-spacing: -0.01em; font-weight: 400; }
+  .spec .what { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+  .why { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .why a { font-size: 11px; padding: 1px 6px; border: 1px solid var(--rule-soft); text-decoration: none; color: var(--ink-2); }
+  .why a:hover { border-color: var(--ink); color: var(--ink); }
+  .draft { display: inline-block; margin-top: 10px; font-size: 11px; color: var(--ink-2); border-bottom: 1px dashed var(--ink-3); }
+  .well { background: var(--paper); border: 1px solid var(--rule); padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+
+  /* Specimens */
+  .tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+  .token { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .token .chip { height: 72px; border-bottom: 1px solid var(--rule); }
+  .token .t { padding: 8px 10px 10px; font-size: 13px; }
+  .token .t b { display: block; font-weight: 400; }
+  .token .t span { font-size: 11px; color: var(--ink-2); display: block; }
+  .type-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--rule-soft); }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row .label { font-size: 11px; color: var(--ink-2); }
+  .caption { font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+  .rules-demo div { height: 0; margin: 14px 0; }
+  .timing { display: grid; gap: 10px; }
+  .timing div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; align-items: center; font-size: 13px; }
+  .timing i { display: block; height: 6px; background: var(--ink); transform-origin: left; }
+  .dp-stage { position: relative; height: 320px; background: var(--desk); border: 1px solid var(--rule); overflow: hidden; }
+  #naming-demo .name-over { position: relative; box-shadow: none; }
+  .shell-stage { padding: 32px; background: linear-gradient(180deg, #D9D9DC, #C9C9CC); border: 1px solid var(--rule); }
+
+  /* Templates */
+  .desk { position: relative; background: var(--desk); border: 1px solid var(--rule); height: 520px; overflow: hidden; }
+  .site { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 0; height: calc(100% - 34px); }
+  .site button { border: 0; padding: 0; cursor: crosshair; }
+  .site button:focus-visible { outline: 3px solid var(--paper); outline-offset: -6px; }
+
+  .desk-hint { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--ink); background: rgba(255, 255, 255, 0.7); padding: 4px 8px; }
+
+  .archive-win { position: relative; border-radius: 12px; overflow: hidden; background: var(--paper); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.25); }
+  .archive-body { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: 640px; }
+  .archive-main { padding: 16px; overflow: auto; max-height: 760px; border-right: 1px solid var(--rule); }
+  .archive-side { padding: 16px 20px 24px; overflow: auto; max-height: 760px; }
+  .archive-main .filters { margin-bottom: 16px; }
+
+  .calls { counter-reset: call; border-top: 1px solid var(--rule); }
+  .calls li { list-style: none; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 18px 0; border-bottom: 1px solid var(--rule-soft); }
+  .calls h3 { font-size: 15px; font-weight: 400; }
+  .calls-sub { font-size: 20px; font-weight: 400; letter-spacing: -0.015em; margin: 32px 0 8px; }
+  .calls .code { font-size: 11px; color: var(--ink-2); margin-top: 6px; display: block; }
+  .calls p { font-size: 13px; color: var(--ink-2); }
+  .calls ul { margin: 0; padding: 0; }
+  footer { margin-top: 96px; padding: 24px 0 64px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-2); }
+  footer p + p { margin-top: 6px; }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-swatch { aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--rule); }
+    .principles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .principles > div:nth-child(3) { padding-left: 0; border-left: 0; }
+    .archive-body { grid-template-columns: 1fr; }
+    .archive-main { border-right: 0; border-bottom: 1px solid var(--rule); max-height: none; }
+    .archive-side { max-height: none; }
+  }
+  @media (max-width: 700px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    .hero-text { padding: 20px; }
+    .hero-foot { grid-template-columns: 1fr 1fr; }
+    .principles { grid-template-columns: 1fr; }
+    .principles > div, .principles > div + div { padding-left: 0; border-left: 0; padding-bottom: 16px; border-bottom: 1px solid var(--rule-soft); }
+    .level-head { grid-template-columns: 1fr; }
+    .spec, .calls li { grid-template-columns: 1fr; gap: 16px; }
+    .type-row { grid-template-columns: 1fr; gap: 4px; }
+    .ts-display { font-size: 52px; }
+    .desk { height: 460px; }
+    .card-eph { width: 100%; max-width: 280px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html">Palit</a>
+    <span class="where">Design system, first pass. October 17, 2026.</span>
+    <a class="back" href="../history/index.html">Dashboard</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" aria-label="Name a color">
+    <div class="hero-swatch" id="hero-swatch" role="img"></div>
+    <div class="hero-text">
+      <p class="hero-no num" id="hero-no"></p>
+      <div class="name-edit" id="hero-name" contenteditable="true" role="textbox" aria-label="Name this color" spellcheck="false"></div>
+      <p class="hero-hint">Name it. Your name shows first; the technical identity sits underneath.</p>
+      <div class="hero-foot">
+        <dl class="tech" id="hero-tech"></dl>
+        <div class="source" id="hero-source"></div>
+        <div><p class="meta-label">Neighbors</p><div class="neighbors" id="hero-neighbors" style="margin-top:6px;width:96px"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="principles">
+    <div><h2>The colors are the only color.</h2><p>The interface stays neutral so you judge each color honestly, against nothing but paper and ink.</p><div class="why" data-why="W1 W3 E:albers"></div></div>
+    <div><h2>Your name comes first.</h2><p>Your name in full ink; until you give one, a plain placeholder in gray from where you found it. Never an AI name.</p><div class="why" data-why="A24 A27 E:naming"></div></div>
+    <div><h2>Cards come and go. The archive keeps everything.</h2><p>A capture is a moment; the archive is permanent, numbered, and never merges or forgets.</p><div class="why" data-why="A26 A1 D1"></div></div>
+    <div><h2>A native shell around a raw heart.</h2><p>The menu bar and windows behave like macOS. Everything inside is square, ruled and archival.</p><div class="why" data-why="A26 A25"></div></div>
+  </div>
+
+  <!-- Atoms -->
+  <section class="level" id="atoms" aria-labelledby="atoms-h">
+    <div class="level-head">
+      <h2 id="atoms-h"><span class="step">1</span>Atoms</h2>
+      <p>The smallest pieces. On their own they don't say much; every larger piece is built from these.</p>
+    </div>
+
+    <div class="spec">
+      <div><h3>Neutrals</h3><p class="what">Pure white paper, chrome, three inks and two rules. No accent color: the captured colors are the only color.</p><div class="why" data-why="W1 W2 W3 A36"></div></div>
+      <div class="tokens" id="tokens"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Type</h3><p class="what">One family, SF Pro, in two voices: big names at a regular weight with tight tracking, and small technical captions with tabular figures. Hierarchy comes from size and ink, never bold, so it reads less like a website or a tool and more like a physical label. Only the native shell keeps macOS's own weights.</p><div class="why" data-why="W4 A10 A11 A30 E:inktone"></div></div>
+      <div class="well" id="type-specimen"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Swatch</h3><p class="what">Square in the archive, where color is studied. A faint inset edge lets light colors read on white paper.</p><div class="why" data-why="A26 A31"></div></div>
+      <div class="well row" id="swatches"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Number and time</h3><p class="what">Every capture is numbered and dated, and numbers are never reused.</p><div class="why" data-why="W6 A1"></div></div>
+      <div class="well row">
+        <div><p class="ts-small">Number</p><p class="ts-heading num" style="margin-top:4px">No. 004</p></div>
+        <div><p class="ts-small">Past 999</p><p class="ts-heading num" style="margin-top:4px">No. 1204</p></div>
+        <div><p class="ts-small">Captured</p><p class="ts-body num" style="margin-top:4px" id="time-sample"></p></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Technical identity</h3><p class="what">Hex in lowercase, RGB and OKLCH, set in SF Pro with tabular figures. Always underneath the name, and what filtering by hue and tone runs on.</p><div class="why" data-why="W5 A27 A35"></div></div>
+      <div class="well"><dl class="tech" id="tech-sample"></dl></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Reads as</h3><p class="what">Plain words for temperature, value and chroma. They describe; they never prescribe.</p><div class="why" data-why="P8 E:memory"></div></div>
+      <div class="well reads" id="reads-sample"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Shell pieces</h3><p class="what">The only parts that look like macOS: the shortcut and Palit in the menu bar. No logo yet, not even a placeholder, so the menu bar shows the word; Daeun designs the mark.</p><div class="why" data-why="P1 P3 A26"></div></div>
+      <div class="well row" style="align-items:center">
+        <div><p class="ts-small">Shortcut</p><div class="keycap" style="margin-top:6px"><kbd>⌥</kbd><kbd>⇧</kbd><kbd>C</kbd></div></div>
+        <div><p class="ts-small">In the menu bar</p><div style="margin-top:8px;font-size:13px">Palit</div></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Rules and timing</h3><p class="what">Ink rules give the archive its structure; soft rules separate within it. Motion has three speeds, all easing out.</p><div class="why" data-why="A26"></div></div>
+      <div class="well">
+        <div class="rules-demo">
+          <p class="ts-small">Structure, 1 px ink</p><div style="border-top:1px solid var(--rule)"></div>
+          <p class="ts-small">Separation, 1 px soft</p><div style="border-top:1px solid var(--rule-soft)"></div>
+        </div>
+        <div class="timing" style="margin-top:20px">
+          <div><span>Press, 120 ms</span><i style="width:33%"></i></div>
+          <div><span>Appear, 200 ms</span><i style="width:56%"></i></div>
+          <div><span>Capture, 360 ms</span><i style="width:100%"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Molecules -->
+  <section class="level" id="molecules" aria-labelledby="molecules-h">
+    <div class="level-head">
+      <h2 id="molecules-h"><span class="step">2</span>Molecules</h2>
+      <p>Atoms joined into small pieces that do one job: say what a color is called, where it came from, or what it's close to.</p>
+    </div>
+
+    <div class="spec">
+      <div><h3>Name block</h3><p class="what">Your name first and big, in full ink. Until you name it, the placeholder sits in gray. The name is the handle and the meaning; the hex underneath keeps the exact color.</p><div class="why" data-why="A24 A27 A30 A33 E:naming E:labels"></div></div>
+      <div class="well row" id="nameblocks"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Source</h3><p class="what">Where the color came from and when: the kind of source, the place, and its title.</p><div class="why" data-why="A1 E:boards"></div></div>
+      <div class="well row" id="sources"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Neighbors</h3><p class="what">The 8 samples around the picked pixel, with the color in the middle. Color only makes sense in context.</p><div class="why" data-why="P7 E:albers E:object"></div></div>
+      <div class="well row" id="neighbors-demo"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Similar</h3><p class="what">The colors you've already kept that are close to this one, each with where it came from and when. No count and no score: your own history, not a measure. Where Sip deletes repeats, Palit lets you find them.</p><div class="why" data-why="P9 A47 A48 A53 A25 E:sip E:resurface"></div></div>
+      <div class="well" style="max-width:420px" id="kept-demo"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Palette</h3><p class="what">The colors you kept together in one ⇧-click run, side by side on 1 px ink rules. Each stays its own capture. In a color's story the strip marks that color and opens the others, and the palette can be named there any time.</p><div class="why" data-why="A45 A1 A24 A27 A32"></div><span class="draft">Draft copy: the placeholder, and “4 colors, No. 029–032”</span></div>
+      <div class="well" style="max-width:420px" id="palette-demo"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Color chip</h3><p class="what">A color, its name and its number on one line. The menu bar popover lists your latest colors this way.</p><div class="why" data-why="A26 A31"></div></div>
+      <div class="well row" id="chips-demo"></div>
+    </div>
+
+    <div class="spec" id="naming">
+      <div><h3>Name beside the cursor</h3><p class="what">Right-click while you pick, and the color is kept with a small field next to the pointer. Return names it; Esc leaves it for later, in the archive.</p><div class="why" data-why="A52 A24 A27"></div><span class="draft">Noah's idea, to try in the prototype. Draft copy: “Return names it. Esc leaves it for later.”</span></div>
+      <div class="well" id="naming-demo"></div>
+    </div>
+
+    <div class="spec" id="note">
+      <div><h3>Note</h3><p class="what">A quiet scratchpad on every color's card. Write anything and it stays; you decide how to classify and remember the color.</p><div class="why" data-why="A54"></div><span class="draft">Draft copy: “Anything you want to remember about it”</span></div>
+      <div class="well story" style="max-width:420px" id="note-demo"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Filter</h3><p class="what">Find colors by hue family and value, running on the technical identity, not on names.</p><div class="why" data-why="A27"></div></div>
+      <div class="well"><div class="filters" id="filter-demo"></div></div>
+    </div>
+  </section>
+
+  <!-- Organisms -->
+  <section class="level" id="organisms" aria-labelledby="organisms-h">
+    <div class="level-head">
+      <h2 id="organisms-h"><span class="step">3</span>Organisms</h2>
+      <p>Complete parts of the interface, built from molecules. Each one can stand on its own in a screen.</p>
+    </div>
+
+    <div class="spec" id="desk-palette">
+      <div><h3>Desktop palette</h3><p class="what">Your latest picks, or a palette you pin, on the desktop. Docked at the edge as thin bars that open when you point at them. Drag it off the edge to sit anywhere, and it snaps back at the edge. Click copies the hex, ⌥-click RGB, ⌘-click OKLCH. A new pick lands in it with a small ring, so there's no chip.</p><div class="why" data-why="D8 A49 A50 A51 A52 A46"></div><span class="draft">Draft copy: “Copied …”, “Pinned”, “Unpin”</span>
+        <div class="row" style="margin-top:14px;gap:8px"><button class="btn" id="dp-keep">Keep a color</button><button class="btn" id="dp-pin" aria-pressed="false">Pin a palette</button></div></div>
+      <div class="dp-stage" id="dp-stage"><p class="desk-hint">Point at it, click a color to copy, or drag it by its top.</p></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Archive tile</h3><p class="what">A square of color, the name or placeholder, the number and the place. Tiles sit on a grid of 1 px ink lines.</p><div class="why" data-why="A26 A27 A31 A32"></div></div>
+      <div class="grid" id="tiles-demo" style="max-width:420px"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Story panel</h3><p class="what">Everything Palit kept about one color, in reading order: your name, a note of your own, identity, source, its palette when it has one, neighbors, how it reads, and the similar colors you've kept.</p><div class="why" data-why="A1 A24 A27 A54 P7 P8 A53 A43 A45"></div></div>
+      <div class="well story" style="max-width:420px" id="story-demo"></div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Menu bar popover</h3><p class="what">The native shell: system material, rounded corners, and raw chips inside it.</p><div class="why" data-why="W9 A26 P14"></div><span class="draft">Draft: footer copy from v0</span></div>
+      <div class="shell-stage"><div class="popover" id="popover-demo"></div></div>
+    </div>
+  </section>
+
+  <!-- Templates -->
+  <section class="level" id="templates" aria-labelledby="templates-h">
+    <div class="level-head">
+      <h2 id="templates-h"><span class="step">4</span>Templates</h2>
+      <p>Organisms put together into the two moments the video has to show. Both work: steal a color on the desktop, and it lands in the archive below.</p>
+    </div>
+
+    <div class="spec">
+      <div><h3>Capture moment</h3><p class="what">Palit stays out of sight until you call it. Click any block on the page to steal its color: a small ring, and it lands in the desktop palette at the edge. In the prototype it makes a soft sound too.</p><div class="why" data-why="D1 A26 A24 A52 E:capture"></div></div>
+      <div class="desk" id="desk">
+        <div class="menubar">
+          <span class="app">Browser</span><span>File</span><span>Edit</span><span>View</span>
+          <span class="right"><span>Palit</span><span class="num">Sat 10:24</span></span>
+        </div>
+        <div class="win" style="left:6%;top:56px;width:62%;height:400px">
+          <div class="titlebar"><span class="lights"><i></i><i></i><i></i></span><span class="tt">Warm light, NYC</span></div>
+          <div class="site" id="site"></div>
+        </div>
+        <div class="loupe" id="loupe"></div>
+        <p class="desk-hint">Click a block to steal its color. <span class="num" id="desk-count"></span></p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div><h3>Archive</h3><p class="what">A native window around the raw heart: the ink grid of everything you've kept, newest first, and the story of the one you pick. Rename a color in the panel and the tile follows.</p><div class="why" data-why="A26 A27 A1 D2"></div></div>
+      <div class="archive-win">
+        <div class="titlebar"><span class="lights"><i></i><i></i><i></i></span><span class="tt">Palit</span></div>
+        <div class="toolbar"><span class="tt">Archive</span><span class="tc" id="archive-count"></span></div>
+        <div class="archive-body">
+          <div class="archive-main"><div class="filters" id="archive-filters"></div><div class="grid" id="archive-grid"></div></div>
+          <div class="archive-side story" id="archive-story" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="level" id="calls" aria-labelledby="calls-h">
+    <div class="level-head">
+      <h2 id="calls-h">Calls</h2>
+      <p>The choices this design system rests on. Noah made these on October 18, the last five in the feature workshop; the rest are still open.</p>
+    </div>
+    <h3 class="calls-sub">Made</h3>
+    <ul class="calls" id="calls-made"></ul>
+    <h3 class="calls-sub">Still open</h3>
+    <ul class="calls" id="calls-open"></ul>
+  </section>
+
+  <footer>
+    <p>Built from the 28 sample captures in design/fixtures/sample-archive.json. The color math in color.js passes all of the fixture's expected values; run node design/system/color.test.js to check.</p>
+    <p>All interface copy on this page is a draft for Noah. Decision codes link to their entries in the dashboard.</p>
+  </footer>
+</main>
+
+<script src="sample.js"></script>
+<script src="color.js"></script>
+<script src="components.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE;
+  var captures = S.captures.slice();
+
+  /* The shared builders, bound to this page's archive (components.js). */
+  var UI = PalitUI.create(captures, { neighborOrder: S.neighborOrder });
+  var el = PalitUI.el, no = PalitUI.no, title = PalitUI.title, when = PalitUI.when, sourceTitle = PalitUI.sourceTitle, swatchLabel = PalitUI.swatchLabel;
+  var byNumber = UI.byNumber, techList = UI.techList, sourceBlock = UI.sourceBlock, neighborGrid = UI.neighborGrid, readsRow = UI.readsRow,
+    similarList = UI.similarList, chip = UI.chip, tile = UI.tile, storyPanel = UI.storyPanel, filterBar = UI.filterBar;
+
+  /* Where each decision code lives in the dashboard. */
+  var HUB = "../history/index.html";
+  var WHY = {
+    W1: ["e09", "Neutral canvas"], W2: ["e08", "Neutral ink"], W3: ["e10", "No accent"], W4: ["e08", "SF Pro only"],
+    W5: ["e08", "Lowercase hex"], W6: ["e08", "No. 028"], W9: ["e08", "System material for the shell"],
+    A1: ["e01", "Archive first"], A10: ["e05", "No all caps"], A11: ["e05", "No mono"], A14: ["e12", "Bold and small"],
+    A24: ["e44", "Human-first naming"], A25: ["e45", "Sip, the main competitor"], A26: ["e48", "Native shell, raw heart"],
+    A27: ["e49", "Your name first"], D1: ["e28", "Quiet capture"], D2: ["e29", "The archive gets the most work"],
+    P1: ["e02", "⌥⇧C"], P3: ["e02", "Iris icon"], P7: ["e02", "8 neighbors"], P8: ["e02", "Reads as"], P9: ["e02", "Kept before"], P14: ["e02", "Stored on this Mac"],
+    "E:albers": ["research/evidence", "Evidence: Albers, simultaneous contrast"],
+    "E:memory": ["research/evidence", "Evidence: color memory drifts"],
+    "E:object": ["research/evidence", "Evidence: objects change color"],
+    "E:boards": ["research/evidence", "Evidence: our boards lost their sources"],
+    "E:recall": ["research/precedents", "Precedent: Recall, show what was kept"],
+    "E:sip": ["inspiration/sip", "Sip refuses repeats"],
+    "E:naming": ["research/evidence", "Evidence: naming builds ownership"],
+    "E:labels": ["research/evidence", "Evidence: names find, swatches keep exact"],
+    "E:capture": ["research/evidence", "Evidence: chosen capture focuses attention"],
+    "E:resurface": ["research/evidence", "Evidence: examples help most mid-project"],
+    "E:inktone": ["e07", "Research: hierarchy from ink tone, like Granola"],
+    A30: ["e55", "Regular headers"],
+    A31: ["e56", "Square heart, rounded shell"], A32: ["e56", "1 px ink grid"], A33: ["e56", "Hue from place"],
+    A34: ["e56", "Loupe ring and chip"], A35: ["e56", "SF Pro tabular caption"], A36: ["e56", "Pure white paper"],
+    A37: ["e59", "Name it in the chip"], A38: ["e60", "Hex copied on capture"], A39: ["e61", "Echo in the chip"], A40: ["e62", "Chip timing"],
+    A41: ["e63", "A line under Kept before"], A42: ["e64", "Rediscover"], A43: ["e65", "Back to the source"], A44: ["e66", "The chip does the card's job"],
+    A45: ["e67", "Palette capture, hold ⇧"],
+    A46: ["e68", "Picking copies nothing"], A47: ["e69", "Similar lives in the archive"], A48: ["e70", "Similar, no count"],
+    A49: ["e81", "Latest picks, or a pinned palette"], A50: ["e82", "Docked, or dragged off"], A51: ["e83", "One key per format"],
+    A52: ["e84", "No chip"], A53: ["e85", "Where it came from"], A54: ["e86", "A note on every color"], A55: ["e88", "Capture card cut"],
+    D8: ["e71", "A palette on the desktop"],
+    "E:detail": ["research/evidence", "Evidence: photographing the whole hurts memory"],
+    "E:sipmulti": ["inspiration/sip", "Sip's multi-pick holds a key"]
+  };
+  document.querySelectorAll("[data-why]").forEach(function (box) {
+    box.getAttribute("data-why").split(" ").forEach(function (code) {
+      var w = WHY[code];
+      if (!w) return;
+      var label = code.indexOf("E:") === 0 ? w[1] : code + " " + w[1];
+      box.appendChild(el("a", { href: HUB + "#" + w[0], text: label }));
+    });
+  });
+
+  /* Hero: a real unnamed capture, waiting for a name. */
+  var hero = byNumber(25);
+  document.getElementById("hero-swatch").style.background = hero.hex;
+  document.getElementById("hero-swatch").setAttribute("aria-label", swatchLabel(hero));
+  document.getElementById("hero-no").textContent = no(hero.number);
+  var heroName = document.getElementById("hero-name");
+  heroName.setAttribute("data-placeholder", hero.placeholder);
+  heroName.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); heroName.blur(); } });
+  heroName.addEventListener("input", function () { if (!heroName.textContent.trim()) heroName.textContent = ""; });
+  techList(hero, document.getElementById("hero-tech"));
+  document.getElementById("hero-source").appendChild(sourceBlock(hero));
+  var hn = neighborGrid(hero, 96);
+  document.getElementById("hero-neighbors").replaceWith(hn);
+
+  /* Atoms */
+  var tokens = [
+    ["Paper", "#FFFFFF", "Archive wells and cards"], ["Chrome", "#F5F5F5", "The canvas around them"],
+    ["Ink", "#1D1D1F", "Names, rules, selection"], ["Ink 2", "#6B6B70", "Captions and placeholders"],
+    ["Ink 3", "#9C9CA1", "Never for text"], ["Soft rule", "#E2E2E4", "Separation inside a piece"]
+  ];
+  var tk = document.getElementById("tokens");
+  tokens.forEach(function (t) {
+    tk.appendChild(el("div", { class: "token" }, [
+      el("div", { class: "chip", style: "background:" + t[1] }),
+      el("div", { class: "t" }, [el("b", { text: t[0] }), el("span", { class: "num", text: t[1].toLowerCase() }), el("span", { text: t[2] })])
+    ]));
+  });
+  var ts = document.getElementById("type-specimen");
+  [["Display, 72 regular", "ts-display", byNumber(4).name],
+   ["Title, 34 regular", "ts-title", byNumber(13).name],
+   ["Heading, 20 regular", "ts-heading", "Kept before"],
+   ["Body, 15 regular", "ts-body", "Kept from a photo at McCarren pool, June 2026."],
+   ["Caption, 13", "ts-caption", "#2e6b6f   46 107 111   45.8% 0.071 199°"],
+   ["Small, 11", "ts-small", "No. 004   Photos"]].forEach(function (r) {
+    ts.appendChild(el("div", { class: "type-row" }, [el("span", { class: "label", text: r[0] }), el("span", { class: r[1], text: r[2] })]));
+  });
+  var sws = document.getElementById("swatches");
+  [byNumber(4), byNumber(10), byNumber(21)].forEach(function (c) {
+    sws.appendChild(el("div", null, [el("div", { class: "sw", role: "img", "aria-label": swatchLabel(c), style: "background:" + c.hex }), el("p", { class: "caption", text: title(c) })]));
+  });
+  sws.appendChild(el("div", null, [el("div", { class: "sw sm", role: "img", "aria-label": swatchLabel(byNumber(16)), style: "background:" + byNumber(16).hex }), el("p", { class: "caption", text: "Small, 40 px" })]));
+  document.getElementById("time-sample").textContent = when(byNumber(4).capturedAt);
+  techList(byNumber(4), document.getElementById("tech-sample"));
+  document.getElementById("reads-sample").appendChild(readsRow(byNumber(1)));
+  document.getElementById("reads-sample").appendChild(el("span", { class: "ts-caption", style: "align-self:center;margin-left:12px", text: byNumber(1).name }));
+
+  /* Molecules */
+  var nb = document.getElementById("nameblocks");
+  [byNumber(13), byNumber(28)].forEach(function (c) {
+    nb.appendChild(el("div", { class: "nameblock" }, [
+      el("div", { class: "nm" + (c.name ? "" : " placeholder"), text: title(c) }),
+      el("div", { class: "tc" }, [el("span", { text: c.hex }), el("span", { text: c.rgb }), el("span", { text: c.oklch })])
+    ]));
+  });
+  var srcs = document.getElementById("sources");
+  [byNumber(11), byNumber(6), byNumber(10)].forEach(function (c) { srcs.appendChild(sourceBlock(c)); });
+  var nd = document.getElementById("neighbors-demo");
+  [byNumber(1), byNumber(4)].forEach(function (c) {
+    nd.appendChild(el("div", null, [neighborGrid(c), el("p", { class: "caption", text: title(c) + ", " + sourceTitle(c) })]));
+  });
+  document.getElementById("kept-demo").appendChild(el("p", { class: "ts-small", style: "margin-bottom:8px", text: "Similar, for " + title(byNumber(28)) }));
+  document.getElementById("kept-demo").appendChild(similarList(byNumber(28)));
+  var cd = document.getElementById("chips-demo");
+  [byNumber(16), byNumber(25)].forEach(function (c) { cd.appendChild(chip(c)); });
+
+  var demoState = { family: "teal", value: "all" };
+  (function drawDemo() { filterBar(document.getElementById("filter-demo"), demoState, drawDemo); })();
+
+  /* Naming beside the cursor, and a note */
+  var namer = UI.nameOverlay(byNumber(25), function () { namer.input.blur(); });
+  document.getElementById("naming-demo").appendChild(namer);
+  var noted = Object.assign({}, byNumber(4), { note: "The deep end, late afternoon. Darker than I remembered." });
+  document.getElementById("note-demo").appendChild(UI.noteBlock(noted, true));
+
+  /* A palette for the specimens: four colors from the template's page, kept in one ⇧-click run,
+     on a copy of the archive so the templates below still start from the 28 samples. */
+  var demo = PalitUI.create(S.captures.map(function (c) { return Object.assign({}, c); }), { neighborOrder: S.neighborOrder });
+  var demoPal = demo.newPalette("are.na");
+  ["#c4552d", "#e8e1d3", "#2f5d62", "#d98e04"].forEach(function (hex) {
+    demo.addToPalette(demoPal, demo.newCapture(hex, { place: "are.na", sourceType: "Browser", source: "are.na — Warm light, NYC" }));
+  });
+
+  /* The desktop palette, on a small desk of its own */
+  var pinned = null;
+  var deskPal = demo.deskPalette({
+    latest: function () { return demo.captures.slice().sort(function (a, b) { return b.number - a.number; }); },
+    pinned: function () { return pinned; },
+    onUnpin: function () { pinned = null; deskPal.refresh(); document.getElementById("dp-pin").setAttribute("aria-pressed", "false"); }
+  });
+  document.getElementById("dp-stage").appendChild(deskPal);
+  var keepHex = ["#2d696e", "#e9a15a", "#9db1bd", "#6e8f5e"], keepI = 0;
+  document.getElementById("dp-keep").addEventListener("click", function () {
+    var c = demo.newCapture(keepHex[keepI++ % keepHex.length], { place: "stoopnotes.studio", sourceType: "Browser", source: "stoopnotes.studio — Bergen Street, golden hour" });
+    if (pinned) { deskPal.say("Kept " + PalitUI.no(c.number)); return; }
+    deskPal.refresh(c.number);
+    deskPal.peek(1700);
+  });
+  document.getElementById("dp-pin").addEventListener("click", function () {
+    pinned = pinned ? null : demoPal;
+    this.setAttribute("aria-pressed", String(!!pinned));
+    deskPal.refresh();
+    deskPal.peek(1800);
+  });
+  (function drawPalette(n) {
+    var host = document.getElementById("palette-demo");
+    host.textContent = "";
+    host.appendChild(demo.paletteBlock(demo.byNumber(n), { editable: true, onPick: drawPalette }));
+  })(demoPal.numbers[1]);
+  var td = document.getElementById("tiles-demo");
+  [byNumber(4), byNumber(5), byNumber(25)].forEach(function (c) { td.appendChild(tile(c)); });
+
+  storyPanel(document.getElementById("story-demo"), byNumber(4));
+
+  var pop = document.getElementById("popover-demo");
+  pop.appendChild(el("div", { class: "ph" }, [el("span", { style: "font-weight:600;color:var(--ink);font-size:13px", text: "Palit" }), el("span", { class: "num", id: "pop-count" })]));
+  var pr = el("div", { class: "pr" });
+  captures.slice().sort(function (a, b) { return b.number - a.number; }).slice(0, 4).forEach(function (c) { pr.appendChild(chip(c)); });
+  pop.appendChild(pr);
+  pop.appendChild(el("div", { class: "pa" }, [
+    el("button", { type: "button", class: "pbtn" }, ["Steal a color", el("span", { style: "color:var(--ink-2)", text: "⌥⇧C" })]),
+    el("button", { type: "button", class: "pbtn", text: "Open archive" })
+  ]));
+  pop.appendChild(el("p", { class: "pf", text: "Stored on this Mac" }));
+
+  /* Templates: capture lands in the archive. */
+  var SITE = ["#c4552d", "#e8e1d3", "#2f5d62", "#d98e04", "#f3d9cf", "#1f3b2d", "#7a8b99", "#c9b8e8", "#141414"];
+  var siteEl = document.getElementById("site");
+  SITE.forEach(function (hex, i) {
+    var b = el("button", { type: "button", style: "background:" + hex, "aria-label": "Steal this color, " + hex });
+    b.addEventListener("click", function (e) { steal(i, e); });
+    siteEl.appendChild(b);
+  });
+  function siteNeighbors(i) {
+    var r = Math.floor(i / 3), c = i % 3, out = [];
+    [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]].forEach(function (d) {
+      var rr = r + d[0], cc = c + d[1];
+      out.push(rr < 0 || rr > 2 || cc < 0 || cc > 2 ? SITE[i] : SITE[rr * 3 + cc]);
+    });
+    return out;
+  }
+  var loupe = document.getElementById("loupe"), desk = document.getElementById("desk");
+  var deskLanding = UI.deskPalette({ latest: function () { return captures.slice().sort(function (a, b) { return b.number - a.number; }); } });
+  desk.appendChild(deskLanding);
+  function steal(i, e) {
+    var c = UI.newCapture(SITE[i], { place: "are.na", sourceType: "Browser", source: "are.na — Warm light, NYC", neighbors: siteNeighbors(i) });
+    var rect = desk.getBoundingClientRect();
+    var x = e && e.clientX ? e.clientX - rect.left : rect.width * 0.36;
+    var y = e && e.clientY ? e.clientY - rect.top : rect.height * 0.5;
+    loupe.style.left = x + "px"; loupe.style.top = y + "px";
+    loupe.classList.remove("on"); void loupe.offsetWidth; loupe.classList.add("on");
+    deskLanding.refresh(c.number);
+    deskLanding.peek(1700);
+    archive.selected = c.number;
+    archive.fresh = c.number;
+    drawCounts();
+    drawArchive();
+  }
+
+  var archive = { family: "all", value: "all", selected: 28, fresh: null };
+  function drawCounts() {
+    var t = captures.length + " colors kept";
+    document.getElementById("desk-count").textContent = t;
+    document.getElementById("archive-count").textContent = t;
+    document.getElementById("pop-count").textContent = t;
+  }
+  function drawArchive() {
+    filterBar(document.getElementById("archive-filters"), archive, drawArchive);
+    var grid = document.getElementById("archive-grid");
+    grid.textContent = "";
+    var list = captures.slice().sort(function (a, b) { return b.number - a.number; }).filter(function (c) {
+      return (archive.family === "all" || c.family === archive.family) && (archive.value === "all" || c.value === archive.value);
+    });
+    if (!list.length) grid.appendChild(el("p", { class: "empty", style: "grid-column:1/-1", text: "Nothing in the archive matches that yet." }));
+    list.forEach(function (c) {
+      var t = tile(c, select, c.number === archive.selected);
+      if (c.number === archive.fresh) t.classList.add("fresh");
+      grid.appendChild(t);
+    });
+    archive.fresh = null;
+    var cur = byNumber(archive.selected) || list[0];
+    if (cur) storyPanel(document.getElementById("archive-story"), cur, { editable: true, onPick: select, onRename: renameTile });
+  }
+  function select(n) {
+    archive.selected = n;
+    var c = byNumber(n);
+    if (archive.family !== "all" && c.family !== archive.family) archive.family = "all";
+    if (archive.value !== "all" && c.value !== archive.value) archive.value = "all";
+    drawArchive();
+  }
+  function renameTile(c) {
+    var t = document.querySelector('#archive-grid .tile[data-n="' + c.number + '"]');
+    if (!t) return;
+    var tn = t.querySelector(".tn");
+    tn.textContent = title(c);
+    tn.className = "tn" + (c.name ? "" : " placeholder");
+    t.setAttribute("aria-label", swatchLabel(c));
+  }
+  drawCounts();
+  drawArchive();
+
+  /* Calls */
+  var MADE = [
+    ["Corners", "Square in the heart: the archive, cards and chips. Rounded only in the native shell: windows, the popover and the shortcut keys.", "A31"],
+    ["Grid lines", "1 px ink lines between archive tiles, like Are.na's blocks.", "A32"],
+    ["Placeholder wording", "A plain hue word plus the place you found the color: “Teal from are.na”. Computed from OKLCH, never named by AI.", "A33"],
+    ["Capture confirmation", "A small loupe ring where you clicked, then the chip under the menu bar for about 2.5 seconds. Test T2 can still tune the timing.", "A34"],
+    ["Technical caption", "SF Pro with tabular figures. One family, and no mono (A11).", "A35"],
+    ["Paper", "Pure white, so every color is judged honestly. The physical-label feel comes from the type and the rules. Confirmed in the feature workshop; how colors sit on it is now deep dive 1's question.", "A36"],
+    ["The desktop palette", "Your latest picks, or a palette you pin. Docked at the edge, and you can drag it off. One key per format when you copy.", "A49"],
+    ["No chip", "A new pick lands in the desktop palette with a ring and a soft sound. Name it beside the cursor, or later in the archive.", "A52"],
+    ["Similar", "Each row says where the color came from and when. No count, no ΔE.", "A53"],
+    ["A note on every color", "A quiet scratchpad on each color's card that stays.", "A54"],
+    ["The capture card", "Cut. A color's card lives in the archive, not on its own.", "A55"]
+  ];
+  var OPEN = [
+    ["Dark mode", "Not designed yet."],
+    ["Logo and menu bar mark", "None yet, not even a placeholder: the menu bar shows the word Palit until Daeun designs the mark (entry 107)."],
+    ["Popover footer", "“Stored on this Mac”, from v0. Proposed, not decided."]
+  ];
+  var made = document.getElementById("calls-made");
+  MADE.forEach(function (c) {
+    made.appendChild(el("li", null, [el("h3", { text: c[0] }), el("p", null, [c[1], el("a", { class: "code", href: HUB + "#" + WHY[c[2]][0], text: c[2] + ", made October 18" })])]));
+  });
+  var open = document.getElementById("calls-open");
+  OPEN.forEach(function (c) { open.appendChild(el("li", null, [el("h3", { text: c[0] }), el("p", { text: c[1] })])); });
+})();
+</script>
+</body>
+</html>

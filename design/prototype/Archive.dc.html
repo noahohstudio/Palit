@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Archive</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#1D1D1F}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 820px; box-sizing: border-box; background: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; color: #1D1D1F; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased">
+
+<div style="min-height: 52px; box-sizing: border-box; padding: 8px 16px; background: #F4F3F1; border-bottom: 1px solid #E6E3DE; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<div style="flex: 1 1 220px; display: flex; align-items: center; gap: 8px">
+<span style="width: 12px; height: 12px; border-radius: 50%; background: #D3D0CA"></span>
+<span style="width: 12px; height: 12px; border-radius: 50%; background: #D3D0CA"></span>
+<span style="width: 12px; height: 12px; border-radius: 50%; background: #D3D0CA"></span>
+<span style="margin-left: 12px; font-size: 13px; font-weight: 600">Archive</span>
+<span style="font-size: 12px; color: #6B6B70">{{total}} colors kept</span>
+</div>
+<div role="group" aria-label="View" style="display: flex; padding: 2px; border-radius: 8px; background: #E7E5E1">
+<button onClick="{{showTimeline}}" aria-pressed="{{tl.pressed}}" style="height: 28px; padding: 0 14px; border: 0; border-radius: 6px; background: {{tl.bg}}; box-shadow: {{tl.shadow}}; font: inherit; font-size: 12px; font-weight: 500; color: #1D1D1F; cursor: pointer">Timeline</button>
+<button onClick="{{showSpectrum}}" aria-pressed="{{sp.pressed}}" style="height: 28px; padding: 0 14px; border: 0; border-radius: 6px; background: {{sp.bg}}; box-shadow: {{sp.shadow}}; font: inherit; font-size: 12px; font-weight: 500; color: #1D1D1F; cursor: pointer">Spectrum</button>
+</div>
+<div style="flex: 1 1 220px; display: flex; justify-content: flex-end; position: relative">
+<label for="ar-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Search the archive</label>
+<input id="ar-q" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search name, source, or hex" style="width: 260px; max-width: 100%; height: 30px; box-sizing: border-box; padding: 0 10px; border: 1px solid #DCD9D4; border-radius: 7px; background: #FFFFFF; font: inherit; font-size: 12px; color: #1D1D1F">
+</div>
+</div>
+
+<div style="flex: 1 1 auto; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Library" style="flex: 1 1 220px; box-sizing: border-box; padding: 16px 10px; background: #F4F3F1; border-right: 1px solid #E6E3DE; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase">Library</span>
+<sc-for list="{{lib}}" as="it" hint-placeholder-count="3">
+<button onClick="{{it.pick}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; border: 0; border-radius: 7px; background: {{it.bg}}; display: flex; align-items: center; justify-content: space-between; gap: 8px; font: inherit; font-size: 13px; font-weight: {{it.fw}}; color: #1D1D1F; cursor: pointer; text-align: left">
+<span>{{it.label}}</span>
+<span style="font-size: 12px; font-weight: 400; color: #6B6B70">{{it.count}}</span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase">Projects</span>
+<sc-for list="{{projects}}" as="it" hint-placeholder-count="4">
+<button onClick="{{it.pick}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; border: 0; border-radius: 7px; background: {{it.bg}}; display: flex; align-items: center; justify-content: space-between; gap: 8px; font: inherit; font-size: 13px; font-weight: {{it.fw}}; color: #1D1D1F; cursor: pointer; text-align: left">
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="width: 10px; height: 10px; flex-shrink: 0; border-radius: 3px; background: {{it.dot}}; box-shadow: inset 0 0 0 1px rgba(0,0,0,.10)"></span>
+<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{it.label}}</span>
+</span>
+<span style="font-size: 12px; font-weight: 400; color: #6B6B70">{{it.count}}</span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 0 10px 6px; font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase">Captured from</span>
+<sc-for list="{{sources}}" as="it" hint-placeholder-count="4">
+<button onClick="{{it.pick}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; border: 0; border-radius: 7px; background: {{it.bg}}; display: flex; align-items: center; justify-content: space-between; gap: 8px; font: inherit; font-size: 13px; font-weight: {{it.fw}}; color: #1D1D1F; cursor: pointer; text-align: left">
+<span>{{it.label}}</span>
+<span style="font-size: 12px; font-weight: 400; color: #6B6B70">{{it.count}}</span>
+</button>
+</sc-for>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; max-height: 768px; overflow-y: auto; box-sizing: border-box; padding: 22px 28px 40px; display: flex; flex-direction: column; gap: 28px">
+
+<section aria-label="Every color in order" style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 4px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600">Every color, in the order you kept it</h2>
+<span style="font-size: 12px; color: #6B6B70">June to October 2026</span>
+</div>
+<div style="display: flex; height: 40px; border-radius: 8px; overflow: hidden">
+<sc-for list="{{ribbon}}" as="b" hint-placeholder-count="28">
+<button onClick="{{b.pick}}" aria-label="{{b.label}}" title="{{b.label}}" style="flex: 1 1 0; min-width: 0; height: 40px; border: 0; padding: 0; background: {{b.hex}}; opacity: {{b.op}}; cursor: pointer"></button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 0">
+<sc-for list="{{ribbon}}" as="b" hint-placeholder-count="28">
+<span style="flex: 1 1 0; min-width: 0; height: 3px; border-radius: 2px; background: {{b.mark}}"></span>
+</sc-for>
+</div>
+<div style="display: flex">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="5">
+<span style="flex: {{m.count}} 1 0; min-width: 0; box-sizing: border-box; padding-left: 6px; border-left: 1px solid #DCD9D4; font-size: 11px; color: #6B6B70; white-space: nowrap; overflow: hidden">{{m.label}}</span>
+</sc-for>
+</div>
+</section>
+
+<sc-if value="{{filtered}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<span style="font-size: 13px">Showing <strong>{{filterLabel}}</strong> · {{shown}}</span>
+<button onClick="{{clear}}" style="height: 28px; padding: 0 12px; border: 0; border-radius: 14px; background: #F2F0EC; color: #1D1D1F; font: inherit; font-size: 12px; cursor: pointer">Clear</button>
+</div>
+</sc-if>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 13px; color: #6B6B70">Nothing in the archive matches that yet.</p>
+</sc-if>
+
+<sc-if value="{{isTimeline}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 32px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid #EEECE8">
+<h3 style="margin: 0; font-size: 15px; font-weight: 600">{{g.title}}</h3>
+<span style="font-size: 12px; color: #6B6B70">{{g.sub}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 18px 14px">
+<sc-for list="{{g.items}}" as="c" hint-placeholder-count="4">
+<button onClick="{{c.pick}}" aria-label="{{c.aria}}" style="border: 0; padding: 0; background: transparent; text-align: left; font: inherit; color: #1D1D1F; cursor: pointer; display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span style="display: block; width: 100%; height: 96px; border-radius: 10px; background: {{c.hex}}; box-shadow: {{c.ring}}"></span>
+<span style="display: flex; flex-direction: column; gap: 2px; padding: 0 2px; min-width: 0; width: 100%; box-sizing: border-box">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; color: #6B6B70">{{c.no}} · {{c.time}}</span>
+<span style="font-size: 13px; font-weight: {{c.nameFw}}; color: {{c.nameColor}}">{{c.label}}</span>
+<span style="font-size: 11px; color: #6B6B70; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.src}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isSpectrum}}" hint-placeholder-val="{{ false }}">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid #EEECE8">
+<h3 style="margin: 0; font-size: 15px; font-weight: 600">By hue</h3>
+<span style="font-size: 12px; color: #6B6B70">Red around to violet, then neutrals from light to dark</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 8px">
+<sc-for list="{{spectrum}}" as="c" hint-placeholder-count="12">
+<button onClick="{{c.pick}}" aria-label="{{c.aria}}" title="{{c.aria}}" style="height: 68px; border: 0; padding: 0; border-radius: 8px; background: {{c.hex}}; box-shadow: {{c.ring}}; cursor: pointer"></button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+</main>
+
+<aside aria-label="Selected color" style="flex: 1 1 300px; min-width: 0; max-height: 768px; overflow-y: auto; box-sizing: border-box; padding: 20px; border-left: 1px solid #E6E3DE; display: flex; flex-direction: column; gap: 22px">
+<div style="height: 150px; flex-shrink: 0; border-radius: 12px; background: {{s.hex}}; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06)"></div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; color: #6B6B70">{{s.no}} · {{s.when}}</span>
+<span style="font-size: 19px; font-weight: 600; color: {{s.nameColor}}">{{s.label}}</span>
+</div>
+
+<div style="display: flex; flex-direction: column">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; height: 32px; border-bottom: 1px solid #F0EEEA">
+<span style="font-size: 12px; color: #6B6B70">HEX</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px">{{s.hex}}</span>
+</div>
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; height: 32px; border-bottom: 1px solid #F0EEEA">
+<span style="font-size: 12px; color: #6B6B70">RGB</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px">{{s.rgb}}</span>
+</div>
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; height: 32px">
+<span style="font-size: 12px; color: #6B6B70">OKLCH</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px">{{s.oklch}}</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase">Where it came from</span>
+<div style="display: flex; gap: 14px; align-items: center">
+<div style="width: 72px; height: 72px; flex-shrink: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06)">
+<sc-for list="{{s.mos}}" as="m" hint-placeholder-count="9">
+<span style="background: {{m.c}}; box-shadow: {{m.ring}}"></span>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="align-self: flex-start; height: 20px; box-sizing: border-box; padding: 0 8px; border-radius: 10px; border: 1px solid #DCD9D4; display: flex; align-items: center; font-size: 11px">{{s.type}}</span>
+<span style="font-size: 13px; font-weight: 600">{{s.src}}</span>
+<span style="font-size: 12px; color: #6B6B70">{{s.proj}}</span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase">Reads as</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{s.desc}}" as="d" hint-placeholder-count="3">
+<span style="height: 26px; box-sizing: border-box; padding: 0 11px; border-radius: 13px; border: 1px solid #DCD9D4; display: flex; align-items: center; font-size: 12px">{{d.t}}</span>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 11px; font-weight: 600; color: #6B6B70; letter-spacing: .05em; text-transform: uppercase; padding-bottom: 4px">Kept before</span>
+<sc-if value="{{s.hasSim}}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{s.sim}}" as="x" hint-placeholder-count="2">
+<button onClick="{{x.pick}}" style="display: flex; gap: 12px; align-items: center; min-height: 48px; border: 0; padding: 4px 0; background: transparent; text-align: left; font: inherit; color: #1D1D1F; cursor: pointer">
+<span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 7px; background: {{x.hex}}; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08)"></span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 13px; font-weight: 600">{{x.title}}</span>
+<span style="font-size: 12px; color: #6B6B70">{{x.sub}}</span>
+</span>
+</button>
+</sc-for>
+</sc-if>
+<sc-if value="{{s.noSim}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 12px; color: #6B6B70">Nothing close yet. This one is new to your archive.</span>
+</sc-if>
+</div>
+
+<a href="Card.dc.html" style="align-self: flex-start; height: 36px; box-sizing: border-box; padding: 0 14px; border-radius: 8px; background: #F2F0EC; color: #1D1D1F; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center">Open full card</a>
+</aside>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"defaultView":{"editor":"enum","options":["timeline","spectrum"],"default":"timeline","section":"View"},"$preview":{"width":1280,"height":820}}'>
+var CAPS = [{"n":1,"no":"No. 001","date":"2026-06-03","dayLong":"Wednesday, June 3","time":"10:14 AM","hex":"#6C2E3A","name":"Oxblood","type":"Photos","src":"IMG_2210 — coat on the F train","proj":"zn","mos":["#2B2A2E","#2B2A2E","#8C8A86","#6C2E3A","#6C2E3A","#8C8A86","#C9B9A6","#C9B9A6","#8C8A86"],"rgb":"108 46 58","oklch":"39.0% 0.089 10°","C":0.089,"H":10.1,"L":0.39,"desc":["Warm","Dark","Muted"],"sim":[]},
+{"n":2,"no":"No. 002","date":"2026-06-03","dayLong":"Wednesday, June 3","time":"10:15 AM","hex":"#E7D6BE","name":null,"type":"Browser","src":"are.na — Paper samples","proj":"zn","mos":["#CDBB9F","#F4EEE4","#F4EEE4","#8E7F6B","#E7D6BE","#E7D6BE","#8E7F6B","#CDBB9F","#F4EEE4"],"rgb":"231 214 190","oklch":"88.4% 0.037 77°","C":0.037,"H":76.6,"L":0.884,"desc":["Warm","Light","Muted"],"sim":[{"n":26,"de":2.9},{"n":22,"de":3.3},{"n":20,"de":3.6}]},
+{"n":3,"no":"No. 003","date":"2026-06-09","dayLong":"Tuesday, June 9","time":"6:40 PM","hex":"#F0C23B","name":"Mango","type":"Photos","src":"IMG_2291 — fruit stand, Delancey","proj":null,"mos":["#2E2A26","#F0C23B","#E0662B","#2E2A26","#F0C23B","#E0662B","#4E7B2F","#4E7B2F","#E0662B"],"rgb":"240 194 59","oklch":"83.3% 0.153 89°","C":0.153,"H":89.0,"L":0.833,"desc":["Warm","Light","Saturated"],"sim":[]},
+{"n":4,"no":"No. 004","date":"2026-06-17","dayLong":"Wednesday, June 17","time":"1:02 PM","hex":"#2E6B6F","name":"Pool tile","type":"Photos","src":"IMG_2380 — McCarren pool","proj":null,"mos":["#9FC4C0","#9FC4C0","#E9E6DF","#2E6B6F","#2E6B6F","#E9E6DF","#1F3E44","#1F3E44","#E9E6DF"],"rgb":"46 107 111","oklch":"49.0% 0.063 201°","C":0.063,"H":201.1,"L":0.49,"desc":["Cool","Mid value","Muted"],"sim":[{"n":25,"de":4.4},{"n":18,"de":6.8}]},
+{"n":5,"no":"No. 005","date":"2026-06-17","dayLong":"Wednesday, June 17","time":"1:03 PM","hex":"#9FC4C0","name":null,"type":"Photos","src":"IMG_2380 — McCarren pool","proj":null,"mos":["#E9E6DF","#2E6B6F","#2E6B6F","#C9DCD6","#9FC4C0","#9FC4C0","#C9DCD6","#E9E6DF","#2E6B6F"],"rgb":"159 196 192","oklch":"79.2% 0.040 188°","C":0.04,"H":188.3,"L":0.792,"desc":["Cool","Light","Muted"],"sim":[{"n":24,"de":4.4}]},
+{"n":6,"no":"No. 006","date":"2026-06-30","dayLong":"Tuesday, June 30","time":"9:18 PM","hex":"#3B3F46","name":"Graphite","type":"Figma","src":"Portfolio site — Nav","proj":"pf","mos":["#8C9097","#3B3F46","#F7F6F3","#8C9097","#3B3F46","#F7F6F3","#1D1D1F","#1D1D1F","#F7F6F3"],"rgb":"59 63 70","oklch":"36.7% 0.013 262°","C":0.013,"H":261.7,"L":0.367,"desc":["No temperature","Dark","Neutral"],"sim":[{"n":15,"de":6.3}]},
+{"n":7,"no":"No. 007","date":"2026-07-08","dayLong":"Wednesday, July 8","time":"4:25 PM","hex":"#D9A7A0","name":"Faded rose","type":"Browser","src":"vimeo.com — short film still","proj":"zn","mos":["#6E4A44","#6E4A44","#EAD7C9","#D9A7A0","#D9A7A0","#EAD7C9","#2F2A2C","#2F2A2C","#EAD7C9"],"rgb":"217 167 160","oklch":"77.2% 0.060 28°","C":0.06,"H":27.7,"L":0.772,"desc":["Warm","Light","Muted"],"sim":[]},
+{"n":8,"no":"No. 008","date":"2026-07-08","dayLong":"Wednesday, July 8","time":"4:26 PM","hex":"#2F2A2C","name":null,"type":"Browser","src":"vimeo.com — short film still","proj":"zn","mos":["#6E4A44","#D9A7A0","#D9A7A0","#141213","#2F2A2C","#2F2A2C","#141213","#6E4A44","#D9A7A0"],"rgb":"47 42 44","oklch":"29.1% 0.008 351°","C":0.008,"H":351.4,"L":0.291,"desc":["No temperature","Dark","Neutral"],"sim":[{"n":15,"de":6.1}]},
+{"n":9,"no":"No. 009","date":"2026-07-19","dayLong":"Sunday, July 19","time":"11:50 AM","hex":"#4F7CAC","name":"Workwear blue","type":"Browser","src":"instagram.com — studio visit","proj":"pf","mos":["#B9A88E","#4F7CAC","#E8E4DC","#B9A88E","#4F7CAC","#E8E4DC","#2C3E57","#2C3E57","#E8E4DC"],"rgb":"79 124 172","oklch":"57.4% 0.090 251°","C":0.09,"H":251.1,"L":0.574,"desc":["Cool","Mid value","Muted"],"sim":[]},
+{"n":10,"no":"No. 010","date":"2026-07-27","dayLong":"Monday, July 27","time":"9:33 AM","hex":"#F2EDE4","name":"Morning paper","type":"PDF","src":"zine_refs_v2.pdf — p. 14","proj":"zn","mos":["#1C1C1C","#1C1C1C","#D8CFC0","#F2EDE4","#F2EDE4","#D8CFC0","#A39A8C","#A39A8C","#D8CFC0"],"rgb":"242 237 228","oklch":"94.8% 0.013 82°","C":0.013,"H":82.4,"L":0.948,"desc":["No temperature","Light","Neutral"],"sim":[{"n":20,"de":3.3},{"n":22,"de":3.7},{"n":26,"de":5.0}]},
+{"n":11,"no":"No. 011","date":"2026-08-12","dayLong":"Wednesday, August 12","time":"3:07 PM","hex":"#C25A35","name":"Clay pot","type":"Browser","src":"are.na — Plant shop","proj":"pk","mos":["#EADFCC","#5E7A3A","#5E7A3A","#8C3E22","#C25A35","#C25A35","#8C3E22","#EADFCC","#5E7A3A"],"rgb":"194 90 53","oklch":"59.0% 0.143 40°","C":0.143,"H":39.6,"L":0.59,"desc":["Warm","Mid value","Saturated"],"sim":[{"n":28,"de":1.0},{"n":19,"de":5.2}]},
+{"n":12,"no":"No. 012","date":"2026-08-12","dayLong":"Wednesday, August 12","time":"3:09 PM","hex":"#8BAE7C","name":"Sage","type":"Browser","src":"are.na — Plant shop","proj":"pk","mos":["#EADFCC","#8BAE7C","#5E7A3A","#EADFCC","#8BAE7C","#5E7A3A","#C25A35","#C25A35","#5E7A3A"],"rgb":"139 174 124","oklch":"71.2% 0.080 136°","C":0.08,"H":136.5,"L":0.712,"desc":["Between warm and cool","Mid value","Muted"],"sim":[{"n":24,"de":6.8}]},
+{"n":13,"no":"No. 013","date":"2026-08-20","dayLong":"Thursday, August 20","time":"7:44 PM","hex":"#A8432A","name":"Brick, Chinatown","type":"Photos","src":"IMG_3105 — Mott St","proj":null,"mos":["#3C3A38","#3C3A38","#D8C7B0","#A8432A","#A8432A","#D8C7B0","#6F2C1C","#6F2C1C","#D8C7B0"],"rgb":"168 67 42","oklch":"51.5% 0.139 35°","C":0.139,"H":35.1,"L":0.515,"desc":["Warm","Mid value","Saturated"],"sim":[{"n":19,"de":2.8}]},
+{"n":14,"no":"No. 014","date":"2026-08-29","dayLong":"Saturday, August 29","time":"2:12 PM","hex":"#C9B8E8","name":"Lilac","type":"Browser","src":"pinterest.com — tea packaging","proj":"pk","mos":["#5B3A63","#F5F1FA","#F5F1FA","#E8D9C4","#C9B8E8","#C9B8E8","#E8D9C4","#5B3A63","#F5F1FA"],"rgb":"201 184 232","oklch":"81.3% 0.069 301°","C":0.069,"H":301.1,"L":0.813,"desc":["Between warm and cool","Light","Muted"],"sim":[]},
+{"n":15,"no":"No. 015","date":"2026-09-05","dayLong":"Saturday, September 5","time":"12:30 PM","hex":"#1F3B2D","name":"Bottle green","type":"PDF","src":"zine_refs_v2.pdf — p. 31","proj":"zn","mos":["#E9E1CF","#1F3B2D","#C9A45C","#E9E1CF","#1F3B2D","#C9A45C","#0F1F18","#0F1F18","#C9A45C"],"rgb":"31 59 45","oklch":"32.5% 0.043 161°","C":0.043,"H":161.0,"L":0.325,"desc":["Cool","Dark","Muted"],"sim":[{"n":8,"de":6.1},{"n":6,"de":6.3}]},
+{"n":16,"no":"No. 016","date":"2026-09-14","dayLong":"Monday, September 14","time":"5:58 PM","hex":"#D98E04","name":"Taxi","type":"Photos","src":"IMG_4471 — Canal St","proj":null,"mos":["#2B2B2B","#2B2B2B","#8D8D8D","#D98E04","#D98E04","#8D8D8D","#F2C14E","#F2C14E","#8D8D8D"],"rgb":"217 142 4","oklch":"70.6% 0.151 72°","C":0.151,"H":71.9,"L":0.706,"desc":["Warm","Mid value","Saturated"],"sim":[]},
+{"n":17,"no":"No. 017","date":"2026-09-21","dayLong":"Monday, September 21","time":"10:05 AM","hex":"#7A8B99","name":"Overcast steel","type":"Photos","src":"IMG_4402 — Brooklyn Bridge","proj":null,"mos":["#4B5560","#B8C2CA","#B8C2CA","#D9D6CF","#7A8B99","#7A8B99","#D9D6CF","#4B5560","#B8C2CA"],"rgb":"122 139 153","oklch":"62.8% 0.029 243°","C":0.029,"H":243.0,"L":0.628,"desc":["No temperature","Mid value","Neutral"],"sim":[]},
+{"n":18,"no":"No. 018","date":"2026-09-21","dayLong":"Monday, September 21","time":"10:06 AM","hex":"#4B5560","name":null,"type":"Photos","src":"IMG_4402 — Brooklyn Bridge","proj":null,"mos":["#2D333A","#4B5560","#7A8B99","#2D333A","#4B5560","#7A8B99","#B8C2CA","#B8C2CA","#7A8B99"],"rgb":"75 85 96","oklch":"44.5% 0.022 251°","C":0.022,"H":250.8,"L":0.445,"desc":["No temperature","Mid value","Neutral"],"sim":[{"n":25,"de":3.9},{"n":4,"de":6.8}]},
+{"n":19,"no":"No. 019","date":"2026-09-28","dayLong":"Monday, September 28","time":"4:40 PM","hex":"#B5462E","name":"Brick, Bushwick","type":"Photos","src":"IMG_4398 — Jefferson St","proj":null,"mos":["#7E2F1E","#7E2F1E","#D2C4AE","#B5462E","#B5462E","#D2C4AE","#3A3634","#3A3634","#D2C4AE"],"rgb":"181 70 46","oklch":"54.1% 0.149 34°","C":0.149,"H":33.8,"L":0.541,"desc":["Warm","Mid value","Saturated"],"sim":[{"n":13,"de":2.8},{"n":28,"de":4.7},{"n":11,"de":5.2}]},
+{"n":20,"no":"No. 020","date":"2026-09-28","dayLong":"Monday, September 28","time":"10:11 PM","hex":"#EDE3CF","name":null,"type":"Figma","src":"Portfolio site — Case study cover","proj":"pf","mos":["#C9B79A","#1D1D1F","#1D1D1F","#F7F2E8","#EDE3CF","#EDE3CF","#F7F2E8","#C9B79A","#1D1D1F"],"rgb":"237 227 207","oklch":"91.8% 0.029 85°","C":0.029,"H":84.6,"L":0.918,"desc":["No temperature","Light","Neutral"],"sim":[{"n":22,"de":1.1},{"n":26,"de":2.6},{"n":10,"de":3.3}]},
+{"n":21,"no":"No. 021","date":"2026-09-28","dayLong":"Monday, September 28","time":"10:12 PM","hex":"#141414","name":"Almost black","type":"Figma","src":"Portfolio site — Case study cover","proj":"pf","mos":["#000000","#141414","#EDE3CF","#000000","#141414","#EDE3CF","#3B3F46","#3B3F46","#EDE3CF"],"rgb":"20 20 20","oklch":"19.1% 0.000 90°","C":0.0,"H":89.9,"L":0.191,"desc":["No temperature","Dark","Neutral"],"sim":[]},
+{"n":22,"no":"No. 022","date":"2026-10-01","dayLong":"Thursday, October 1","time":"1:20 PM","hex":"#E8E1D3","name":"Gallery wall","type":"Browser","src":"instagram.com — studio visit","proj":"pf","mos":["#C9C1B2","#C9C1B2","#3A3633","#E8E1D3","#E8E1D3","#3A3633","#F5F2EC","#F5F2EC","#3A3633"],"rgb":"232 225 211","oklch":"91.1% 0.020 85°","C":0.02,"H":84.6,"L":0.911,"desc":["No temperature","Light","Neutral"],"sim":[{"n":20,"de":1.1},{"n":26,"de":2.3},{"n":2,"de":3.3}]},
+{"n":23,"no":"No. 023","date":"2026-10-01","dayLong":"Thursday, October 1","time":"1:22 PM","hex":"#5E4B8B","name":null,"type":"Browser","src":"instagram.com — studio visit","proj":"pf","mos":["#2B2440","#E8E1D3","#E8E1D3","#9D8FC2","#5E4B8B","#5E4B8B","#9D8FC2","#2B2440","#E8E1D3"],"rgb":"94 75 139","oklch":"46.2% 0.103 296°","C":0.103,"H":295.8,"L":0.462,"desc":["Cool","Mid value","Saturated"],"sim":[]},
+{"n":24,"no":"No. 024","date":"2026-10-01","dayLong":"Thursday, October 1","time":"8:05 PM","hex":"#A9B9A0","name":"Lichen","type":"Photos","src":"IMG_4510 — Prospect Park","proj":null,"mos":["#3E4A36","#A9B9A0","#5E6B4E","#3E4A36","#A9B9A0","#5E6B4E","#D6D3C3","#D6D3C3","#5E6B4E"],"rgb":"169 185 160","oklch":"76.6% 0.039 134°","C":0.039,"H":134.2,"L":0.766,"desc":["Between warm and cool","Light","Muted"],"sim":[{"n":5,"de":4.4},{"n":12,"de":6.8}]},
+{"n":25,"no":"No. 025","date":"2026-10-04","dayLong":"Sunday, October 4","time":"11:40 AM","hex":"#2F5D62","name":null,"type":"Browser","src":"are.na — Warm light, NYC","proj":null,"mos":["#C4552D","#C4552D","#C4552D","#C4552D","#2F5D62","#7FA7A3","#C4552D","#C4552D","#2F5D62"],"rgb":"47 93 98","oklch":"44.8% 0.051 205°","C":0.051,"H":204.7,"L":0.448,"desc":["Cool","Mid value","Muted"],"sim":[{"n":18,"de":3.9},{"n":4,"de":4.4}]},
+{"n":26,"no":"No. 026","date":"2026-10-04","dayLong":"Sunday, October 4","time":"1:57 PM","hex":"#F3D9CF","name":"Blush ground","type":"Figma","src":"Tea packaging — Box front","proj":"pk","mos":["#E9E9EA","#5B3A63","#5B3A63","#E9E9EA","#F3D9CF","#F3D9CF","#E9E9EA","#F3D9CF","#F3D9CF"],"rgb":"243 217 207","oklch":"90.4% 0.032 42°","C":0.032,"H":42.3,"L":0.904,"desc":["Warm","Light","Muted"],"sim":[{"n":22,"de":2.3},{"n":20,"de":2.6},{"n":2,"de":2.9}]},
+{"n":27,"no":"No. 027","date":"2026-10-04","dayLong":"Sunday, October 4","time":"1:58 PM","hex":"#5B3A63","name":"Plum label","type":"Figma","src":"Tea packaging — Box front","proj":"pk","mos":["#F3D9CF","#F3D9CF","#F3D9CF","#F3D9CF","#5B3A63","#F7F1EA","#F3D9CF","#F3D9CF","#F3D9CF"],"rgb":"91 58 99","oklch":"40.4% 0.078 320°","C":0.078,"H":319.6,"L":0.404,"desc":["Between warm and cool","Dark","Muted"],"sim":[]},
+{"n":28,"no":"No. 028","date":"2026-10-04","dayLong":"Sunday, October 4","time":"2:22 PM","hex":"#C4552D","name":null,"type":"Browser","src":"are.na — Warm light, NYC","proj":null,"mos":["#EFE6D6","#EFE6D6","#C4552D","#C4552D","#C4552D","#2F5D62","#C4552D","#E0A526","#E0A526"],"rgb":"196 85 45","oklch":"58.5% 0.152 39°","C":0.152,"H":39.4,"L":0.585,"desc":["Warm","Mid value","Saturated"],"sim":[{"n":11,"de":1.0},{"n":19,"de":4.7}]}];
+
+var PROJ = { pk: 'Packaging — tea', pf: 'Portfolio site', zn: 'Editorial zine' };
+var TODAY = '2026-10-04';
+var MONTHS = [
+  { k: '2026-06', label: 'June' }, { k: '2026-07', label: 'July' }, { k: '2026-08', label: 'August' },
+  { k: '2026-09', label: 'September' }, { k: '2026-10', label: 'October' }
+];
+var BY_N = {};
+CAPS.forEach(function (c) { BY_N[c.n] = c; });
+
+function matches(c, f) {
+  if (f === 'all') return true;
+  if (f === 'today') return c.date === TODAY;
+  if (f === 'unnamed') return !c.name;
+  if (f.indexOf('p:') === 0) { var p = f.slice(2); return p === 'none' ? !c.proj : c.proj === p; }
+  if (f.indexOf('s:') === 0) return c.type === f.slice(2);
+  return true;
+}
+function matchesQ(c, q) {
+  if (!q) return true;
+  var hay = [c.no, c.hex, c.name || 'unnamed', c.src, c.type, PROJ[c.proj] || 'unsorted'].join(' ').toLowerCase();
+  return hay.indexOf(q.toLowerCase().trim()) !== -1;
+}
+function srcHead(s) { return s.split(' — ')[0]; }
+function reads(d) {
+  if (d[0] === 'No temperature') return [d[1], 'Neutral'];
+  return d;
+}
+function filterName(f) {
+  if (f === 'today') return 'Today';
+  if (f === 'unnamed') return 'Unnamed';
+  if (f.indexOf('p:') === 0) { var p = f.slice(2); return p === 'none' ? 'Unsorted' : PROJ[p]; }
+  if (f.indexOf('s:') === 0) return f.slice(2);
+  return 'All colors';
+}
+
+class Component extends DCLogic {
+  state = { sel: 28, view: null, filter: 'all', q: '' };
+  pickers = {};
+  filters = {};
+
+  pick(n) {
+    if (!this.pickers[n]) this.pickers[n] = () => this.setState({ sel: n });
+    return this.pickers[n];
+  }
+  filt(key) {
+    if (!this.filters[key]) this.filters[key] = () => this.setState({ filter: key });
+    return this.filters[key];
+  }
+  onQ = (e) => { this.setState({ q: e.target.value }); };
+  showTimeline = () => { this.setState({ view: 'timeline' }); };
+  showSpectrum = () => { this.setState({ view: 'spectrum' }); };
+  clear = () => { this.setState({ filter: 'all', q: '' }); };
+
+  renderVals() {
+    var st = this.state;
+    var self = this;
+    var view = st.view || this.props.defaultView || 'timeline';
+    var sel = BY_N[st.sel] || BY_N[28];
+    var vis = CAPS.filter(function (c) { return matches(c, st.filter) && matchesQ(c, st.q); });
+    var visSet = {};
+    vis.forEach(function (c) { visSet[c.n] = 1; });
+
+    function card(c) {
+      var on = c.n === sel.n;
+      return {
+        no: c.no, hex: c.hex, time: c.time, src: c.src,
+        label: c.name || 'Unnamed',
+        nameFw: c.name ? 600 : 400,
+        nameColor: c.name ? '#1D1D1F' : '#6B6B70',
+        aria: c.no + ', ' + (c.name || 'unnamed') + ', ' + c.hex,
+        ring: on ? '0 0 0 2px #FFFFFF, 0 0 0 4px #1D1D1F' : 'inset 0 0 0 1px rgba(0,0,0,.08)',
+        pick: self.pick(c.n)
+      };
+    }
+
+    var groups = [];
+    var byDate = {};
+    vis.slice().reverse().forEach(function (c) {
+      if (!byDate[c.date]) {
+        byDate[c.date] = { date: c.date, title: c.date === TODAY ? 'Today' : c.dayLong, items: [], heads: {} };
+        groups.push(byDate[c.date]);
+      }
+      byDate[c.date].items.push(card(c));
+      byDate[c.date].heads[srcHead(c.src)] = 1;
+    });
+    groups = groups.map(function (g) {
+      var n = g.items.length;
+      return {
+        title: g.title,
+        sub: (g.date === TODAY ? 'Sunday, October 4 · ' : '') + n + (n === 1 ? ' color' : ' colors') + ' from ' + Object.keys(g.heads).join(', '),
+        items: g.items
+      };
+    });
+
+    var chrom = vis.filter(function (c) { return c.C >= 0.03; }).sort(function (a, b) { return a.H - b.H; });
+    var neut = vis.filter(function (c) { return c.C < 0.03; }).sort(function (a, b) { return b.L - a.L; });
+    var spectrum = chrom.concat(neut).map(card);
+
+    var ribbon = CAPS.map(function (c) {
+      return {
+        hex: c.hex,
+        op: visSet[c.n] ? 1 : 0.16,
+        mark: c.n === sel.n ? '#1D1D1F' : 'transparent',
+        label: c.no + ' · ' + (c.name || 'Unnamed') + ' · ' + c.hex,
+        pick: self.pick(c.n)
+      };
+    });
+    var months = MONTHS.map(function (m) {
+      return { label: m.label, count: CAPS.filter(function (c) { return c.date.slice(0, 7) === m.k; }).length };
+    });
+
+    function item(key, label, count, dot) {
+      var on = st.filter === key;
+      return { label: label, count: count, dot: dot || 'transparent', bg: on ? 'rgba(29,29,31,.08)' : 'transparent', fw: on ? 600 : 400, pick: self.filt(key) };
+    }
+    function countWhere(fn) { return CAPS.filter(fn).length; }
+    var lib = [
+      item('all', 'All colors', CAPS.length),
+      item('today', 'Today', countWhere(function (c) { return c.date === TODAY; })),
+      item('unnamed', 'Unnamed', countWhere(function (c) { return !c.name; }))
+    ];
+    var projects = ['pk', 'pf', 'zn'].map(function (p) {
+      var list = CAPS.filter(function (c) { return c.proj === p; });
+      return item('p:' + p, PROJ[p], list.length, list[list.length - 1].hex);
+    });
+    var unsorted = CAPS.filter(function (c) { return !c.proj; });
+    projects.push(item('p:none', 'Unsorted', unsorted.length, unsorted[unsorted.length - 1].hex));
+    var sources = ['Browser', 'Figma', 'Photos', 'PDF'].map(function (t) {
+      return item('s:' + t, t, countWhere(function (c) { return c.type === t; }));
+    });
+
+    var s = {
+      no: sel.no,
+      hex: sel.hex,
+      rgb: sel.rgb,
+      oklch: sel.oklch,
+      when: (sel.date === TODAY ? 'Today' : sel.dayLong) + ', ' + sel.time,
+      label: sel.name || 'Unnamed',
+      nameColor: sel.name ? '#1D1D1F' : '#6B6B70',
+      type: sel.type,
+      src: sel.src,
+      proj: PROJ[sel.proj] || 'Unsorted',
+      mos: sel.mos.map(function (h, i) { return { c: h, ring: i === 4 ? 'inset 0 0 0 2px #FFFFFF' : 'none' }; }),
+      desc: reads(sel.desc).map(function (d) { return { t: d }; }),
+      sim: sel.sim.map(function (x) {
+        var o = BY_N[x.n];
+        return {
+          hex: o.hex,
+          title: o.no + ' · ' + (o.name || 'Unnamed'),
+          sub: o.dayLong.split(', ')[1] + ' · ' + (x.de < 2 ? 'Nearly identical' : 'Close') + ' · ΔE ' + x.de.toFixed(1),
+          pick: self.pick(o.n)
+        };
+      }),
+      hasSim: sel.sim.length > 0,
+      noSim: sel.sim.length === 0
+    };
+
+    var seg = function (on) {
+      return { pressed: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', shadow: on ? '0 1px 2px rgba(0,0,0,.12)' : 'none' };
+    };
+
+    return {
+      total: CAPS.length,
+      tl: seg(view === 'timeline'),
+      sp: seg(view === 'spectrum'),
+      showTimeline: this.showTimeline,
+      showSpectrum: this.showSpectrum,
+      q: st.q,
+      onQ: this.onQ,
+      clear: this.clear,
+      lib: lib,
+      projects: projects,
+      sources: sources,
+      ribbon: ribbon,
+      months: months,
+      filtered: st.filter !== 'all' || !!st.q,
+      filterLabel: st.q ? '“' + st.q + '”' + (st.filter !== 'all' ? ' in ' + filterName(st.filter) : '') : filterName(st.filter),
+      shown: vis.length + (vis.length === 1 ? ' color' : ' colors'),
+      empty: vis.length === 0,
+      isTimeline: view === 'timeline' && vis.length > 0,
+      isSpectrum: view === 'spectrum' && vis.length > 0,
+      groups: groups,
+      spectrum: spectrum,
+      s: s
+    };
+  }
+}
+</script>
+</body>
+</html>

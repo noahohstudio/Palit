@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette — Archive (inspector-forward)</title>
+<style>
+:root{--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#a1a1a6;--line:rgba(0,0,0,.09);--bg:#fff;--side:#f5f5f7;--chrome:#ececee;
+--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;--mono:"SF Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ui);background:#d9d9de;color:var(--ink);display:grid;place-items:center;min-height:100vh;padding:24px;font-size:13px;-webkit-font-smoothing:antialiased}
+.win{width:1280px;height:820px;background:var(--bg);border-radius:12px;box-shadow:0 0 0 .5px rgba(0,0,0,.25),0 24px 60px rgba(0,0,0,.25);display:grid;grid-template-rows:52px 1fr;overflow:hidden}
+.bar{display:flex;align-items:center;gap:14px;padding:0 16px;background:var(--chrome);border-bottom:1px solid var(--line)}
+.lights{display:flex;gap:8px;margin-right:10px}.lights i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.title{font-weight:600;font-size:13px}.sub{color:var(--ink2);font-size:12px}
+.seg{display:flex;background:rgba(0,0,0,.06);border-radius:6px;padding:2px;margin-left:auto}
+.seg button{border:0;background:none;font:inherit;font-size:12px;padding:3px 12px;border-radius:5px;color:var(--ink);cursor:pointer}
+.seg button.on{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.search{width:240px;height:26px;border-radius:6px;border:0;background:rgba(0,0,0,.06);padding:0 10px 0 26px;font:inherit;font-size:12px;
+background-image:radial-gradient(circle at 12px 12px,transparent 4px,#8e8e93 4.5px,#8e8e93 5.5px,transparent 6px);outline:none}
+.search:focus{box-shadow:0 0 0 3px rgba(0,122,255,.35)}
+.main{display:grid;grid-template-columns:28px 92px 1fr;min-height:0}
+/* vertical ribbon */
+.ribbon{display:flex;flex-direction:column;border-right:1px solid var(--line);position:relative}
+.ribbon i{flex:1;transition:opacity .25s}.ribbon i.dim{opacity:.16}.ribbon i.sel{box-shadow:inset 3px 0 0 var(--ink)}
+/* thin rail */
+.rail{background:var(--side);border-right:1px solid var(--line);overflow-y:auto;padding:8px 0 16px;scrollbar-width:none}
+.rail h6{font-size:10px;font-weight:600;color:var(--ink3);text-align:center;margin:10px 0 6px;letter-spacing:.02em}
+.chip{display:block;width:44px;height:44px;margin:0 auto 6px;border-radius:8px;border:0;cursor:pointer;position:relative;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12);transition:transform .15s,opacity .25s}
+.chip:hover{transform:scale(1.06)}
+.chip.dim{opacity:.16}
+.chip.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.chip.sel::after{content:attr(data-n);position:absolute;left:0;right:0;bottom:3px;font:9px var(--mono);color:#fff;mix-blend-mode:difference;text-align:center}
+/* inspector */
+.insp{display:grid;grid-template-columns:1fr 340px;min-height:0;overflow:hidden}
+.stage{padding:28px 32px;display:flex;flex-direction:column;gap:22px;overflow-y:auto}
+.hero{display:grid;grid-template-columns:360px 1fr;gap:28px}
+.big{height:300px;border-radius:14px;position:relative;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12);transition:background .35s ease}
+.big .cmp{position:absolute;right:14px;bottom:14px;width:96px;height:96px;border-radius:10px;box-shadow:0 0 0 2px #fff,0 6px 18px rgba(0,0,0,.18);display:none}
+.big.compare .cmp{display:block}
+.meta .no{font:600 28px var(--mono);letter-spacing:-.01em}
+.meta .when{color:var(--ink2);margin-top:4px}
+.name{margin-top:14px;font-size:20px;font-weight:500;border:0;outline:none;width:100%;font-family:inherit;padding:4px 0;border-bottom:1px solid transparent}
+.name::placeholder{color:var(--ink3)}.name:focus{border-bottom-color:var(--line)}
+.vals{margin-top:16px;border-top:1px solid var(--line)}
+.vals div{display:grid;grid-template-columns:56px 1fr auto;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.vals b{font-size:11px;font-weight:500;color:var(--ink2)}.vals span{font:13px var(--mono)}
+.btn{border:0;background:rgba(0,0,0,.06);font:inherit;font-size:12px;padding:3px 10px;border-radius:5px;cursor:pointer;color:var(--ink)}
+.btn:hover{background:rgba(0,0,0,.1)}.btn.ok{color:#1a7f37}
+.sec h5{font-size:12px;font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h5 small{font-weight:400;color:var(--ink2);font-size:11px}
+.reads{display:flex;gap:8px;flex-wrap:wrap}
+.reads span{padding:5px 12px;border-radius:99px;background:var(--side);font-size:12px;box-shadow:inset 0 0 0 .5px var(--line)}
+/* scales: where this color sits */
+.scale{display:grid;grid-template-columns:72px 1fr 64px;align-items:center;gap:12px;margin-bottom:10px;font-size:12px;color:var(--ink2)}
+.track{height:14px;border-radius:7px;position:relative}
+.track i{position:absolute;top:-3px;width:4px;height:20px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px #fff;transform:translateX(-2px);transition:left .35s ease}
+.track u{position:absolute;top:4px;width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.28);transform:translateX(-3px)}
+.scale em{font:12px var(--mono);font-style:normal;color:var(--ink);text-align:right}
+.kept{display:flex;flex-direction:column;gap:6px}
+.kept button{display:grid;grid-template-columns:36px 70px 1fr auto;gap:12px;align-items:center;border:0;background:none;font:inherit;text-align:left;padding:6px;border-radius:8px;cursor:pointer}
+.kept button:hover{background:var(--side)}
+.kept i{width:36px;height:36px;border-radius:6px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.kept .n{font:12px var(--mono)}.kept .d{color:var(--ink2);font-size:12px}.kept .de{font:11px var(--mono);color:var(--ink2)}
+.empty{color:var(--ink2);font-size:12px;padding:6px 0}
+/* side column */
+.ctx{border-left:1px solid var(--line);background:#fbfbfc;padding:28px 24px;display:flex;flex-direction:column;gap:22px;overflow-y:auto}
+.src{display:flex;gap:10px;align-items:flex-start}
+.src .ic{width:28px;height:28px;border-radius:7px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600;flex:none}
+.src p{font-size:13px}.src small{display:block;color:var(--ink2);font-size:12px;margin-top:2px;word-break:break-all}
+.grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden}
+.grid9 i{transition:background .35s}
+.grid9 i.c{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px var(--ink)}
+.note{font-size:11px;color:var(--ink2);line-height:1.45}
+.filters{display:flex;flex-direction:column;gap:2px}
+.filters button{display:flex;justify-content:space-between;border:0;background:none;font:inherit;font-size:12px;padding:5px 8px;border-radius:6px;cursor:pointer;color:var(--ink)}
+.filters button span{color:var(--ink3);font-variant-numeric:tabular-nums}
+.filters button.on{background:rgba(0,0,0,.07);font-weight:500}
+.filters .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.draft{font-size:10px;color:#b25000;margin-left:6px}
+.walk{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink2)}
+kbd{font:11px var(--mono);background:var(--side);border-radius:4px;padding:1px 5px;box-shadow:inset 0 0 0 .5px var(--line)}
+</style>
+</head>
+<body>
+<div class="win" role="application" aria-label="Palette archive">
+  <header class="bar">
+    <div class="lights"><i></i><i></i><i></i></div>
+    <span class="title">Archive</span><span class="sub" id="count"></span>
+    <div class="seg" role="tablist"><button class="on" data-sort="time">Timeline</button><button data-sort="hue">Spectrum</button></div>
+    <input class="search" id="q" placeholder="Search name, source, or hex" aria-label="Search">
+  </header>
+  <div class="main">
+    <div class="ribbon" id="ribbon" title="Every color, in the order you kept it"></div>
+    <nav class="rail" id="rail" aria-label="Captures"></nav>
+    <section class="insp">
+      <div class="stage">
+        <div class="hero">
+          <div class="big" id="big"><div class="cmp" id="cmp"></div></div>
+          <div class="meta">
+            <div class="no" id="no"></div>
+            <div class="when" id="when"></div>
+            <input class="name" id="name" placeholder="Unnamed" aria-label="Name">
+            <div class="vals" id="vals"></div>
+          </div>
+        </div>
+        <div class="sec"><h5>Reads as</h5><div class="reads" id="reads"></div></div>
+        <div class="sec"><h5>Where it sits <small>Dots are everything else you’ve kept</small></h5><div id="scales"></div></div>
+        <div class="sec"><h5>Kept before <small>Earlier captures within ΔE 7</small></h5><div class="kept" id="kept"></div></div>
+      </div>
+      <aside class="ctx">
+        <div class="sec"><h5>Source</h5><div class="src" id="src"></div></div>
+        <div class="sec"><h5>Around it</h5><div class="grid9" id="grid9"></div>
+          <p class="note" style="margin-top:8px">The 8 samples that surrounded the pixel you picked.</p></div>
+        <div class="sec"><h5>Show</h5><div class="filters" id="filters"></div></div>
+        <div class="walk"><kbd>↑</kbd><kbd>↓</kbd> Step through the archive<span class="draft">Draft copy</span></div>
+      </aside>
+    </section>
+  </div>
+</div>
+<script>
+const D=[
+["#E8643A","Oct 15 10:42","Safari","Arc — Field Notes","fieldnotesbrand.com",""],
+["#2F3A4A","Oct 15 10:15","Figma","Onboarding v3","",""],
+["#F2E6D3","Oct 15 9:58","Photos","IMG_2041.HEIC","","Morning linen"],
+["#8FA98B","Oct 15 9:30","Safari","Kinfolk — Issue 48","kinfolk.com",""],
+["#C9473B","Oct 14 17:20","PDF","Pantone_Guide_2026.pdf","",""],
+["#1F6F8B","Oct 14 16:05","Figma","Dashboard tokens","",""],
+["#E3B23C","Oct 14 15:41","Photos","IMG_1988.HEIC","",""],
+["#E46A3F","Oct 14 11:02","Safari","Are.na — warm stuff","are.na/nestu/warm",""],
+["#6B5B95","Oct 13 18:30","Safari","Dribbble — Shot 2214","dribbble.com",""],
+["#D9D4CC","Oct 13 14:12","Figma","Type specimen","","Paper"],
+["#3E5641","Oct 13 13:50","Photos","IMG_1920.HEIC","",""],
+["#F4A259","Oct 12 19:04","Photos","IMG_1899.HEIC","","Sodium lamp"],
+["#B8C4CC","Oct 12 10:33","PDF","Braun_Catalog_1967.pdf","",""],
+["#2A2A2E","Oct 12 10:30","PDF","Braun_Catalog_1967.pdf","",""],
+["#C4482F","Oct 11 16:10","Safari","Muji — Linen","muji.com",""],
+["#A3C4BC","Oct 10 12:00","Figma","Moodboard A","",""],
+["#7D4E57","Oct 9 15:22","Safari","The Gentlewoman","thegentlewoman.co.uk",""],
+["#EFD9CE","Oct 9 15:20","Safari","The Gentlewoman","thegentlewoman.co.uk",""],
+["#5B8E7D","Oct 8 09:45","Photos","IMG_1801.HEIC","",""],
+["#F1C40F","Oct 7 14:30","Other","Keynote — Q4 Review","",""],
+["#E5E1D8","Oct 7 11:11","Figma","Type specimen","",""],
+["#264653","Oct 6 17:40","Safari","Coolors — browse","coolors.co",""],
+["#E9C46A","Oct 6 17:38","Safari","Coolors — browse","coolors.co",""],
+["#C0392B","Oct 5 20:15","Photos","IMG_1744.HEIC","","Tomato"],
+["#9B8F7E","Oct 4 13:00","PDF","Ando_Monograph.pdf","","Concrete"],
+["#4A4E69","Oct 3 16:22","Figma","Onboarding v3","",""],
+["#D88C6A","Oct 2 10:05","Safari","Aesop — Hand balm","aesop.com",""],
+["#FAF7F2","Oct 1 18:50","Figma","Onboarding v3","",""],
+["#E8653B","Oct 1 15:20","Photos","IMG_1702.HEIC","",""],
+["#3D405B","Oct 1 15:02","Safari","Linear — Changelog","linear.app/changelog",""],
+["#81B29A","Oct 1 11:44","Safari","Linear — Changelog","linear.app/changelog",""],
+["#6D597A","Sep 29 14:00","PDF","Albers_Interaction.pdf","",""],
+["#B56576","Sep 29 13:58","PDF","Albers_Interaction.pdf","",""],
+["#355070","Sep 27 09:12","Figma","Dashboard tokens","",""],
+["#EAAC8B","Sep 26 19:30","Photos","IMG_1650.HEIC","",""],
+["#1B1B1E","Sep 25 22:10","Other","Terminal","",""],
+["#CB997E","Sep 24 12:45","Safari","Kinfolk — Issue 47","kinfolk.com",""],
+["#DDBEA9","Sep 24 12:44","Safari","Kinfolk — Issue 47","kinfolk.com",""],
+["#A5A58D","Sep 22 16:00","Photos","IMG_1588.HEIC","","Sage wall"],
+["#E76F51","Sep 20 10:20","Figma","Moodboard A","",""]
+].map((r,i,a)=>({n:a.length-i,hex:r[0],t:r[1],app:r[2],doc:r[3],url:r[4],name:r[5]}));
+const $=id=>document.getElementById(id);
+const lin=c=>(c/=255)<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
+function rgb(h){return[1,3,5].map(i=>parseInt(h.slice(i,i+2),16))}
+function oklab(h){const[r,g,b]=rgb(h).map(lin);
+const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]}
+function oklch(h){const[L,a,b]=oklab(h);let H=Math.atan2(b,a)*180/Math.PI;if(H<0)H+=360;return[L,Math.hypot(a,b),H]}
+const dE=(x,y)=>{const p=oklab(x),q=oklab(y);return Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2])*100};
+D.forEach(d=>{d.lch=oklch(d.hex);d.day=d.t.split(" ").slice(0,2).join(" ")});
+function reads(d){const[L,C,H]=d.lch,o=[];
+if(C<.03)o.push("Neutral");else o.push(H<110||H>330?"Warm":H>=150&&H<=300?"Cool":"Between warm and cool");
+o.push(L<.42?"Dark":L<.72?"Mid value":"Light");if(C>=.03)o.push(C<.09?"Muted":"Saturated");return o}
+function shade(h,k){return"#"+rgb(h).map(v=>Math.max(0,Math.min(255,Math.round(v+k))).toString(16).padStart(2,"0")).join("")}
+function neighbors(d){const ks=[-14,-6,-10,8,0,-4,12,4,18];return ks.map((k,i)=>i==4?d.hex:shade(d.hex,k+((d.n*7+i*13)%9-4)))}
+const fmt=n=>"No. "+String(n).padStart(3,"0");
+let sel=D[0],sort="time",filter="all",q="";
+const today="Oct 15";
+const filters=[["all","All colors",()=>1],["today","Today",d=>d.day==today],["unnamed","Unnamed",d=>!d.name],
+["Safari","Browser",d=>d.app=="Safari"],["Figma","Figma",d=>d.app=="Figma"],["Photos","Photos",d=>d.app=="Photos"],["PDF","PDF",d=>d.app=="PDF"],["Other","Other",d=>d.app=="Other"]];
+function match(d){const f=filters.find(f=>f[0]==filter)[2];const s=q.toLowerCase();
+return f(d)&&(!s||(d.name+" "+d.app+" "+d.doc+" "+d.url+" "+d.hex).toLowerCase().includes(s))}
+function render(){
+$("count").textContent=D.length+" colors kept";
+$("ribbon").innerHTML=[...D].reverse().map(d=>`<i style="background:${d.hex}" class="${match(d)?"":"dim"} ${d==sel?"sel":""}"></i>`).join("");
+let list=[...D],html="";
+if(sort=="hue"){const ch=list.filter(d=>d.lch[1]>=.03).sort((a,b)=>a.lch[2]-b.lch[2]),ne=list.filter(d=>d.lch[1]<.03).sort((a,b)=>b.lch[0]-a.lch[0]);
+html="<h6>Hue</h6>"+ch.map(chip).join("")+"<h6>Neutral</h6>"+ne.map(chip).join("")}
+else{let last="";list.forEach(d=>{if(d.day!=last){last=d.day;html+=`<h6>${d.day==today?"Today":d.day}</h6>`}html+=chip(d)})}
+$("rail").innerHTML=html;
+$("filters").innerHTML=filters.map(f=>`<button data-f="${f[0]}" class="${f[0]==filter?"on":""}">${f[1]}<span>${D.filter(f[2]).length}</span></button>`).join("")
++`<button data-f="proj" disabled style="opacity:.55"><span style="color:inherit"><i class="dot" style="background:${D[0].hex}"></i>Field Notes rebrand</span><span>12</span></button>`;
+show()}
+function chip(d){const L=`${fmt(d.n)}, ${d.name||"Unnamed"}, ${d.hex}`;
+return`<button class="chip ${match(d)?"":"dim"} ${d==sel?"sel":""}" style="background:${d.hex}" data-i="${d.n}" data-n="${String(d.n).padStart(3,"0")}" aria-label="${L}"></button>`}
+function show(){const d=sel,[L,C,H]=d.lch,[r,g,b]=rgb(d.hex);
+$("big").style.background=d.hex;$("big").classList.remove("compare");
+$("no").textContent=fmt(d.n);$("when").textContent=(d.day==today?"Today, ":d.day+", ")+d.t.split(" ")[2];
+$("name").value=d.name;
+const v=[["HEX",d.hex],["RGB",`${r} ${g} ${b}`],["OKLCH",`${(L*100).toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(0)}°`]];
+$("vals").innerHTML=v.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span><button class="btn" data-copy="${x[1]}">Copy</button></div>`).join("");
+$("reads").innerHTML=reads(d).map(x=>`<span>${x}</span>`).join("");
+const sc=[["Value",L,"linear-gradient(90deg,#111,#888,#fafafa)",(L*100).toFixed(0)+"%",x=>x.lch[0]],
+["Chroma",Math.min(C/.25,1),`linear-gradient(90deg,#9a9a9a,${d.hex})`,C.toFixed(3),x=>Math.min(x.lch[1]/.25,1)],
+["Hue",H/360,"linear-gradient(90deg,#d0607a,#d08a4a,#c8b040,#6aa860,#40a0a0,#5080d0,#9060c0,#d0607a)",H.toFixed(0)+"°",x=>x.lch[2]/360]];
+$("scales").innerHTML=sc.map(s=>`<div class="scale">${s[0]}<div class="track" style="background:${s[2]}">${D.filter(x=>x!=d).map(x=>`<u style="left:${(s[4](x)*100).toFixed(1)}%"></u>`).join("")}<i style="left:${(s[1]*100).toFixed(1)}%"></i></div><em>${s[3]}</em></div>`).join("");
+const k=D.filter(x=>x.n<d.n).map(x=>({x,e:dE(d.hex,x.hex)})).filter(o=>o.e<7).sort((a,b)=>a.e-b.e);
+$("kept").innerHTML=k.length?k.map(o=>`<button data-cmp="${o.x.n}"><i style="background:${o.x.hex}"></i><span class="n">${fmt(o.x.n)}</span><span class="d">${o.e<2?"Nearly identical":o.e<5?"Close":"Similar"} · ${o.x.day}, ${o.x.app}</span><span class="de">ΔE ${o.e.toFixed(1)}</span></button>`).join("")
+:`<p class="empty">Nothing like it yet. This one is new to your eye.</p>`;
+$("src").innerHTML=`<div class="ic">${d.app[0]}</div><p>${d.app=="Safari"?"Safari":d.app}<small>${d.doc}${d.url?"<br>"+d.url:""}</small></p>`;
+$("grid9").innerHTML=neighbors(d).map((h,i)=>`<i class="${i==4?"c":""}" style="background:${h}"></i>`).join("")}
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+if(t.dataset.i){sel=D.find(d=>d.n==+t.dataset.i);render()}
+else if(t.dataset.sort){sort=t.dataset.sort;document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b==t));render()}
+else if(t.dataset.f&&!t.disabled){filter=t.dataset.f;render()}
+else if(t.dataset.copy){navigator.clipboard?.writeText(t.dataset.copy);t.textContent="Copied";t.classList.add("ok");setTimeout(()=>{t.textContent="Copy";t.classList.remove("ok")},1200)}
+else if(t.dataset.cmp){const o=D.find(d=>d.n==+t.dataset.cmp);$("cmp").style.background=o.hex;$("big").classList.toggle("compare")}});
+$("q").addEventListener("input",e=>{q=e.target.value;render()});
+document.addEventListener("keydown",e=>{if(e.target.tagName=="INPUT")return;const vis=[...document.querySelectorAll(".chip")].map(c=>+c.dataset.i);
+const i=vis.indexOf(sel.n);if(e.key=="ArrowDown"&&i<vis.length-1){sel=D.find(d=>d.n==vis[i+1]);render();e.preventDefault()}
+if(e.key=="ArrowUp"&&i>0){sel=D.find(d=>d.n==vis[i-1]);render();e.preventDefault()}});
+$("name").addEventListener("change",e=>{sel.name=e.target.value.trim();render()});
+render();
+</script>
+</body>
+</html>

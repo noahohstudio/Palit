@@ -1,0 +1,187 @@
+/* Palit design system: tokens and shared components.
+   Used by the design system page (design/system/) and the prototype (design/journey/).
+   Neutral everywhere so the captured colors are the only color (W1, W3). The heart is
+   square and ruled (A31, A32) on pure white (A36); only the native shell is rounded. */
+
+:root {
+  --paper: #FFFFFF;
+  --chrome: #F5F5F5;
+  --ink: #1D1D1F;
+  --ink-2: #6B6B70;
+  --ink-3: #9C9CA1;
+  --rule: #1D1D1F;
+  --rule-soft: #E2E2E4;
+  --swatch-edge: rgba(0, 0, 0, 0.08);
+  --material: rgba(246, 246, 246, 0.78);
+  --desk: #CBCBCE;
+  --shell-radius: 12px;
+  --heart-radius: 0;
+  --dur-press: 120ms;
+  --dur-appear: 200ms;
+  --dur-capture: 360ms;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Type: SF Pro, unbolded (A30). Hierarchy from size and ink. */
+.ts-display { font-size: 72px; line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+.ts-title { font-size: 34px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 400; }
+.ts-heading { font-size: 20px; letter-spacing: -0.015em; font-weight: 400; }
+.ts-body { font-size: 15px; }
+.ts-caption { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ts-small { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* Shell pieces: the only parts that look like macOS. */
+.keycap { display: inline-flex; gap: 4px; }
+.keycap kbd { font: 13px/1 var(--font); min-width: 26px; height: 26px; padding: 0 6px; display: inline-grid; place-items: center; background: linear-gradient(#FFFFFF, #F1F1F3); border: 0.5px solid rgba(0, 0, 0, 0.18); border-radius: 6px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); }
+.menubar { position: absolute; inset: 0 0 auto 0; height: 28px; background: rgba(255, 255, 255, 0.58); backdrop-filter: blur(20px) saturate(1.5); -webkit-backdrop-filter: blur(20px) saturate(1.5); display: flex; align-items: center; gap: 18px; padding: 0 14px; font-size: 13px; z-index: 3; }
+.menubar .app { font-weight: 700; }
+.menubar .right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+.toolbar { display: flex; align-items: center; gap: 16px; padding: 10px 14px; background: var(--material); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+.toolbar .tt { font-size: 13px; font-weight: 600; }
+.toolbar .tc { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.win { position: absolute; background: var(--paper); border-radius: 10px; overflow: hidden; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.25); }
+.titlebar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--material); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid rgba(0, 0, 0, 0.14); font-size: 13px; }
+.lights { display: flex; gap: 8px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; background: #DADADC; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+.titlebar .tt { flex: 1; text-align: center; color: var(--ink-2); font-weight: 600; margin-right: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.popover { width: 300px; background: var(--material); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); border-radius: var(--shell-radius); border: 0.5px solid rgba(0, 0, 0, 0.18); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18); padding: 12px; }
+.popover .ph { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; font-weight: 600; padding: 2px 4px 10px; }
+.popover .ph span { font-weight: 400; color: var(--ink-2); font-size: 11px; }
+.popover .pr { display: grid; gap: 6px; }
+.popover .pa { display: flex; gap: 8px; margin-top: 12px; }
+.popover .pbtn { flex: 1; font-size: 13px; padding: 5px 8px; border-radius: 6px; border: 0.5px solid rgba(0, 0, 0, 0.16); background: rgba(255, 255, 255, 0.85); cursor: pointer; display: inline-flex; justify-content: center; gap: 6px; align-items: center; }
+.popover .pf { margin-top: 10px; font-size: 11px; color: var(--ink-2); text-align: center; }
+
+/* Atoms and molecules of the heart */
+.source p, .story p, .popover p, .nameblock p { margin: 0; }
+.sw { width: 96px; height: 96px; box-shadow: inset 0 0 0 1px var(--swatch-edge); border-radius: var(--heart-radius); }
+.sw.sm { width: 40px; height: 40px; }
+.descriptor { display: inline-block; font-size: 13px; padding: 2px 8px; border: 1px solid var(--rule); }
+.nameblock .nm { font-size: 28px; line-height: 1.05; letter-spacing: -0.02em; font-weight: 400; }
+.nameblock .nm.placeholder { color: var(--ink-2); font-weight: 400; }
+.nameblock .tc { margin-top: 6px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; gap: 14px; flex-wrap: wrap; }
+.reads { display: flex; flex-wrap: wrap; gap: 4px; }
+.tech { margin: 0; }
+.tech dt { font-size: 11px; color: var(--ink-2); }
+.tech dd { margin: 0 0 8px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.source .k { font-size: 11px; color: var(--ink-2); }
+.source .p { font-size: 15px; font-weight: 400; }
+.source .ti { font-size: 13px; }
+.source .tm { font-size: 11px; color: var(--ink-2); margin-top: 2px; }
+.source .url { display: inline; background: none; border: 0; padding: 0; font-size: 13px; text-align: left; color: var(--ink); text-decoration: underline; text-decoration-color: rgba(29, 29, 31, 0.35); text-underline-offset: 2px; overflow-wrap: anywhere; }
+.source button.url { cursor: pointer; }
+.source button.url:hover { text-decoration-color: currentColor; }
+.neighbors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); width: 132px; }
+.neighbors div { aspect-ratio: 1; }
+.neighbors .center { box-shadow: inset 0 0 0 3px var(--paper); }
+.kept { display: grid; gap: 0; border-top: 1px solid var(--rule-soft); }
+.kept button { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--rule-soft); padding: 8px 0; cursor: pointer; }
+.kept button:hover .kn { text-decoration: underline; }
+.kept .ks { width: 28px; height: 28px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.kept .kn { font-size: 13px; font-weight: 400; }
+.kept .kn.placeholder { font-weight: 400; color: var(--ink-2); }
+.kept .kw { display: block; font-size: 11px; color: var(--ink-2); margin-top: 1px; }
+.chip-raw { display: inline-grid; grid-template-columns: 16px auto; gap: 8px; align-items: center; background: var(--paper); border: 1px solid var(--rule); padding: 6px 10px 6px 6px; font-size: 13px; }
+.chip-raw .cs { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.chip-raw .cn { font-weight: 400; white-space: nowrap; }
+.chip-raw .cn.placeholder { font-weight: 400; color: var(--ink-2); }
+.chip-raw .cno { color: var(--ink-2); font-size: 11px; margin-left: 6px; font-weight: 400; }
+/* The palette (entry 67): colors kept together in one ⇧-click run, side by side on 1 px ink rules.
+   While the run is open, an empty slot at the end of the chip's strip waits for the next one. */
+.pal-strip { display: flex; gap: 1px; height: 28px; background: var(--rule); }
+.pal-strip > * { flex: 1 1 0; min-width: 0; border: 0; padding: 0; border-radius: var(--heart-radius); }
+.pal-strip > .in { animation: pal-in var(--dur-appear) ease-out; }
+@keyframes pal-in { from { flex-grow: 0.0001; } }
+.pal-strip button { cursor: pointer; }
+.pal-strip [aria-current="true"] { box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 4px var(--paper); }
+.pal .pal-strip { height: 40px; border: 1px solid var(--rule); }
+.pal .pal-n { margin-top: 8px; font-size: 15px; outline: none; overflow-wrap: anywhere; }
+.pal .pal-n[contenteditable="true"] { cursor: text; }
+.pal .pal-n:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+.pal .pal-n:focus-visible { box-shadow: inset 0 -1px 0 var(--ink); }
+.pal .pal-m { margin: 2px 0 0; font-size: 11px; color: var(--ink-2); }
+.filters { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; }
+.filters .group { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--rule); }
+.filters button { background: var(--paper); border: 0; border-right: 1px solid var(--rule); padding: 5px 10px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.filters .group button:last-child { border-right: 0; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.filters .fs { width: 10px; height: 10px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.filters .label { font-size: 11px; color: var(--ink-2); }
+.btn { background: var(--paper); border: 1px solid var(--rule); padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.btn:hover { background: var(--chrome); }
+.btn:active { transform: translateY(1px); }
+.empty { padding: 24px; border: 1px dashed var(--ink-3); color: var(--ink-2); font-size: 13px; }
+
+/* Organisms */
+.tile { display: block; width: 100%; text-align: left; background: var(--paper); border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 0; cursor: pointer; }
+.tile .ts { aspect-ratio: 1; box-shadow: inset 0 -1px 0 var(--rule); }
+.tile .tb { padding: 8px 10px 10px; }
+.tile .tn { font-size: 13px; font-weight: 400; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .tn.placeholder { font-weight: 400; color: var(--ink-2); }
+.tile .tm { margin-top: 2px; display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.tile .tm span:first-child { flex: none; white-space: nowrap; }
+.tile .tm span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile[aria-current="true"] { outline: 2px solid var(--ink); outline-offset: -2px; position: relative; z-index: 1; }
+.tile.fresh .ts { animation: fresh 1.2s ease-out; }
+@keyframes fresh { 0% { box-shadow: inset 0 0 0 6px var(--paper), inset 0 -1px 0 var(--rule); } 100% { box-shadow: inset 0 0 0 0 var(--paper), inset 0 -1px 0 var(--rule); } }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.story { background: var(--paper); }
+.story .sn { font-size: 34px; line-height: 1.02; letter-spacing: -0.025em; font-weight: 400; outline: none; overflow-wrap: anywhere; cursor: text; }
+.story .sn:empty::before { content: attr(data-placeholder); color: var(--ink-2); font-weight: 400; }
+.story .sn:focus-visible { box-shadow: inset 0 -2px 0 var(--ink); }
+.story .shint { font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+.story section { padding: 16px 0; border-top: 1px solid var(--rule-soft); }
+.story section:first-of-type { border-top: 0; padding-top: 12px; }
+.story h4 { margin: 0 0 8px; font-size: 11px; font-weight: 400; color: var(--ink-2); }
+.story .two { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; }
+
+/* The capture loupe (A34): a small ring, then nothing. */
+.loupe { position: absolute; width: 22px; height: 22px; border-radius: 50%; box-shadow: 0 0 0 1.5px #FFFFFF, 0 0 0 2.5px rgba(29, 29, 31, 0.7); pointer-events: none; z-index: 4; opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+.loupe.on { animation: loupe var(--dur-capture) ease-out forwards; }
+@keyframes loupe { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.4); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+/* A note on every color (A54), and pinning a palette to the desktop (A49) */
+.story .cnote { font-size: 14px; line-height: 1.45; outline: none; min-height: 1.45em; overflow-wrap: anywhere; white-space: pre-wrap; }
+.story .cnote[contenteditable="true"] { cursor: text; }
+.story .cnote:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+.story .cnote:focus-visible { box-shadow: inset 0 -1px 0 var(--ink); }
+.pal .pal-pin { margin-top: 8px; font: 12px var(--font); background: var(--paper); border: 1px solid var(--rule); padding: 3px 10px; cursor: pointer; }
+.pal .pal-pin[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* The desktop palette (D8, A49–A52): a native shell around raw, square swatches */
+.dpal { position: absolute; z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 6px; background: var(--material); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.22); touch-action: none; }
+.dpal.docked { right: 0; top: 50%; transform: translateY(-50%); border-radius: 10px 0 0 10px; }
+.dpal.floating { border-radius: 10px; }
+.dpal.near-edge { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16), 0 0 0 2px var(--ink); }
+.dp-grip { width: 18px; height: 7px; cursor: grab; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 1px, transparent 1px 3px); }
+.dp-list { display: flex; flex-direction: column; gap: 3px; }
+.dp-list button { width: 8px; height: 26px; border: 0; padding: 0; cursor: pointer; border-radius: var(--heart-radius); box-shadow: inset 0 0 0 1px var(--swatch-edge); transition: width var(--dur-appear) ease-out; }
+.dpal.floating .dp-list button, .dpal.docked:hover .dp-list button, .dpal.docked:focus-within .dp-list button, .dpal.open .dp-list button { width: 30px; }
+.dpal.docked:not(:hover):not(:focus-within):not(.open) .dp-grip { width: 8px; }
+.dpal.docked:not(:hover):not(:focus-within):not(.open) .dp-foot { display: none; }
+.dp-list button.landed { animation: dp-land 900ms ease-out; }
+@keyframes dp-land { 0% { box-shadow: 0 0 0 3px var(--paper), 0 0 0 4.5px var(--ink); } 100% { box-shadow: 0 0 0 0 var(--paper), inset 0 0 0 1px var(--swatch-edge); } }
+.dp-empty { width: 30px; height: 26px; border: 1px dashed var(--ink-3); }
+.dp-foot { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--ink-2); }
+.dp-foot:empty { display: none; }
+.dp-unpin { font: 10px var(--font); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: var(--ink); }
+.dp-note { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); white-space: nowrap; background: var(--paper); border: 1px solid var(--rule); padding: 3px 8px; font-size: 12px; font-variant-numeric: tabular-nums; opacity: 0; pointer-events: none; transition: opacity var(--dur-appear) ease-out; }
+.dpal.saying .dp-note { opacity: 1; }
+
+/* Naming beside the cursor (A52) */
+.name-over { position: absolute; z-index: 44; width: 260px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); font-size: 13px; line-height: 1.3; }
+.name-over .no-top { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px 0 8px; }
+.name-over .cs { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.name-over .no-in { width: 100%; min-width: 0; border: 0; padding: 0; margin: 0; background: none; outline: none; font: inherit; color: var(--ink); box-shadow: inset 0 -1px 0 var(--ink); }
+.name-over .no-in::placeholder { color: var(--ink-2); }
+.name-over .cno { font-size: 11px; color: var(--ink-2); }
+.name-over .no-hint { margin: 0; padding: 3px 10px 8px 32px; font-size: 11px; color: var(--ink-2); }

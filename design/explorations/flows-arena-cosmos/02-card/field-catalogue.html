@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · Flow 2 · Card · Field Catalogue</title>
+<style>
+:root{
+  --chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;
+  --r1:6px;--r2:10px;--r3:14px;--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.2,1);
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;color:var(--ink);background:#d9d9db;display:grid;place-items:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.desk{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:var(--r2);background:linear-gradient(160deg,#c9c9cc,#a9a9ad 60%,#9d9da1);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.mbar{position:absolute;inset:0 0 auto 0;height:28px;display:flex;align-items:center;gap:18px;padding:0 14px;background:rgba(246,246,246,.72);backdrop-filter:blur(24px) saturate(1.4);font-size:13px;z-index:20}
+.mbar b{font-weight:600}.mbar .sp{flex:1}
+.iris{width:26px;height:22px;border-radius:5px;display:grid;place-items:center;background:none;border:none;cursor:pointer}
+
+.stage{position:absolute;inset:28px 0 0 0;display:grid;place-items:center;z-index:10}
+.scrim{position:absolute;inset:0;background:rgba(30,30,34,.3)}
+
+/* Archival Specimen Landscape Card */
+.catalogue-card{position:relative;width:640px;height:410px;background:#FCFCFA var(--grain);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.1);overflow:hidden;display:grid;grid-template-columns:230px 1fr}
+
+/* Left: Full bleed crop photograph with crosshair */
+.crop-col{position:relative;background:radial-gradient(circle at 45% 55%,#c4552d 0 25%,#e0a526 38%,#2f5d62 65%,#1f2421 95%);box-shadow:inset -1px 0 0 rgba(0,0,0,.15)}
+.crosshair{position:absolute;left:45%;top:55%;transform:translate(-50%,-50%);width:24px;height:24px}
+.crosshair::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:#fff;box-shadow:0 0 2px #000}
+.crosshair::after{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:#fff;box-shadow:0 0 2px #000}
+.crop-tag{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;backdrop-filter:blur(6px)}
+
+/* Right: Archival Card Body */
+.card-body{padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between}
+.head-row{display:flex;justify-content:space-between;align-items:flex-start}
+.cat-no{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.cat-no small{display:block;font-size:10px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+
+.postal-box{border:1px dashed rgba(0,0,0,.25);padding:4px 8px;border-radius:3px;font-size:9.5px;color:var(--ink2);text-align:center;line-height:1.2}
+
+.field-group{margin-top:12px}
+.field-label{font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.field-val{font-size:15px;font-weight:600;color:var(--ink);margin-top:2px}
+
+.note-box{margin-top:12px;padding:10px 12px;background:rgba(0,0,0,.035);border-left:2.5px solid var(--ink);border-radius:0 4px 4px 0;font-size:11.5px;line-height:1.45;color:var(--ink2)}
+.note-box b{color:var(--ink)}
+
+.bottom-meta{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;border-top:1px solid rgba(0,0,0,.1);padding-top:10px}
+.grid-3x3{display:grid;grid-template-columns:repeat(3,18px);gap:2px}
+.grid-3x3 i{height:18px;border-radius:2px}
+.grid-3x3 i.center{outline:1.5px solid var(--ink);outline-offset:1px}
+
+.val-chips{display:flex;gap:6px}
+.val-pill{font-size:10.5px;padding:3px 8px;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:4px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="desk">
+  <div class="mbar">
+    <span aria-hidden="true">&#63743;</span><b>Safari</b><span>File</span><span>Edit</span>
+    <span class="sp"></span>
+    <button class="iris" id="iris"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1D1D1F" stroke-width="1.2"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5 10.6 7M14.5 8 9 10.2M8 14.5 5.4 9M1.5 8 7 5.8M3.4 3.4l5.5 2.3M12.6 12.6 7.1 10.3"/></svg></button>
+    <span>Fri Oct 16&nbsp; 2:24 PM</span>
+  </div>
+
+  <div class="stage">
+    <div class="scrim"></div>
+    <!-- Field Catalogue Specimen Card -->
+    <div class="catalogue-card">
+      <div class="crop-col">
+        <div class="crosshair"></div>
+        <div class="crop-tag">12px Extraction Zone</div>
+      </div>
+
+      <div class="card-body">
+        <div class="head-row">
+          <div class="cat-no">
+            <small>Specimen Catalogue</small>
+            No. 028.1
+          </div>
+          <div class="postal-box">
+            LOCAL STORE<br>OCT 2026
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Species / Formulation</div>
+          <div class="field-val">Strontianite Warm Red Ochre</div>
+        </div>
+
+        <div class="field-group" style="margin-top:6px">
+          <div class="field-label">Locality / Context</div>
+          <div style="font-size:12px;color:var(--ink2)">Safari · are.na/channel/5873698 (NYC)</div>
+        </div>
+
+        <div class="note-box">
+          <b>Archival Note:</b> A saturated, earthy red-orange (L 58.5%, C 0.152, h 39°). Against cool chrome it advances sharply; against warm wood it harmonizes as a neutral rust. ΔE 1.0 from No. 011.
+        </div>
+
+        <div class="bottom-meta">
+          <div>
+            <div class="field-label" style="margin-bottom:4px">Surrounding Matrix (3×3)</div>
+            <div class="grid-3x3" id="matrix"></div>
+          </div>
+          <div class="val-chips">
+            <span class="val-pill">#c4552d</span>
+            <span class="val-pill">58.5% OKLCH</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const matrix=document.getElementById('matrix');
+const n=['#e9dcc6','#efe6d6','#e7d6bc','#b94f2b','#c4552d','#2f5d62','#d39a2c','#e0a526','#d8ab3c'];
+matrix.innerHTML=n.map((h,i)=>`<i class="${i===4?'center':''}" style="background:${h}"></i>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit prototype</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The core journey on a Mac desktop, built from the design system (../system/). Everything inside
+     the stage is drawn at 1440 wide (810 high, or a real screenshot's own height) and scaled to fit. */
+  html, body { margin: 0; height: 100%; }
+  body { background: #000; color: var(--ink); font: 13px/1.4 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  p { margin: 0; }
+
+  #stage { position: absolute; left: 0; top: 0; width: 1440px; height: 810px; transform-origin: 0 0; overflow: hidden; background: var(--desk); user-select: none; -webkit-user-select: none; }
+  #stage input, #stage [contenteditable="true"] { user-select: text; -webkit-user-select: text; }
+  #stage.picking, #stage.picking *, #stage.playing, #stage.playing * { cursor: none !important; }
+  .desk-bg { position: absolute; inset: 0; }
+
+  /* Menu bar: the native shell */
+  .menubar { z-index: 10; }
+  .mb-icon { display: inline-grid; place-items: center; height: 22px; padding: 0 7px; border: 0; border-radius: 5px; background: none; color: var(--ink); font: inherit; cursor: default; }
+  .mb-icon.on, .mb-icon[aria-expanded="true"] { background: rgba(0, 0, 0, 0.13); }
+
+  /* The browser and the fictional site in it. Someone else's page, so it has its own look. */
+  .browser { left: 120px; top: 50px; width: 980px; height: 728px; z-index: 1; }
+  .browser .titlebar { height: 38px; }
+  .addr { flex: 1; display: flex; justify-content: center; margin-right: 52px; }
+  .addr span { min-width: 380px; text-align: center; padding: 4px 14px; border-radius: 6px; background: rgba(0, 0, 0, 0.055); color: var(--ink-2); font-size: 12px; }
+  .site { height: calc(100% - 38px); background: #f7f3ec; color: #2a2622; padding: 22px 44px 0; font-family: Georgia, "Times New Roman", serif; overflow: hidden; }
+  .site header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 12px; border-bottom: 1px solid #2a2622; }
+  .site .wordmark { font-size: 22px; font-style: italic; }
+  .site nav { display: flex; gap: 22px; font: 13px/1 var(--font); }
+  .site h1 { margin: 24px 0 4px; font-size: 40px; font-weight: 400; letter-spacing: -0.01em; line-height: 1.1; }
+  .site .by { font: 13px/1.4 var(--font); color: #6b6055; }
+  .site .cols { display: grid; grid-template-columns: 520px minmax(0, 1fr); gap: 40px; margin-top: 22px; }
+  .site .scene { display: block; }
+  .site .cap { margin-top: 8px; font: 12px/1.3 var(--font); color: #6b6055; }
+  .site .lede { font-size: 17px; line-height: 1.55; }
+  .site .also { margin-top: 28px; font: 12px/1.3 var(--font); color: #6b6055; }
+  .site .thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .site figure { margin: 0; }
+  .site figure svg { display: block; width: 100%; height: auto; }
+  .site figcaption { margin-top: 6px; font: 12px/1.3 var(--font); color: #6b6055; }
+
+  /* Capture */
+  .picker { position: absolute; left: 0; top: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 6px solid var(--c, #cbcbce); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 0 2px rgba(29, 29, 31, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.9), inset 0 0 0 2px rgba(29, 29, 31, 0.4), 0 3px 10px rgba(0, 0, 0, 0.22); pointer-events: none; z-index: 41; }
+  #ring { z-index: 42; }
+  .trace { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 3.5px rgba(29, 29, 31, 0.75); opacity: 0; pointer-events: none; z-index: 42; }
+  .trace.on { animation: trace 2.6s ease-out forwards; }
+  .trace.hold { opacity: 1; animation: none; }
+  @keyframes trace { 0% { opacity: 0; transform: scale(1.8); } 12% { opacity: 1; transform: scale(1); } 30% { transform: scale(1.25); } 45% { transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+  .pop-slot { position: absolute; top: 34px; right: 12px; z-index: 20; }
+  .prow { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
+  .prow .chip-raw { display: grid; width: 100%; grid-template-columns: 16px minmax(0, 1fr); }
+  .prow .chip-raw > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prow:hover .chip-raw { background: var(--chrome); }
+
+  /* The archive: a native window around the raw heart */
+  .archive { left: 96px; top: 40px; width: 1248px; height: 752px; z-index: 2; transition: opacity var(--dur-appear) ease-out, transform var(--dur-appear) ease-out; }
+  .archive.shut { opacity: 0; transform: scale(0.985); }
+  .ab-bar { height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: var(--material); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--rule); }
+  .lights button { width: 12px; height: 12px; border-radius: 50%; padding: 0; border: 0; background: #DADADC; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.18); cursor: pointer; }
+  .lights button:hover { background: #C4C4C7; }
+  .ab-title { font-size: 13px; font-weight: 600; margin-left: 8px; }
+  .ab-count { font-size: 11px; color: var(--ink-2); }
+  .seg { display: inline-flex; padding: 2px; border-radius: 7px; background: rgba(0, 0, 0, 0.06); margin-left: 8px; }
+  .seg button { border: 0; background: none; font-size: 12px; padding: 3px 12px; border-radius: 5px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--paper); box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.25); }
+  .ab-space { flex: 1; }
+  .ab-btn { font-size: 12px; padding: 4px 12px; border-radius: 6px; border: 0.5px solid rgba(0, 0, 0, 0.16); background: rgba(255, 255, 255, 0.85); cursor: pointer; }
+  .ab-body { display: grid; grid-template-columns: minmax(0, 1fr) 372px; height: calc(100% - 52px); }
+  .ab-main { overflow: auto; padding: 16px 18px 24px; border-right: 1px solid var(--rule); }
+  .ab-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 12px; }
+  .ab-h { font-size: 20px; letter-spacing: -0.015em; }
+  .ab-sub { font-size: 11px; color: var(--ink-2); }
+  .ab-main .filters { margin-bottom: 14px; gap: 10px 16px; }
+  .ab-side { overflow: auto; padding: 16px 22px 24px; }
+  .ab-side .tech { display: grid; grid-auto-flow: column; grid-template-rows: auto auto; grid-auto-columns: max-content; column-gap: 20px; }
+  .ab-side .tech dd { margin: 0; }
+
+  /* Recording aids: the keystrokes on screen and a pointer for playback. Not part of Palit. */
+  .keys { position: absolute; left: 50%; bottom: 34px; display: flex; gap: 6px; padding: 10px 12px; background: rgba(29, 29, 31, 0.84); border-radius: 12px; opacity: 0; transform: translate(-50%, 8px); transition: opacity 160ms ease-out, transform 160ms ease-out; pointer-events: none; z-index: 30; }
+  .keys.on { opacity: 1; transform: translate(-50%, 0); }
+  .keys kbd { font: 22px/1 var(--font); color: #FFFFFF; min-width: 40px; height: 40px; padding: 0 10px; display: inline-grid; place-items: center; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 8px; }
+  .cursor { position: absolute; left: 0; top: 0; margin: -1.5px 0 0 -1.5px; pointer-events: none; z-index: 40; }
+  .cursor svg { display: block; transform-origin: 1.5px 1.5px; transition: transform 100ms ease-out; }
+  .cursor.press svg { transform: scale(0.86); }
+
+  /* Prototype controls, outside the stage */
+  .controls { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 10px 16px; background: #1D1D1F; color: #F5F5F7; z-index: 100; }
+  .controls[hidden] { display: none; }
+  .controls .c-title { font-weight: 600; }
+  .controls .c-title span { font-weight: 400; color: #A1A1A6; margin-left: 8px; }
+  .controls .c-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .controls button { background: transparent; border: 1px solid rgba(255, 255, 255, 0.28); padding: 4px 10px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+  .controls button:hover { border-color: #F5F5F7; }
+  .controls button[aria-pressed="false"] { color: #A1A1A6; }
+  .controls kbd { font: 11px/1 var(--font); color: #A1A1A6; }
+  .controls .c-hint { color: #A1A1A6; margin-left: auto; }
+  .controls a { color: inherit; text-underline-offset: 2px; }
+  .controls :focus-visible { outline-color: #F5F5F7; }
+
+  /* Real screenshots (D9) */
+  #stage.shot .desk-bg, #stage.shot .menubar, #stage.shot #browser { display: none; }
+  .shot-bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  .shot-icon { position: absolute; z-index: 11; transform: translate(-50%, -50%); }
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Palit on a Mac desktop">
+  <div class="desk-bg" data-place="Desktop" data-type="Desktop" data-title="Desktop wallpaper"></div>
+
+  <div class="menubar" data-hex="#e9e9ea" data-place="Menu bar" data-type="Desktop" data-title="Menu bar">
+    <span class="app">Browser</span><span>File</span><span>Edit</span><span>View</span><span>History</span><span>Window</span>
+    <span class="right">
+      <button type="button" class="mb-icon" id="mb-icon" aria-expanded="false">Palit</button>
+      <span class="num" id="mb-date"></span><span class="num" id="mb-time"></span>
+    </span>
+  </div>
+
+  <section class="win browser" id="browser" aria-label="Browser window" data-place="stoopnotes.studio" data-type="Browser" data-title="Bergen Street, golden hour" data-url="stoopnotes.studio/walks/bergen-street">
+    <div class="titlebar" data-hex="#f7f7f7"><span class="lights"><i></i><i></i><i></i></span><span class="addr"><span>stoopnotes.studio/walks/bergen-street</span></span></div>
+    <div class="site">
+      <header><span class="wordmark">Stoop notes</span><nav><span>Walks</span><span>Light</span><span>About</span></nav></header>
+      <h1>Bergen Street, golden hour</h1>
+      <p class="by">Walk 14, late September.</p>
+      <div class="cols">
+        <div>
+          <svg class="scene" viewBox="0 0 500 400" width="520" height="416" role="img" aria-label="A brownstone with a teal door in evening light">
+            <rect width="500" height="400" fill="#efb98e"/>
+            <rect y="30" width="500" height="344" fill="#b3492f"/>
+            <polygon points="16,240 124,196 124,250 16,294" fill="#e9a15a"/>
+            <polygon points="500,168 500,374 312,374" fill="#6e3427"/>
+            <rect y="30" width="500" height="20" fill="#ece2cf"/>
+            <rect y="50" width="500" height="6" fill="#6e3427"/>
+            <rect x="44" y="74" width="116" height="14" fill="#ece2cf"/>
+            <rect x="54" y="88" width="96" height="128" fill="#ece2cf"/>
+            <rect x="62" y="96" width="80" height="112" fill="#2b3036"/>
+            <polygon points="62,96 120,96 62,168" fill="#9db1bd"/>
+            <rect x="62" y="148" width="80" height="6" fill="#ece2cf"/>
+            <rect x="340" y="74" width="116" height="14" fill="#ece2cf"/>
+            <rect x="350" y="88" width="96" height="128" fill="#ece2cf"/>
+            <rect x="358" y="96" width="80" height="112" fill="#2b3036"/>
+            <polygon points="358,96 416,96 358,168" fill="#9db1bd"/>
+            <rect x="358" y="148" width="80" height="6" fill="#ece2cf"/>
+            <rect x="178" y="142" width="144" height="16" fill="#ece2cf"/>
+            <rect x="186" y="158" width="128" height="182" fill="#ece2cf"/>
+            <rect id="door" x="196" y="168" width="108" height="172" fill="#2d696e"/>
+            <g fill="#275c60">
+              <rect x="208" y="182" width="36" height="66"/><rect x="256" y="182" width="36" height="66"/>
+              <rect x="208" y="260" width="36" height="66"/><rect x="256" y="260" width="36" height="66"/>
+            </g>
+            <circle cx="298" cy="254" r="3" fill="#e9a15a"/>
+            <rect x="186" y="340" width="128" height="6" fill="#b9ab98"/>
+            <rect x="180" y="346" width="140" height="6" fill="#8a7f74"/>
+            <rect x="174" y="352" width="152" height="6" fill="#b9ab98"/>
+            <rect x="168" y="358" width="164" height="6" fill="#8a7f74"/>
+            <rect x="162" y="364" width="176" height="6" fill="#b9ab98"/>
+            <rect x="156" y="370" width="188" height="4" fill="#8a7f74"/>
+            <g fill="#1c1c1e">
+              <polygon points="180,322 186,322 158,374 152,374"/><polygon points="314,322 320,322 348,374 342,374"/>
+              <rect x="146" y="336" width="8" height="38"/><rect x="346" y="336" width="8" height="38"/>
+            </g>
+            <rect y="374" width="500" height="26" fill="#dccdb4"/>
+            <polygon points="312,374 500,374 500,400 352,400" fill="#a8977f"/>
+            <rect x="84" y="336" width="54" height="38" fill="#c35b36"/>
+            <ellipse cx="111" cy="318" rx="32" ry="22" fill="#6e8f5e"/>
+            <ellipse cx="96" cy="306" rx="16" ry="14" fill="#93b383"/>
+            <ellipse cx="126" cy="300" rx="14" ry="16" fill="#93b383"/>
+          </svg>
+          <p class="cap">412 Bergen Street.</p>
+        </div>
+        <div>
+          <p class="lede">A little before seven the sun slides behind the row houses across the street, and for ten minutes every stoop on the block turns the same warm brick. The doors hold out. 412 keeps its teal all the way into the shadow.</p>
+          <p class="also">Also on this walk</p>
+          <div class="thumbs">
+            <figure>
+              <svg viewBox="0 0 100 76" role="img" aria-label="Laundromat"><rect width="100" height="76" fill="#3e5a7a"/><rect x="10" y="10" width="80" height="16" fill="#f0c23b"/><rect x="12" y="34" width="76" height="34" fill="#9db1bd"/><rect x="48" y="34" width="4" height="34" fill="#3e5a7a"/></svg>
+              <figcaption>Laundromat</figcaption>
+            </figure>
+            <figure>
+              <svg viewBox="0 0 100 76" role="img" aria-label="Corner store"><rect width="100" height="76" fill="#ece2cf"/><g fill="#b3492f"><rect y="10" width="12.5" height="22"/><rect x="25" y="10" width="12.5" height="22"/><rect x="50" y="10" width="12.5" height="22"/><rect x="75" y="10" width="12.5" height="22"/></g><g fill="#f2ede4"><rect x="12.5" y="10" width="12.5" height="22"/><rect x="37.5" y="10" width="12.5" height="22"/><rect x="62.5" y="10" width="12.5" height="22"/><rect x="87.5" y="10" width="12.5" height="22"/></g><rect x="10" y="40" width="80" height="30" fill="#2b3036"/></svg>
+              <figcaption>Corner store</figcaption>
+            </figure>
+            <figure>
+              <svg viewBox="0 0 100 76" role="img" aria-label="Fire escape"><rect width="100" height="76" fill="#d0784a"/><g fill="#1c1c1e"><rect x="14" y="20" width="72" height="4"/><rect x="14" y="50" width="72" height="4"/><polygon points="24,24 30,24 76,50 70,50"/><rect x="14" y="8" width="3" height="16"/><rect x="83" y="8" width="3" height="16"/><rect x="14" y="38" width="3" height="16"/><rect x="83" y="38" width="3" height="16"/></g></svg>
+              <figcaption>Fire escape</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="win archive" id="archive" hidden aria-label="Palit archive" data-place="Palit" data-type="App" data-title="Archive">
+    <div class="ab-bar" data-hex="#f8f8f8">
+      <span class="lights"><button type="button" id="arc-close" aria-label="Close the archive"></button><i></i><i></i></span>
+      <span class="ab-title">Archive</span><span class="ab-count num" id="arc-count"></span>
+      <span class="seg" id="arc-view" role="group" aria-label="View"><button type="button" data-view="timeline" aria-pressed="true">Timeline</button><button type="button" data-view="spectrum" aria-pressed="false">Spectrum</button></span>
+      <span class="ab-space"></span>
+      <button type="button" class="ab-btn" id="rediscover">Rediscover</button>
+    </div>
+    <div class="ab-body">
+      <div class="ab-main" id="arc-main">
+        <div class="ab-head"><p class="ab-h" id="arc-h"></p><p class="ab-sub" id="arc-sub"></p></div>
+        <div class="filters" id="arc-filters"></div>
+        <div class="grid" id="arc-grid"></div>
+      </div>
+      <aside class="ab-side story" id="arc-story" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <div class="pop-slot" id="pop-slot"></div>
+  <div class="loupe" id="ring"></div>
+  <div class="trace" id="trace"></div>
+  <div class="picker" id="picker" hidden></div>
+  <div class="keys" id="keys" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" hidden><svg width="20" height="28" viewBox="0 0 20 28" aria-hidden="true"><path d="M1.5 1.5 L1.5 21 L6.2 16.6 L9.6 24.6 L13 23.2 L9.7 15.4 L16 15.4 Z" fill="#000" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+</div>
+
+<div class="controls" id="controls" role="region" aria-label="Prototype controls">
+  <p class="c-title">Palit prototype<span>The core journey. All copy is a draft for Noah.</span></p>
+  <div class="c-acts">
+    <button type="button" id="c-play">Play the journey <kbd>P</kbd></button>
+    <button type="button" id="c-reset">Reset <kbd>R</kbd></button>
+    <button type="button" id="c-keys" aria-pressed="true">Keystrokes <kbd>K</kbd></button>
+    <button type="button" id="c-sound" aria-pressed="true">Sound <kbd>S</kbd></button>
+    <button type="button" id="c-hide">Hide this bar <kbd>H</kbd></button>
+  </div>
+  <p class="c-hint" id="c-hint">Or try it: press ⌥⇧C and click any color, or right-click to name it as you keep it. Hold ⇧ as you click to keep a palette. <a href="../history/index.html#work">Dashboard</a></p>
+</div>
+
+<script src="../system/sample.js"></script>
+<script src="../system/color.js"></script>
+<script src="../system/components.js"></script>
+<script>
+  // shots.js carries whole screenshots as data, so it loads only when ?shot= asks for one.
+  if (/[?&]shot=/.test(location.search)) document.write('<script src="shots/shots.js"><\/script>');
+</script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI;
+  var el = U.el, title = U.title, swatchLabel = U.swatchLabel, no = U.no;
+  function $(id) { return document.getElementById(id); }
+
+  /* The archive: the 28 sample captures, copied so renames and new captures reset cleanly. */
+  var captures = [];
+  function restock() { captures.length = 0; S.captures.forEach(function (c) { captures.push(Object.assign({}, c)); }); }
+  restock();
+  var UI = U.create(captures, { neighborOrder: S.neighborOrder });
+
+  var W = 1440, H = 810;
+  var BASE = new Date(2026, 9, 18, 14, 22).getTime(), LOADED = Date.now();
+  function now() { return new Date(BASE + (Date.now() - LOADED)); }
+
+  var q = new URLSearchParams(location.search);
+  var NAME = q.get("name") || "Childhood home";                    // typed in playback; Noah's own example (A24). Change it with ?name=
+  var NOTE = q.get("note") || "Teal all the way into the shadow.";  // typed in playback; Claude's draft. Change it with ?note=
+  var REDISCOVER = 1;                                               // playback rediscovers No. 001, Oxblood
+  var PALETTE = [[378, 112], [250, 100], [70, 245], [111, 330]];    // playback's palette, in the photo's own units: window glass, brick, the last sun, the planter's leaves
+
+  /* Real screenshots (D9): ?shot=1 uses the first one in shots/shots.js. */
+  var SHOTS = (window.PALIT_SHOTS && window.PALIT_SHOTS.list) || [];
+  var shot = q.has("shot") ? SHOTS[Number(q.get("shot")) - 1] || null : null;
+  var shotImg = null, shotCtx = null, shotScale = 1;
+
+  var stage = $("stage"), picker = $("picker"), cursor = $("cursor"), popSlot = $("pop-slot");
+  var st = { mode: "idle", playing: false, allow: false, token: null, hold: false, scale: 1, pointer: { x: 760, y: 600 },
+    run: null, pop: null, namer: null, pinned: null, keysTimer: null,
+    controls: !q.has("clean"), keys: q.get("keys") !== "0", sound: q.get("sound") !== "0" };
+  var arc = { family: "all", value: "all", view: "timeline", selected: null, fresh: null };
+
+  /* The desktop palette (D8, A49–A51): your latest picks, or a palette you pin. */
+  var dp = UI.deskPalette({
+    latest: newest,
+    pinned: function () { return st.pinned; },
+    onUnpin: function () { pin(null); },
+    canWrite: function () { return !st.playing && !st.hold; }
+  });
+  dp.setAttribute("data-place", "Palit"); dp.setAttribute("data-type", "App"); dp.setAttribute("data-title", "Desktop palette");
+  stage.appendChild(dp);
+
+  /* Stage scaling and coordinates */
+  function fit() {
+    var bar = $("controls");
+    bar.hidden = !st.controls;
+    var ch = st.controls ? bar.offsetHeight : 0;
+    var s = Math.min(innerWidth / W, (innerHeight - ch) / H);
+    st.scale = s;
+    stage.style.transform = "scale(" + s + ")";
+    stage.style.left = Math.max(0, (innerWidth - W * s) / 2) + "px";
+    stage.style.top = Math.max(0, (innerHeight - ch - H * s) / 2) + "px";
+  }
+  function toStage(cx, cy) { var r = stage.getBoundingClientRect(); return { x: (cx - r.left) / st.scale, y: (cy - r.top) / st.scale }; }
+  function toClient(x, y) { var r = stage.getBoundingClientRect(); return { x: r.left + x * st.scale, y: r.top + y * st.scale }; }
+  function centerOf(node) { var r = node.getBoundingClientRect(); return toStage(r.left + r.width / 2, r.top + r.height / 2); }
+  addEventListener("resize", fit);
+
+  function tick() {
+    var d = now();
+    $("mb-date").textContent = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }).replace(",", "");
+    $("mb-time").textContent = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  }
+  setInterval(tick, 15000);
+
+  /* Reading the screen: the color under a point, where it came from, and its 8 neighbors.
+     On a real screenshot the color comes from the screenshot's own pixels. */
+  function hexOf(rgb) {
+    var m = rgb.match(/[\d.]+/g);
+    return "#" + m.slice(0, 3).map(function (v) { return ("0" + Math.round(+v).toString(16)).slice(-2); }).join("");
+  }
+  function opaque(rgb) { var m = rgb.match(/[\d.]+/g); return m && (m.length < 4 || +m[3] > 0.95); }
+  function shotPixel(x, y) {
+    if (!shotCtx) return null;
+    try {
+      var d = shotCtx.getImageData(Math.floor(x * shotScale), Math.floor(y * shotScale), 1, 1).data;
+      return "#" + [d[0], d[1], d[2]].map(function (v) { return ("0" + v.toString(16)).slice(-2); }).join("");
+    } catch (e) { return null; }
+  }
+  function colorAt(x, y) {
+    if (x < 0 || y < 0 || x >= W || y >= H) return null;
+    var p = toClient(x, y), n = document.elementFromPoint(p.x, p.y);
+    if (shot && n === shotImg) return shotPixel(x, y) || "#cbcbce";
+    while (n && n !== document.documentElement) {
+      if (n.dataset && n.dataset.hex) return n.dataset.hex;
+      if (n instanceof SVGElement) {
+        if (n.tagName !== "svg") {
+          var f = n.getAttribute("fill"), s = n.getAttribute("stroke");
+          if (f && f !== "none") return f.toLowerCase();
+          if (s && s !== "none") return s.toLowerCase();
+        }
+      } else {
+        var bg = getComputedStyle(n).backgroundColor;
+        if (bg && opaque(bg)) return hexOf(bg);
+      }
+      n = n.parentNode;
+    }
+    return "#cbcbce";
+  }
+  function sourceAt(x, y) {
+    var p = toClient(x, y), n = document.elementFromPoint(p.x, p.y);
+    if (shot && n === shotImg) {
+      var ix = x * shotScale, iy = y * shotScale;
+      var r = (shot.regions || []).filter(function (g) { return ix >= g.x && iy >= g.y && ix < g.x + g.w && iy < g.y + g.h; })[0];
+      return r ? { place: r.place, type: r.type, title: r.title, url: r.url || null } : { place: "Desktop", type: "Desktop", title: "Desktop" };
+    }
+    while (n && n !== document.documentElement && !(n.dataset && n.dataset.place)) n = n.parentNode;
+    var d = n && n.dataset && n.dataset.place ? n.dataset : { place: "Desktop", type: "Desktop", title: "Desktop wallpaper" };
+    return { place: d.place, type: d.type, title: d.title, url: d.url || null };
+  }
+  var OFF = { NW: [-12, -12], N: [0, -12], NE: [12, -12], W: [-12, 0], E: [12, 0], SW: [-12, 12], S: [0, 12], SE: [12, 12] };
+  function neighborsAt(x, y) { return S.neighborOrder.map(function (k) { return colorAt(x + OFF[k][0], y + OFF[k][1]) || "#cbcbce"; }); }
+  function doorPoint() {
+    if (shot) return fromShot(shot.play && shot.play.pick, [W / 2, H / 2]);
+    var r = $("door").getBoundingClientRect();
+    return toStage(r.left + r.width / 2, r.top + r.height / 2);   // the cross between the four panels
+  }
+  function paletteTargets() {
+    if (shot) return ((shot.play && shot.play.palette) || [[W * 0.3, H * 0.4], [W * 0.4, H * 0.45], [W * 0.5, H * 0.5], [W * 0.6, H * 0.55]].map(function (pt) { return [pt[0] * shotScale, pt[1] * shotScale]; })).map(function (pt) { return fromShot(pt); });
+    return PALETTE.map(function (pt) { return photoPoint(pt[0], pt[1]); });
+  }
+  function fromShot(pt, fallback) { return pt ? { x: pt[0] / shotScale, y: pt[1] / shotScale } : { x: fallback[0], y: fallback[1] }; }
+  function photoPoint(x, y) {
+    var s = document.querySelector(".site .scene"), r = s.getBoundingClientRect(), vb = s.viewBox.baseVal;
+    return toStage(r.left + x / vb.width * r.width, r.top + y / vb.height * r.height);
+  }
+  function setupShot() {
+    if (!shot) return;
+    H = Math.round(W * shot.h / shot.w);
+    shotScale = shot.w / W;
+    stage.style.height = H + "px";
+    stage.classList.add("shot");
+    shotImg = el("img", { class: "shot-bg", src: shot.data || "shots/" + shot.file, alt: "", draggable: "false" });
+    stage.insertBefore(shotImg, stage.firstChild);
+    function ready() {
+      var c = document.createElement("canvas");
+      c.width = shotImg.naturalWidth; c.height = shotImg.naturalHeight;
+      shotCtx = c.getContext("2d", { willReadFrequently: true });
+      shotCtx.drawImage(shotImg, 0, 0);
+      shotScale = shotImg.naturalWidth / W;
+      try { shotCtx.getImageData(0, 0, 1, 1); }
+      catch (e) { shotCtx = null; $("c-hint").textContent = "Colors can't be read from this screenshot when the page is opened from Finder. Rebuild shots.js with build-shots.py, or open it through the local server."; }
+    }
+    if (shotImg.complete && shotImg.naturalWidth) ready(); else shotImg.addEventListener("load", ready);
+    var holder = el("div", { class: "shot-icon" });
+    holder.style.left = (shot.icon ? shot.icon[0] / shotScale : W - 230) + "px";
+    holder.style.top = (shot.icon ? shot.icon[1] / shotScale : 14) + "px";
+    holder.appendChild($("mb-icon"));
+    stage.appendChild(holder);
+  }
+
+  /* Pointer and picker */
+  function setPointer(x, y) {
+    st.pointer = { x: x, y: y };
+    cursor.style.transform = "translate(" + x + "px," + y + "px)";
+    if (st.mode === "picking") movePicker(x, y);
+  }
+  function movePicker(x, y) {
+    picker.style.transform = "translate(" + x + "px," + y + "px)";
+    picker.style.setProperty("--c", colorAt(x, y) || "#cbcbce");
+  }
+  function startPicking() {
+    if (st.mode === "picking") return;
+    if (st.namer) st.namer.finish(false);
+    closePopover();
+    st.mode = "picking";
+    stage.classList.add("picking");
+    $("mb-icon").classList.add("on");
+    picker.hidden = false;
+    movePicker(st.pointer.x, st.pointer.y);
+  }
+  function stopPicking() {
+    st.mode = "idle";
+    stage.classList.remove("picking");
+    $("mb-icon").classList.remove("on");
+    picker.hidden = true;
+    endRun();
+  }
+
+  /* One keystroke keeps a color. No chip (A52): a small ring, a soft sound, and it lands in the
+     desktop palette. Picking copies nothing (A46). Or a palette (entry 67): hold ⇧ while clicking
+     and the loupe stays open; each ⇧-click keeps one more, and a plain click keeps the last. */
+  function capture(x, y, more) {
+    var hex = colorAt(x, y), src = sourceAt(x, y), nb = neighborsAt(x, y);
+    ring(x, y);
+    chime();
+    var c = UI.newCapture(hex, { place: src.place, sourceType: src.type, source: src.place + " — " + src.title, neighbors: nb });
+    c.capturedAt = now().toISOString();
+    c.url = src.url;
+    c.point = { x: Math.round(x), y: Math.round(y) };
+    arc.selected = c.number;
+    arc.fresh = c.number;
+    counts();
+    if (more || st.run) keepInRun(c, src.place);
+    if (!more) stopPicking();   // ends a run, too
+    land(c);
+    if (!$("archive").hidden) renderArchive();
+    return c;
+  }
+  function land(c) {
+    if (st.pinned) { dp.say("Kept " + no(c.number), st.hold); return; }   // a pinned palette stays fixed; the color goes to the archive
+    dp.refresh(c.number);
+    dp.peek(st.hold ? 0 : 1700);
+  }
+  function ring(x, y) {
+    var r = $("ring");
+    r.style.left = x + "px"; r.style.top = y + "px";
+    r.classList.remove("on"); void r.offsetWidth; r.classList.add("on");
+  }
+  function keepInRun(c, place) {
+    if (st.run) { UI.addToPalette(st.run, c); return; }
+    st.run = UI.addToPalette(UI.newPalette(place), c);
+  }
+  function endRun() {
+    var p = st.run;
+    if (!p) return;
+    st.run = null;
+    UI.endPalette(p);   // a run of one is just a color
+  }
+  // The capture sound, from the foundations workshop (W10): two soft sine partials.
+  var audio = null;
+  function chime() {
+    if (!st.sound || st.hold) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === "suspended") audio.resume();
+      var t = audio.currentTime;
+      [[1318.5, 0.07], [1975.5, 0.025]].forEach(function (pv) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.type = "sine"; o.frequency.value = pv[0];
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(pv[1], t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + 0.25);
+      });
+    } catch (e) {}
+  }
+
+  /* Name it beside the cursor (A52): right-click while picking. Or name it later in the archive. */
+  function nameBeside(c, x, y) {
+    if (st.namer) st.namer.finish(false);
+    var box = UI.nameOverlay(c, function () {
+      if (st.namer === box) { box.remove(); st.namer = null; }
+      dp.refresh();
+      if (!$("archive").hidden) renderArchive();
+    });
+    box.style.left = Math.min(x + 18, W - 272) + "px";
+    box.style.top = Math.min(y + 18, H - 76) + "px";
+    stage.appendChild(box);
+    st.namer = box;
+    if (!st.hold) box.input.focus();   // a paused scene doesn't take focus, so previews don't pull the page around
+    return box;
+  }
+
+  /* Pin a palette to the desktop (A49): it stays fixed until you unpin it. */
+  function pin(p) {
+    st.pinned = p && st.pinned !== p ? p : null;
+    dp.refresh();
+    dp.peek(st.hold ? 0 : 1800);
+    if (!$("archive").hidden) renderArchive();
+  }
+
+  /* The menu bar popover */
+  function openPopover() {
+    if (st.pop) return;
+    stopPicking();
+    var pop = el("div", { class: "popover", role: "dialog", "aria-label": "Palit", "data-hex": "#f2f2f2", "data-place": "Palit", "data-type": "App", "data-title": "Menu bar popover" });
+    pop.appendChild(el("div", { class: "ph" }, [el("span", { style: "font-weight:600;color:var(--ink);font-size:13px", text: "Palit" }), el("span", { class: "num", text: captures.length + " colors kept" })]));
+    var pr = el("div", { class: "pr" });
+    newest().slice(0, 4).forEach(function (c) {
+      var b = el("button", { type: "button", class: "prow", "aria-label": "Open " + swatchLabel(c) + " in the archive" }, [UI.chip(c)]);
+      b.addEventListener("click", function () { openArchive(c.number); });
+      pr.appendChild(b);
+    });
+    pop.appendChild(pr);
+    var steal = el("button", { type: "button", class: "pbtn" }, ["Steal a color", el("span", { style: "color:var(--ink-2)", text: "⌥⇧C" })]);
+    var open = el("button", { type: "button", class: "pbtn", "data-act": "archive", text: "Open archive" });
+    steal.addEventListener("click", function () { startPicking(); });
+    open.addEventListener("click", function () { openArchive(); });
+    pop.appendChild(el("div", { class: "pa" }, [steal, open]));
+    pop.appendChild(el("p", { class: "pf", text: "Stored on this Mac" }));
+    popSlot.appendChild(pop);
+    st.pop = pop;
+    $("mb-icon").setAttribute("aria-expanded", "true");
+  }
+  function closePopover() {
+    if (!st.pop) return;
+    st.pop.remove();
+    st.pop = null;
+    $("mb-icon").setAttribute("aria-expanded", "false");
+  }
+
+  /* The archive keeps everything: trace, rediscover, re-explore. */
+  function newest() { return captures.slice().sort(function (a, b) { return b.number - a.number; }); }
+  function hueKey(c) { var o = PC.oklch(c.hex); return o.C < PC.thresholds.neutralChroma ? 1000 + (1 - o.L) : (o.h - 345 + 360) % 360; }
+  function counts() { $("arc-count").textContent = captures.length + " colors kept"; }
+  function openArchive(n) {
+    closePopover();
+    stopPicking();
+    if (n) focusOn(n);
+    if (!arc.selected) arc.selected = newest()[0].number;
+    var w = $("archive");
+    if (w.hidden) {
+      w.hidden = false;
+      if (!st.hold) { w.classList.add("shut"); void w.offsetWidth; w.classList.remove("shut"); }
+    }
+    renderArchive();
+    $("arc-story").scrollTop = 0;
+    revealTile(arc.selected);
+  }
+  function closeArchive() {
+    var w = $("archive");
+    if (w.hidden) return;
+    if (st.hold) { w.hidden = true; return; }
+    w.classList.add("shut");
+    setTimeout(function () { w.hidden = true; w.classList.remove("shut"); }, 200);
+  }
+  function focusOn(n) {
+    var c = UI.byNumber(n);
+    arc.selected = n;
+    if (arc.family !== "all" && c.family !== arc.family) arc.family = "all";
+    if (arc.value !== "all" && c.value !== arc.value) arc.value = "all";
+  }
+  function renderArchive() {
+    var spectrum = arc.view === "spectrum";
+    $("arc-h").textContent = spectrum ? "By hue" : "Every color, in the order you kept it";
+    $("arc-sub").textContent = spectrum ? "Red around to violet, then neutrals from light to dark" : "June to October 2026";
+    document.querySelectorAll("#arc-view button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === arc.view)); });
+    UI.filterBar($("arc-filters"), arc, renderArchive);
+    var grid = $("arc-grid");
+    grid.textContent = "";
+    var list = captures.filter(function (c) {
+      return (arc.family === "all" || c.family === arc.family) && (arc.value === "all" || c.value === arc.value);
+    });
+    list.sort(spectrum ? function (a, b) { return hueKey(a) - hueKey(b); } : function (a, b) { return b.number - a.number; });
+    if (!list.length) grid.appendChild(el("p", { class: "empty", style: "grid-column:1/-1", text: "Nothing in the archive matches that yet." }));
+    list.forEach(function (c) {
+      var t = UI.tile(c, function (n) { select(n); }, c.number === arc.selected);
+      if (c.number === arc.fresh) t.classList.add("fresh");
+      grid.appendChild(t);
+    });
+    arc.fresh = null;
+    var cur = UI.byNumber(arc.selected);
+    if (cur) UI.storyPanel($("arc-story"), cur, {
+      editable: true,
+      onPick: function (n) { select(n, true); },
+      onRename: renameTile,
+      onSource: goToSource,
+      onPin: function (p) { pin(p); },
+      isPinned: function (p) { return st.pinned === p; }
+    });
+  }
+  function select(n, reveal) {
+    focusOn(n);
+    renderArchive();
+    $("arc-story").scrollTop = 0;
+    if (reveal) revealTile(n, true);
+  }
+  function renameTile(c) {
+    var t = document.querySelector('#arc-grid .tile[data-n="' + c.number + '"]');
+    dp.refresh();
+    if (!t) return;
+    var tn = t.querySelector(".tn");
+    tn.textContent = title(c);
+    tn.className = "tn" + (c.name ? "" : " placeholder");
+    t.setAttribute("aria-label", swatchLabel(c));
+  }
+  function revealIn(box, child, smooth) {
+    var br = box.getBoundingClientRect(), r = child.getBoundingClientRect(), s = st.scale, top = null;
+    if (r.top < br.top) top = box.scrollTop + (r.top - br.top) / s - 16;
+    else if (r.bottom > br.bottom) top = box.scrollTop + (r.bottom - br.bottom) / s + 24;
+    if (top !== null) box.scrollTo({ top: Math.max(0, top), behavior: smooth && !document.hidden ? "smooth" : "auto" });
+  }
+  function revealTile(n, smooth) {
+    var t = document.querySelector('#arc-grid .tile[data-n="' + n + '"]');
+    if (t) revealIn($("arc-main"), t, smooth);
+  }
+  function rediscover() {
+    var cutoff = now().getTime() - 30 * 864e5;
+    var pool = captures.filter(function (c) { return c.number !== arc.selected && new Date(c.capturedAt).getTime() < cutoff; });
+    if (!pool.length) return;
+    var pick = st.playing ? UI.byNumber(REDISCOVER) : pool[Math.floor(Math.random() * pool.length)];
+    arc.family = "all";
+    arc.value = "all";
+    select(pick.number, true);
+  }
+  function goToSource(c) {
+    closeArchive();
+    if (!c.point) return;
+    var p = c.point;
+    setTimeout(function () {
+      var t = $("trace");
+      t.style.left = p.x + "px"; t.style.top = p.y + "px";
+      t.classList.remove("on", "hold"); void t.offsetWidth;
+      t.classList.add(st.hold ? "hold" : "on");
+    }, st.hold ? 0 : 240);
+  }
+
+  /* Keystrokes on screen, for the recording */
+  function showKeys(list, held) {
+    if (!st.keys) return;
+    var k = $("keys");
+    k.textContent = "";
+    list.forEach(function (t) { k.appendChild(el("kbd", { text: t })); });
+    k.classList.add("on");
+    clearTimeout(st.keysTimer);
+    if (!held) st.keysTimer = setTimeout(hideKeys, 1100);   // a held key stays until hideKeys
+  }
+  function hideKeys() { clearTimeout(st.keysTimer); $("keys").classList.remove("on"); }
+
+  /* Input */
+  function typing(e) { var t = e.target; return !!t && (t.tagName === "INPUT" || t.isContentEditable); }
+  addEventListener("keydown", function (e) {
+    var k = (e.key || "").toLowerCase();
+    if (st.playing) {
+      if (e.key === "Escape" || (!typing(e) && k === "p")) { e.preventDefault(); stop(); }
+      else if (!typing(e) && k === "h") toggleControls();
+      else if (!typing(e) && k === "k") toggleKeys();
+      return;
+    }
+    if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      showKeys(["⌥", "⇧", "C"]);
+      if (st.mode === "picking") stopPicking(); else startPicking();
+      return;
+    }
+    if (typing(e)) return;
+    if (e.key === "Escape") {
+      if (st.mode === "picking") { showKeys(["Esc"]); stopPicking(); }
+      else if (st.pop) closePopover();
+      else closeArchive();
+      return;
+    }
+    if (e.key === "Enter" && st.run) { e.preventDefault(); showKeys(["Return"]); stopPicking(); return; }   // ends a palette
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (k === "p") play();
+    else if (k === "r") reset();
+    else if (k === "h") toggleControls();
+    else if (k === "k") toggleKeys();
+    else if (k === "s") toggleSound();
+  });
+  stage.addEventListener("mousemove", function (e) {
+    if (st.playing) return;
+    var p = toStage(e.clientX, e.clientY);
+    st.pointer = p;
+    if (st.mode === "picking") movePicker(p.x, p.y);
+  });
+  stage.addEventListener("mousedown", function (e) { if (!st.allow && (st.mode === "picking" || st.playing)) e.preventDefault(); }, true);
+  stage.addEventListener("click", function (e) {
+    if (st.allow) return;
+    if (st.playing) { e.preventDefault(); e.stopPropagation(); return; }
+    if (st.mode === "picking") {
+      e.preventDefault(); e.stopPropagation();
+      var p = toStage(e.clientX, e.clientY);
+      st.pointer = p;
+      if (e.shiftKey) showKeys(["⇧"]);
+      capture(p.x, p.y, e.shiftKey);
+      return;
+    }
+    if (st.pop && !st.pop.contains(e.target) && !$("mb-icon").contains(e.target)) closePopover();
+  }, true);
+  stage.addEventListener("contextmenu", function (e) {   // right-click while picking: keep it and name it (A52)
+    if (st.mode !== "picking" || st.playing) return;
+    e.preventDefault(); e.stopPropagation();
+    var p = toStage(e.clientX, e.clientY);
+    st.pointer = p;
+    showKeys(["Right-click"]);
+    nameBeside(capture(p.x, p.y), p.x, p.y);
+  }, true);
+  $("mb-icon").addEventListener("click", function () { if (st.pop) closePopover(); else openPopover(); });
+  $("arc-close").addEventListener("click", closeArchive);
+  $("rediscover").addEventListener("click", rediscover);
+  document.querySelectorAll("#arc-view button").forEach(function (b) {
+    b.addEventListener("click", function () { arc.view = b.dataset.view; renderArchive(); revealTile(arc.selected); });
+  });
+
+  /* Controls */
+  function toggleControls() { st.controls = !st.controls; fit(); }
+  function toggleKeys() { st.keys = !st.keys; $("c-keys").setAttribute("aria-pressed", String(st.keys)); if (!st.keys) $("keys").classList.remove("on"); }
+  function toggleSound() { st.sound = !st.sound; $("c-sound").setAttribute("aria-pressed", String(st.sound)); }
+  function playLabel() { $("c-play").firstChild.textContent = st.playing ? "Stop " : "Play the journey "; }
+  $("c-play").addEventListener("click", function () { if (st.playing) stop(); else play(); });
+  $("c-reset").addEventListener("click", function () { reset(); });
+  $("c-keys").addEventListener("click", toggleKeys);
+  $("c-sound").addEventListener("click", toggleSound);
+  $("c-hide").addEventListener("click", toggleControls);
+  $("c-keys").setAttribute("aria-pressed", String(st.keys));
+  $("c-sound").setAttribute("aria-pressed", String(st.sound));
+
+  function reset() {
+    stop();
+    st.run = null;
+    st.hold = false;
+    st.pinned = null;
+    if (st.namer) { st.namer.remove(); st.namer = null; }
+    restock();
+    arc.family = "all"; arc.value = "all"; arc.view = "timeline"; arc.selected = null; arc.fresh = null;
+    stopPicking();
+    closePopover();
+    $("archive").hidden = true;
+    $("archive").classList.remove("shut");
+    $("ring").classList.remove("on");
+    $("trace").classList.remove("on", "hold");
+    dp.dock();
+    dp.classList.remove("open", "saying");
+    dp.refresh();
+    cursor.hidden = true;
+    counts();
+  }
+
+  /* Playback: the core journey on its own, for recording the video. P plays or stops it. */
+  function stop() {
+    st.token = null;
+    st.playing = false;
+    stage.classList.remove("playing");
+    hideKeys();
+    playLabel();
+  }
+  function wait(ms) {
+    var token = st.token;
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () { if (token && token === st.token) resolve(); else reject("stopped"); }, ms);
+    });
+  }
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function frame(fn) { if (document.hidden) setTimeout(fn, 16); else requestAnimationFrame(fn); }
+  function moveTo(x, y, ms) {
+    var token = st.token, from = { x: st.pointer.x, y: st.pointer.y };
+    var dx = x - from.x, dy = y - from.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    var bend = Math.min(48, dist * 0.1), nx = -dy / dist, ny = dx / dist, t0 = performance.now();
+    return new Promise(function (resolve, reject) {
+      function step() {
+        if (!token || token !== st.token) return reject("stopped");
+        var t = Math.min(1, (performance.now() - t0) / ms), e = ease(t);
+        var b = Math.sin(Math.PI * e) * bend;
+        setPointer(from.x + dx * e + nx * b, from.y + dy * e + ny * b);
+        if (t < 1) frame(step); else resolve();
+      }
+      step();
+    });
+  }
+  function dragDesk(x, y, ms) {   // playback holds the grip and moves the desktop palette
+    var token = st.token, r = dp.getBoundingClientRect(), from = toStage(r.left, r.top), t0 = performance.now();
+    return new Promise(function (resolve, reject) {
+      function step() {
+        if (!token || token !== st.token) return reject("stopped");
+        var t = Math.min(1, (performance.now() - t0) / ms), e = ease(t);
+        var px = from.x + (x - from.x) * e, py = from.y + (y - from.y) * e;
+        dp.dragTo(px, py);
+        setPointer(px + dp.offsetWidth / 2, py + 6);
+        if (t < 1) frame(step); else resolve();
+      }
+      step();
+    });
+  }
+  function press() { cursor.classList.add("press"); setTimeout(function () { cursor.classList.remove("press"); }, 140); }
+  function clickNode(node) {
+    press();
+    st.allow = true;
+    try { node.click(); } finally { st.allow = false; }
+  }
+  function go(node, ms) { var p = centerOf(node); return moveTo(p.x, p.y, ms); }
+  function filterButton(label) {
+    return Array.prototype.filter.call(document.querySelectorAll("#arc-filters button"), function (b) { return b.textContent === label; })[0];
+  }
+  async function typeInto(fn, text) { for (var i = 1; i <= text.length; i++) { fn(text.slice(0, i)); await wait(65 + Math.random() * 55); } }
+
+  async function play() {
+    reset();
+    st.playing = true;
+    st.token = {};
+    stage.classList.add("playing");
+    playLabel();
+    cursor.hidden = false;
+    setPointer(760, 640);
+    try {
+      await wait(900);
+      await moveTo(640, 470, 1000);
+      await wait(500);
+
+      // 1. One keystroke, a right-click, and a name beside the cursor (A52)
+      showKeys(["⌥", "⇧", "C"]);
+      startPicking();
+      cursor.hidden = true;
+      await wait(450);
+      if (!shot) await moveTo(170, 400, 900);
+      var door = doorPoint();
+      await moveTo(door.x - 46, door.y - 64, 800);
+      await moveTo(door.x, door.y, 650);
+      await wait(700);
+      showKeys(["Right-click"]);
+      press();
+      var first = capture(door.x, door.y);
+      var namer = nameBeside(first, door.x, door.y);
+      cursor.hidden = false;
+      await wait(700);
+      await typeInto(function (v) { namer.input.value = v; }, NAME);
+      await wait(600);
+      showKeys(["Return"]);
+      namer.input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      await wait(1800);
+
+      // 2. Or a palette: hold ⇧ and keep clicking (entry 67). Each color lands in the desktop palette.
+      showKeys(["⌥", "⇧", "C"]);
+      startPicking();
+      cursor.hidden = true;
+      await wait(450);
+      var pal = paletteTargets();
+      for (var j = 0; j < pal.length; j++) {
+        var more = j < pal.length - 1;
+        await moveTo(pal[j].x, pal[j].y, j ? 520 : 800);
+        if (more) showKeys(["⇧"], true); else hideKeys();
+        await wait(260);
+        capture(pal[j].x, pal[j].y, more);
+      }
+      cursor.hidden = false;
+      await wait(1500);
+
+      // 3. Copy it when you need it: ⌥-click copies RGB (A51)
+      dp.peek(4200);
+      var sw = dp.querySelector('.dp-list button[data-n="' + first.number + '"]');
+      await go(sw, 1000);
+      await wait(300);
+      showKeys(["⌥", "Click"]);
+      press();
+      dp.copyFrom(first, { altKey: true });
+      await wait(1900);
+
+      // 4. Drag it off the edge to sit on the desktop, then back, where it snaps (A50)
+      await go(dp.querySelector(".dp-grip"), 600);
+      await wait(200);
+      await dragDesk(1150, 160, 1100);
+      await wait(1300);
+      await dragDesk(W - 20, 300, 1000);
+      dp.drop();
+      await wait(1200);
+
+      // 5. Later: the archive, from the menu bar
+      await go($("mb-icon"), 1000);
+      await wait(200);
+      clickNode($("mb-icon"));
+      await wait(1200);
+      var open = st.pop.querySelector("[data-act=archive]");
+      await go(open, 700);
+      await wait(250);
+      clickNode(open);
+      await wait(1600);
+      var named = document.querySelector('#arc-grid .tile[data-n="' + first.number + '"]');
+      await go(named, 800);
+      await wait(200);
+      clickNode(named);
+      await wait(1300);
+
+      // 6. A note of your own (A54)
+      var note = $("arc-story").querySelector(".cnote");
+      await go(note, 800);
+      press();
+      await wait(250);
+      await typeInto(function (v) { note.textContent = v; note.dispatchEvent(new Event("input", { bubbles: true })); }, NOTE);
+      await wait(1400);
+
+      // 7. Trace it back: Similar says where and when, and leads to Pool tile (A53)
+      var row = $("arc-story").querySelector(".kept button");
+      revealIn($("arc-story"), $("arc-story").querySelector(".kept"), true);
+      await wait(900);
+      await go(row, 900);
+      await wait(300);
+      clickNode(row);
+      await wait(2600);
+
+      // 8. Pin the palette to the desktop (A49)
+      var lastOne = newest()[0];
+      var palTile = document.querySelector('#arc-grid .tile[data-n="' + lastOne.number + '"]');
+      revealIn($("arc-main"), palTile, true);
+      await wait(600);
+      await go(palTile, 900);
+      await wait(200);
+      clickNode(palTile);
+      await wait(1200);
+      var pinB = $("arc-story").querySelector(".pal-pin");
+      revealIn($("arc-story"), pinB, true);
+      await wait(700);
+      await go(pinB, 800);
+      await wait(250);
+      clickNode(pinB);
+      await wait(2400);
+
+      // 9. Re-explore: by hue, then only the teals, then rediscover something older
+      var spec = document.querySelector('#arc-view [data-view="spectrum"]');
+      await go(spec, 900);
+      await wait(200);
+      clickNode(spec);
+      await wait(2200);
+      var teal = filterButton("Teal");
+      await go(teal, 800);
+      await wait(200);
+      clickNode(teal);
+      await wait(2000);
+      await go($("rediscover"), 900);
+      await wait(200);
+      clickNode($("rediscover"));
+      await wait(2400);
+
+      // 10. Back to where it came from
+      var tile = document.querySelector('#arc-grid .tile[data-n="' + first.number + '"]');
+      revealIn($("arc-main"), tile, true);
+      await wait(700);
+      await go(tile, 900);
+      await wait(250);
+      clickNode(tile);
+      await wait(1300);
+      var link = $("arc-story").querySelector(".source .url");
+      if (link) {
+        await go(link, 800);
+        await wait(300);
+        clickNode(link);
+      }
+      await wait(3200);
+    } catch (err) {
+      if (err !== "stopped") throw err;
+      return;
+    }
+    stop();
+  }
+
+  /* Scenes, for the dashboard's Work page and for checking: index.html#/archive and so on.
+     The slash keeps the browser from scrolling to an element with the same id. */
+  var SCENES = ["desktop", "picking", "captured", "naming", "palette", "copy", "floating", "pinned", "popover", "archive", "note", "trace", "spectrum", "source"];
+  function scene(name) {
+    reset();
+    if (SCENES.indexOf(name) < 1 || shot) return;
+    st.hold = true;
+    var door = doorPoint();
+    setPointer(door.x, door.y);
+    if (name === "picking") { startPicking(); return; }
+    if (name === "palette") {   // mid-run: three kept with ⇧ held, the loupe on the fourth
+      var pts = paletteTargets();
+      startPicking();
+      pts.slice(0, 3).forEach(function (pt) { capture(pt.x, pt.y, true); });
+      setPointer(pts[3].x, pts[3].y);
+      $("ring").classList.remove("on");
+      showKeys(["⇧"], true);
+      return;
+    }
+    var c = capture(door.x, door.y);
+    $("ring").classList.remove("on");
+    if (name === "captured") return;
+    if (name === "naming") { nameBeside(c, door.x, door.y).input.value = NAME; return; }
+    c.name = NAME;
+    dp.refresh();
+    if (name === "copy") { dp.peek(0); dp.copyFrom(c, { altKey: true }, true); return; }
+    if (name === "floating") { dp.classList.remove("open"); dp.dragTo(1150, 160); dp.classList.remove("near-edge"); return; }
+    if (name === "pinned") {
+      var run = paletteTargets();
+      startPicking();
+      run.forEach(function (pt, i) { capture(pt.x, pt.y, i < run.length - 1); });
+      $("ring").classList.remove("on");
+      pin(UI.byNumber(newest()[0].number).palette);
+      return;
+    }
+    dp.classList.remove("open");
+    if (name === "popover") { openPopover(); return; }
+    openArchive(c.number);
+    if (name === "note") { c.note = NOTE; renderArchive(); }
+    else if (name === "trace") select(4, true);
+    else if (name === "spectrum") { arc.view = "spectrum"; renderArchive(); revealTile(c.number); }
+    else if (name === "source") goToSource(c);
+  }
+  function route() { scene(location.hash.replace(/^#\/?/, "")); }
+  addEventListener("hashchange", route);
+
+  setupShot();
+  tick();
+  counts();
+  fit();
+  route();
+  if (q.has("play")) setTimeout(play, 600);
+})();
+</script>
+</body>
+</html>

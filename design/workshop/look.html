@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit look and flow workshop</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The look and flow workshop, October 18 (entry 93). Same frame as the feature workshop. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 96px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, figure, dl, dd { margin: 0; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+
+  .intro { padding: 48px 0 8px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: end; }
+  .intro h1 { font-size: clamp(44px, 6vw, 72px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 54ch; }
+  .intro blockquote { margin: 0 0 14px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 17px; line-height: 1.35; }
+  .intro cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+
+  .part { margin-top: 64px; }
+  .part-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  .part-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 400; }
+  .part-head p { color: var(--ink-2); font-size: 15px; max-width: 52ch; }
+
+  /* An item: the question and Noah's words on top, the live options full width, then the why and a note */
+  .item { padding: 28px 0 34px; border-bottom: 1px solid var(--rule-soft); }
+  .item-head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px; align-items: start; margin-bottom: 16px; }
+  .item-no { font-size: 13px; color: var(--ink-2); }
+  .item h3 { font-size: 26px; line-height: 1.12; letter-spacing: -0.02em; font-weight: 400; margin-top: 2px; }
+  .item .multi { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+  .item blockquote { margin: 0; padding-left: 10px; border-left: 2px solid var(--ink); font-size: 14px; }
+  .item blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+  .item .ctx { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .item .refs { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .item .refs a { font-size: 11px; padding: 1px 6px; border: 1px solid var(--rule-soft); text-decoration: none; color: var(--ink-2); }
+  .item .refs a:hover { border-color: var(--ink); color: var(--ink); }
+  .item-foot { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 32px; margin-top: 14px; align-items: start; }
+  .rec-why { font-size: 13px; color: var(--ink-2); }
+  .rec-why b { font-weight: 400; color: var(--ink); }
+  .note label { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .note textarea { width: 100%; min-height: 56px; resize: vertical; padding: 8px 10px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.45 var(--font); box-sizing: border-box; }
+  .note textarea:focus { border-color: var(--ink); outline: none; }
+
+  /* Options: a live preview on the desk, and a header you click to pick */
+  .opts { display: grid; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+  .opts.stack { grid-template-columns: minmax(0, 1fr); }
+  .opts.grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .opts.list { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+  .opt { position: relative; display: flex; flex-direction: column; background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-width: 0; }
+  .opt-head { position: relative; display: block; flex: 1; padding: 12px 16px 14px; cursor: pointer; }
+  .opt-head input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt .ol { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 13px; color: var(--ink-2); }
+  .opt .rec { font-size: 11px; color: var(--ink); border: 1px solid var(--rule); padding: 0 5px; white-space: nowrap; }
+  .opt .on { font-size: 18px; letter-spacing: -0.012em; margin-top: 4px; line-height: 1.25; }
+  .opt .ot { font-size: 13px; color: var(--ink-2); margin-top: 4px; max-width: 74ch; }
+  .opt-head:hover { background: var(--chrome); }
+  .opt.picked .opt-head { background: var(--ink); color: var(--paper); }
+  .opt.picked .ol, .opt.picked .ot { color: #D6D6D9; }
+  .opt.picked .rec { color: var(--paper); border-color: var(--paper); }
+  .opt-head:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .opts.stack .opt-head { display: grid; grid-template-columns: minmax(0, 230px) minmax(0, 1fr); column-gap: 28px; align-items: start; border-bottom: 1px solid var(--rule); }
+  .opts.stack .opt-head .ol { grid-column: 1; grid-row: 1; }
+  .opts.stack .opt-head .on { grid-column: 1; grid-row: 2; }
+  .opts.stack .opt-head .ot { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; align-self: center; }
+
+  .pv { position: relative; padding: 22px; background: var(--desk); border-bottom: 1px solid var(--rule); overflow: hidden; min-width: 0; }
+  .opts.stack .pv { border-bottom: 0; padding: 26px 32px 22px; }
+  .opts.grid .pv { padding: 16px; }
+  .pv-hint { margin-top: 10px; font-size: 11px; color: #4A4A4F; }
+  .figure img { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.24); }
+  .figure figcaption { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .figure figcaption b { font-weight: 400; color: var(--ink); }
+  .stat { display: flex; align-items: baseline; gap: 12px; margin-top: 4px; }
+  .stat b { font-weight: 400; font-size: 56px; line-height: 1; letter-spacing: -0.04em; color: var(--ink); }
+
+  /* A small Mac window: the native shell around each heart */
+  .mw { position: relative; background: var(--paper); border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.24); }
+  .mw-tb { position: relative; z-index: 300; height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: rgba(246, 246, 246, 0.97); border-bottom: 0.5px solid rgba(0, 0, 0, 0.14); font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+  .mw-tb i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #DADADC; }
+  .mw-tb .t { margin-left: 8px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
+  .mw-tb .r { margin-left: auto; display: flex; gap: 14px; }
+  .mw-tb .dim { color: var(--ink-3); }
+  .mw-body { position: relative; height: 430px; overflow: hidden; }
+  .mw.small .mw-tb { height: 20px; gap: 4px; padding: 0 8px; font-size: 10px; }
+  .mw.small .mw-tb i { width: 7px; height: 7px; }
+  .mw.small .mw-body { height: 200px; }
+
+  /* The fan */
+  .fan { position: absolute; inset: 0; background: var(--paper); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .fan:active { cursor: grabbing; }
+  .fan:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .fan-cap { position: absolute; left: 26px; top: 22px; z-index: 250; max-width: 46%; pointer-events: none; }
+  .fan-cap .nm { font-size: 38px; line-height: 1.02; letter-spacing: -0.035em; }
+  .fan-cap .nm.ph { color: var(--ink-2); }
+  .fan-cap .mt { margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .fan-count { position: absolute; right: 26px; top: 26px; z-index: 250; font-size: 12px; color: var(--ink-2); pointer-events: none; }
+  .fan-card { position: absolute; left: calc(50% - 46px); bottom: 30px; width: 92px; height: 154px; background: var(--c); color: var(--on); transform-origin: 50% 340px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 8px 18px rgba(0, 0, 0, 0.12); }
+  .fan-card::before { content: ""; position: absolute; inset: 6px 6px 30px; border: 1px solid currentColor; opacity: 0.3; }
+  .fan-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 24px; border-top: 1px dashed currentColor; opacity: 0.45; }
+  .fan-card .fc-no { position: absolute; left: 12px; top: 11px; font-size: 10px; }
+  .fan-card .fc-stub { position: absolute; left: 12px; bottom: 6px; font-size: 9px; opacity: 0.85; }
+
+  /* The drawer */
+  .drawer { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); background: var(--chrome); }
+  .dw-list { overflow-y: auto; padding: 6px 30px 30px 22px; scrollbar-width: thin; }
+  .dw-day { margin-top: 14px; }
+  .dw-tab { display: inline-flex; gap: 8px; align-items: baseline; margin-left: 16px; padding: 4px 10px 3px; background: var(--paper); border: 1px solid var(--rule-soft); border-bottom: 0; font-size: 11px; color: var(--ink-2); }
+  .dw-tab b { font-weight: 400; color: var(--ink); }
+  .dw-cards { display: flex; flex-direction: column; }
+  .dw-card { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: center; height: 34px; padding: 0 12px; background: var(--c); color: var(--on); border: 0; font: 12px var(--font); text-align: left; cursor: pointer; box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.06); transition: transform 220ms cubic-bezier(.2, .8, .2, 1); }
+  .dw-card:hover, .dw-card:focus-visible { transform: translateX(10px); outline: none; z-index: 2; }
+  .dw-card.out { transform: translateX(28px); z-index: 3; box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2), 0 6px 14px rgba(0, 0, 0, 0.16); }
+  .dw-card .no { opacity: 0.8; }
+  .dw-card .tt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dw-card .tt.ph { opacity: 0.75; }
+  .dw-card .pl { opacity: 0.75; font-size: 11px; }
+  .dw-side { position: relative; border-left: 1px solid var(--rule-soft); background: var(--paper); padding: 16px; overflow: hidden; }
+
+  /* The wall */
+  .wall { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--paper); }
+  .wl-bar { flex: none; display: flex; align-items: center; gap: 16px; padding: 9px 14px; font-size: 12px; color: var(--ink-2); }
+  .wl-bar b { font-weight: 400; color: var(--ink); font-size: 13px; }
+  .wl-bar .dim { color: var(--ink-3); }
+  .wl-dots { display: flex; gap: 5px; margin-left: auto; }
+  .wl-dots i { width: 11px; height: 11px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+  .wl-rows { flex: 1; display: flex; flex-direction: column; gap: 3px; padding: 0 3px 3px; min-height: 0; }
+  .wl-row { display: flex; gap: 3px; flex: 1 1 0; min-height: 0; }
+  .wl-row.first { flex-grow: 1.9; }
+  .wl-c { position: relative; flex: 1 1 0; min-width: 0; background: var(--c); color: var(--on); border: 0; padding: 0; cursor: pointer; overflow: hidden; text-align: left; font: inherit; transition: flex-grow 360ms cubic-bezier(.2, .8, .2, 1); }
+  .wl-c:hover, .wl-c:focus-visible { flex-grow: 2.6; outline: none; }
+  .wl-c .n { position: absolute; left: 9px; top: 7px; font-size: 10px; opacity: 0.8; }
+  .wl-c .t { position: absolute; left: 9px; right: 9px; bottom: 8px; font-size: 13px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wl-c .t.ph { opacity: 0.72; }
+  .wl-c .m { position: absolute; left: 9px; right: 9px; bottom: 26px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 200ms; }
+  .wl-row.first .wl-c .t { font-size: 21px; letter-spacing: -0.02em; bottom: 10px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .wl-row.first .wl-c .m { bottom: 62px; }
+  .wl-c:hover .m, .wl-c:focus-visible .m { opacity: 0.85; }
+
+  /* The specimen card */
+  .spec { display: grid; grid-template-columns: 46% 54%; width: min(660px, 100%); height: 320px; margin: 0 auto; background: var(--paper); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16); }
+  .sp-src { position: relative; overflow: hidden; }
+  .mosaic { position: absolute; inset: -18px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); filter: blur(12px); }
+  .sp-chip { position: absolute; left: 50%; top: 50%; width: 46%; transform: translate(-50%, -54%); background: var(--paper); padding: 6px 6px 0; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22); }
+  .sp-sw { aspect-ratio: 1 / 1.05; }
+  .sp-lb { font-size: 11px; padding: 6px 2px 7px; }
+  .sp-cap { position: absolute; left: 12px; bottom: 9px; font-size: 10px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+  .sp-form { display: flex; flex-direction: column; padding: 18px 20px 16px; min-width: 0; }
+  .sp-no { font-size: 44px; line-height: 0.95; letter-spacing: -0.04em; }
+  .sp-nm { font-size: 20px; margin-top: 8px; letter-spacing: -0.01em; }
+  .sp-nm.ph { color: var(--ink-2); }
+  .sp-rows { display: grid; grid-template-columns: 56px minmax(0, 1fr); margin-top: 12px; font-size: 11px; border-bottom: 1px solid var(--rule-soft); }
+  .sp-rows dt { color: var(--ink-2); padding: 3px 0; border-top: 1px solid var(--rule-soft); }
+  .sp-rows dd { padding: 3px 0; border-top: 1px solid var(--rule-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sp-note { margin-top: auto; padding-top: 10px; font-size: 11px; line-height: 18px; color: var(--ink-2); background: repeating-linear-gradient(transparent 0 17px, var(--rule-soft) 17px 18px); background-origin: content-box; background-clip: content-box; min-height: 54px; }
+  .sp-note.ph { color: var(--ink-3); }
+  .spec.mini { grid-template-columns: 1fr; grid-template-rows: 142px auto; width: 100%; height: 100%; box-shadow: none; }
+  .spec.mini .sp-no { font-size: 32px; }
+  .spec.mini .sp-nm { font-size: 16px; }
+  .spec.mini .sp-form { padding: 12px 2px 4px; }
+  .spec.mini .sp-chip { width: 40%; }
+
+  /* Opening a color: the flip, and the full window */
+  .desk-c { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; }
+  .flip { width: 236px; height: 322px; perspective: 1400px; cursor: pointer; outline: none; }
+  .flip:focus-visible .fl-in { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .fl-in { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 720ms cubic-bezier(.3, .7, .2, 1); }
+  .flip.on .fl-in { transform: rotateY(180deg); }
+  .fl-f, .fl-b { position: absolute; inset: 0; display: flex; flex-direction: column; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18); }
+  .fl-f { background: var(--c); color: var(--on); padding: 14px 16px 16px; font-size: 11px; }
+  .fl-f .fl-nm { margin-top: auto; font-size: 32px; line-height: 1; letter-spacing: -0.035em; }
+  .fl-f .fl-mt { margin-top: 8px; opacity: 0.85; }
+  .fl-b { background: var(--paper); transform: rotateY(180deg); padding: 14px 16px 14px; font-size: 11px; }
+  .fl-b .fl-bh { font-size: 13px; }
+  .fl-b .sp-rows { margin-top: 8px; }
+  .fl-b .nb { display: grid; grid-template-columns: repeat(3, 22px); gap: 2px; margin-top: 10px; }
+  .fl-b .nb i { aspect-ratio: 1; }
+  .fl-b .nb i.me { box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--ink); }
+  .fw { position: absolute; inset: 0; background: var(--c); color: var(--on); }
+  .fw-no { position: absolute; left: 24px; top: 18px; font-size: 12px; opacity: 0.85; }
+  .fw-nm { position: absolute; left: 22px; top: 42px; font-size: 76px; line-height: 0.95; letter-spacing: -0.045em; }
+  .fw-band { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; padding: 12px 24px 16px; background: var(--paper); color: var(--ink); font-size: 12px; border-top: 3px solid var(--ink); transform: translateY(102%); transition: transform 520ms cubic-bezier(.2, .8, .2, 1) 120ms; }
+  .fw.in .fw-band { transform: none; }
+  .fw-band .k { display: block; font-size: 10px; color: var(--ink-2); padding-bottom: 3px; margin-bottom: 4px; border-bottom: 1px solid var(--rule-soft); }
+
+  /* What the archive opens on */
+  .hm { position: absolute; inset: 0; padding: 8px 8px 0; background: var(--paper); overflow: hidden; }
+  .hm-d { font-size: 9px; color: var(--ink-2); margin: 6px 0 3px; }
+  .hm-d:first-child { margin-top: 0; }
+  .hm-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 2px; }
+  .hm-grid i { aspect-ratio: 1; }
+  .hm-row { display: flex; gap: 2px; height: 20px; }
+  .hm-row.big { height: 82px; }
+  .hm-c { position: relative; flex: 1 1 0; min-width: 0; background: var(--c); color: var(--on); }
+  .hm-c span { position: absolute; left: 4px; right: 4px; bottom: 3px; font-size: 8px; line-height: 1.15; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .hm-last { display: flex; flex-direction: column; gap: 2px; padding: 0; }
+  .hm-big { position: relative; flex: 1; background: var(--c); color: var(--on); }
+  .hm-big .n { position: absolute; left: 10px; top: 8px; font-size: 9px; opacity: 0.85; }
+  .hm-big .t { position: absolute; left: 10px; right: 10px; bottom: 22px; font-size: 18px; line-height: 1.05; letter-spacing: -0.02em; }
+  .hm-big .t.ph { opacity: 0.8; }
+  .hm-big .m { position: absolute; left: 10px; bottom: 8px; font-size: 9px; opacity: 0.85; }
+  .hm-strip { flex: none; height: 26px; display: flex; gap: 1px; }
+  .hm-strip i { flex: 1; }
+
+  /* Type */
+  .ty { width: 230px; height: 250px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16); }
+  .ty-a { display: flex; flex-direction: column; background: var(--paper); }
+  .ty-a .ty-sw { flex: 1; }
+  .ty-a .lb { padding: 10px 12px 12px; border-top: 1px solid var(--rule); }
+  .ty-a .nm { font-size: 18px; letter-spacing: -0.01em; }
+  .ty-a .mt { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--ink-2); }
+  .ty-b, .ty-c { position: relative; background: var(--c); color: var(--on); padding: 12px 14px; display: flex; flex-direction: column; font-size: 11px; }
+  .ty-b .nm { margin-top: auto; font-size: 50px; line-height: 0.92; letter-spacing: -0.05em; }
+  .ty-b .mt, .ty-c .mt { margin-top: 8px; opacity: 0.85; }
+  .ty-c .big { font-size: 104px; line-height: 0.82; letter-spacing: -0.06em; margin-top: 10px; }
+  .ty-c .of { opacity: 0.85; margin-top: 8px; }
+  .ty-c .nm { margin-top: auto; font-size: 17px; letter-spacing: -0.01em; }
+
+  /* Motion */
+  .mo { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; padding: 2px; background: var(--paper); }
+  .mo-row { display: flex; gap: 2px; flex: 1 1 0; min-height: 0; }
+  .mo-c { position: relative; flex: 1 1 0; min-width: 0; border: 0; padding: 0; background: var(--c); color: var(--on); cursor: pointer; overflow: visible; }
+  .mo-c .t { position: absolute; left: 5px; right: 5px; bottom: 4px; font-size: 9px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 200ms; }
+  .mo-answer .mo-c { transition: flex-grow 340ms cubic-bezier(.2, .8, .2, 1); }
+  .mo-answer .mo-c:hover, .mo-answer .mo-c:focus-visible { flex-grow: 2.6; outline: none; }
+  .mo-answer .mo-c:hover .t, .mo-answer .mo-c:focus-visible .t { opacity: 0.9; transition-delay: 140ms; }
+  .mo-alive .mo-c { animation: drift var(--d) ease-in-out infinite alternate; transition: scale 500ms cubic-bezier(.2, .8, .2, 1), box-shadow 500ms; }
+  .mo-alive .mo-c.up { scale: 1.16; z-index: 3; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28); }
+  .mo-alive .mo-c.up .t { opacity: 0.95; }
+  @keyframes drift { from { transform: translate(0, 0); } to { transform: translate(var(--x), var(--y)); } }
+  .mo-open { position: absolute; inset: 0; z-index: 5; background: var(--c); color: var(--on); padding: 12px 14px; cursor: pointer; transform-origin: 0 0; font-size: 10px; }
+  .mo-open .nm { font-size: 24px; line-height: 1; letter-spacing: -0.03em; margin-top: 6px; }
+  .mo-open .mt { margin-top: 6px; opacity: 0.85; }
+
+  /* Keeping a color */
+  .cm { position: relative; height: 230px; overflow: hidden; }
+  .cm .mw { position: absolute; left: 4%; top: 6%; width: 74%; }
+  .cm .mw-body { height: 180px; }
+  .cm-photo { position: absolute; inset: 0; background: #b3492f; cursor: crosshair; }
+  .cm-photo i { position: absolute; display: block; }
+  .cm-pal { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 3px; padding: 5px; background: var(--material); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 8px 0 0 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.2); }
+  .cm-pal i { width: 18px; height: 18px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+  .cm-pal i.new { animation: landed 900ms ease-out; }
+  @keyframes landed { 0% { box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--ink); } 100% { box-shadow: inset 0 0 0 1px var(--swatch-edge); } }
+  .cm-ring { position: absolute; left: 0; top: 0; z-index: 8; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(0, 0, 0, 0.35); transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
+  .cm-ring.on { opacity: 1; transition: opacity 160ms; }
+  .cm-ticket { position: absolute; left: 0; top: 0; z-index: 9; width: 26px; height: 34px; display: block; font-size: 8px; padding: 3px 4px; box-sizing: border-box; box-shadow: 0 0 0 1.5px var(--paper), 0 4px 10px rgba(0, 0, 0, 0.3); pointer-events: none; }
+  .cm-ticket::after { content: ""; position: absolute; left: 0; right: 0; bottom: 7px; border-top: 1px dashed currentColor; opacity: 0.6; }
+  .cm-bloom { position: absolute; left: 0; top: 0; z-index: 9; width: 96px; height: 96px; border-radius: 50%; box-shadow: 0 0 0 3px var(--paper), 0 8px 20px rgba(0, 0, 0, 0.25); pointer-events: none; }
+  .cm-play { margin-top: 10px; }
+
+  /* The desktop palette */
+  .dp-desk { position: relative; height: 230px; overflow: hidden; }
+  .dp-desk .mw { position: absolute; left: 4%; top: 7%; width: 72%; }
+  .dp-desk .mw-body { height: 176px; background: var(--chrome); }
+  .dp-art { position: absolute; left: 12%; top: 14%; width: 46%; height: 66%; background: var(--paper); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+  .dpx { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 3px; padding: 5px; background: var(--material); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 8px 0 0 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.2); }
+  .dpx-c { position: relative; border: 0; padding: 0; background: var(--c); color: var(--on); cursor: pointer; }
+  .dpx-strips .dpx-c { width: 6px; height: 22px; transition: width 220ms ease-out; }
+  .dpx-strips:hover .dpx-c, .dpx-strips:focus-within .dpx-c { width: 24px; }
+  .dpx-chips .dpx-c { width: 28px; height: 22px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06); transition: width 240ms cubic-bezier(.2, .8, .2, 1); text-align: left; overflow: hidden; }
+  .dpx-chips .dpx-c span { position: absolute; left: 4px; top: 3px; font-size: 8px; white-space: nowrap; }
+  .dpx-chips .dpx-c em { position: absolute; left: 4px; bottom: 2px; font-style: normal; font-size: 8px; white-space: nowrap; opacity: 0; transition: opacity 160ms; }
+  .dpx-chips:hover .dpx-c, .dpx-chips:focus-within .dpx-c { width: 98px; height: 26px; }
+  .dpx-chips:hover .dpx-c em, .dpx-chips:focus-within .dpx-c em { opacity: 0.85; transition-delay: 120ms; }
+  .dpx-fan { width: 70px; height: 150px; padding: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .dpx-fan .dpx-c { position: absolute; right: -10px; top: 60px; width: 54px; height: 30px; transform-origin: 140% 50%; transform: rotate(var(--a)); transition: transform 320ms cubic-bezier(.2, .8, .2, 1); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+  .dpx-fan:hover .dpx-c, .dpx-fan:focus-within .dpx-c { transform: rotate(var(--b)) translateX(-14px); }
+
+  /* The bar at the bottom */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 400; background: var(--paper); border-top: 1px solid var(--rule); }
+  .bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding-top: 12px; padding-bottom: 12px; }
+  .bar .count { font-size: 13px; }
+  .bar .status { font-size: 13px; color: var(--ink-2); }
+  .bar .btn.primary { background: var(--ink); color: var(--paper); }
+  .bar .grow { flex: 1; }
+  .btn { font-family: var(--font); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mo-alive .mo-c { animation: none; }
+    .fl-in, .fw-band, .wl-c, .dw-card, .mo-c, .dpx-c { transition: none; }
+  }
+  @media (max-width: 960px) {
+    .intro, .part-head, .item-head, .item-foot { grid-template-columns: 1fr; gap: 16px; }
+  }
+  @media (max-width: 760px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    .opts.grid { grid-template-columns: 1fr; }
+    .opts.stack .opt-head { grid-template-columns: 1fr; }
+    .opts.stack .opt-head .ot { grid-column: 1; grid-row: 3; margin-top: 4px; }
+    .drawer { grid-template-columns: 1fr; }
+    .dw-side { display: none; }
+    .top .links { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html">Palit</a>
+    <span class="where">Look and flow workshop. October 18, 2026.</span>
+    <span class="links"><a href="../journey/index.html">Prototype</a><a href="../system/index.html">Design system</a><a href="features.html">Feature workshop</a><a href="../history/index.html#plan">Dashboard</a></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Look and flow workshop</h1>
+    <div>
+      <blockquote>Not loving it right now - feels very stagnant and boring<cite>Noah, October 18</cite></blockquote>
+      <p>So before anything gets tested, this takes the look apart: what makes it stagnant, which way the archive (your dashboard) should go, what it opens on, how a color opens, the type, the motion, and the moment you keep a color. Every option is live and built from the same 33 colors; the recommended one is marked. Pick, add a note if you like, press “I'm done” and tell me in chat. Our process dashboard is built from the same system, so it follows whatever you pick here.</p>
+    </div>
+  </section>
+
+  <section class="part" id="now" aria-labelledby="now-h">
+    <div class="part-head">
+      <h2 id="now-h">Why it feels stagnant</h2>
+      <p>The archive as the prototype draws it today. It isn't short of color: the color is boxed in.</p>
+    </div>
+    <div id="items-now"></div>
+  </section>
+
+  <section class="part" id="archive" aria-labelledby="archive-h">
+    <div class="part-head">
+      <h2 id="archive-h">The archive, your dashboard</h2>
+      <p>Three directions, each taken from your own references, then what it opens on and how a color opens. They're all live: drag, scroll, point and click.</p>
+    </div>
+    <div id="items-archive"></div>
+  </section>
+
+  <section class="part" id="voice" aria-labelledby="voice-h">
+    <div class="part-head">
+      <h2 id="voice-h">Its voice</h2>
+      <p>Type and motion: what gives the same layout a personality.</p>
+    </div>
+    <div id="items-voice"></div>
+  </section>
+
+  <section class="part" id="keep" aria-labelledby="keep-h">
+    <div class="part-head">
+      <h2 id="keep-h">Keeping a color</h2>
+      <p>The moment you keep one, and where it waits on your desktop. Press Play to hear it with the chime.</p>
+    </div>
+    <div id="items-keep"></div>
+  </section>
+</main>
+
+<div class="bar" role="region" aria-label="Your picks">
+  <div class="wrap">
+    <span class="count num" id="count"></span>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="reset">Clear my picks</button>
+    <button type="button" class="btn" id="copy">Copy my picks</button>
+    <button type="button" class="btn primary" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+
+<script src="../system/sample.js"></script>
+<script src="../system/color.js"></script>
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI;
+  var el = U.el, no = U.no, pad = U.pad;
+  function $(id) { return document.getElementById(id); }
+  var HUB = "../history/index.html#";
+  var REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function observe(node, fn, threshold) {
+    if (!("IntersectionObserver" in window)) { fn(true); return; }
+    new IntersectionObserver(function (es) { es.forEach(function (e) { fn(e.isIntersecting); }); }, { threshold: threshold || 0.4 }).observe(node);
+  }
+
+  /* The colors: the 28 sample captures, plus the five the prototype keeps on October 18. */
+  function lum(hex) {
+    var v = [1, 3, 5].map(function (i) { var c = parseInt(hex.slice(i, i + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  var INK = "#1d1d1f", INK_L = lum(INK);
+  // Text set on a color: near-black or white, whichever has more contrast with it.
+  function inkOn(hex) { var l = lum(hex); return 1.05 / (l + 0.05) >= (l + 0.05) / (INK_L + 0.05) ? "#ffffff" : INK; }
+  function shortDay(iso) { return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+  function prep(c) {
+    var o = PC.oklch(c.hex);
+    return { number: c.number, hex: c.hex, name: c.name, title: U.title(c), place: U.place(c), src: U.sourceTitle(c), day: U.day(c.capturedAt), at: c.capturedAt,
+      neighbors: c.neighbors, note: null, L: o.L, C: o.C, h: o.h, on: inkOn(c.hex) };
+  }
+  var CAPS = S.captures.map(prep);
+  var STOOP = [["#2d696e", "Childhood home", "Teal all the way into the shadow."], ["#2b3036"], ["#b3492f"], ["#e9a15a"], ["#6e8f5e"]];
+  var TODAY = STOOP.map(function (s, i) {
+    var o = PC.oklch(s[0]);
+    return { number: 29 + i, hex: s[0], name: s[1] || null, title: s[1] || PC.placeholder(s[0], "stoopnotes.studio"), place: "stoopnotes.studio", src: "Bergen Street, golden hour",
+      day: "October 18", at: "2026-10-18T14:2" + (2 + i) + ":00-04:00", neighbors: null, note: s[2] || null, L: o.L, C: o.C, h: o.h, on: inkOn(s[0]) };
+  });
+  var ALL = CAPS.concat(TODAY);
+  var NEWEST = ALL.slice().sort(function (a, b) { return b.number - a.number; });
+  var HUE = ALL.slice().sort(function (a, b) {
+    var an = a.C < 0.03, bn = b.C < 0.03;
+    if (an !== bn) return an ? 1 : -1;
+    return an ? b.L - a.L : a.h - b.h;
+  });
+  var POOL = CAPS[3];   // No. 004, Pool tile, kept from a photo at McCarren pool
+  function label(c) { return no(c.number) + ", " + (c.name || "Unnamed") + ", " + c.hex; }
+  function vars(c) { return "--c:" + c.hex + ";--on:" + c.on; }
+  function groupByDay(list) {
+    var out = [];
+    list.forEach(function (c) { var g = out[out.length - 1]; if (g && g.day === c.day) g.list.push(c); else out.push({ day: c.day, list: [c] }); });
+    return out;
+  }
+  function win(title, kids, opts) {
+    opts = opts || {};
+    return el("div", { class: "mw" + (opts.small ? " small" : "") + (opts.cls ? " " + opts.cls : "") }, [
+      el("div", { class: "mw-tb" }, [el("i"), el("i"), el("i"), el("span", { class: "t", text: title }), opts.right ? el("span", { class: "r" }, opts.right) : null]),
+      el("div", { class: "mw-body", style: opts.h ? "height:" + opts.h + "px" : null }, kids)
+    ]);
+  }
+
+  /* The chime from the foundations workshop (W10): two soft sines, only when you press Play. */
+  var actx = null;
+  function chime() {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      var t = actx.currentTime;
+      [[1318.5, 0.07], [1975.5, 0.025]].forEach(function (p) {
+        var o = actx.createOscillator(), g = actx.createGain();
+        o.type = "sine"; o.frequency.value = p[0];
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(p[1], t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.25);
+      });
+    } catch (e) {}
+  }
+
+  /* ---------- The archive: the fan ---------- */
+  function fanArchive() {
+    var list = HUE, STEP = 6.4, pos = list.indexOf(TODAY[0]);
+    var stage = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "Your colors fanned by hue. The arrow keys turn the fan." });
+    var nm = el("p", { class: "nm" }), mt = el("p", { class: "mt" });
+    stage.appendChild(el("div", { class: "fan-cap", "aria-live": "polite" }, [nm, mt]));
+    stage.appendChild(el("p", { class: "fan-count", text: list.length + " colors, by hue" }));
+    var cards = list.map(function (c) {
+      var d = el("div", { class: "fan-card", style: vars(c), role: "img", "aria-label": label(c) }, [
+        el("span", { class: "fc-no num", text: pad(c.number) }),
+        el("span", { class: "fc-stub", text: shortDay(c.at) })
+      ]);
+      stage.appendChild(d);
+      return d;
+    });
+    function place(p, ease) {
+      cards.forEach(function (d, i) {
+        var off = i - p, a = off * STEP, top = Math.abs(off) < 0.5;
+        d.style.transition = ease && !REDUCED ? "transform 320ms cubic-bezier(.2,.8,.2,1), opacity 320ms" : "none";
+        d.style.transform = "rotate(" + a.toFixed(2) + "deg)" + (top ? " translateY(-30px)" : "");
+        d.style.opacity = Math.abs(a) > 82 ? "0" : "1";
+        d.style.zIndex = String(200 - Math.round(Math.abs(off) * 2));
+      });
+      var c = list[Math.round(p)];
+      nm.textContent = c.title; nm.className = "nm" + (c.name ? "" : " ph");
+      mt.textContent = no(c.number) + ", " + c.place + ", " + c.day;
+    }
+    var drag = null, acc = 0;
+    stage.addEventListener("pointerdown", function (e) { drag = { x: e.clientX, p: pos }; stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener("pointermove", function (e) { if (!drag) return; pos = clamp(drag.p - (e.clientX - drag.x) / 22, 0, list.length - 1); place(pos, false); });
+    function end() { if (!drag) return; drag = null; pos = Math.round(pos); place(pos, true); }
+    stage.addEventListener("pointerup", end);
+    stage.addEventListener("pointercancel", end);
+    stage.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(acc) < 36) return;
+      pos = clamp(Math.round(pos) + (acc > 0 ? 1 : -1), 0, list.length - 1); acc = 0; place(pos, true);
+    }, { passive: false });
+    stage.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault(); pos = clamp(Math.round(pos) + (e.key === "ArrowRight" ? 1 : -1), 0, list.length - 1); place(pos, true);
+    });
+    place(pos, false);
+    return el("div", null, [win("Archive", [stage], { right: [el("span", { text: "By hue" }), el("span", { class: "dim", text: "By day" })] }), el("p", { class: "pv-hint", text: "Drag, scroll or use the arrow keys to turn the fan." })]);
+  }
+
+  /* ---------- The archive: the drawer ---------- */
+  function drawerArchive() {
+    var listBox = el("div", { class: "dw-list" }), side = el("div", { class: "dw-side" }), current = null;
+    groupByDay(NEWEST).forEach(function (g) {
+      var cards = el("div", { class: "dw-cards" });
+      g.list.forEach(function (c) {
+        var b = el("button", { type: "button", class: "dw-card", style: vars(c), "aria-label": label(c) }, [
+          el("span", { class: "no num", text: pad(c.number) }),
+          el("span", { class: "tt" + (c.name ? "" : " ph"), text: c.title }),
+          el("span", { class: "pl", text: c.place })
+        ]);
+        b.addEventListener("click", function () { pull(c, b); });
+        cards.appendChild(b);
+      });
+      listBox.appendChild(el("div", { class: "dw-day" }, [el("span", { class: "dw-tab" }, [el("b", { text: g.day }), g.list.length + (g.list.length === 1 ? " color" : " colors")]), cards]));
+    });
+    function pull(c, b) {
+      if (current) current.classList.remove("out");
+      current = b; b.classList.add("out");
+      side.textContent = "";
+      side.appendChild(specimenCard(c, true));
+    }
+    pull(NEWEST[4], listBox.querySelectorAll(".dw-card")[4]);
+    return el("div", null, [win("Archive", [el("div", { class: "drawer" }, [listBox, side])], { right: [el("span", { text: "By day" }), el("span", { class: "dim", text: "By place" })] }), el("p", { class: "pv-hint", text: "Run down the drawer, and click a card to pull it out." })]);
+  }
+
+  /* ---------- The archive: the wall ---------- */
+  function wallArchive() {
+    var rows = [NEWEST.slice(0, 5)];
+    for (var i = 5; i < NEWEST.length; i += 7) rows.push(NEWEST.slice(i, i + 7));
+    var box = el("div", { class: "wl-rows" });
+    rows.forEach(function (r, ri) {
+      box.appendChild(el("div", { class: "wl-row" + (ri === 0 ? " first" : "") }, r.map(function (c) {
+        return el("button", { type: "button", class: "wl-c", style: vars(c), "aria-label": label(c) }, [
+          el("span", { class: "n num", text: pad(c.number) }),
+          el("span", { class: "m", text: c.place + ", " + c.day }),
+          el("span", { class: "t" + (c.name ? "" : " ph"), text: c.title })
+        ]);
+      })));
+    });
+    var dots = U.FAMILIES.filter(function (f) { return f[0] !== "all"; }).map(function (f) { return el("i", { style: "background:" + U.REP[f[0]], title: f[1] }); });
+    var bar = el("div", { class: "wl-bar" }, [el("b", { text: ALL.length + " colors" }), el("span", { text: "Newest first" }), el("span", { class: "dim", text: "By hue" }), el("span", { class: "wl-dots", "aria-hidden": "true" }, dots)]);
+    return el("div", null, [win("Archive", [el("div", { class: "wall" }, [bar, box])]), el("p", { class: "pv-hint", text: "Point at any color. The row makes room for it." })]);
+  }
+
+  /* ---------- A color's specimen card, used by the drawer and question 4 ---------- */
+  function mosaic(c) {
+    var nb = c.neighbors || ["#b3492f", "#b3492f", "#2b3036", "#b3492f", "#b3492f", "#ece2cf", "#ece2cf", "#b3492f"];
+    var cells = [nb[0], nb[1], nb[2], nb[3], c.hex, nb[4], nb[5], nb[6], nb[7]];
+    return el("div", { class: "mosaic", "aria-hidden": "true" }, cells.map(function (h) { return el("i", { style: "background:" + h }); }));
+  }
+  function specimenCard(c, mini) {
+    var rows = [["Found", c.place + (c.src ? ", " + c.src : "")], ["Kept", c.day + ", 2026"], ["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)], ["OKLCH", PC.displayOklch(c.hex)]];
+    var dl = el("dl", { class: "sp-rows" });
+    rows.forEach(function (r) { dl.appendChild(el("dt", { text: r[0] })); dl.appendChild(el("dd", { class: "num", text: r[1] })); });
+    return el("div", { class: "spec" + (mini ? " mini" : "") }, [
+      el("div", { class: "sp-src" }, [
+        mosaic(c),
+        el("div", { class: "sp-chip" }, [el("div", { class: "sp-sw", style: "background:" + c.hex, role: "img", "aria-label": label(c) }), el("p", { class: "sp-lb num", text: no(c.number) })]),
+        el("p", { class: "sp-cap", text: "Where you found it" })
+      ]),
+      el("div", { class: "sp-form" }, [
+        el("p", { class: "sp-no num", text: no(c.number) }),
+        el("p", { class: "sp-nm" + (c.name ? "" : " ph"), text: c.title }),
+        dl,
+        el("p", { class: "sp-note" + (c.note ? "" : " ph"), text: c.note || "Anything you want to remember about it" })
+      ])
+    ]);
+  }
+
+  /* ---------- What the archive opens on ---------- */
+  function homeAll() {
+    var g = el("div", { class: "hm-grid" }, NEWEST.map(function (c) { return el("i", { style: "background:" + c.hex, title: c.title }); }));
+    return win("Archive", [el("div", { class: "hm" }, [el("p", { class: "hm-d", text: ALL.length + " colors, newest first" }), g])], { small: true });
+  }
+  function homeToday() {
+    var box = el("div", { class: "hm" });
+    groupByDay(NEWEST).slice(0, 5).forEach(function (g, gi) {
+      box.appendChild(el("p", { class: "hm-d", text: (gi === 0 ? "Today, " : "") + g.day + ", " + g.list.length + (g.list.length === 1 ? " color" : " colors") }));
+      box.appendChild(el("div", { class: "hm-row" + (gi === 0 ? " big" : "") }, g.list.map(function (c) {
+        return el("div", { class: "hm-c", style: vars(c), title: c.title }, gi === 0 ? [el("span", { text: c.title })] : []);
+      })));
+    });
+    return win("Archive", [box], { small: true });
+  }
+  function homeLast() {
+    var c = NEWEST[0];
+    var big = el("div", { class: "hm-big", style: vars(c) }, [el("span", { class: "n num", text: no(c.number) }), el("span", { class: "t" + (c.name ? "" : " ph"), text: c.title }), el("span", { class: "m", text: c.place + ", " + c.day })]);
+    var strip = el("div", { class: "hm-strip" }, NEWEST.slice(1).map(function (x) { return el("i", { style: "background:" + x.hex }); }));
+    return win("Archive", [el("div", { class: "hm hm-last" }, [big, strip])], { small: true });
+  }
+
+  /* ---------- Opening a color ---------- */
+  function flipCard() {
+    var c = POOL, dl = el("dl", { class: "sp-rows" });
+    [["Found", c.place + ", " + c.src], ["Kept", c.day + ", 2026"], ["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)], ["OKLCH", PC.displayOklch(c.hex)]].forEach(function (r) {
+      dl.appendChild(el("dt", { text: r[0] })); dl.appendChild(el("dd", { class: "num", text: r[1] }));
+    });
+    var nb = c.neighbors, cells = [nb[0], nb[1], nb[2], nb[3], c.hex, nb[4], nb[5], nb[6], nb[7]];
+    var front = el("span", { class: "fl-f", style: vars(c) }, [el("span", { class: "num", text: no(c.number) }), el("span", { class: "fl-nm", text: c.title }), el("span", { class: "fl-mt", text: c.src + ", " + c.day })]);
+    var back = el("span", { class: "fl-b" }, [
+      el("span", { class: "fl-bh", text: no(c.number) + ", " + c.title }), dl,
+      el("span", { class: "nb", "aria-hidden": "true" }, cells.map(function (h, i) { return el("i", { class: i === 4 ? "me" : null, style: "background:" + h }); })),
+      el("span", { class: "sp-note ph", text: "Anything you want to remember about it" })
+    ]);
+    var card = el("div", { class: "flip", role: "button", tabindex: "0", "aria-pressed": "false", "aria-label": "Flip the card for " + c.title }, [el("span", { class: "fl-in" }, [front, back])]);
+    function flip() { var on = card.classList.toggle("on"); card.setAttribute("aria-pressed", String(on)); }
+    card.addEventListener("click", flip);
+    card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    return el("div", { class: "desk-c" }, [card, el("p", { class: "pv-hint", text: "Click the card to flip it." })]);
+  }
+  function specimenOpen() { return el("div", { class: "desk-c" }, [specimenCard(POOL)]); }
+  function fullWindow() {
+    var c = POOL;
+    var band = el("div", { class: "fw-band" }, [["Found", c.src + ", " + c.place], ["Kept", c.day + ", 2026"], ["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)]].map(function (r) {
+      return el("div", null, [el("span", { class: "k", text: r[0] }), el("span", { class: "num", text: r[1] })]);
+    }));
+    var body = el("div", { class: "fw", style: vars(c), role: "img", "aria-label": label(c) }, [el("p", { class: "fw-no num", text: no(c.number) }), el("p", { class: "fw-nm", text: c.title }), band]);
+    observe(body, function (vis) { if (vis) body.classList.add("in"); });
+    return el("div", null, [win(c.title, [body], { h: 320 }), el("p", { class: "pv-hint", text: "The label band slides up as the color opens." })]);
+  }
+
+  /* ---------- Type ---------- */
+  function typeQuiet() {
+    var c = POOL;
+    return el("div", { class: "desk-c" }, [el("div", { class: "ty ty-a" }, [el("div", { class: "ty-sw", style: "background:" + c.hex, role: "img", "aria-label": label(c) }),
+      el("div", { class: "lb" }, [el("p", { class: "nm", text: c.title }), el("p", { class: "mt" }, [el("span", { class: "num", text: no(c.number) }), el("span", { text: c.src })])])])]);
+  }
+  function typeName() {
+    var c = POOL;
+    return el("div", { class: "desk-c" }, [el("div", { class: "ty ty-b", style: vars(c) }, [el("p", { class: "num", text: no(c.number) }), el("p", { class: "nm", text: c.title }), el("p", { class: "mt", text: c.src + ", " + c.day })])]);
+  }
+  function typeNumber() {
+    var c = POOL;
+    return el("div", { class: "desk-c" }, [el("div", { class: "ty ty-c", style: vars(c) }, [el("p", { class: "big num", text: pad(c.number) }), el("p", { class: "of", text: "of " + ALL.length + " kept" }), el("p", { class: "nm", text: c.title }), el("p", { class: "mt", text: c.src + ", " + c.day })])]);
+  }
+
+  /* ---------- Motion ---------- */
+  function motionDemo(mode) {
+    var list = NEWEST.slice(0, 12), stage = el("div", { class: "mo mo-" + mode }), tiles = [], open = null;
+    [list.slice(0, 4), list.slice(4, 8), list.slice(8, 12)].forEach(function (r) {
+      stage.appendChild(el("div", { class: "mo-row" }, r.map(function (c) {
+        var b = el("button", { type: "button", class: "mo-c", style: vars(c) + ";--d:" + (5 + Math.random() * 5).toFixed(1) + "s;--x:" + (Math.random() * 3 - 1.5).toFixed(1) + "px;--y:" + (Math.random() * 3 - 1.5).toFixed(1) + "px", "aria-label": label(c) }, [el("span", { class: "t", text: c.title })]);
+        b.addEventListener("click", function () { show(c, b); });
+        tiles.push(b);
+        return b;
+      })));
+    });
+    function show(c, b) {
+      if (open) { hide(); return; }
+      open = el("div", { class: "mo-open", style: vars(c) }, [el("p", { class: "num", text: no(c.number) }), el("p", { class: "nm", text: c.title }), el("p", { class: "mt", text: c.place + ", " + c.day })]);
+      open.addEventListener("click", hide);
+      stage.appendChild(open);
+      if (mode !== "still" && !REDUCED) {
+        var s = stage.getBoundingClientRect(), r = b.getBoundingClientRect();
+        var from = "translate(" + (r.left - s.left) + "px," + (r.top - s.top) + "px) scale(" + (r.width / s.width).toFixed(3) + "," + (r.height / s.height).toFixed(3) + ")";
+        open.animate([{ transform: from }, { transform: "none" }], { duration: 320, easing: "cubic-bezier(.2,.8,.2,1)" });
+        Array.prototype.forEach.call(open.children, function (k) { k.animate([{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 1 }], { duration: 360 }); });
+        open._from = from;
+      }
+    }
+    function hide() {
+      var o = open; open = null;
+      if (o._from && !REDUCED) o.animate([{ transform: "none" }, { transform: o._from }], { duration: 260, easing: "cubic-bezier(.4,0,.6,1)" }).onfinish = function () { o.remove(); };
+      else o.remove();
+    }
+    if (mode === "alive" && !REDUCED) {
+      var timer = null;
+      observe(stage, function (vis) {
+        if (vis && !timer) timer = setInterval(function () {
+          var t = tiles[Math.floor(Math.random() * tiles.length)];
+          t.classList.add("up"); setTimeout(function () { t.classList.remove("up"); }, 1700);
+        }, 3200);
+        if (!vis && timer) { clearInterval(timer); timer = null; }
+      }, 0.2);
+    }
+    var hints = { still: "Click a color, then click it again.", answer: "Point at the colors, then click one.", alive: "Watch for a moment, then click one." };
+    return el("div", null, [win("Archive", [stage], { small: true }), el("p", { class: "pv-hint", text: hints[mode] })]);
+  }
+
+  /* ---------- The moment you keep a color ---------- */
+  var PHOTO = [["#e9a15a", 0, 0, 100, 9], ["#2b3036", 10, 18, 22, 30], ["#2d696e", 46, 22, 24, 62, "door"], ["#ece2cf", 0, 86, 100, 14], ["#6e8f5e", 8, 66, 20, 18], ["#ece2cf", 44, 18, 28, 4]];
+  function capturePhoto() {
+    return el("div", { class: "cm-photo" }, PHOTO.map(function (p) { return el("i", { class: p[5] || null, style: "background:" + p[0] + ";left:" + p[1] + "%;top:" + p[2] + "%;width:" + p[3] + "%;height:" + p[4] + "%" }); }));
+  }
+  function captureDemo(mode) {
+    var desk = el("div", { class: "cm" }), photo = capturePhoto();
+    var pal = el("div", { class: "cm-pal", "aria-hidden": "true" }, ["#c4552d", "#5b3a63", "#f3d9cf", "#2f5d62"].map(function (h) { return el("i", { style: "background:" + h }); }));
+    var ring = el("span", { class: "cm-ring", "aria-hidden": "true" });
+    desk.appendChild(win("Bergen Street, golden hour", [photo], { small: true }));
+    desk.appendChild(pal);
+    desk.appendChild(ring);
+    var busy = false, played = false;
+    function tr(x, y, s) { return "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) translate(-50%,-50%) scale(" + s + ")"; }
+    async function run(sound) {
+      if (busy) return;
+      busy = true;
+      var old = pal.querySelector(".new"); if (old) old.remove();
+      var d = desk.getBoundingClientRect(), door = photo.querySelector(".door").getBoundingClientRect(), p = pal.getBoundingClientRect();
+      var x = door.left - d.left + door.width / 2, y = door.top - d.top + door.height * 0.42;
+      var tx = p.left - d.left + p.width / 2, ty = p.top - d.top + 12;
+      ring.style.transform = tr(x, y, 1); ring.style.left = "0"; ring.style.top = "0";
+      ring.classList.add("on");
+      await sleep(REDUCED ? 100 : 650);
+      if (sound) chime();
+      if (mode === "ring" || REDUCED) {
+        if (!REDUCED) ring.animate([{ transform: tr(x, y, 1), opacity: 1 }, { transform: tr(x, y, 1.9), opacity: 0 }], { duration: 560, easing: "ease-out" });
+        await sleep(280);
+      } else if (mode === "ticket") {
+        ring.classList.remove("on");
+        var t = el("span", { class: "cm-ticket num", style: "background:#2d696e;color:#fff" }, ["029"]);
+        desk.appendChild(t);
+        await t.animate([{ transform: tr(x, y, 0) }, { transform: tr(x, y - 22, 1), offset: 0.28 }, { transform: tr(x, y - 22, 1), offset: 0.5 }, { transform: tr(tx, ty, 0.55) }], { duration: 980, easing: "cubic-bezier(.3,.7,.3,1)", fill: "forwards" }).finished;
+        t.remove();
+      } else {
+        ring.classList.remove("on");
+        var b = el("span", { class: "cm-bloom", style: "background:#2d696e" });
+        desk.appendChild(b);
+        await b.animate([{ transform: tr(x, y, 0.06) }, { transform: tr(x, y, 1), offset: 0.34 }, { transform: tr(x, y, 1), offset: 0.48 }, { transform: tr(tx, ty, 0.12) }], { duration: 980, easing: "cubic-bezier(.3,.7,.3,1)", fill: "forwards" }).finished;
+        b.remove();
+      }
+      ring.classList.remove("on");
+      var slot = el("i", { class: "new", style: "background:#2d696e" });
+      pal.insertBefore(slot, pal.firstChild);
+      await sleep(1200);
+      busy = false;
+    }
+    var play = el("button", { type: "button", class: "btn cm-play", text: "Play" });
+    play.addEventListener("click", function () { run(true); });
+    observe(desk, function (vis) { if (vis && !played) { played = true; setTimeout(function () { run(false); }, 500); } }, 0.6);
+    return el("div", null, [desk, play]);
+  }
+
+  /* ---------- The desktop palette ---------- */
+  function paletteDemo(mode) {
+    var list = NEWEST.slice(0, mode === "fan" ? 6 : 7), n = list.length;
+    var pal = el("div", { class: "dpx dpx-" + mode, role: "toolbar", "aria-label": "Desktop palette" }, list.map(function (c, i) {
+      var k = i - (n - 1) / 2;
+      return el("button", { type: "button", class: "dpx-c", style: vars(c) + ";--a:" + (k * 7) + "deg;--b:" + (k * 17) + "deg", "aria-label": label(c) },
+        mode === "chips" ? [el("span", { class: "num", text: pad(c.number) }), el("em", { text: c.title })] : []);
+    }));
+    var desk = el("div", { class: "dp-desk" }, [win("Figma", [el("div", { class: "dp-art" })], { small: true }), pal]);
+    return el("div", null, [desk, el("p", { class: "pv-hint", text: "Point at the palette on the right." })]);
+  }
+
+  /* ---------- The questions. Noah's words are quoted exactly; everything else is Claude's draft. ---------- */
+  var ITEMS = [
+    { id: "stagnant", part: "now", layout: "list", multi: true, title: "What makes it feel stagnant?",
+      refs: [["A26", "e48"], ["A30", "e55"], ["A32", "e56"], ["Entry 93", "e93"]],
+      options: [
+        { k: "A", name: "Every color gets the same tile", text: "The same square for every color, each with its label underneath." },
+        { k: "B", name: "It reads like a document", text: "A header, two rows of filter chips, a grid and an inspector: a spreadsheet of swatches." },
+        { k: "C", name: "Nothing moves", text: "Opening, filtering and rediscovering swap what's on screen without showing what changed." },
+        { k: "D", name: "The type has no voice", text: "Past the name, everything is 11 to 13 point gray." },
+        { k: "E", name: "Where it came from is only text", text: "A link and a title, never the place itself." }
+      ],
+      why: ["Claude's read: ", "A, B and E. It isn't short of color: color fills 43% of the archive window. It's boxed into identical tiles under a document's header and filters, and the source is a line of text. Your references are all objects instead: a fan of colored stock, catalogue cards shown with their specimen, chips with the name set on the color."] },
+    { id: "archive", part: "archive", layout: "stack", title: "Which way should the archive go?",
+      quote: ["Sip looks very baseline, it looks very standardized, and it doesn't look very fun. I think through Palette, we can make Sip better. We could make Sip with more features, a better interface, more interactions, fun ways to explore and rediscover color", "Noah, October 17"],
+      ctx: "The fan is close to ED3's fan deck (entry 19), proposed on October 16 and never decided.",
+      refs: [["A26", "e48"], ["A15", "e12"], ["ED3", "e19"], ["Entry 11", "e11"]],
+      options: [
+        { k: "A", name: "The fan", text: "Your colors as cards of colored stock, fanned by hue like Núria Garcia's business cards. Turn it, and the top card lifts with its name. The timeline becomes a second view.", render: fanArchive },
+        { k: "B", name: "The drawer", text: "Cards filed by the day you kept them, like the Strontianite and Crocoite catalogue cards. Run down the drawer and pull one out to read it.", render: drawerArchive },
+        { k: "C", name: "The wall", text: "Every color nearly edge to edge, names set on the color, the newest first and biggest. Point at one and it grows while the rest make room. Filters fold into one line.", rec: true, render: wallArchive }
+      ],
+      why: ["Why the recommendation: ", "It keeps everything in view for re-exploring, which is what the archive is for (A23), and lets the color take the room the way the expressive cards did in lofi round 2 (entry 11). It also scales: at a few thousand colors a fan or a drawer gets slow, a wall doesn't. The fan could still be the one wow point (A15) as the hue view."] },
+    { id: "home", part: "archive", layout: "grid", title: "What does it open on?",
+      quote: ["They kind of just come and go, but the archive keeps everything locked in.", "Noah, October 17"],
+      refs: [["A15", "e12"], ["Entry 90", "e90"]],
+      options: [
+        { k: "A", name: "Everything, newest first", text: "As now: every color at once.", render: homeAll },
+        { k: "B", name: "Today first", text: "What you kept today, large, with earlier days in smaller rows underneath.", rec: true, render: homeToday },
+        { k: "C", name: "The last color, open", text: "The color you kept last fills the window; the rest wait in a strip.", render: homeLast }
+      ],
+      why: ["Why the recommendation: ", "It opens on what you just kept, large, with everything before it underneath, so keeping a color leads straight into the archive, and the archive looks different every day you use it. That's the opposite of stagnant, without anything moving on its own."] },
+    { id: "open", part: "archive", layout: "stack", title: "How does a color open?",
+      quote: ["The cards should live on the dashboard, not on their own.", "Noah, in the feature workshop"],
+      ctx: "After lofi round 2 you wanted more of a card feeling when you open a color (entry 11). The specimen card is close to ED2's (entry 18), proposed on October 16 and never decided.",
+      refs: [["A55", "e88"], ["A54", "e86"], ["Entry 11", "e11"], ["ED2", "e18"]],
+      options: [
+        { k: "A", name: "Flip the card", text: "The front is the color and your name; flip it for the back: where it came from, the values, the 8 samples around it, your note. A sparse front and a dense back, like the SOUND card.", render: flipCard },
+        { k: "B", name: "A specimen card", text: "The color as a chip over where you found it, the catalogue number large, and a form with the place, the day, the values and your note on ruled lines.", rec: true, render: specimenOpen },
+        { k: "C", name: "The color takes the window", text: "The whole window turns the color, your name set large on it, and a white label band slides up with the details, like the Ravex cans.", render: fullWindow }
+      ],
+      why: ["Why the recommendation: ", "It's the card feeling you asked for, and it shows the color with where it came from, the way your references do (the catalogue cards, the olive chip over the olives): context is part of the color. The flip hides the context behind a click; the full window is the boldest way to see the color itself, but buries where it came from. Here the place is the 8 samples Palit keeps around a pick, blurred; a real crop would replace it."] },
+    { id: "type", part: "voice", layout: "grid", title: "Type",
+      quote: ["I want Palette to feel a little bit more elevated, a little more raw and authentic.", "Noah, October 17"],
+      refs: [["A30", "e55"], ["A27", "e49"], ["A12", "e5"]],
+      options: [
+        { k: "A", name: "Quiet, as now", text: "The name at 18 to 40 point, everything else 11 to 13 point gray.", render: typeQuiet },
+        { k: "B", name: "Your name is the big thing", text: "Your name set large and tight on the color, everything else small.", rec: true, render: typeName },
+        { k: "C", name: "The number is the big thing", text: "The catalogue number set large, like an edition, with the name smaller.", render: typeNumber }
+      ],
+      why: ["Why the recommendation: ", "Scale gives it a voice without a new typeface, and it keeps your unbolded SF Pro (A30) and your name first (A27). It's the Aesop band from your references: one big element, small type around it. The number as the hero is strong for an archive, but the name is what you own (A24)."] },
+    { id: "motion", part: "voice", layout: "grid", title: "Motion",
+      quote: ["The cards should be very minimal and ephemeral. They kind of just come and go", "Noah, October 17"],
+      refs: [["A42", "e64"], ["A26", "e48"]],
+      options: [
+        { k: "A", name: "Still, as now", text: "Views change without moving.", render: function () { return motionDemo("still"); } },
+        { k: "B", name: "Motion that answers you", text: "Colors grow under the pointer; a color opens out of its tile and closes back into it.", rec: true, render: function () { return motionDemo("answer"); } },
+        { k: "C", name: "Always a little alive", text: "The colors drift, and now and then an older one floats up on its own.", render: function () { return motionDemo("alive"); } }
+      ],
+      why: ["Why the recommendation: ", "Motion that answers what you do shows what changed, and it's where the fun you asked for lives, while Palit stays quiet. Motion that runs on its own competes with judging a color, and bringing old colors back is yours to start (A42)."] },
+    { id: "capture", part: "keep", layout: "grid", title: "The moment you keep a color",
+      quote: ["I'm thinking it lives as screen software on the screen, such as Wispr Flow or Granola, subtly, until you prompt it with your keybinds.", "Noah, October 16"],
+      ctx: "The ticket is close to ED1's (entry 17), proposed on October 16 and never decided; this one is smaller and quieter.",
+      refs: [["A52", "e84"], ["D1", "e28"], ["ED1", "e17"]],
+      options: [
+        { k: "A", name: "Ring and chime, as now", text: "A small ring where you clicked, then the color slides into the desktop palette.", render: function () { return captureDemo("ring"); } },
+        { k: "B", name: "A numbered ticket", text: "A tiny ticket with the color's number slips out of the loupe and flies to the desktop palette.", rec: true, render: function () { return captureDemo("ticket"); } },
+        { k: "C", name: "A bloom", text: "The color swells out of the loupe for a beat, then shrinks into the desktop palette.", render: function () { return captureDemo("bloom"); } }
+      ],
+      why: ["Why the recommendation: ", "In under a second it says “kept, and numbered”, which is the archive's promise, and it's the edition feeling from the Bureau Borsche card. It stays small enough to keep the capture nearly invisible (D1)."] },
+    { id: "palette", part: "keep", layout: "grid", title: "The desktop palette",
+      quote: ["This will be an important feature - if no pin is set, the palette is just your latest picks.", "Noah, in the feature workshop"],
+      refs: [["A49", "e81"], ["A50", "e82"], ["A51", "e83"]],
+      options: [
+        { k: "A", name: "Slim strips, as now", text: "Thin bars at the edge that widen when you point.", render: function () { return paletteDemo("strips"); } },
+        { k: "B", name: "Little chips", text: "Each color a small chip with its number on it, the same label as the archive's cards. Point and they slide out with their names.", rec: true, render: function () { return paletteDemo("chips"); } },
+        { k: "C", name: "A fan at the edge", text: "Your latest colors fanned like cards; point at them and they spread.", render: function () { return paletteDemo("fan"); } }
+      ],
+      why: ["Why the recommendation: ", "One label at every size, like the Ravex cans in your references: the chip on your desktop is the card in your archive, number on the color. Strips are quieter but anonymous; a fan is charming but hides colors behind each other."] }
+  ];
+
+  /* Picks and notes stay in this browser until you're done. */
+  var KEY = "palit-look-workshop", HANDOFF = "look-workshop";
+  var st = { picks: {}, notes: {} };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) st = { picks: saved.picks || {}, notes: saved.notes || {} }; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} handoff(); }
+  // The handoff (entry 89): your picks as text, kept where Claude can read them from this page.
+  function handoff() {
+    if (!window.PalitHandoff) return;
+    PalitHandoff.put(HANDOFF, { title: "Look and flow workshop", text: picksText() });
+    doneState();
+  }
+  function doneState() {
+    var rec = window.PalitHandoff ? PalitHandoff.get(HANDOFF) : null, b = $("done");
+    b.textContent = rec && rec.done ? "Done" : "I'm done";
+    b.setAttribute("aria-pressed", String(!!(rec && rec.done)));
+  }
+  function optOf(it, k) { return it.options.filter(function (o) { return o.k === k; })[0]; }
+  function picked(it) { var p = st.picks[it.id]; return it.multi ? (p || []).length > 0 : !!p; }
+
+  function renderItem(it, n) {
+    var box = el("div", { class: "item", id: "item-" + it.id });
+    box.appendChild(el("div", { class: "item-head" }, [
+      el("div", null, [
+        el("p", { class: "item-no num", text: "Question " + n + " of " + ITEMS.length }),
+        el("h3", { text: it.title }),
+        it.multi ? el("p", { class: "multi", text: "Pick as many as fit." }) : null,
+        el("div", { class: "refs" }, it.refs.map(function (r) { return el("a", { href: HUB + r[1], text: r[0] }); }))
+      ]),
+      el("div", null, [
+        it.quote ? el("blockquote", null, [it.quote[0], el("cite", { text: it.quote[1] })]) : null,
+        it.ctx ? el("p", { class: "ctx", text: it.ctx }) : null
+      ])
+    ]));
+    if (it.id === "stagnant") box.appendChild(nowFigure());
+    var opts = el("div", { class: "opts " + it.layout, role: it.multi ? "group" : "radiogroup", "aria-label": it.title });
+    it.options.forEach(function (o) {
+      var input = el("input", { type: it.multi ? "checkbox" : "radio", name: "pick-" + it.id, value: o.k, "aria-label": o.k + ": " + o.name });
+      input.checked = it.multi ? (st.picks[it.id] || []).indexOf(o.k) >= 0 : st.picks[it.id] === o.k;
+      var card = el("div", { class: "opt" + (input.checked ? " picked" : "") });
+      var head = el("label", { class: "opt-head" }, [
+        input,
+        el("span", { class: "ol" }, [el("span", { text: o.k }), o.rec ? el("span", { class: "rec", text: "Recommended" }) : null]),
+        el("p", { class: "on", text: o.name }),
+        el("p", { class: "ot", text: o.text })
+      ]);
+      input.addEventListener("change", function () {
+        if (it.multi) {
+          var ks = (st.picks[it.id] || []).filter(function (k) { return k !== o.k; });
+          if (input.checked) ks.push(o.k);
+          st.picks[it.id] = ks.sort();
+        } else st.picks[it.id] = o.k;
+        save();
+        opts.querySelectorAll(".opt").forEach(function (c) { c.classList.toggle("picked", c.querySelector("input").checked); });
+        count();
+      });
+      var pv = o.render ? el("div", { class: "pv" }, [o.render()]) : null;
+      if (it.layout === "stack") { card.appendChild(head); if (pv) card.appendChild(pv); }
+      else { if (pv) card.appendChild(pv); card.appendChild(head); }
+      opts.appendChild(card);
+    });
+    box.appendChild(opts);
+    var note = el("textarea", { id: "note-" + it.id, placeholder: "Anything to add, change or ask" });
+    note.value = st.notes[it.id] || "";
+    note.addEventListener("input", function () { st.notes[it.id] = note.value; save(); });
+    box.appendChild(el("div", { class: "item-foot" }, [
+      el("p", { class: "rec-why" }, [el("b", { text: it.why[0] }), it.why[1]]),
+      el("div", { class: "note" }, [el("label", { for: "note-" + it.id, text: "Your note" }), note])
+    ]));
+    return box;
+  }
+  function nowFigure() {
+    return el("div", { class: "item-head figure" }, [
+      el("figure", null, [el("img", { src: "shots/archive-now.jpg", alt: "The archive as the prototype draws it: a uniform grid of square color tiles with labels underneath, filter chips above, and an inspector on the right.", width: "1248", height: "752", loading: "lazy" }),
+        el("figcaption", { text: "The archive scene from the prototype, October 18." })]),
+      el("div", null, [
+        el("div", { class: "stat" }, [el("b", { class: "num", text: "43%" }), el("span", { text: "of the archive window is color." })]),
+        el("p", { class: "ctx", text: "Measured on the screenshot: the pixels that are exactly one of the kept colors or the samples around them. So it isn't short of color. The color is boxed into one tile size, and everything around it is text, rules and chips." })
+      ])
+    ]);
+  }
+  ITEMS.forEach(function (it, i) { $("items-" + it.part).appendChild(renderItem(it, i + 1)); });
+
+  /* ---------- Your picks, for Claude ---------- */
+  function count() { $("count").textContent = ITEMS.filter(picked).length + " of " + ITEMS.length + " picked"; }
+  function picksText() {
+    var lines = ["Look and flow workshop, October 18. My picks:"];
+    ITEMS.forEach(function (it, i) {
+      var k = st.picks[it.id], line = (i + 1) + ". " + it.title + (/\?$/.test(it.title) ? " " : ": ");
+      if (it.multi) {
+        var ks = (k || []);
+        line += ks.length ? ks.map(function (x) { return x + ", " + optOf(it, x).name; }).join("; ") + "." : "Not picked yet.";
+      } else {
+        var o = k && optOf(it, k);
+        line += o ? k + ", " + o.name + (o.rec ? " (the recommendation)" : "") + "." : "Not picked yet.";
+      }
+      lines.push(line);
+      var note = (st.notes[it.id] || "").trim();
+      if (note) lines.push("   Note: " + note);
+    });
+    return lines.join("\n");
+  }
+  $("copy").addEventListener("click", function () {
+    var text = picksText(), status = $("status");
+    function fallback() {
+      var t = el("textarea", { readonly: "" });
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      t.remove();
+      status.textContent = ok ? "Copied. Paste it into chat." : "Couldn't copy. Press “I'm done” instead, and Claude reads it from this page.";
+    }
+    try { navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied. Paste it into chat."; }, fallback); } catch (e) { fallback(); }
+  });
+  $("reset").addEventListener("click", function () {
+    st = { picks: {}, notes: {} }; save();
+    document.querySelectorAll(".opt-head input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll(".opt").forEach(function (c) { c.classList.remove("picked"); });
+    document.querySelectorAll(".note textarea").forEach(function (t) { t.value = ""; });
+    count();
+    $("status").textContent = "Cleared.";
+  });
+  $("done").addEventListener("click", function () {
+    handoff();
+    PalitHandoff.done(HANDOFF);
+    doneState();
+    $("status").textContent = "Marked done. Tell Claude in chat, and Claude reads your picks from this page.";
+  });
+  count();
+  if (ITEMS.some(picked)) handoff(); else doneState();
+  window.PalitLookWorkshop = { picksText: picksText };
+})();
+</script>
+</body>
+</html>

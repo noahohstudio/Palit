@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette — Flow 2: the capture card (paint chip)</title>
+<style>
+:root{--chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--r1:6px;--r2:10px;--r3:14px;--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.2,1);
+--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;color:var(--ink);background:#d9d9db;display:grid;place-items:center;min-height:100vh;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.desk{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:var(--r2);background:linear-gradient(160deg,#c9c9cc,#a9a9ad 60%,#9d9da1);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+/* menu bar */
+.mbar{position:absolute;inset:0 0 auto 0;height:28px;display:flex;align-items:center;gap:18px;padding:0 14px;background:rgba(246,246,246,.72);backdrop-filter:blur(24px) saturate(1.4);font-size:13px;z-index:20}
+.mbar b{font-weight:600}.mbar .sp{flex:1}
+.iris{width:26px;height:22px;border-radius:5px;display:grid;place-items:center}
+.iris.on{background:rgba(0,0,0,.12)}
+/* background window */
+.win{position:absolute;left:70px;top:70px;width:560px;height:380px;background:var(--content);border-radius:var(--r2);box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden;opacity:.9}
+.win .tb{height:36px;background:var(--chrome);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12px;color:var(--ink2)}
+.win .tb i{width:11px;height:11px;border-radius:50%;background:#d4d4d6}
+.win .url{margin-left:16px;flex:1;background:#fff;border-radius:var(--r1);padding:3px 10px}
+.win .ph{margin:20px;height:290px;border-radius:var(--r1);background:radial-gradient(circle at 46% 52%,#c4552d 0 14%,transparent 15%),linear-gradient(180deg,#efe6d6 0 40%,#c4552d 40% 64%,#e0a526 64%),#2f5d62;}
+/* popover + toast */
+.mat{background:rgba(250,250,250,.78);backdrop-filter:blur(30px) saturate(1.5);border:1px solid rgba(0,0,0,.08);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.pop{position:absolute;top:34px;right:110px;width:300px;border-radius:var(--r2);padding:8px;z-index:19;transform-origin:top right;transition:opacity var(--mid) var(--ease),transform var(--mid) var(--ease)}
+.pop.hide,.toast.hide{opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none}
+.pop h3{font-size:12px;font-weight:500;color:var(--ink2);padding:4px 8px 6px}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:6px 8px;border-radius:var(--r1);text-align:left;transition:background var(--fast)}
+.row:hover,.row.pulse{background:rgba(0,0,0,.06)}
+.row .sw{width:22px;height:34px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.row .t{flex:1}.row small{display:block;color:var(--ink2);font-size:11px}
+.row .tm{font-size:11px;color:var(--ink3)}
+.pop .ft{display:flex;justify-content:space-between;border-top:1px solid rgba(0,0,0,.08);margin-top:6px;padding:8px 8px 2px;font-size:12px;color:var(--ink2)}
+.pop .ft button{color:var(--ink)}
+.toast{position:absolute;right:16px;top:40px;width:280px;border-radius:var(--r3);padding:12px;display:flex;gap:12px;align-items:center;z-index:18;transition:opacity var(--mid) var(--ease),transform var(--mid) var(--ease)}
+.toast .sw{width:30px;height:44px;border-radius:4px;background:#c4552d}
+.toast div{flex:1;font-size:12px}.toast small{color:var(--ink2);font-size:11px;display:block}
+.btn{padding:4px 10px;border-radius:var(--r1);background:var(--ink);color:#fff;font-size:12px;font-weight:500}
+.btn.ghost{background:rgba(0,0,0,.06);color:var(--ink)}
+/* stage */
+.stage{position:absolute;inset:28px 0 0 0;display:grid;place-items:center;z-index:10;pointer-events:none}
+.scrim{position:absolute;inset:0;background:rgba(40,40,44,.18);opacity:0;transition:opacity var(--mid) var(--ease)}
+.stage.open{pointer-events:auto}.stage.open .scrim{opacity:1}
+.holder{position:relative;width:340px;height:660px;perspective:1600px;opacity:0;transform:translateY(24px) rotate(-1.5deg) scale(.96);transition:opacity var(--mid) var(--ease),transform var(--slow) var(--ease)}
+.stage.open .holder{opacity:1;transform:none}
+.card{position:absolute;inset:0;transform-style:preserve-3d;transition:transform var(--slow) var(--ease)}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r1);background:#fcfcfc var(--grain);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px rgba(0,0,0,.06),0 2px 3px rgba(0,0,0,.08),0 18px 40px -8px rgba(0,0,0,.28);overflow:hidden;display:flex;flex-direction:column}
+.face::after{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.05));pointer-events:none}
+.back{transform:rotateY(180deg)}
+/* front */
+.chip{flex:0 0 372px;position:relative;margin:10px 10px 0;border-radius:3px;transition:background var(--slow) var(--ease);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.chip .x{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:14px;color:var(--ink2)}
+.chip .when{position:absolute;left:12px;bottom:10px;font-size:11px;color:rgba(255,255,255,.85)}
+.label{padding:16px 18px 0;flex:1;display:flex;flex-direction:column}
+.big{font-size:34px;line-height:1.05;font-weight:700;letter-spacing:-.02em;min-height:36px;transition:opacity var(--mid) var(--ease),transform var(--mid) var(--ease);overflow-wrap:anywhere}
+.big.swap{opacity:0;transform:translateY(4px)}
+.meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:6px}
+.name{margin-top:12px;width:100%;border:0;border-bottom:1px solid rgba(0,0,0,.12);background:transparent;font:inherit;font-size:12px;padding:4px 0;color:var(--ink)}
+.name::placeholder{color:var(--ink3)}
+.rule{height:2px;background:var(--ink);margin:12px 0 8px}
+.k{font-size:11px;color:var(--ink2);margin-bottom:4px}
+.vals{display:grid;grid-template-columns:44px 1fr auto;row-gap:2px;align-items:center;font-size:12px}
+.vals span:nth-child(3n+1){color:var(--ink3);font-size:11px}
+.copy{font-size:11px;color:var(--ink2);padding:2px 6px;border-radius:4px;transition:background var(--fast)}
+.copy:hover{background:rgba(0,0,0,.06);color:var(--ink)}.copy.done{color:var(--ink);background:rgba(0,0,0,.06)}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding:10px 0 12px;font-size:11px;color:var(--ink3)}
+.turn{font-size:12px;color:var(--ink);padding:4px 8px;border-radius:var(--r1);background:rgba(0,0,0,.05)}
+/* back */
+.band{height:14px;flex:0 0 14px;transition:background var(--slow)}
+.bk{padding:12px 18px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:12px}
+.bk h4{font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+.bk .hd{display:flex;justify-content:space-between;align-items:baseline}
+.bk .hd b{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.src{font-size:12px}.src small{display:block;color:var(--ink2);font-size:11px}
+.crop{position:relative;height:84px;border-radius:3px;margin-top:8px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.crop .cx{position:absolute;left:46%;top:52%;width:22px;height:22px;transform:translate(-50%,-50%)}
+.crop .cx::before,.crop .cx::after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.4)}
+.crop .cx::before{left:50%;top:0;bottom:0;width:1px}.crop .cx::after{top:50%;left:0;right:0;height:1px}
+.sur{display:flex;gap:12px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(3,22px);gap:2px;padding:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08);border-radius:3px}
+.grid i{height:22px;border-radius:2px}.grid i.c{outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.sur p{font-size:11px;color:var(--ink2);flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:12px;padding:2px 8px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.kept{display:flex;gap:8px}
+.mini{flex:1;text-align:left;background:#fcfcfc var(--grain);border-radius:3px;padding:4px 4px 6px;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.08);transition:transform var(--fast) var(--ease),box-shadow var(--fast)}
+.mini:hover{transform:translateY(-2px) rotate(-1deg);box-shadow:0 0 0 1px rgba(0,0,0,.1),0 6px 12px rgba(0,0,0,.12)}
+.mini i{display:block;height:44px;border-radius:2px}
+.mini b{display:block;font-size:12px;font-weight:500;margin-top:4px;padding:0 2px}
+.mini small{display:block;font-size:10.5px;color:var(--ink2);padding:0 2px}
+select{font:inherit;font-size:12px;width:100%;padding:5px 8px;border-radius:var(--r1);border:1px solid rgba(0,0,0,.14);background:#fff;color:var(--ink)}
+.backlink{position:absolute;top:-34px;left:0;font-size:12px;padding:4px 10px;border-radius:var(--r1);background:rgba(255,255,255,.9);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:opacity var(--mid) var(--ease)}
+.backlink.hide{opacity:0;pointer-events:none}
+.hint{position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-size:11px;color:rgba(29,29,31,.6)}
+/* steps */
+.steps{position:absolute;left:16px;bottom:16px;width:196px;padding:10px 12px;border-radius:var(--r2);background:rgba(255,255,255,.82);box-shadow:0 2px 10px rgba(0,0,0,.08);font-size:11px;color:var(--ink3);z-index:30}
+.steps h5{font-size:11px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+.steps li{list-style:none;display:flex;gap:8px;padding:1px 0;transition:color var(--fast)}
+.steps li::before{content:attr(data-n);width:12px;text-align:right}
+.steps li.done{color:var(--ink2)}.steps li.now{color:var(--ink);font-weight:500}
+</style>
+</head>
+<body>
+<div class="desk" id="desk">
+  <div class="mbar">
+    <span aria-hidden="true">&#63743;</span><b>Safari</b><span>File</span><span>Edit</span><span>View</span><span>History</span>
+    <span class="sp"></span>
+    <button class="iris" id="iris" aria-label="Palette" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1D1D1F" stroke-width="1.2"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5 10.6 7M14.5 8 9 10.2M8 14.5 5.4 9M1.5 8 7 5.8M3.4 3.4l5.5 2.3M12.6 12.6 7.1 10.3"/></svg>
+    </button>
+    <span>Fri Oct 16&nbsp; 2:24 PM</span>
+  </div>
+
+  <div class="win" aria-hidden="true"><div class="tb"><i></i><i></i><i></i><span class="url">are.na/block/warm-light-nyc</span></div><div class="ph"></div></div>
+
+  <div class="toast mat" id="toast" role="status">
+    <span class="sw"></span>
+    <div>Kept No. 028<small>#c4552d · are.na</small></div>
+    <button class="btn" id="toastOpen">Open card</button>
+  </div>
+
+  <div class="pop mat hide" id="pop" role="dialog" aria-label="Palette">
+    <h3>Today</h3>
+    <div id="today"></div>
+    <div class="ft"><span>Stored on this Mac</span><button id="openArchive">Open in archive</button></div>
+  </div>
+
+  <div class="stage" id="stage" aria-hidden="true">
+    <div class="scrim" id="scrim"></div>
+    <div class="holder">
+      <button class="backlink hide" id="backlink">&larr; Back to No. 028</button>
+      <div class="card" id="card">
+        <section class="face front" aria-label="Card front">
+          <div class="chip" id="chip"><button class="x" id="close" aria-label="Close">&times;</button><span class="when" id="when"></span></div>
+          <div class="label">
+            <div class="big" id="big"></div>
+            <div class="meta"><span id="sub"></span><span id="hexs"></span></div>
+            <input class="name" id="name" placeholder="Unnamed. Name it so you remember it." aria-label="Name">
+            <div class="rule"></div>
+            <div class="k">Values</div>
+            <div class="vals" id="vals"></div>
+            <div class="foot"><span id="fsrc"></span><button class="turn" id="toBack">Turn over &rarr;</button></div>
+          </div>
+        </section>
+        <section class="face back" aria-label="Card back">
+          <div class="band" id="band"></div>
+          <div class="bk" id="bk">
+            <div class="hd"><b id="bno"></b><button class="turn" id="toFront">&larr; Turn back</button></div>
+            <div data-step="4"><h4>Where it came from</h4>
+              <div class="src"><span class="k">Sampled in</span> <span id="bapp"></span><small id="btitle"></small><small id="burl"></small></div>
+              <div class="crop" id="crop"><span class="cx"></span></div>
+            </div>
+            <div data-step="5"><h4>What surrounded it</h4>
+              <div class="sur"><div class="grid" id="grid"></div><p>Sampled 12 px out from the point you clicked.</p></div>
+            </div>
+            <div data-step="6"><h4>Reads as</h4><div class="tags" id="reads"></div></div>
+            <div data-step="7"><h4>You’ve kept this before</h4><div class="kept" id="kept"></div></div>
+            <div data-step="8"><h4>Project</h4>
+              <select id="proj" aria-label="Project"><option value="">None</option><option>Packaging — tea</option><option>Portfolio site</option><option>Editorial zine</option></select>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="hint">Esc to close · Tab to move · Enter to set the name</div>
+    </div>
+  </div>
+
+  <ol class="steps" id="steps"><h5>Flow 2 · The capture card</h5></ol>
+</div>
+
+<script>
+const C={
+ '028':{name:'',hex:'#c4552d',rgb:'196 85 45',ok:'58.5% 0.152 39°',app:'Safari',src:'are.na',title:'Warm light, NYC',url:'are.na/block/warm-light-nyc',when:'Kept today at 2:22 PM',
+  n:['#e9dcc6','#efe6d6','#e7d6bc','#b94f2b','#c4552d','#2f5d62','#d39a2c','#e0a526','#d8ab3c'],reads:['Warm','Mid value','Saturated'],kept:[['011','Safari','Nearly identical',1.0],['019','Photos','Close',4.7]],proj:''},
+ '011':{name:'Clay pot',hex:'#c25a35',rgb:'194 90 53',ok:'59.3% 0.141 41°',app:'Safari',src:'etsy.com',title:'Hand-thrown planter',url:'etsy.com/listing/clay-planter',when:'Kept Sep 28 at 10:14 AM',
+  n:['#e8e2d8','#ece6dc','#e4dccf','#a9492b','#c25a35','#c96a44','#7f6a54','#8a735b','#6f5c48'],reads:['Warm','Mid value','Saturated'],kept:[['028','are.na','Nearly identical',1.0],['019','Photos','Close',4.6]],proj:'Packaging — tea'},
+ '019':{name:'Brick, Bushwick',hex:'#b5462e',rgb:'181 70 46',ok:'54.9% 0.153 35°',app:'Photos',src:'Photos',title:'IMG_2231.HEIC',url:'Library › October',when:'Kept Oct 3 at 6:41 PM',
+  n:['#9fb4c4','#a7bccb','#b0c3d1','#8e3a27','#b5462e','#a8432c','#5c5d5f','#646568','#58595b'],reads:['Warm','Mid value','Saturated'],kept:[['028','are.na','Close',4.7],['011','Safari','Close',4.6]],proj:'Editorial zine'}
+};
+const today=[['028','#c4552d','Unnamed','are.na','2:22 PM'],['027','#5b3a63','Plum label','Preview','11:05 AM'],['026','#f3d9cf','Blush ground','Figma','9:48 AM']];
+const STEPS=['Open the card','Name it','Copy a value','Where it came from','What surrounded it','Reads as','You’ve kept this before','Assign a project','Close'];
+const $=id=>document.getElementById(id);
+let cur='028',reached=0,trail=[];
+const stepsEl=$('steps');
+STEPS.forEach((s,i)=>{const li=document.createElement('li');li.dataset.n=i+1;li.textContent=s;stepsEl.appendChild(li)});
+function step(n){reached=Math.max(reached,n);[...stepsEl.querySelectorAll('li')].forEach((li,i)=>{li.className=i+1<n||i+1<=reached&&i+1!==n?'done':i+1===n?'now':''})}
+step(1);
+function renderToday(){$('today').innerHTML=today.map(t=>{const nm=t[0]==='028'?(C['028'].name||'Unnamed'):t[2];return `<button class="row${t[0]==='028'?' pulse':''}" data-no="${t[0]}" aria-label="No. ${t[0]}, ${nm}, ${t[1]}"><span class="sw" style="background:${t[1]}"></span><span class="t">No. ${t[0]} ${nm}<small>${t[1]} · ${t[3]}</small></span><span class="tm">${t[4]}</span></button>`}).join('');
+ $('today').querySelectorAll('.row').forEach(r=>r.onclick=()=>{C[r.dataset.no]?open(r.dataset.no):null})}
+renderToday();
+function fill(no,swap){const c=C[no];cur=no;
+ const big=$('big');const set=()=>{big.textContent=c.name||'No. '+no;big.style.color='';$('sub').textContent=c.name?'No. '+no:'Unnamed';};
+ if(swap){big.classList.add('swap');setTimeout(()=>{set();big.classList.remove('swap')},120)}else set();
+ $('chip').style.background=c.hex;$('band').style.background=c.hex;$('when').textContent=c.when;
+ $('hexs').textContent=c.hex;$('name').value=c.name;$('fsrc').textContent=c.src+' · '+c.app;
+ $('vals').innerHTML=[['HEX',c.hex],['RGB',c.rgb],['OKLCH',c.ok]].map(v=>`<span>${v[0]}</span><span>${v[1]}</span><button class="copy" data-v="${v[1]}" aria-label="Copy ${v[0]}">Copy</button>`).join('');
+ $('vals').querySelectorAll('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(b.dataset.v).catch(()=>{});b.textContent='Copied';b.classList.add('done');step(3);setTimeout(()=>{b.textContent='Copy';b.classList.remove('done')},1200)});
+ $('bno').textContent='No. '+no+(c.name?' '+c.name:'');
+ $('bapp').textContent=c.app;$('btitle').textContent=c.src+' — '+c.title;$('burl').textContent=c.url;
+ $('crop').style.background=`linear-gradient(90deg,${c.n[3]} 0 30%,transparent 30%),linear-gradient(180deg,${c.n[1]} 0 34%,${c.hex} 34% 70%,${c.n[7]} 70%),${c.n[5]}`;
+ $('crop').style.backgroundSize='100% 100%';
+ $('grid').innerHTML=c.n.map((h,i)=>`<i class="${i===4?'c':''}" style="background:${h}" title="${h}" aria-label="${i===4?'Picked':'Neighbor'} ${h}"></i>`).join('');
+ $('reads').innerHTML=c.reads.map(r=>`<span>${r}</span>`).join('');
+ $('kept').innerHTML=c.kept.map(k=>{const o=C[k[0]];return `<button class="mini" data-no="${k[0]}" aria-label="No. ${k[0]}, ${o.name||'Unnamed'}, ${o.hex}"><i style="background:${o.hex}"></i><b>No. ${k[0]} ${o.name||'Unnamed'}</b><small>${k[1]} · ${k[2]}</small><small>ΔE ${k[3].toFixed(1)}</small></button>`}).join('');
+ $('kept').querySelectorAll('.mini').forEach(b=>b.onclick=()=>{trail.push(cur);go(b.dataset.no)});
+ $('proj').value=c.proj;
+ const bl=$('backlink');if(trail.length){bl.textContent='← Back to No. '+trail[trail.length-1];bl.classList.remove('hide')}else bl.classList.add('hide');
+ $('stage').setAttribute('aria-label','No. '+no+', '+(c.name||'Unnamed')+', '+c.hex)}
+function go(no){const card=$('card');card.classList.remove('flipped');step(7);setTimeout(()=>fill(no,true),180)}
+$('backlink').onclick=()=>{const no=trail.pop();if(no){$('card').classList.remove('flipped');setTimeout(()=>fill(no,true),180)}};
+function open(no){trail=[];fill(no);$('card').classList.remove('flipped');$('pop').classList.add('hide');$('toast').classList.add('hide');$('iris').classList.remove('on');
+ $('stage').classList.add('open');$('stage').setAttribute('aria-hidden','false');step(Math.max(reached,1)===1?2:reached);setTimeout(()=>$('name').focus(),360)}
+function close(){$('stage').classList.remove('open');$('stage').setAttribute('aria-hidden','true');step(9);renderToday();setTimeout(()=>{reached=9;[...stepsEl.querySelectorAll('li')].forEach(l=>l.className='done')},400)}
+$('toastOpen').onclick=()=>open('028');
+$('iris').onclick=()=>{const p=$('pop');p.classList.toggle('hide');$('iris').classList.toggle('on',!p.classList.contains('hide'));$('iris').setAttribute('aria-expanded',!p.classList.contains('hide'))};
+$('openArchive').onclick=()=>{$('pop').classList.add('hide');$('iris').classList.remove('on')};
+$('close').onclick=close;$('scrim').onclick=close;
+function commit(){const v=$('name').value.trim();if(v===C[cur].name)return;C[cur].name=v;fill(cur,true);step(2);setTimeout(()=>step(3),10)}
+$('name').addEventListener('keydown',e=>{if(e.key==='Enter'){commit();$('name').blur()}});
+$('name').addEventListener('blur',commit);
+$('toBack').onclick=()=>{$('card').classList.add('flipped');step(4);setTimeout(()=>$('toFront').focus(),360)};
+$('toFront').onclick=()=>{$('card').classList.remove('flipped');setTimeout(()=>$('toBack').focus(),360)};
+$('bk').querySelectorAll('[data-step]').forEach(s=>{s.addEventListener('mouseenter',()=>{if($('card').classList.contains('flipped'))step(+s.dataset.step)});s.addEventListener('focusin',()=>step(+s.dataset.step))});
+$('proj').onchange=e=>{C[cur].proj=e.target.value;step(8)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('stage').classList.contains('open'))close();else{$('pop').classList.add('hide');$('iris').classList.remove('on')}}});
+setTimeout(()=>{$('toast').classList.add('hide')},6000);
+setTimeout(()=>{$('pop').classList.remove('hide');$('iris').classList.add('on')},6200);
+</script>
+</body>
+</html>

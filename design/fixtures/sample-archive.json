@@ -1,0 +1,1236 @@
+{
+  "about": "Sample archive from the v0 prototype. Use it for SwiftUI previews, the DEBUG import, and color-math tests. Expected values come from sRGB → OKLab/OKLCH (Ottosson). deltaE = 100 × Euclidean distance in OKLab, rounded to 0.1. keptBefore lists other captures with deltaE < 7, nearest first, at most 3. Test tolerance: L and C ±0.001, h ±0.1°, deltaE ±0.1.",
+  "neighborOrder": [
+    "NW",
+    "N",
+    "NE",
+    "W",
+    "E",
+    "SW",
+    "S",
+    "SE"
+  ],
+  "thresholds": {
+    "nearlyIdentical": 2,
+    "close": 5,
+    "keptBefore": 7,
+    "neutralChroma": 0.03,
+    "mutedChroma": 0.09,
+    "darkL": 0.42,
+    "midL": 0.72,
+    "warmHueBelow": 110,
+    "warmHueAbove": 330,
+    "coolHueFrom": 150,
+    "coolHueTo": 300
+  },
+  "projects": [
+    "Packaging — tea",
+    "Portfolio site",
+    "Editorial zine"
+  ],
+  "captures": [
+    {
+      "number": 1,
+      "capturedAt": "2026-06-03T10:14:00-04:00",
+      "srgbHex": "#6C2E3A",
+      "name": "Oxblood",
+      "sourceType": "Photos",
+      "source": "IMG_2210 — coat on the F train",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#2B2A2E",
+        "#2B2A2E",
+        "#8C8A86",
+        "#6C2E3A",
+        "#8C8A86",
+        "#C9B9A6",
+        "#C9B9A6",
+        "#8C8A86"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.3904,
+          "C": 0.089,
+          "h": 10.08
+        },
+        "display": {
+          "oklch": "39.0% 0.089 10°",
+          "rgb": "108 46 58"
+        },
+        "reads": [
+          "Warm",
+          "Dark",
+          "Muted"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 2,
+      "capturedAt": "2026-06-03T10:15:00-04:00",
+      "srgbHex": "#E7D6BE",
+      "name": null,
+      "sourceType": "Browser",
+      "source": "are.na — Paper samples",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#CDBB9F",
+        "#F4EEE4",
+        "#F4EEE4",
+        "#8E7F6B",
+        "#E7D6BE",
+        "#8E7F6B",
+        "#CDBB9F",
+        "#F4EEE4"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.8836,
+          "C": 0.0372,
+          "h": 76.59
+        },
+        "display": {
+          "oklch": "88.4% 0.037 77°",
+          "rgb": "231 214 190"
+        },
+        "reads": [
+          "Warm",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 26,
+            "deltaE": 2.9,
+            "label": "Close"
+          },
+          {
+            "number": 22,
+            "deltaE": 3.3,
+            "label": "Close"
+          },
+          {
+            "number": 20,
+            "deltaE": 3.6,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "capturedAt": "2026-06-09T18:40:00-04:00",
+      "srgbHex": "#F0C23B",
+      "name": "Mango",
+      "sourceType": "Photos",
+      "source": "IMG_2291 — fruit stand, Delancey",
+      "project": null,
+      "neighbors": [
+        "#2E2A26",
+        "#F0C23B",
+        "#E0662B",
+        "#2E2A26",
+        "#E0662B",
+        "#4E7B2F",
+        "#4E7B2F",
+        "#E0662B"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.8326,
+          "C": 0.1526,
+          "h": 88.98
+        },
+        "display": {
+          "oklch": "83.3% 0.153 89°",
+          "rgb": "240 194 59"
+        },
+        "reads": [
+          "Warm",
+          "Light",
+          "Saturated"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 4,
+      "capturedAt": "2026-06-17T13:02:00-04:00",
+      "srgbHex": "#2E6B6F",
+      "name": "Pool tile",
+      "sourceType": "Photos",
+      "source": "IMG_2380 — McCarren pool",
+      "project": null,
+      "neighbors": [
+        "#9FC4C0",
+        "#9FC4C0",
+        "#E9E6DF",
+        "#2E6B6F",
+        "#E9E6DF",
+        "#1F3E44",
+        "#1F3E44",
+        "#E9E6DF"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.4896,
+          "C": 0.0628,
+          "h": 201.15
+        },
+        "display": {
+          "oklch": "49.0% 0.063 201°",
+          "rgb": "46 107 111"
+        },
+        "reads": [
+          "Cool",
+          "Mid value",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 25,
+            "deltaE": 4.4,
+            "label": "Close"
+          },
+          {
+            "number": 18,
+            "deltaE": 6.8,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 5,
+      "capturedAt": "2026-06-17T13:03:00-04:00",
+      "srgbHex": "#9FC4C0",
+      "name": null,
+      "sourceType": "Photos",
+      "source": "IMG_2380 — McCarren pool",
+      "project": null,
+      "neighbors": [
+        "#E9E6DF",
+        "#2E6B6F",
+        "#2E6B6F",
+        "#C9DCD6",
+        "#9FC4C0",
+        "#C9DCD6",
+        "#E9E6DF",
+        "#2E6B6F"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.7922,
+          "C": 0.0399,
+          "h": 188.3
+        },
+        "display": {
+          "oklch": "79.2% 0.040 188°",
+          "rgb": "159 196 192"
+        },
+        "reads": [
+          "Cool",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 24,
+            "deltaE": 4.4,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 6,
+      "capturedAt": "2026-06-30T21:18:00-04:00",
+      "srgbHex": "#3B3F46",
+      "name": "Graphite",
+      "sourceType": "Figma",
+      "source": "Portfolio site — Nav",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#8C9097",
+        "#3B3F46",
+        "#F7F6F3",
+        "#8C9097",
+        "#F7F6F3",
+        "#1D1D1F",
+        "#1D1D1F",
+        "#F7F6F3"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.3666,
+          "C": 0.0132,
+          "h": 261.74
+        },
+        "display": {
+          "oklch": "36.7% 0.013 262°",
+          "rgb": "59 63 70"
+        },
+        "reads": [
+          "Dark",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 15,
+            "deltaE": 6.3,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "capturedAt": "2026-07-08T16:25:00-04:00",
+      "srgbHex": "#D9A7A0",
+      "name": "Faded rose",
+      "sourceType": "Browser",
+      "source": "vimeo.com — short film still",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#6E4A44",
+        "#6E4A44",
+        "#EAD7C9",
+        "#D9A7A0",
+        "#EAD7C9",
+        "#2F2A2C",
+        "#2F2A2C",
+        "#EAD7C9"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.7725,
+          "C": 0.0602,
+          "h": 27.66
+        },
+        "display": {
+          "oklch": "77.2% 0.060 28°",
+          "rgb": "217 167 160"
+        },
+        "reads": [
+          "Warm",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 8,
+      "capturedAt": "2026-07-08T16:26:00-04:00",
+      "srgbHex": "#2F2A2C",
+      "name": null,
+      "sourceType": "Browser",
+      "source": "vimeo.com — short film still",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#6E4A44",
+        "#D9A7A0",
+        "#D9A7A0",
+        "#141213",
+        "#2F2A2C",
+        "#141213",
+        "#6E4A44",
+        "#D9A7A0"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.2912,
+          "C": 0.0081,
+          "h": 351.4
+        },
+        "display": {
+          "oklch": "29.1% 0.008 351°",
+          "rgb": "47 42 44"
+        },
+        "reads": [
+          "Dark",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 15,
+            "deltaE": 6.1,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 9,
+      "capturedAt": "2026-07-19T11:50:00-04:00",
+      "srgbHex": "#4F7CAC",
+      "name": "Workwear blue",
+      "sourceType": "Browser",
+      "source": "instagram.com — studio visit",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#B9A88E",
+        "#4F7CAC",
+        "#E8E4DC",
+        "#B9A88E",
+        "#E8E4DC",
+        "#2C3E57",
+        "#2C3E57",
+        "#E8E4DC"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.5744,
+          "C": 0.0896,
+          "h": 251.09
+        },
+        "display": {
+          "oklch": "57.4% 0.090 251°",
+          "rgb": "79 124 172"
+        },
+        "reads": [
+          "Cool",
+          "Mid value",
+          "Muted"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 10,
+      "capturedAt": "2026-07-27T09:33:00-04:00",
+      "srgbHex": "#F2EDE4",
+      "name": "Morning paper",
+      "sourceType": "PDF",
+      "source": "zine_refs_v2.pdf — p. 14",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#1C1C1C",
+        "#1C1C1C",
+        "#D8CFC0",
+        "#F2EDE4",
+        "#D8CFC0",
+        "#A39A8C",
+        "#A39A8C",
+        "#D8CFC0"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.9475,
+          "C": 0.0131,
+          "h": 82.4
+        },
+        "display": {
+          "oklch": "94.8% 0.013 82°",
+          "rgb": "242 237 228"
+        },
+        "reads": [
+          "Light",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 20,
+            "deltaE": 3.3,
+            "label": "Close"
+          },
+          {
+            "number": 22,
+            "deltaE": 3.7,
+            "label": "Close"
+          },
+          {
+            "number": 26,
+            "deltaE": 5.0,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 11,
+      "capturedAt": "2026-08-12T15:07:00-04:00",
+      "srgbHex": "#C25A35",
+      "name": "Clay pot",
+      "sourceType": "Browser",
+      "source": "are.na — Plant shop",
+      "project": "Packaging — tea",
+      "neighbors": [
+        "#EADFCC",
+        "#5E7A3A",
+        "#5E7A3A",
+        "#8C3E22",
+        "#C25A35",
+        "#8C3E22",
+        "#EADFCC",
+        "#5E7A3A"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.5901,
+          "C": 0.1431,
+          "h": 39.58
+        },
+        "display": {
+          "oklch": "59.0% 0.143 40°",
+          "rgb": "194 90 53"
+        },
+        "reads": [
+          "Warm",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": [
+          {
+            "number": 28,
+            "deltaE": 1.0,
+            "label": "Nearly identical"
+          },
+          {
+            "number": 19,
+            "deltaE": 5.2,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 12,
+      "capturedAt": "2026-08-12T15:09:00-04:00",
+      "srgbHex": "#8BAE7C",
+      "name": "Sage",
+      "sourceType": "Browser",
+      "source": "are.na — Plant shop",
+      "project": "Packaging — tea",
+      "neighbors": [
+        "#EADFCC",
+        "#8BAE7C",
+        "#5E7A3A",
+        "#EADFCC",
+        "#5E7A3A",
+        "#C25A35",
+        "#C25A35",
+        "#5E7A3A"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.7117,
+          "C": 0.0803,
+          "h": 136.49
+        },
+        "display": {
+          "oklch": "71.2% 0.080 136°",
+          "rgb": "139 174 124"
+        },
+        "reads": [
+          "Between warm and cool",
+          "Mid value",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 24,
+            "deltaE": 6.8,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 13,
+      "capturedAt": "2026-08-20T19:44:00-04:00",
+      "srgbHex": "#A8432A",
+      "name": "Brick, Chinatown",
+      "sourceType": "Photos",
+      "source": "IMG_3105 — Mott St",
+      "project": null,
+      "neighbors": [
+        "#3C3A38",
+        "#3C3A38",
+        "#D8C7B0",
+        "#A8432A",
+        "#D8C7B0",
+        "#6F2C1C",
+        "#6F2C1C",
+        "#D8C7B0"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.5153,
+          "C": 0.1389,
+          "h": 35.08
+        },
+        "display": {
+          "oklch": "51.5% 0.139 35°",
+          "rgb": "168 67 42"
+        },
+        "reads": [
+          "Warm",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": [
+          {
+            "number": 19,
+            "deltaE": 2.8,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 14,
+      "capturedAt": "2026-08-29T14:12:00-04:00",
+      "srgbHex": "#C9B8E8",
+      "name": "Lilac",
+      "sourceType": "Browser",
+      "source": "pinterest.com — tea packaging",
+      "project": "Packaging — tea",
+      "neighbors": [
+        "#5B3A63",
+        "#F5F1FA",
+        "#F5F1FA",
+        "#E8D9C4",
+        "#C9B8E8",
+        "#E8D9C4",
+        "#5B3A63",
+        "#F5F1FA"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.8126,
+          "C": 0.069,
+          "h": 301.06
+        },
+        "display": {
+          "oklch": "81.3% 0.069 301°",
+          "rgb": "201 184 232"
+        },
+        "reads": [
+          "Between warm and cool",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 15,
+      "capturedAt": "2026-09-05T12:30:00-04:00",
+      "srgbHex": "#1F3B2D",
+      "name": "Bottle green",
+      "sourceType": "PDF",
+      "source": "zine_refs_v2.pdf — p. 31",
+      "project": "Editorial zine",
+      "neighbors": [
+        "#E9E1CF",
+        "#1F3B2D",
+        "#C9A45C",
+        "#E9E1CF",
+        "#C9A45C",
+        "#0F1F18",
+        "#0F1F18",
+        "#C9A45C"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.3253,
+          "C": 0.0426,
+          "h": 160.99
+        },
+        "display": {
+          "oklch": "32.5% 0.043 161°",
+          "rgb": "31 59 45"
+        },
+        "reads": [
+          "Cool",
+          "Dark",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 8,
+            "deltaE": 6.1,
+            "label": "Close"
+          },
+          {
+            "number": 6,
+            "deltaE": 6.3,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 16,
+      "capturedAt": "2026-09-14T17:58:00-04:00",
+      "srgbHex": "#D98E04",
+      "name": "Taxi",
+      "sourceType": "Photos",
+      "source": "IMG_4471 — Canal St",
+      "project": null,
+      "neighbors": [
+        "#2B2B2B",
+        "#2B2B2B",
+        "#8D8D8D",
+        "#D98E04",
+        "#8D8D8D",
+        "#F2C14E",
+        "#F2C14E",
+        "#8D8D8D"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.706,
+          "C": 0.1505,
+          "h": 71.87
+        },
+        "display": {
+          "oklch": "70.6% 0.151 72°",
+          "rgb": "217 142 4"
+        },
+        "reads": [
+          "Warm",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 17,
+      "capturedAt": "2026-09-21T10:05:00-04:00",
+      "srgbHex": "#7A8B99",
+      "name": "Overcast steel",
+      "sourceType": "Photos",
+      "source": "IMG_4402 — Brooklyn Bridge",
+      "project": null,
+      "neighbors": [
+        "#4B5560",
+        "#B8C2CA",
+        "#B8C2CA",
+        "#D9D6CF",
+        "#7A8B99",
+        "#D9D6CF",
+        "#4B5560",
+        "#B8C2CA"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.6279,
+          "C": 0.0289,
+          "h": 242.99
+        },
+        "display": {
+          "oklch": "62.8% 0.029 243°",
+          "rgb": "122 139 153"
+        },
+        "reads": [
+          "Mid value",
+          "Neutral"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 18,
+      "capturedAt": "2026-09-21T10:06:00-04:00",
+      "srgbHex": "#4B5560",
+      "name": null,
+      "sourceType": "Photos",
+      "source": "IMG_4402 — Brooklyn Bridge",
+      "project": null,
+      "neighbors": [
+        "#2D333A",
+        "#4B5560",
+        "#7A8B99",
+        "#2D333A",
+        "#7A8B99",
+        "#B8C2CA",
+        "#B8C2CA",
+        "#7A8B99"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.4449,
+          "C": 0.0221,
+          "h": 250.83
+        },
+        "display": {
+          "oklch": "44.5% 0.022 251°",
+          "rgb": "75 85 96"
+        },
+        "reads": [
+          "Mid value",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 25,
+            "deltaE": 3.9,
+            "label": "Close"
+          },
+          {
+            "number": 4,
+            "deltaE": 6.8,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 19,
+      "capturedAt": "2026-09-28T16:40:00-04:00",
+      "srgbHex": "#B5462E",
+      "name": "Brick, Bushwick",
+      "sourceType": "Photos",
+      "source": "IMG_4398 — Jefferson St",
+      "project": null,
+      "neighbors": [
+        "#7E2F1E",
+        "#7E2F1E",
+        "#D2C4AE",
+        "#B5462E",
+        "#D2C4AE",
+        "#3A3634",
+        "#3A3634",
+        "#D2C4AE"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.5408,
+          "C": 0.1495,
+          "h": 33.82
+        },
+        "display": {
+          "oklch": "54.1% 0.149 34°",
+          "rgb": "181 70 46"
+        },
+        "reads": [
+          "Warm",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": [
+          {
+            "number": 13,
+            "deltaE": 2.8,
+            "label": "Close"
+          },
+          {
+            "number": 28,
+            "deltaE": 4.7,
+            "label": "Close"
+          },
+          {
+            "number": 11,
+            "deltaE": 5.2,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 20,
+      "capturedAt": "2026-09-28T22:11:00-04:00",
+      "srgbHex": "#EDE3CF",
+      "name": null,
+      "sourceType": "Figma",
+      "source": "Portfolio site — Case study cover",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#C9B79A",
+        "#1D1D1F",
+        "#1D1D1F",
+        "#F7F2E8",
+        "#EDE3CF",
+        "#F7F2E8",
+        "#C9B79A",
+        "#1D1D1F"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.9184,
+          "C": 0.0288,
+          "h": 84.59
+        },
+        "display": {
+          "oklch": "91.8% 0.029 85°",
+          "rgb": "237 227 207"
+        },
+        "reads": [
+          "Light",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 22,
+            "deltaE": 1.1,
+            "label": "Nearly identical"
+          },
+          {
+            "number": 26,
+            "deltaE": 2.6,
+            "label": "Close"
+          },
+          {
+            "number": 10,
+            "deltaE": 3.3,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 21,
+      "capturedAt": "2026-09-28T22:12:00-04:00",
+      "srgbHex": "#141414",
+      "name": "Almost black",
+      "sourceType": "Figma",
+      "source": "Portfolio site — Case study cover",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#000000",
+        "#141414",
+        "#EDE3CF",
+        "#000000",
+        "#EDE3CF",
+        "#3B3F46",
+        "#3B3F46",
+        "#EDE3CF"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.1913,
+          "C": 0.0,
+          "h": 89.88
+        },
+        "display": {
+          "oklch": "19.1% 0.000 90°",
+          "rgb": "20 20 20"
+        },
+        "reads": [
+          "Dark",
+          "Neutral"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 22,
+      "capturedAt": "2026-10-01T13:20:00-04:00",
+      "srgbHex": "#E8E1D3",
+      "name": "Gallery wall",
+      "sourceType": "Browser",
+      "source": "instagram.com — studio visit",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#C9C1B2",
+        "#C9C1B2",
+        "#3A3633",
+        "#E8E1D3",
+        "#3A3633",
+        "#F5F2EC",
+        "#F5F2EC",
+        "#3A3633"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.9115,
+          "C": 0.0202,
+          "h": 84.59
+        },
+        "display": {
+          "oklch": "91.1% 0.020 85°",
+          "rgb": "232 225 211"
+        },
+        "reads": [
+          "Light",
+          "Neutral"
+        ],
+        "keptBefore": [
+          {
+            "number": 20,
+            "deltaE": 1.1,
+            "label": "Nearly identical"
+          },
+          {
+            "number": 26,
+            "deltaE": 2.3,
+            "label": "Close"
+          },
+          {
+            "number": 2,
+            "deltaE": 3.3,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 23,
+      "capturedAt": "2026-10-01T13:22:00-04:00",
+      "srgbHex": "#5E4B8B",
+      "name": null,
+      "sourceType": "Browser",
+      "source": "instagram.com — studio visit",
+      "project": "Portfolio site",
+      "neighbors": [
+        "#2B2440",
+        "#E8E1D3",
+        "#E8E1D3",
+        "#9D8FC2",
+        "#5E4B8B",
+        "#9D8FC2",
+        "#2B2440",
+        "#E8E1D3"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.462,
+          "C": 0.1026,
+          "h": 295.81
+        },
+        "display": {
+          "oklch": "46.2% 0.103 296°",
+          "rgb": "94 75 139"
+        },
+        "reads": [
+          "Cool",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 24,
+      "capturedAt": "2026-10-01T20:05:00-04:00",
+      "srgbHex": "#A9B9A0",
+      "name": "Lichen",
+      "sourceType": "Photos",
+      "source": "IMG_4510 — Prospect Park",
+      "project": null,
+      "neighbors": [
+        "#3E4A36",
+        "#A9B9A0",
+        "#5E6B4E",
+        "#3E4A36",
+        "#5E6B4E",
+        "#D6D3C3",
+        "#D6D3C3",
+        "#5E6B4E"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.7664,
+          "C": 0.0391,
+          "h": 134.17
+        },
+        "display": {
+          "oklch": "76.6% 0.039 134°",
+          "rgb": "169 185 160"
+        },
+        "reads": [
+          "Between warm and cool",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 5,
+            "deltaE": 4.4,
+            "label": "Close"
+          },
+          {
+            "number": 12,
+            "deltaE": 6.8,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 25,
+      "capturedAt": "2026-10-04T11:40:00-04:00",
+      "srgbHex": "#2F5D62",
+      "name": null,
+      "sourceType": "Browser",
+      "source": "are.na — Warm light, NYC",
+      "project": null,
+      "neighbors": [
+        "#C4552D",
+        "#C4552D",
+        "#C4552D",
+        "#C4552D",
+        "#7FA7A3",
+        "#C4552D",
+        "#C4552D",
+        "#2F5D62"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.4479,
+          "C": 0.051,
+          "h": 204.72
+        },
+        "display": {
+          "oklch": "44.8% 0.051 205°",
+          "rgb": "47 93 98"
+        },
+        "reads": [
+          "Cool",
+          "Mid value",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 18,
+            "deltaE": 3.9,
+            "label": "Close"
+          },
+          {
+            "number": 4,
+            "deltaE": 4.4,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 26,
+      "capturedAt": "2026-10-04T13:57:00-04:00",
+      "srgbHex": "#F3D9CF",
+      "name": "Blush ground",
+      "sourceType": "Figma",
+      "source": "Tea packaging — Box front",
+      "project": "Packaging — tea",
+      "neighbors": [
+        "#E9E9EA",
+        "#5B3A63",
+        "#5B3A63",
+        "#E9E9EA",
+        "#F3D9CF",
+        "#E9E9EA",
+        "#F3D9CF",
+        "#F3D9CF"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.904,
+          "C": 0.032,
+          "h": 42.25
+        },
+        "display": {
+          "oklch": "90.4% 0.032 42°",
+          "rgb": "243 217 207"
+        },
+        "reads": [
+          "Warm",
+          "Light",
+          "Muted"
+        ],
+        "keptBefore": [
+          {
+            "number": 22,
+            "deltaE": 2.3,
+            "label": "Close"
+          },
+          {
+            "number": 20,
+            "deltaE": 2.6,
+            "label": "Close"
+          },
+          {
+            "number": 2,
+            "deltaE": 2.9,
+            "label": "Close"
+          }
+        ]
+      }
+    },
+    {
+      "number": 27,
+      "capturedAt": "2026-10-04T13:58:00-04:00",
+      "srgbHex": "#5B3A63",
+      "name": "Plum label",
+      "sourceType": "Figma",
+      "source": "Tea packaging — Box front",
+      "project": "Packaging — tea",
+      "neighbors": [
+        "#F3D9CF",
+        "#F3D9CF",
+        "#F3D9CF",
+        "#F3D9CF",
+        "#F7F1EA",
+        "#F3D9CF",
+        "#F3D9CF",
+        "#F3D9CF"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.4038,
+          "C": 0.078,
+          "h": 319.63
+        },
+        "display": {
+          "oklch": "40.4% 0.078 320°",
+          "rgb": "91 58 99"
+        },
+        "reads": [
+          "Between warm and cool",
+          "Dark",
+          "Muted"
+        ],
+        "keptBefore": []
+      }
+    },
+    {
+      "number": 28,
+      "capturedAt": "2026-10-04T14:22:00-04:00",
+      "srgbHex": "#C4552D",
+      "name": null,
+      "sourceType": "Browser",
+      "source": "are.na — Warm light, NYC",
+      "project": null,
+      "neighbors": [
+        "#EFE6D6",
+        "#EFE6D6",
+        "#C4552D",
+        "#C4552D",
+        "#2F5D62",
+        "#C4552D",
+        "#E0A526",
+        "#E0A526"
+      ],
+      "expected": {
+        "oklch": {
+          "L": 0.5849,
+          "C": 0.1522,
+          "h": 39.42
+        },
+        "display": {
+          "oklch": "58.5% 0.152 39°",
+          "rgb": "196 85 45"
+        },
+        "reads": [
+          "Warm",
+          "Mid value",
+          "Saturated"
+        ],
+        "keptBefore": [
+          {
+            "number": 11,
+            "deltaE": 1.0,
+            "label": "Nearly identical"
+          },
+          {
+            "number": 19,
+            "deltaE": 4.7,
+            "label": "Close"
+          }
+        ]
+      }
+    }
+  ]
+}

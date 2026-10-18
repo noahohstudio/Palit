@@ -1,0 +1,19 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.build/
+
+# Kept local, not on the public site: agent instructions and tool data
+.claude/
+.cursor/
+/.rivet/
+design/**/.cursor/
+design/**/.rivet/cli/
+CLAUDE.md
+HANDOFF.md
+KICKOFF.md
+
+.pages/

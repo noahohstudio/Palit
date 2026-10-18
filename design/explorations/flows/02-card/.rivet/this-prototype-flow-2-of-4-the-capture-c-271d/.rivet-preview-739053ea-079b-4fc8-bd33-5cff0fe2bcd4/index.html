@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · Flow 2 · Specimen card</title>
+<style>
+:root{--chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--rule:rgba(29,29,31,.12);
+--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.2,1);
+--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .45 0 0 0 0 .45 0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box;margin:0}
+body{background:#2a2a2c;font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;color:var(--ink);font-variant-numeric:tabular-nums;display:grid;place-items:center;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+.desk{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:10px;background:linear-gradient(160deg,#cfcfd1,#b7b7ba 55%,#a6a6aa)}
+/* menu bar */
+.menubar{position:absolute;inset:0 0 auto;height:28px;display:flex;align-items:center;gap:16px;padding:0 16px;background:rgba(245,245,245,.72);backdrop-filter:blur(20px) saturate(1.4);font-size:13px;z-index:20}
+.menubar b{font-weight:600}.menubar .sp{flex:1}
+.iris{width:24px;height:22px;display:grid;place-items:center;border-radius:6px}
+.iris.on{background:rgba(29,29,31,.12)}
+.iris svg{width:16px;height:16px}
+/* popover + toast: translucent material */
+.mat{background:rgba(246,246,246,.78);backdrop-filter:blur(28px) saturate(1.6);border:.5px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.18);border-radius:14px}
+.pop{position:absolute;top:34px;right:120px;width:300px;padding:12px;z-index:19;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity var(--mid) var(--ease),transform var(--mid) var(--ease)}
+.pop.open{opacity:1;transform:none;pointer-events:auto}
+.pop h4{font-size:12px;font-weight:500;color:var(--ink2);margin:4px 4px 8px}
+.today{display:flex;flex-direction:column;gap:2px}
+.trow{display:flex;align-items:center;gap:12px;padding:8px;border-radius:10px;text-align:left;width:100%;transition:background var(--fast) var(--ease)}
+.trow:hover,.trow:focus-visible{background:rgba(0,0,0,.06);outline:none}
+.trow i{width:28px;height:28px;border-radius:6px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.trow span{flex:1}.trow small{color:var(--ink3)}
+.trow.hot{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.popfoot{display:flex;justify-content:space-between;border-top:.5px solid var(--rule);margin-top:8px;padding:8px 4px 0;font-size:12px;color:var(--ink2)}
+.popfoot button{font-weight:500;color:var(--ink)}
+.toast{position:absolute;top:40px;right:16px;width:300px;padding:12px;display:flex;gap:12px;align-items:center;z-index:18;transition:opacity var(--mid) var(--ease),transform var(--mid) var(--ease)}
+.toast.gone{opacity:0;transform:translateX(16px);pointer-events:none}
+.toast i{width:36px;height:36px;border-radius:6px;background:#c4552d}
+.toast div{flex:1}.toast small{display:block;color:var(--ink2);font-size:12px}
+.btn{padding:4px 12px;border-radius:6px;background:var(--ink);color:#fff;font-weight:500;font-size:12px}
+.btn.ghost{background:rgba(0,0,0,.06);color:var(--ink)}
+/* step list */
+.steps{position:absolute;left:16px;bottom:16px;z-index:15;width:200px;padding:12px;border-radius:10px;background:rgba(255,255,255,.55);font-size:12px;color:var(--ink2)}
+.steps p{font-weight:500;color:var(--ink);margin-bottom:8px}
+.steps ol{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px}
+.steps button{display:flex;gap:8px;width:100%;text-align:left;padding:2px 4px;border-radius:6px;color:var(--ink3)}
+.steps button em{font-style:normal;width:16px}
+.steps li.done button{color:var(--ink2)}
+.steps li.done em::before{content:"✓"}
+.steps li.cur button{color:var(--ink);background:rgba(0,0,0,.06)}
+/* scrim + stage */
+.scrim{position:absolute;inset:28px 0 0;background:rgba(40,40,42,.28);opacity:0;pointer-events:none;transition:opacity var(--slow) var(--ease);z-index:10}
+.scrim.open{opacity:1;pointer-events:auto}
+.stage{position:absolute;left:50%;top:420px;width:700px;height:440px;margin:-220px 0 0 -350px;z-index:12;perspective:1800px;opacity:0;transform:translateY(24px) rotate(-1.2deg) scale(.96);pointer-events:none;transition:opacity var(--slow) var(--ease),transform var(--slow) var(--ease)}
+.stage.open{opacity:1;transform:rotate(-.6deg);pointer-events:auto}
+.stage.swap .inner{opacity:0;transform:translateX(-24px)}
+.backto{position:absolute;top:-40px;left:0;display:none}
+.backto.show{display:inline-flex}
+.closeX{position:absolute;top:-40px;right:0}
+.inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform var(--slow) var(--ease),opacity var(--mid) var(--ease)}
+.inner.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:6px;overflow:hidden;
+background:var(--grain),#FDFDFC;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 .5px rgba(0,0,0,.18),0 2px 3px rgba(0,0,0,.08),0 18px 40px -8px rgba(0,0,0,.28);display:flex}
+.face::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:6px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.04),inset 0 0 0 1px rgba(255,255,255,.6)}
+.back{transform:rotateY(180deg)}
+/* front: specimen label */
+.plate{width:236px;flex:none;display:flex;flex-direction:column}
+.crop{position:relative;height:172px;overflow:hidden;flex:none}
+.crop .ph{position:absolute;inset:-24px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);filter:blur(9px) saturate(.95)}
+.cross{position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px;border:1.5px solid #fff;border-radius:50%;box-shadow:0 0 0 .5px rgba(0,0,0,.4)}
+.cross::before,.cross::after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.3)}
+.cross::before{left:50%;top:-8px;bottom:-8px;width:1.5px;margin-left:-.75px}
+.cross::after{top:50%;left:-8px;right:-8px;height:1.5px;margin-top:-.75px}
+.chip{flex:1;position:relative}
+.chip span{position:absolute;left:12px;bottom:12px;font-size:11px;color:rgba(255,255,255,.85)}
+.label{flex:1;padding:24px 32px 16px;display:flex;flex-direction:column;min-width:0}
+.cat{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2)}
+.cat b{font-weight:500;color:var(--ink)}
+.name{margin-top:8px;border:0;background:none;width:100%;font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.1;padding:2px 0;outline:none;border-radius:6px}
+.name::placeholder{font-size:16px;font-weight:400;letter-spacing:0;color:var(--ink3)}
+.name:focus{box-shadow:0 2px 0 var(--ink3)}
+.heavy{height:3px;background:var(--ink);margin:12px 0 4px}
+.rows{display:grid;grid-template-columns:96px 1fr;font-size:12px}
+.rows dt{color:var(--ink2);padding:8px 0;border-bottom:.5px solid var(--rule)}
+.rows dd{padding:8px 0;border-bottom:.5px solid var(--rule);min-width:0}
+.vals{display:flex;flex-direction:column;gap:2px}
+.val{display:flex;justify-content:space-between;align-items:center}
+.val button{font-size:11px;color:var(--ink2);padding:0 8px;border-radius:6px;transition:background var(--fast) var(--ease),color var(--fast)}
+.val button:hover{background:rgba(0,0,0,.06);color:var(--ink)}
+.val button.ok{color:var(--ink);background:rgba(0,0,0,.08)}
+.tags{display:flex;gap:4px;flex-wrap:wrap}
+.tags span{padding:0 8px;border-radius:6px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
+.note{margin-top:12px;flex:1;border:0;resize:none;background:repeating-linear-gradient(transparent 0 19px,rgba(0,0,0,.08) 19px 20px);font-size:12px;line-height:20px;font-family:inherit;outline:none;color:var(--ink)}
+.note::placeholder{color:var(--ink3)}
+.foot{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink3);padding-top:8px}
+.turn{font-size:12px;font-weight:500;color:var(--ink);padding:4px 8px;border-radius:6px}
+.turn:hover{background:rgba(0,0,0,.06)}
+/* back */
+.bk{flex:1;padding:24px 32px 16px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:0 32px;min-width:0}
+.bk h5{font-size:12px;font-weight:500;margin:12px 0 4px}
+.bk h5:first-child{margin-top:0}
+.bk .sub{font-size:11px;color:var(--ink3);margin-top:4px}
+.grid9{display:grid;grid-template-columns:repeat(3,32px);gap:4px;margin-top:4px}
+.grid9 i{height:32px;border-radius:2px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.grid9 i.c{box-shadow:0 0 0 1.5px var(--ink)}
+.kin{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.kin button{display:flex;gap:8px;align-items:center;text-align:left;padding:4px;border-radius:6px;margin:0 -4px;transition:background var(--fast) var(--ease)}
+.kin button:hover{background:rgba(0,0,0,.05)}
+.kin i{width:36px;height:48px;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.15),inset 0 0 0 .5px rgba(0,0,0,.15);transform:rotate(-2deg)}
+.kin button:nth-child(2) i{transform:rotate(2deg)}
+.kin small{display:block;color:var(--ink2);font-size:11px}
+.proj{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.proj label{display:flex;gap:8px;align-items:center;font-size:12px;cursor:pointer;padding:2px 0}
+.proj input{accent-color:#1D1D1F}
+.crop.tall{height:auto;flex:1}
+.src .rows{grid-template-columns:72px 1fr}
+.src dd{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bfoot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink3);margin-top:auto;padding-top:8px}
+</style>
+</head>
+<body>
+<div class="desk" id="desk">
+  <div class="menubar">
+    <b></b><b>Safari</b><span>File</span><span>Edit</span><span>View</span><span class="sp"></span>
+    <button class="iris" id="iris" aria-label="Palette"><svg viewBox="0 0 16 16" fill="none" stroke="#1D1D1F" stroke-width="1.3"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="2.4"/><path d="M8 1.8 9.6 5.8M14 7 9.8 8.4M10.7 13.6 8.4 10.3M2.6 11 6.1 9M3.2 3.7 6.3 6.4"/></svg></button>
+    <span>Fri Oct 16</span><span>2:23 PM</span>
+  </div>
+
+  <div class="toast mat" id="toast">
+    <i></i><div>No. 028 kept<small>#c4552d · are.na</small></div>
+    <button class="btn ghost" id="toastOpen">Open card</button>
+  </div>
+
+  <div class="pop mat" id="pop">
+    <h4>Today</h4>
+    <div class="today" id="today"></div>
+    <div class="popfoot"><span>Stored on this Mac</span><button>Open in archive</button></div>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="stage" id="stage" role="dialog" aria-label="Capture card">
+    <button class="btn ghost backto" id="backto"></button>
+    <button class="btn ghost closeX" id="closeX">Close</button>
+    <div class="inner" id="inner">
+      <section class="face front" id="front"></section>
+      <section class="face back" id="back"></section>
+    </div>
+  </div>
+
+  <nav class="steps" aria-label="Steps"><p>Flow 2 · The capture card</p><ol id="steps"></ol></nav>
+</div>
+
+<script>
+const C={
+ 28:{n:28,name:"",hex:"#c4552d",rgb:"196 85 45",ok:"58.5% 0.152 39°",app:"are.na",win:"Warm light, NYC",url:"are.na/block/31408822",kept:"Kept today at 2:22 PM",
+  nb:["#e8dcc8","#efe6d6","#d9d2c4","#c86a3f","#c4552d","#2f5d62","#d89a2b","#e0a526","#3a5a52"],reads:["Warm","Mid value","Saturated"],kin:[[11,"Nearly identical",1.0],[19,"Close",4.7]],proj:""},
+ 11:{n:11,name:"Clay pot",hex:"#c25a35",rgb:"194 90 53",ok:"59.0% 0.145 40°",app:"Safari",win:"Heath Ceramics — Planters",url:"heathceramics.com/planters",kept:"Kept Oct 2 at 10:41 AM",
+  nb:["#ece7df","#e6ddd0","#f1ece4","#b8532f","#c25a35","#a94a2c","#7d6a58","#8a705b","#6e5d4c"],reads:["Warm","Mid value","Saturated"],kin:[[28,"Nearly identical",1.0],[19,"Close",4.9]],proj:"Packaging — tea"},
+ 19:{n:19,name:"Brick, Bushwick",hex:"#b5462e",rgb:"181 70 46",ok:"53.4% 0.156 35°",app:"Photos",win:"IMG_2041.HEIC",url:"",kept:"Kept Oct 9 at 6:05 PM",
+  nb:["#9c3a28","#a8412c","#c9c3bb","#b04a33","#b5462e","#8f3626","#5e5a55","#6b2f24","#4a4643"],reads:["Warm","Mid value","Saturated"],kin:[[28,"Close",4.7],[11,"Close",4.9]],proj:"Editorial zine"}};
+const others=[[27,"Plum label","#5b3a63"],[26,"Blush ground","#f3d9cf"],[24,"Lichen","#a9b9a0"]];
+const PROJ=["Packaging — tea","Portfolio site","Editorial zine"];
+const STEPS=[["open","Open from Today"],["name","Name it"],["copy","Copy values"],["src","Where it came from"],["nb","What surrounded it"],["reads","Reads as"],["kin","You’ve kept this before"],["proj","Assign a project"],["close","Close"]];
+const $=s=>document.querySelector(s);
+let cur=28,hist=[],done=new Set(),curStep="open",flipped=false;
+
+function pad(n){return "No. "+String(n).padStart(3,"0")}
+function steps(){$("#steps").innerHTML=STEPS.map(([k,t])=>`<li class="${done.has(k)?"done":""} ${curStep===k?"cur":""}"><button data-s="${k}"><em></em>${t}</button></li>`).join("")}
+function mark(k){done.add(k);const nx=STEPS.find(([s])=>!done.has(s));curStep=nx?nx[0]:k;steps()}
+function crop(c,cls=""){return `<div class="crop ${cls}" aria-label="Crop with the pick point marked"><div class="ph">${c.nb.map(h=>`<i style="background:${h}"></i>`).join("")}</div><div class="cross"></div></div>`}
+
+function render(){
+ const c=C[cur];
+ $("#front").innerHTML=`
+  <div class="plate">${crop(c)}<div class="chip" style="background:${c.hex}"><span>${c.hex}</span></div></div>
+  <div class="label">
+   <div class="cat"><span>Catalogue no. <b>${pad(c.n)}</b></span><span>${c.kept}</span></div>
+   <input class="name" id="name" value="${c.name}" placeholder="Unnamed. Name it so you remember it." aria-label="Name for ${pad(c.n)}">
+   <div class="heavy"></div>
+   <dl class="rows">
+    <dt>Locality</dt><dd>${c.app} · ${c.win}</dd>
+    <dt>Values</dt><dd class="vals">
+     ${[["Hex",c.hex],["RGB",c.rgb],["OKLCH",c.ok]].map(([l,v])=>`<div class="val"><span><span style="color:var(--ink2);display:inline-block;width:48px">${l}</span>${v}</span><button data-copy="${v}" aria-label="Copy ${l}">Copy</button></div>`).join("")}
+    </dd>
+    <dt>Reads as</dt><dd class="tags">${c.reads.map(r=>`<span>${r}</span>`).join("")}</dd>
+    <dt>Project</dt><dd id="fproj">${c.proj||'<span style="color:var(--ink3)">None yet</span>'}</dd>
+   </dl>
+   <textarea class="note" rows="2" placeholder="A short note, if you want one."></textarea>
+   <div class="foot"><span>Stored on this Mac</span><button class="turn" data-flip>Turn over →</button></div>
+  </div>`;
+ $("#back").innerHTML=`
+  <div class="bk">
+   <div class="src">
+    <h5>Where it came from</h5>
+    <dl class="rows"><dt>Sampled in</dt><dd>${c.app}</dd><dt>Window</dt><dd>${c.win}</dd>${c.url?`<dt>URL</dt><dd>${c.url}</dd>`:`<dt>File</dt><dd>${c.win}</dd>`}</dl>
+    <h5>What surrounded it</h5>
+    <div class="grid9">${c.nb.map((h,i)=>`<i class="${i==4?"c":""}" style="background:${h}" title="${h}"></i>`).join("")}</div>
+    <p class="sub">Sampled 12 px out from the point you clicked.</p>
+   </div>
+   <div>
+    <h5>You’ve kept this before</h5>
+    <div class="kin">${c.kin.map(([n,l,d])=>`<button data-go="${n}"><i style="background:${C[n].hex}"></i><span>${pad(n)} ${C[n].name||"Unnamed"}<small>${C[n].app} · ${l} · ΔE ${d.toFixed(1)}</small></span></button>`).join("")}</div>
+    <h5>Project</h5>
+    <div class="proj">${PROJ.map(p=>`<label><input type="radio" name="p" value="${p}" ${c.proj===p?"checked":""}>${p}</label>`).join("")}</div>
+   </div>
+   <div class="bfoot"><span>${pad(c.n)} · ${c.hex}</span><button class="turn" data-flip>← Turn over</button></div>
+  </div>
+  <div class="plate" style="width:200px">${crop(c,"tall")}</div>`;
+ const bt=$("#backto");
+ if(hist.length){bt.textContent="← Back to "+pad(hist[hist.length-1]);bt.classList.add("show")}else bt.classList.remove("show");
+}
+function today(){
+ const r=[[28,C[28].name||"Unnamed","#c4552d","2:22 PM"],...others.map(([n,nm,h],i)=>[n,nm,h,["1:48 PM","11:05 AM","9:30 AM"][i]])];
+ $("#today").innerHTML=r.map(([n,nm,h,t])=>`<button class="trow ${n==28?"hot":""}" data-open="${n}"><i style="background:${h}"></i><span>${pad(n)} ${nm}</span><small>${t}</small></button>`).join("");
+}
+function openCard(){$("#pop").classList.remove("open");$("#iris").classList.remove("on");$("#toast").classList.add("gone");cur=28;hist=[];setFlip(false);render();$("#scrim").classList.add("open");$("#stage").classList.add("open");mark("open");setTimeout(()=>$("#name").focus(),360)}
+function closeCard(){$("#stage").classList.remove("open");$("#scrim").classList.remove("open");if(done.has("open"))mark("close");today()}
+function setFlip(f){flipped=f;$("#inner").classList.toggle("flipped",f);if(f){mark("src");mark("nb")}}
+function go(n,back){
+ $("#stage").classList.add("swap");
+ setTimeout(()=>{if(!back)hist.push(cur);cur=n;render();setFlip(back?true:false);$("#stage").classList.remove("swap")},200);
+}
+
+document.addEventListener("click",e=>{
+ const t=e.target.closest("button,[data-open]");if(!t)return;
+ if(t.id==="iris"){const o=$("#pop").classList.toggle("open");t.classList.toggle("on",o);return}
+ if(t.id==="toastOpen"||t.dataset.open==28)return openCard();
+ if(t.dataset.open){t.animate([{transform:"translateX(0)"},{transform:"translateX(3px)"},{transform:"translateX(0)"}],{duration:200});return}
+ if(t.id==="closeX")return closeCard();
+ if(t.id==="backto"){go(hist.pop(),true);return}
+ if("flip" in t.dataset)return setFlip(!flipped);
+ if(t.dataset.copy){navigator.clipboard?.writeText(t.dataset.copy).catch(()=>{});t.textContent="Copied";t.classList.add("ok");setTimeout(()=>{t.textContent="Copy";t.classList.remove("ok")},1200);mark("copy");mark("reads");return}
+ if(t.dataset.go){mark("kin");go(+t.dataset.go);return}
+ if(t.dataset.s){const s=t.dataset.s;
+  if(!$("#stage").classList.contains("open")&&s!=="open"&&s!=="close")openCard();
+  if(s==="open")openCard();if(s==="close")closeCard();
+  if(s==="name"||s==="copy"||s==="reads"){setFlip(false);if(s==="name")setTimeout(()=>$("#name")?.focus(),200)}
+  if(["src","nb","kin","proj"].includes(s))setFlip(true);
+  curStep=s;steps()}
+});
+document.addEventListener("change",e=>{if(e.target.name==="p"){C[cur].proj=e.target.value;$("#fproj").textContent=e.target.value;mark("proj")}});
+document.addEventListener("input",e=>{if(e.target.id==="name"){C[cur].name=e.target.value.trim()}});
+document.addEventListener("keydown",e=>{
+ if(e.target.id==="name"&&e.key==="Enter"){e.target.blur();if(C[cur].name)mark("name");return}
+ if(e.key==="Escape"){if(flipped)setFlip(false);else if($("#stage").classList.contains("open"))closeCard();else{$("#pop").classList.remove("open");$("#iris").classList.remove("on")}}
+});
+document.addEventListener("focusout",e=>{if(e.target.id==="name"&&C[cur].name)mark("name")});
+$("#scrim").onclick=closeCard;
+today();steps();
+</script>
+</body>
+</html>

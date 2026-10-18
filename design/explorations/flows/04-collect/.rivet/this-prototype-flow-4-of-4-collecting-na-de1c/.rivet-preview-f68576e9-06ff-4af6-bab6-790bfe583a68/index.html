@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · Flow 4 · Naming stack</title>
+<style>
+:root{--chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--line:#E4E4E6;--r1:6px;--r2:10px;--r3:14px;--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.3,1);
+--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .06 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;color:var(--ink);background:#d9d9dc;height:100vh;overflow:hidden;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:800px;transform-origin:center;background:linear-gradient(160deg,#cfd0d4,#b9bbc0);overflow:hidden;border-radius:var(--r2)}
+.menubar{height:24px;background:rgba(246,246,246,.82);backdrop-filter:blur(20px);display:flex;align-items:center;padding:0 12px;gap:16px;font-size:13px}
+.menubar .sp{flex:1}.menubar b{font-weight:600}
+.iris{width:22px;height:18px;display:grid;place-items:center;border-radius:4px}
+.iris.on{background:rgba(0,0,0,.1)}
+.win{position:absolute;left:80px;top:52px;width:1120px;height:700px;background:var(--content);border-radius:var(--r2);box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 20px 50px rgba(0,0,0,.22);display:grid;grid-template-columns:208px 1fr;overflow:hidden}
+.side{background:var(--chrome);border-right:1px solid var(--line);padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+.lights{display:flex;gap:8px;padding:2px 8px 18px}.lights i{width:12px;height:12px;border-radius:50%;background:#dcdcde}
+.sh{font-size:11px;color:var(--ink3);padding:12px 8px 4px;font-weight:500}
+.nav{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r1);text-align:left;width:100%;transition:background var(--fast) ease-out}
+.nav:hover{background:rgba(0,0,0,.04)}.nav.on{background:rgba(0,0,0,.07);font-weight:500}
+.nav .c{margin-left:auto;color:var(--ink3);font-size:12px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18);transition:background var(--slow) ease-out,transform var(--slow) ease-out}
+.dot.pop{transform:scale(1.5)}
+.side .foot{margin-top:auto;font-size:11px;color:var(--ink3);padding:8px}
+.main{display:flex;flex-direction:column;min-width:0;position:relative}
+.bar{height:52px;display:flex;align-items:center;gap:12px;padding:0 24px;border-bottom:1px solid var(--line)}
+.bar h1{font-size:15px;font-weight:600}.bar .sub{color:var(--ink2)}.bar .sp{flex:1}
+.btn{padding:6px 12px;border-radius:var(--r1);background:var(--ink);color:#fff;font-weight:500;transition:opacity var(--fast) ease-out}
+.btn:hover{opacity:.85}.btn.ghost{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn:disabled{opacity:.3;cursor:default}
+.view{flex:1;overflow:auto;padding:24px;animation:in var(--mid) ease-out}
+@keyframes in{from{opacity:0;transform:translateY(4px)}}
+.lede{color:var(--ink2);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px}
+/* paper */
+.paper{background:#fff var(--grain);border-radius:var(--r1);box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 1px 0 rgba(0,0,0,.04),0 6px 14px -6px rgba(0,0,0,.18);position:relative}
+.chip{padding:6px 6px 10px;text-align:left;transition:transform var(--mid) var(--ease),box-shadow var(--mid) var(--ease)}
+.chip:hover{transform:translateY(-2px)}
+.chip .sw{height:96px;border-radius:3px}
+.chip .nm{font-weight:600;font-size:13px;margin:8px 2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .nm.un{color:var(--ink3);font-weight:500}
+.chip .fp{font-size:11px;color:var(--ink2);margin:0 2px;display:flex;justify-content:space-between}
+.chip[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink),0 8px 18px -6px rgba(0,0,0,.25);transform:translateY(-2px)}
+.chip .tick{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;display:none;place-items:center}
+.chip[aria-pressed=true] .tick{display:grid}
+.chip.fresh .nm::after{content:" · just named";font-weight:400;color:var(--ink3);font-size:11px}
+/* stack */
+.stackwrap{display:grid;grid-template-columns:1fr 340px 1fr;gap:32px;align-items:center;height:100%}
+.stack{position:relative;width:340px;height:470px}
+.stack .paper{position:absolute;inset:0;transition:transform var(--slow) var(--ease),opacity var(--slow) ease-out}
+.card{display:flex;flex-direction:column;padding:10px}
+.card .sw{height:250px;border-radius:3px;margin:-10px -10px 0;border-radius:var(--r1) var(--r1) 0 0}
+.card .no{font-size:11px;color:var(--ink2);margin-top:12px;display:flex;justify-content:space-between}
+.card .nameIn{font-size:30px;font-weight:700;letter-spacing:-.02em;border:0;outline:0;background:transparent;width:100%;padding:2px 0 4px;margin-top:2px}
+.card .nameIn::placeholder{color:#c9c9cc}
+.card .rule{height:3px;background:var(--ink);margin:2px 0 10px}
+.card .fine{font-size:11px;color:var(--ink2);display:grid;grid-template-columns:64px 1fr;row-gap:2px}
+.card .fine span:nth-child(odd){color:var(--ink3)}
+.out-name{transform:translate(460px,-30px) rotate(8deg)!important;opacity:0}
+.out-skip{transform:translate(-460px,20px) rotate(-6deg)!important;opacity:0}
+.keys{display:flex;gap:16px;justify-content:center;margin-top:16px;color:var(--ink2);font-size:12px}
+.keys kbd{font:inherit;font-size:11px;padding:1px 6px;border-radius:4px;box-shadow:inset 0 0 0 1px var(--line);margin-right:4px;background:var(--chrome)}
+.aside{font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:12px}
+.aside h3{font-size:11px;font-weight:500;color:var(--ink3)}
+.nb{display:grid;grid-template-columns:repeat(3,28px);gap:2px}.nb i{height:28px;border-radius:2px}
+.kept{padding:8px;border-radius:var(--r1);background:var(--chrome);display:flex;gap:8px;align-items:center}
+.kept i{width:18px;height:18px;border-radius:3px}
+.tray{display:flex;flex-wrap:wrap;gap:6px}.tray i{width:26px;height:34px;border-radius:3px;box-shadow:0 0 0 .5px rgba(0,0,0,.15);animation:in var(--slow) ease-out}
+.tray i.sk{opacity:.35}
+.prog{height:2px;background:var(--line);border-radius:2px;overflow:hidden}.prog b{display:block;height:100%;background:var(--ink);transition:width var(--slow) ease-out}
+/* filing */
+.pop{position:absolute;right:24px;top:48px;width:260px;padding:8px;background:#fff;border-radius:var(--r2);box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 12px 30px rgba(0,0,0,.18);z-index:5;animation:in var(--mid) ease-out}
+.pop .opt{width:100%;display:flex;gap:8px;align-items:center;padding:8px;border-radius:var(--r1);text-align:left}
+.pop .opt:hover{background:var(--chrome)}
+.pop .opt .c{margin-left:auto;color:var(--ink3);font-size:12px}
+.pop hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.pop input{width:100%;padding:8px;border:0;outline:0;border-radius:var(--r1);background:var(--chrome)}
+.note{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 12px;border-radius:var(--r2);display:flex;gap:12px;align-items:center;animation:in var(--mid) ease-out;z-index:6}
+.note button{color:#fff;text-decoration:underline;text-underline-offset:2px}
+/* project */
+.ptitle{font-size:40px;font-weight:700;letter-spacing:-.025em;border:0;outline:0;background:none;width:100%;padding:0}
+.ptitle:focus{box-shadow:0 2px 0 var(--ink)}
+.prule{height:4px;background:var(--ink);margin:6px 0 8px}
+.pmeta{font-size:11px;color:var(--ink2);display:flex;gap:16px;margin-bottom:32px}
+.deck{display:flex;padding:8px 0 24px 0}
+.deck .paper{width:170px;flex:none;margin-right:-28px;padding:8px 8px 12px;cursor:grab;transition:transform var(--mid) var(--ease),margin var(--mid) var(--ease);outline:0}
+.deck .paper:nth-child(odd){transform:rotate(-1.2deg)}.deck .paper:nth-child(even){transform:rotate(1deg) translateY(6px)}
+.deck .paper:hover,.deck .paper:focus{transform:translateY(-12px) rotate(0);z-index:3;margin-right:8px}
+.deck .paper:focus{box-shadow:0 0 0 2px var(--ink),0 10px 22px -6px rgba(0,0,0,.25)}
+.deck .paper.drag{opacity:.4}
+.deck .sw{height:150px;border-radius:3px}
+.deck .nm{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-top:10px}
+.deck .r{height:2px;background:var(--ink);margin:4px 0 6px}
+.deck .fp{font-size:11px;color:var(--ink2)}
+.hint{font-size:12px;color:var(--ink3)}
+/* steps */
+.steps{position:absolute;left:16px;bottom:16px;width:196px;padding:12px;border-radius:var(--r2);background:rgba(255,255,255,.72);backdrop-filter:blur(16px);font-size:11px;color:var(--ink2);z-index:9;box-shadow:0 0 0 .5px rgba(0,0,0,.1)}
+.steps b{display:block;color:var(--ink);font-weight:500;margin-bottom:6px}
+.steps li{list-style:none;display:flex;gap:6px;padding:1px 0}
+.steps li::before{content:"";width:6px;height:6px;border-radius:50%;margin-top:5px;box-shadow:inset 0 0 0 1px var(--ink3);flex:none}
+.steps li.done{color:var(--ink3)}.steps li.done::before{background:var(--ink3);box-shadow:none}
+.steps li.now{color:var(--ink);font-weight:500}.steps li.now::before{background:var(--ink);box-shadow:none}
+.empty{color:var(--ink2);padding:48px 0;text-align:center}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="menubar"><b></b><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span class="sp"></span>
+    <button class="iris on" aria-label="Palette"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#1D1D1F" stroke-width="1.3"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="2.4"/><path d="M8 1.5 9.6 5.8M14.5 8l-4.3 1.6M8 14.5 6.4 10.2M1.5 8l4.3-1.6"/></svg></button>
+    <span>Fri 16 Oct 10:42</span></div>
+  <div class="win" role="application" aria-label="Palette archive">
+    <aside class="side" id="side"></aside>
+    <section class="main" id="main"></section>
+  </div>
+  <ol class="steps" id="steps"></ol>
+</div>
+<script>
+const U=[[2,'#e7d6be','are.na','Paper samples · Browser'],[5,'#9fc4c0','Photos','IMG_4471.heic'],[8,'#2f2a2c','Browser','nytimes.com'],[18,'#4b5560','Photos','IMG_5102.heic'],[20,'#ede3cf','Figma','Zine spreads v2'],[23,'#5e4b8b','Browser','museum.nl/collection'],[25,'#2f5d62','Browser','ferry-schedule.org'],[28,'#c4552d','are.na','Warm light · NYC']];
+const N=[[1,'Oxblood','#6c2e3a','Photos'],[3,'Mango','#f0c23b','Browser'],[4,'Pool tile','#2e6b6f','Photos'],[6,'Graphite','#3b3f46','Figma'],[11,'Clay pot','#c25a35','are.na'],[14,'Lilac','#c9b8e8','Browser'],[24,'Lichen','#a9b9a0','Photos'],[26,'Blush ground','#f3d9cf','Figma'],[27,'Plum label','#5b3a63','Browser']];
+const C={};U.forEach(([n,h,a,w])=>C[n]={n,hex:h,name:'',app:a,win:w});N.forEach(([n,nm,h,a])=>C[n]={n,hex:h,name:nm,app:a,win:''});
+let P=[{id:'tea',name:'Packaging — tea',items:[3,24,27]},{id:'port',name:'Portfolio site',items:[6,14]},{id:'zine',name:'Editorial zine',items:[1,11,26]}];
+const S={view:'all',queue:[],handled:[],fresh:new Set(),sel:new Set(),pop:false,note:null,step:0,popDot:null};
+const STEPS=['Open Unnamed','Name or skip each one','Select a few captures','Add them to a project','Open the project','Reorder the cards','Rename the project','See the sidebar dot change'];
+const $=s=>document.querySelector(s),no=n=>'No. '+String(n).padStart(3,'0');
+function lab(hex){const v=[1,3,5].map(i=>{let c=parseInt(hex.substr(i,2),16)/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)});const[r,g,b]=v;
+ const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+ return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]}
+function reads(hex){const[L,a,b]=lab(hex),c=Math.hypot(a,b);let h=Math.atan2(b,a)*180/Math.PI;if(h<0)h+=360;
+ const val=L<.42?'dark':L<.72?'mid value':'light';if(c<.03)return'Neutral, '+val;
+ const t=(h<110||h>330)?'Warm':(h>=150&&h<=300)?'Cool':'Between warm and cool';return t+', '+val+', '+(c<.09?'muted':'saturated')}
+const dE=(x,y)=>{const p=lab(x),q=lab(y);return Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2])*100};
+function kept(c){let best=null;Object.values(C).forEach(o=>{if(o.n!==c.n&&o.name){const d=dE(c.hex,o.hex);if(d<7&&(!best||d<best.d))best={o,d}}});return best}
+function shade(hex,k){return'#'+[1,3,5].map(i=>Math.max(0,Math.min(255,Math.round(parseInt(hex.substr(i,2),16)*(1+k))))).map(v=>v.toString(16).padStart(2,'0')).join('')}
+const nbs=hex=>[-.12,-.06,-.09,.05,0,-.03,.1,.04,.08].map(k=>`<i style="background:${shade(hex,k)}"></i>`).join('');
+const inProj=n=>P.some(p=>p.items.includes(n));
+const label=c=>`${no(c.n)}, ${c.name||'Unnamed'}, ${c.hex}`;
+function go(step){if(step>S.step)S.step=step}
+
+function side(){const all=Object.values(C),un=all.filter(c=>!c.name).length,us=all.filter(c=>!inProj(c.n)).length;
+ const nav=(v,t,c,dot)=>`<button class="nav ${S.view===v?'on':''}" data-v="${v}">${dot!==undefined?`<span class="dot ${S.popDot===v?'pop':''}" style="background:${dot}"></span>`:''}${t}<span class="c">${c}</span></button>`;
+ $('#side').innerHTML=`<div class="lights"><i></i><i></i><i></i></div>${nav('all','Archive',all.length)}${nav('unnamed','Unnamed',un)}${nav('unsorted','Unsorted',us)}
+ <div class="sh">Projects</div>${P.map(p=>nav(p.id,p.name,p.items.length,C[p.items[p.items.length-1]]?.hex||'#fff')).join('')}<div class="foot">Stored on this Mac</div>`;
+ $('#side').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>open(b.dataset.v))}
+function open(v){S.view=v;S.sel.clear();S.pop=false;
+ if(v==='unnamed')go(1);if(P.find(p=>p.id===v)&&S.step>=4)go(5);render()}
+
+function chip(c,sel){return`<button class="paper chip ${S.fresh.has(c.n)?'fresh':''}" ${sel?`aria-pressed="${S.sel.has(c.n)}"`:''} data-n="${c.n}" aria-label="${label(c)}">
+ <div class="sw" style="background:${c.hex}"></div><span class="tick">✓</span><div class="nm ${c.name?'':'un'}">${c.name||'Unnamed'}</div><div class="fp"><span>${no(c.n)}</span><span>${c.hex}</span></div></button>`}
+
+function render(){side();steps();const m=$('#main'),v=S.view,proj=P.find(p=>p.id===v);
+ if(v==='stack')return stack(m);if(proj)return project(m,proj);
+ let list=Object.values(C).sort((a,b)=>b.n-a.n),title='Archive',sub='',lede='',act='';
+ if(v==='unnamed'){list=list.filter(c=>!c.name);title='Unnamed';lede='Unnamed. Name it so you remember it.';act=list.length?`<button class="btn" id="start">Name them one by one</button>`:''}
+ if(v==='unsorted'){list=list.filter(c=>!inProj(c.n));title='Unsorted';lede='Not in a project yet. Select a few to file them.';
+  act=`<span class="sub">${S.sel.size?S.sel.size+' selected':''}</span><button class="btn" id="add" ${S.sel.size?'':'disabled'}>Add to project</button>`}
+ sub=list.length+' captures';
+ m.innerHTML=`<div class="bar"><h1>${title}</h1><span class="sub">${sub}</span><span class="sp"></span>${act}</div>
+ <div class="view">${lede?`<p class="lede">${lede}</p>`:''}${list.length?`<div class="grid">${list.map(c=>chip(c,v==='unsorted')).join('')}</div>`:'<p class="empty">Nothing here.</p>'}</div>
+ ${S.pop?popover():''}${S.note?`<div class="note">${S.note.t}<button id="noteGo">Open ${S.note.name}</button></div>`:''}`;
+ $('#start')&&($('#start').onclick=()=>{S.queue=list.map(c=>c.n).sort((a,b)=>a-b);S.handled=[];S.view='stack';render()});
+ if(v==='unsorted'){m.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const n=+b.dataset.n;S.sel.has(n)?S.sel.delete(n):S.sel.add(n);if(S.sel.size>1)go(3);S.note=null;render()});
+  $('#add').onclick=()=>{S.pop=!S.pop;render()}}
+ if(S.pop)wirePop();$('#noteGo')&&($('#noteGo').onclick=()=>{const id=S.note.id;S.note=null;open(id)})}
+
+function stack(m){const q=S.queue,total=q.length+S.handled.length,done=S.handled.length;
+ if(!q.length){m.innerHTML=`<div class="bar"><h1>Naming</h1><span class="sub">${total} of ${total}</span></div><div class="view"><div class="empty"><p style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px">${S.handled.filter(h=>h.named).length} named, ${S.handled.filter(h=>!h.named).length} skipped</p><p style="margin-bottom:16px">Next, file them into a project.</p><div class="tray" style="justify-content:center;margin-bottom:24px">${trayHtml()}</div><button class="btn" id="toFile">Go to Unsorted</button></div></div>`;
+  $('#toFile').onclick=()=>{go(2);open('unsorted')};return}
+ const c=C[q[0]],k=kept(c),[L,a,b]=lab(c.hex);
+ m.innerHTML=`<div class="bar"><h1>Naming</h1><span class="sub">${done+1} of ${total}</span><span class="sp"></span><button class="btn ghost" id="end">Done for now</button></div>
+ <div class="view"><div class="prog" style="margin-bottom:24px"><b style="width:${done/total*100}%"></b></div><div class="stackwrap">
+ <div class="aside" style="align-items:flex-end;text-align:right"><h3>Where it came from</h3><div>${c.app}<br>${c.win}</div><h3>Around it</h3><div class="nb">${nbs(c.hex)}</div></div>
+ <div><div class="stack">${q.slice(1,4).reverse().map((n,i,arr)=>{const d=arr.length-i;return`<div class="paper" style="transform:translate(${d*5}px,${d*7}px) rotate(${d%2?1.6:-1.2}deg)"><div style="height:250px;background:${C[n].hex};border-radius:6px 6px 0 0;opacity:.9"></div></div>`}).join('')}
+ <div class="paper card" id="front"><div class="sw" style="background:${c.hex}"></div><div class="no"><span>${no(c.n)}</span><span>${c.hex}</span></div>
+ <input class="nameIn" id="nm" placeholder="Unnamed" aria-label="Name for ${no(c.n)}, ${c.hex}" autocomplete="off"><div class="rule"></div>
+ <div class="fine"><span>Reads as</span><span>${reads(c.hex)}</span><span>OKLCH</span><span>${L.toFixed(2)} ${Math.hypot(a,b).toFixed(3)}</span><span>Source</span><span>${c.app}</span></div></div></div>
+ <div class="keys"><span><kbd>Return</kbd>Name</span><span><kbd>Tab</kbd>Skip</span></div></div>
+ <div class="aside">${k?`<h3>You’ve kept this before</h3><div class="kept"><i style="background:${k.o.hex}"></i><span>${k.o.name}, ${no(k.o.n)}<br>ΔE ${k.d.toFixed(1)} · ${k.d<2?'Nearly identical':k.d<5?'Close':'Kept before'}</span></div>`:''}<h3>This session</h3><div class="tray">${trayHtml()||'<span>Nothing yet</span>'}</div></div>
+ </div></div>`;
+ const inp=$('#nm');setTimeout(()=>inp.focus(),30);
+ inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim()){e.preventDefault();advance(inp.value.trim())}else if(e.key==='Tab'){e.preventDefault();advance(null)}};
+ $('#end').onclick=()=>{S.queue=[];render()}}
+const trayHtml=()=>S.handled.map(h=>`<i class="${h.named?'':'sk'}" style="background:${C[h.n].hex}" title="${label(C[h.n])}"></i>`).join('');
+function advance(name){const n=S.queue[0],f=$('#front');f.classList.add(name?'out-name':'out-skip');go(1);
+ setTimeout(()=>{if(name){C[n].name=name;S.fresh.add(n)}S.handled.push({n,named:!!name});S.queue.shift();render()},360)}
+
+function popover(){return`<div class="pop" role="dialog" aria-label="Add to project">${P.map(p=>`<button class="opt" data-p="${p.id}"><span class="dot" style="background:${C[p.items.at(-1)]?.hex||'#fff'}"></span>${p.name}<span class="c">${p.items.length}</span></button>`).join('')}<hr><input id="newP" placeholder="New project name, then Return"></div>`}
+function wirePop(){document.querySelectorAll('.pop .opt').forEach(b=>b.onclick=()=>file(P.find(p=>p.id===b.dataset.p)));
+ const i=$('#newP');i.onkeydown=e=>{if(e.key==='Enter'&&i.value.trim()){const p={id:'p'+Date.now(),name:i.value.trim(),items:[]};P.push(p);file(p)}if(e.key==='Escape'){S.pop=false;render()}}}
+function file(p){const ids=[...S.sel];ids.forEach(n=>{if(!p.items.includes(n))p.items.push(n)});const k=ids.length;
+ S.sel.clear();S.pop=false;S.note={t:`${k} ${k===1?'capture':'captures'} added to ${p.name}`,id:p.id,name:p.name};S.popDot=p.id;go(4);render();setTimeout(()=>{S.popDot=null;side()},400)}
+
+function project(m,p){const last=C[p.items.at(-1)];
+ m.innerHTML=`<div class="bar"><span class="dot" style="background:${last?.hex||'#fff'}"></span><h1>Project</h1><span class="sub">${p.items.length} cards</span></div>
+ <div class="view"><input class="ptitle" id="pt" value="${p.name}" aria-label="Project name"><div class="prule"></div>
+ <div class="pmeta"><span>${p.items.length} colors</span><span>Latest ${last?no(last.n)+' · '+last.hex:'none'}</span><span>Stored on this Mac</span></div>
+ ${p.items.length?`<div class="deck" id="deck">${p.items.map((n,i)=>{const c=C[n];return`<div class="paper" draggable="true" tabindex="0" data-i="${i}" aria-label="${label(c)}, position ${i+1}"><div class="sw" style="background:${c.hex}"></div><div class="nm">${c.name||'Unnamed'}</div><div class="r"></div><div class="fp">${no(c.n)} · ${c.hex}<br>${reads(c.hex)}</div></div>`}).join('')}</div>
+ <p class="hint">Drag a card to reorder, or focus one and use Option and the arrow keys. Click the title to rename.</p>`:'<p class="empty">No cards yet.</p>'}</div>`;
+ const t=$('#pt');t.onchange=t.onblur=()=>{const v=t.value.trim();if(v&&v!==p.name){p.name=v;go(6);side();steps()}};t.onkeydown=e=>{if(e.key==='Enter')t.blur()};
+ let from=null;m.querySelectorAll('.deck .paper').forEach(el=>{
+  el.ondragstart=e=>{from=+el.dataset.i;el.classList.add('drag');e.dataTransfer.effectAllowed='move'};
+  el.ondragend=()=>el.classList.remove('drag');el.ondragover=e=>e.preventDefault();
+  el.ondrop=e=>{e.preventDefault();move(p,from,+el.dataset.i)};
+  el.onkeydown=e=>{if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const i=+el.dataset.i;move(p,i,i+(e.key==='ArrowRight'?1:-1),true)}}})}
+function move(p,a,b,focus){if(a==null||b<0||b>=p.items.length||a===b)return;const[x]=p.items.splice(a,1);p.items.splice(b,0,x);go(6);S.popDot=p.id;render();
+ if(focus)document.querySelector(`.deck [data-i="${b}"]`)?.focus();setTimeout(()=>{S.popDot=null;side()},400)}
+
+function steps(){const s=S.step,done=S.step>=6&&P.some(p=>p.renamed);$('#steps').innerHTML='<b>Flow 4 · Collecting</b>'+STEPS.map((t,i)=>`<li class="${i<s?'done':i===s?'now':''}">${t}</li>`).join('')}
+function fit(){const k=Math.min(innerWidth/1300,innerHeight/820,1);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
+addEventListener('resize',fit);fit();render();
+</script>
+</body>
+</html>

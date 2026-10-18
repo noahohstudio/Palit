@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Palette — Archive, source-forward</title>
+<style>
+:root{--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#a1a1a6;--line:rgba(0,0,0,.09);--side:#f2f1f4;--bg:#fff;--sel:rgba(0,0,0,.06);--accent:#0a64d8;
+--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;--mono:"SF Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.35 var(--ui);color:var(--ink);background:#d9d6dc;min-height:100vh;display:grid;place-items:center;padding:24px;-webkit-font-smoothing:antialiased}
+.win{width:1280px;height:820px;background:var(--bg);border-radius:12px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.25),0 24px 70px rgba(0,0,0,.28);display:grid;grid-template-columns:240px 1fr 300px;grid-template-rows:52px 1fr}
+/* toolbar */
+.tb{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid var(--line);background:linear-gradient(#fbfbfd,#f5f5f7)}
+.lights{display:flex;gap:8px;width:226px}.lights i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.tt b{font-size:13px;font-weight:600;display:block}.tt span{font-size:11px;color:var(--ink2)}
+.seg{display:flex;background:rgba(0,0,0,.06);border-radius:7px;padding:2px;margin-left:24px}
+.seg button{all:unset;font-size:12px;padding:3px 12px;border-radius:5px;color:var(--ink);cursor:default}
+.seg button.on{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.sp{flex:1}
+.search{width:250px;height:28px;border-radius:7px;background:rgba(0,0,0,.05);display:flex;align-items:center;gap:6px;padding:0 9px;color:var(--ink3);font-size:12px}
+/* sidebar */
+.side{background:var(--side);border-right:1px solid var(--line);overflow:auto;padding:10px 8px 20px}
+.side h6{font-size:11px;font-weight:600;color:var(--ink3);padding:12px 8px 4px}
+.it{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;cursor:default;font-size:13px}
+.it:hover{background:rgba(0,0,0,.04)}.it.on{background:rgba(0,0,0,.08)}
+.it .n{margin-left:auto;color:var(--ink3);font-size:11px;font-variant-numeric:tabular-nums}
+.it.sub{padding-left:30px;font-size:12px;color:var(--ink2)}
+.ico{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff;flex:none}
+.mini{display:flex;gap:1px;width:34px;height:8px;border-radius:2px;overflow:hidden;margin-left:auto}.mini i{flex:1}
+.sub .n{margin-left:6px}
+/* main */
+.main{overflow:auto;position:relative}
+.ribbon{position:sticky;top:0;z-index:2;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);padding:12px 22px 10px;border-bottom:1px solid var(--line)}
+.ribbon p{font-size:11px;color:var(--ink2);margin-bottom:6px;display:flex}.ribbon p span{margin-left:auto;color:var(--ink3)}
+.bands{display:flex;height:40px;border-radius:6px;overflow:hidden;gap:1px}
+.bands i{flex:1;transition:opacity .25s}
+.bands i.dim{opacity:.16}
+.srcrow{display:flex;height:4px;gap:1px;margin-top:3px}.srcrow i{flex:1;border-radius:1px}
+.places{padding:18px 22px 40px;display:flex;flex-direction:column;gap:14px}
+.place{border:1px solid var(--line);border-radius:10px;padding:14px 16px 16px;transition:box-shadow .2s,border-color .2s}
+.place:hover{border-color:rgba(0,0,0,.18)}
+.ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.ph .ico{width:22px;height:22px;border-radius:6px;font-size:11px;margin-top:1px}
+.ph b{font-size:13px;font-weight:600;display:block}
+.ph small{font-size:11px;color:var(--ink2);font-family:var(--mono)}
+.ph .meta{margin-left:auto;text-align:right;font-size:11px;color:var(--ink2);line-height:1.5}
+.ph .meta em{font-style:normal;color:var(--ink3)}
+.app{font-size:11px;font-weight:600;color:var(--ink3);padding:6px 2px 0;display:flex;gap:8px;align-items:center}
+.app::after{content:"";flex:1;height:1px;background:var(--line)}
+.sw{display:flex;flex-wrap:wrap;gap:10px}
+.card{all:unset;width:96px;cursor:default}
+.card .c{height:72px;border-radius:7px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12);transition:transform .15s}
+.card:hover .c{transform:translateY(-1px)}
+.card.on .c{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.card .no{font:500 11px var(--mono);margin-top:6px;display:block}
+.card .nm{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.card .nm.u{color:var(--ink3)}
+.read{margin-top:12px;font-size:11px;color:var(--ink2);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.read .bar{display:flex;height:6px;width:140px;border-radius:3px;overflow:hidden}
+/* inspector */
+.insp{border-left:1px solid var(--line);overflow:auto;padding:18px 18px 24px;background:#fcfcfd}
+.big{height:150px;border-radius:10px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.ih{display:flex;justify-content:space-between;margin:12px 0 2px;font-size:11px;color:var(--ink2)}.ih b{font:600 13px var(--mono);color:var(--ink)}
+.iname{font-size:15px;color:var(--ink3);margin-bottom:12px}
+.ins h5{font-size:11px;font-weight:600;color:var(--ink3);margin:16px 0 6px}
+.val{display:grid;grid-template-columns:48px 1fr auto;align-items:center;font-size:12px;padding:3px 0}
+.val span{color:var(--ink2);font-size:11px}.val code{font:12px var(--mono)}
+.val button{all:unset;font-size:11px;color:var(--accent);padding:1px 6px;border-radius:4px}.val button:hover{background:rgba(10,100,216,.08)}
+.src{display:flex;gap:12px;align-items:flex-start}
+.nb{display:grid;grid-template-columns:repeat(3,22px);gap:2px;flex:none}.nb i{height:22px;border-radius:3px}
+.nb i.mid{box-shadow:0 0 0 1.5px #fff,0 0 0 2.5px var(--ink)}
+.src p{font-size:12px}.src p small{display:block;color:var(--ink2);font:11px var(--mono);word-break:break-all}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips span{font-size:11px;padding:3px 8px;border-radius:10px;background:rgba(0,0,0,.05)}
+.kb{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+.kb i{width:20px;height:20px;border-radius:4px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.kb code{font:11px var(--mono)}.kb span{margin-left:auto;font-size:11px;color:var(--ink2)}
+.empty{font-size:12px;color:var(--ink3)}
+.also{font-size:11px;color:var(--ink2);margin-top:6px}
+</style></head><body>
+<div class="win">
+  <header class="tb">
+    <div class="lights"><i></i><i></i><i></i></div>
+    <div class="tt"><b>Archive</b><span id="count"></span></div>
+    <div class="seg" role="tablist"><button class="on">Sources</button><button>Timeline</button><button>Spectrum</button></div>
+    <div class="sp"></div>
+    <div class="search">⌕ Search name, source, or hex</div>
+  </header>
+  <nav class="side" id="side"></nav>
+  <main class="main">
+    <div class="ribbon"><p>Every color, in the order you kept it<span id="rlabel">Hover a place to see where it falls</span></p><div class="bands" id="bands"></div><div class="srcrow" id="srcrow"></div></div>
+    <div class="places" id="places"></div>
+  </main>
+  <aside class="insp" id="insp"></aside>
+</div>
+<script>
+const APPS={Figma:{c:'#a259ff',g:'F'},Safari:{c:'#1a8cff',g:'S'},Photos:{c:'#f5a623',g:'P'},Preview:{c:'#8e8e93',g:'Pv'}};
+// [hex, name, app, place, detail, day-offset, time]
+const D=[
+['#E4572E','','Safari','are.na','are.na/block/2219034',27,'9:14'],['#F3E9DC','Bone','Safari','are.na','are.na/block/2219034',27,'9:15'],
+['#2E4057','','Figma','Brand refresh v3','Frame / Hero',26,'11:02'],['#5E6472','','Figma','Brand refresh v3','Nav / Default',26,'11:05'],
+['#AED9E0','','Figma','Brand refresh v3','Badge / Info',26,'11:07'],['#C8553D','','Photos','Lisbon, March','IMG_4412.HEIC',24,'20:41'],
+['#F28F3B','Tram orange','Photos','Lisbon, March','IMG_4419.HEIC',24,'20:44'],['#588B8B','','Photos','Lisbon, March','IMG_4431.HEIC',24,'20:46'],
+['#FFD5C2','','Photos','Lisbon, March','IMG_4431.HEIC',24,'20:47'],['#6B4E3D','','Preview','Albers — Interaction of Color.pdf','Page 34',21,'15:20'],
+['#B5651D','','Preview','Albers — Interaction of Color.pdf','Page 34',21,'15:21'],['#D9B26F','','Preview','Albers — Interaction of Color.pdf','Page 41',21,'15:30'],
+['#7A8B99','','Preview','Albers — Interaction of Color.pdf','Page 41',21,'15:31'],['#1B1B1E','','Safari','pentagram.com','pentagram.com/work/mastercard',19,'10:12'],
+['#EB001B','','Safari','pentagram.com','pentagram.com/work/mastercard',19,'10:13'],['#F79E1B','','Safari','pentagram.com','pentagram.com/work/mastercard',19,'10:13'],
+['#E8E4DA','Paper','Figma','Brand refresh v3','Frame / Background',17,'14:00'],['#2F3E46','','Figma','Brand refresh v3','Text / Primary',17,'14:02'],
+['#CAD2C5','','Figma','Brand refresh v3','Surface / Muted',17,'14:04'],['#84A98C','Sage','Figma','Brand refresh v3','Accent / Success',17,'14:06'],
+['#354F52','','Figma','Brand refresh v3','Accent / Deep',17,'14:07'],['#3D5A80','','Safari','are.na','are.na/block/2301877',14,'22:10'],
+['#98C1D9','','Safari','are.na','are.na/block/2301877',14,'22:11'],['#EE6C4D','','Safari','are.na','are.na/block/2301877',14,'22:11'],
+['#9C6644','','Photos','Studio, Sept','IMG_5102.HEIC',11,'17:30'],['#DDB892','','Photos','Studio, Sept','IMG_5102.HEIC',11,'17:31'],
+['#7F5539','','Photos','Studio, Sept','IMG_5108.HEIC',11,'17:35'],['#B08968','','Photos','Studio, Sept','IMG_5108.HEIC',11,'17:36'],
+['#264653','','Figma','Onboarding — mobile','Screen 02',8,'9:40'],['#2A9D8F','','Figma','Onboarding — mobile','Button / Primary',8,'9:41'],
+['#E9C46A','','Figma','Onboarding — mobile','Illustration',8,'9:43'],['#F4A261','','Figma','Onboarding — mobile','Illustration',8,'9:44'],
+['#E76F51','','Safari','are.na','are.na/block/2390551',6,'21:02'],['#C1121F','','Preview','Pantone FHI swatchbook.pdf','Page 112',5,'13:15'],
+['#003049','','Preview','Pantone FHI swatchbook.pdf','Page 118',5,'13:17'],['#669BBC','','Preview','Pantone FHI swatchbook.pdf','Page 118',5,'13:18'],
+['#E4582F','','Safari','nytimes.com','nytimes.com/interactive/2026/…',1,'8:22'],['#F2EDE4','','Safari','nytimes.com','nytimes.com/interactive/2026/…',1,'8:23'],
+['#2E4156','','Figma','Brand refresh v3','Frame / Hero',0,'10:31'],['#D95D39','','Photos','Lisbon, March','IMG_4412.HEIC',0,'11:48'],
+['#C9D6DF','','Figma','Brand refresh v3','Badge / Info',0,'11:52']];
+const TODAY=new Date(2026,9,15);
+// color math (OKLab, Ottosson)
+const lin=v=>(v/=255)<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
+function oklab(h){const r=lin(parseInt(h.slice(1,3),16)),g=lin(parseInt(h.slice(3,5),16)),b=lin(parseInt(h.slice(5,7),16));
+const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]}
+const C=D.map((d,i)=>{const lab=oklab(d[0]),ch=Math.hypot(lab[1],lab[2]);let hu=Math.atan2(lab[2],lab[1])*180/Math.PI;if(hu<0)hu+=360;
+const dt=new Date(TODAY);dt.setDate(dt.getDate()-d[5]);return{no:i+1,hex:d[0],name:d[1],app:d[2],place:d[3],detail:d[4],date:dt,time:d[6],lab,L:lab[0],ch,hu}});
+const no=n=>'No. '+String(n).padStart(3,'0');
+const fmtD=d=>{const o=Math.round((TODAY-d)/864e5);return o===0?'Today':o===1?'Yesterday':d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})};
+const short=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+function reads(c){const r=[];if(c.ch<.03)r.push('Neutral');else r.push(c.hu<110||c.hu>330?'Warm':c.hu>=150&&c.hu<=300?'Cool':'Between warm and cool');
+r.push(c.L<.42?'Dark':c.L<.72?'Mid value':'Light');r.push(c.ch<.09?'Muted':'Saturated');return r}
+const dE=(a,b)=>Math.hypot(a.lab[0]-b.lab[0],a.lab[1]-b.lab[1],a.lab[2]-b.lab[2])*100;
+function shade(h,k){return'#'+[1,3,5].map(i=>Math.max(0,Math.min(255,Math.round(parseInt(h.substr(i,2),16)*k))).toString(16).padStart(2,'0')).join('')}
+function neighbors(c){const ks=[.92,1.04,.97,1.08,1,.9,1.02,.95,1.1];return ks.map((k,i)=>i===4?c.hex:shade(c.hex,k))}
+// group by place
+const places={};C.forEach(c=>{(places[c.place]??={app:c.app,place:c.place,items:[]}).items.push(c)});
+const P=Object.values(places).sort((a,b)=>b.items.at(-1).no-a.items.at(-1).no);
+document.getElementById('count').textContent=C.length+' colors kept from '+P.length+' places';
+let sel=C[C.length-1],focus=null;
+// sidebar
+function side(){const by={};P.forEach(p=>(by[p.app]??=[]).push(p));
+let h=`<h6>Library</h6><div class="it on">All places<span class="n">${C.length}</span></div><div class="it">Today<span class="n">${C.filter(c=>c.date.getTime()===TODAY.getTime()).length}</span></div><div class="it">Unnamed<span class="n">${C.filter(c=>!c.name).length}</span></div><h6>Captured from</h6>`;
+for(const a of ['Figma','Safari','Photos','Preview']){const ps=by[a]||[],n=ps.reduce((s,p)=>s+p.items.length,0);
+h+=`<div class="it"><span class="ico" style="background:${APPS[a].c}">${APPS[a].g}</span>${a==='Safari'?'Browser':a==='Preview'?'PDF':a}<span class="n">${n}</span></div>`;
+ps.forEach(p=>h+=`<div class="it sub" data-place="${p.place}">${p.place.length>20?p.place.slice(0,19)+'…':p.place}<span class="mini">${p.items.slice(-5).map(c=>`<i style="background:${c.hex}"></i>`).join('')}</span><span class="n">${p.items.length}</span></div>`)}
+h+=`<div class="it"><span class="ico" style="background:#c7c7cc">·</span>Other<span class="n">0</span></div><h6>Projects</h6><div class="it"><i style="width:10px;height:10px;border-radius:50%;background:#2E4156"></i>Brand refresh<span class="n">12</span></div><div class="it"><i style="width:10px;height:10px;border-radius:50%;background:#F4A261"></i>Onboarding<span class="n">4</span></div><div class="it"><i style="width:10px;height:10px;border-radius:50%;border:1px dashed var(--ink3)"></i>Unsorted<span class="n">25</span></div>`;
+document.getElementById('side').innerHTML=h}
+// ribbon
+function ribbon(){document.getElementById('bands').innerHTML=C.map(c=>`<i data-no="${c.no}" style="background:${c.hex}" class="${focus&&c.place!==focus?'dim':''}" title="${no(c.no)}"></i>`).join('');
+document.getElementById('srcrow').innerHTML=C.map(c=>`<i style="background:${APPS[c.app].c};opacity:${focus&&c.place!==focus?.16:.55}"></i>`).join('');
+const f=focus&&places[focus];document.getElementById('rlabel').textContent=f?`${f.items.length} of ${C.length} came from ${f.place}`:'Hover a place to see where it falls'}
+// places
+function main(){let h='',last='';
+P.forEach(p=>{const it=p.items,a=APPS[p.app],f=it[0],l=it.at(-1),days=new Set(it.map(c=>c.date.getTime())).size;
+const r=it.map(reads),warm=r.filter(x=>x[0]==='Warm').length,cool=r.filter(x=>x[0]==='Cool').length,neu=it.length-warm-cool;
+const dets=[...new Set(it.map(c=>c.detail))];
+h+=`<section class="place" data-place="${p.place}"><div class="ph"><span class="ico" style="background:${a.c}">${a.g}</span><div><b>${p.place}</b><small>${dets.slice(0,2).join(' · ')}${dets.length>2?' · +'+(dets.length-2):''}</small></div>
+<div class="meta">${it.length} ${it.length>1?'colors':'color'} on ${days} ${days>1?'visits':'visit'}<br><em>${short(f.date)}${days>1?' – '+short(l.date):''} · last ${fmtD(l.date)}</em></div></div><div class="sw">`;
+it.forEach(c=>h+=`<button class="card ${c===sel?'on':''}" data-no="${c.no}" aria-label="${no(c.no)}, ${c.name||'Unnamed'}, ${c.hex}"><div class="c" style="background:${c.hex}"></div><span class="no">${no(c.no)}</span><span class="nm ${c.name?'':'u'}">${c.name||'Unnamed'} · ${c.time}</span></button>`);
+h+=`</div><div class="read"><span class="bar"><i style="flex:${warm};background:#e8a27c"></i><i style="flex:${neu};background:#cfcfd4"></i><i style="flex:${cool};background:#8fb3d1"></i></span>${warm} warm, ${cool} cool, ${neu} between or neutral · mostly ${mode(r.map(x=>x[1])).toLowerCase()}</div></section>`});
+document.getElementById('places').innerHTML=h}
+const mode=a=>a.sort((x,y)=>a.filter(v=>v===y).length-a.filter(v=>v===x).length)[0];
+// inspector
+function insp(){const c=sel,lab=c.lab,rgb=[1,3,5].map(i=>parseInt(c.hex.substr(i,2),16));
+const kb=C.filter(o=>o.no<c.no&&dE(o,c)<7).map(o=>({o,d:dE(o,c)})).sort((a,b)=>a.d-b.d);
+const elsewhere=C.filter(o=>o!==c&&o.place!==c.place&&dE(o,c)<7).length;
+document.getElementById('insp').innerHTML=`<div class="big" style="background:${c.hex}"></div>
+<div class="ih"><b>${no(c.no)}</b>${fmtD(c.date)}, ${c.time}</div><div class="iname">${c.name||'Unnamed'}</div>
+<div class="ins"><h5>Value</h5>
+<div class="val"><span>HEX</span><code>${c.hex}</code><button>Copy</button></div>
+<div class="val"><span>RGB</span><code>${rgb.join(' ')}</code><button>Copy</button></div>
+<div class="val"><span>OKLCH</span><code>${c.L.toFixed(2)} ${c.ch.toFixed(3)} ${c.hu.toFixed(0)}°</code><button>Copy</button></div>
+<h5>Source</h5><div class="src"><div class="nb">${neighbors(c).map((h,i)=>`<i class="${i===4?'mid':''}" style="background:${h}"></i>`).join('')}</div>
+<p>${c.app} — ${c.place}<small>${c.detail}</small></p></div>
+<p class="also">${places[c.place].items.length} colors kept from this place${elsewhere?`, and ${elsewhere} like it from elsewhere`:''}</p>
+<h5>Reads as</h5><div class="chips">${reads(c).map(r=>`<span>${r}</span>`).join('')}</div>
+<h5>Kept before</h5>${kb.length?kb.map(({o,d})=>`<div class="kb"><i style="background:${o.hex}"></i><div><code>${no(o.no)}</code><br><small style="color:var(--ink2);font-size:11px">${o.place}</small></div><span>${d<2?'Nearly identical':'Close'} · ΔE ${d.toFixed(1)}</span></div>`).join(''):'<p class="empty">Nothing close to this yet</p>'}</div>`}
+side();ribbon();main();insp();
+document.addEventListener('click',e=>{const b=e.target.closest('[data-no]');if(!b)return;sel=C[b.dataset.no-1];main();insp();
+document.querySelector(`.card[data-no="${sel.no}"]`)?.scrollIntoView({block:'nearest',behavior:'smooth'})});
+document.addEventListener('mouseover',e=>{const p=e.target.closest('[data-place]');const f=p?p.dataset.place:null;if(f!==focus){focus=f;ribbon()}});
+</script>
+</body></html>

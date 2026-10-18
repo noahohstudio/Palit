@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Palette — Archive · Ribbon-forward</title>
+<style>
+:root{--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#a1a1a6;--line:rgba(0,0,0,.09);--bg:#fbfbfd;--side:#f3f3f5;--acc:#0a64d8;
+--ui:-apple-system,"SF Pro Text","SF Pro",system-ui,sans-serif;--mono:"SF Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d8d8dc;font:13px/1.35 var(--ui);color:var(--ink);display:grid;place-items:center;min-height:100vh;padding:24px}
+.win{width:1280px;height:820px;background:var(--bg);border-radius:12px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.25),0 30px 80px rgba(0,0,0,.28);display:grid;grid-template-rows:52px 1fr;grid-template-columns:1fr 300px}
+/* toolbar */
+.tb{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);background:linear-gradient(#f7f7f9,#f1f1f3)}
+.lights{display:flex;gap:8px;margin-right:10px}.lights i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.tb h1{font-size:13px;font-weight:600}.tb .n{color:var(--ink2);font-size:12px}
+.sp{flex:1}
+.seg{display:flex;background:rgba(0,0,0,.06);border-radius:6px;padding:2px}
+.seg button{border:0;background:none;font:12px var(--ui);padding:3px 10px;border-radius:4px;color:var(--ink);cursor:default}
+.seg button.on{background:#fff;box-shadow:0 .5px 2px rgba(0,0,0,.2)}
+.search{width:240px;height:26px;border-radius:6px;border:0;background:rgba(0,0,0,.06);padding:0 10px 0 26px;font:12px var(--ui);
+background-image:radial-gradient(circle at 12px 12px,transparent 4px,#8e8e93 4px 5.2px,transparent 5.4px);outline:none}
+.search:focus{box-shadow:0 0 0 3px rgba(10,100,216,.3);background-color:#fff}
+/* main */
+.main{display:grid;grid-template-rows:auto 1fr;min-height:0}
+.rib{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+.rhead{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.rhead h2{font-size:15px;font-weight:600}.rhead p{color:var(--ink2);font-size:12px}
+.chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 10px;font:12px var(--ui);color:var(--ink);display:flex;gap:6px;align-items:center}
+.chip b{font-weight:400;color:var(--ink3);font-family:var(--mono);font-size:11px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}.chip.on b{color:#aaa}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.track{position:relative;height:150px;border-radius:8px;overflow:hidden;background:#ececef;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.band{position:absolute;top:0;bottom:0;transition:opacity .25s,left .45s cubic-bezier(.3,.7,.2,1),width .45s cubic-bezier(.3,.7,.2,1),transform .2s}
+.band.dim{opacity:.16}
+.band:hover{transform:scaleY(1.04);z-index:2}
+.band.sel{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px var(--ink);z-index:3}
+.brush{position:absolute;top:-1px;bottom:-1px;border:1.5px solid var(--ink);border-radius:6px;box-shadow:0 0 0 9999px rgba(251,251,253,.55);pointer-events:none;transition:left .3s,width .3s}
+.brush::before,.brush::after{content:"";position:absolute;top:50%;width:4px;height:22px;margin-top:-11px;background:var(--ink);border-radius:2px}
+.brush::before{left:-3px}.brush::after{right:-3px}
+.days{position:relative;height:30px;margin-top:6px}
+.day{position:absolute;top:0;font-size:11px;color:var(--ink2);border-left:1px solid var(--ink3);padding-left:5px;white-space:nowrap;transition:left .45s cubic-bezier(.3,.7,.2,1)}
+.day span{display:block;font-family:var(--mono);font-size:10px;color:var(--ink3)}
+.tip{position:absolute;top:-30px;transform:translateX(-50%);background:var(--ink);color:#fff;font:11px var(--mono);padding:3px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s}
+.rfoot{display:flex;justify-content:space-between;align-items:center;margin-top:2px;color:var(--ink2);font-size:12px}
+.hint{color:var(--ink3);font-size:11px}
+/* stretch */
+.stretch{overflow:auto;padding:16px 22px 22px}
+.sh{display:flex;align-items:baseline;gap:10px;margin:4px 0 10px}
+.sh h3{font-size:13px;font-weight:600}.sh p{color:var(--ink2);font-size:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.card{width:84px;cursor:default}
+.card .sw{height:64px;border-radius:7px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12);transition:transform .15s}
+.card:hover .sw{transform:translateY(-2px)}
+.card.sel .sw{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.card .no{font:11px var(--mono);margin-top:6px}.card .nm{font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:var(--ink3);padding:30px 0}
+/* inspector */
+.insp{grid-row:2;grid-column:2;border-left:1px solid var(--line);background:var(--side);overflow:auto;padding:16px}
+.big{height:150px;border-radius:10px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12);transition:background .3s}
+.meta{display:flex;justify-content:space-between;margin:10px 0 2px;font:12px var(--mono)}.meta span{color:var(--ink2)}
+.nm2{font-size:15px;font-weight:600;margin-bottom:12px}.nm2.u{color:var(--ink3);font-weight:400}
+.lbl{font-size:11px;color:var(--ink2);margin:14px 0 6px;font-weight:600}
+.val{display:grid;grid-template-columns:44px 1fr auto;align-items:center;font:12px var(--mono);padding:4px 0;border-bottom:1px solid var(--line)}
+.val em{font-style:normal;color:var(--ink2);font-family:var(--ui);font-size:11px}
+.val button{border:0;background:none;color:var(--acc);font:11px var(--ui)}
+.src{display:grid;grid-template-columns:1fr 54px;gap:10px;align-items:center}
+.src b{font-weight:500;display:block}.src small{color:var(--ink2);font-size:11px;word-break:break-all}
+.nb{display:grid;grid-template-columns:repeat(3,18px);gap:0;border-radius:4px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.2)}.nb i{height:18px}
+.nb i.c{box-shadow:inset 0 0 0 1.5px #fff}
+.reads{display:flex;gap:5px;flex-wrap:wrap}.reads span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px}
+.kb{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px}
+.kb i{width:22px;height:22px;border-radius:5px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.kb .d{margin-left:auto;font:11px var(--mono);color:var(--ink2)}
+.kb .no{font-family:var(--mono);font-size:11px}
+.none{font-size:12px;color:var(--ink3)}
+</style></head>
+<body>
+<div class="win">
+  <div class="tb">
+    <div class="lights"><i></i><i></i><i></i></div>
+    <h1>Archive</h1><span class="n" id="count"></span>
+    <div class="sp"></div>
+    <div class="seg" role="group" aria-label="Ribbon spacing">
+      <button class="on" data-m="even">Even</button><button data-m="time">By time</button>
+    </div>
+    <input class="search" id="q" placeholder="Search name, source, or hex" aria-label="Search">
+  </div>
+  <div class="main">
+    <section class="rib">
+      <div class="rhead"><h2>Every color, in the order you kept it</h2><p id="rsub"></p></div>
+      <div class="chips" id="chips"></div>
+      <div style="position:relative">
+        <div class="tip" id="tip"></div>
+        <div class="track" id="track"><div class="brush" id="brush"></div></div>
+      </div>
+      <div class="days" id="days"></div>
+      <div class="rfoot"><span id="range"></span><span class="hint">Drag across the ribbon to look closer · Click a band to inspect · ← → to step</span></div>
+    </section>
+    <section class="stretch" id="stretch"></section>
+  </div>
+  <aside class="insp" id="insp" aria-label="Inspector"></aside>
+</div>
+<script>
+const SRC={Figma:'#a259ff',Browser:'#0a84ff',Photos:'#ff9f0a',PDF:'#ff453a',Other:'#8e8e93'};
+// [hex, name, kind, app, where, day(Sep 15=0), hh:mm]
+const RAW=[
+['#e8dcc8','','Photos','Photos','IMG_4471 — Lisbon',0,'09:12'],['#c65b3a','Terracotta wall','Photos','Photos','IMG_4471 — Lisbon',0,'09:13'],['#2f5d62','','Photos','Photos','IMG_4480 — Alfama',0,'09:20'],
+['#1b1f3b','','Browser','Safari','linear.app',1,'14:02'],['#5e6ad2','','Browser','Safari','linear.app/features',1,'14:03'],
+['#f4f1ea','Paper','PDF','Preview','Josef Albers — Interaction of Color.pdf',3,'21:40'],['#d9a441','','PDF','Preview','Interaction of Color.pdf, p. 44',3,'21:42'],['#7b8f5a','','PDF','Preview','Interaction of Color.pdf, p. 44',3,'21:43'],['#8a6d9e','','PDF','Preview','Interaction of Color.pdf, p. 51',3,'21:51'],
+['#ff5a1f','','Browser','Safari','teenage.engineering',6,'11:30'],['#e6e6e1','','Browser','Safari','teenage.engineering/products',6,'11:31'],['#222222','','Browser','Safari','teenage.engineering',6,'11:31'],
+['#3e6b48','Studio green','Figma','Figma','Brand refresh — Moodboard',8,'10:05'],['#b8c4a8','','Figma','Figma','Brand refresh — Moodboard',8,'10:06'],['#efe7da','','Figma','Figma','Brand refresh — Type',8,'10:20'],['#c65e3c','','Figma','Figma','Brand refresh — Moodboard',8,'10:41'],
+['#87a8c4','','Photos','Photos','IMG_4602 — Fog, Sutro',10,'07:58'],['#5b6f7d','','Photos','Photos','IMG_4602 — Fog, Sutro',10,'07:59'],['#d7d3cc','','Photos','Photos','IMG_4605',10,'08:03'],
+['#f2c94c','','Browser','Safari','are.na/block/2214',13,'16:22'],['#12355b','','Browser','Safari','are.na/block/2219',13,'16:25'],['#e94f37','','Browser','Safari','are.na/block/2219',13,'16:25'],
+['#6c4f3d','Walnut','Other','Finder','Quick Look — chair.jpg',14,'12:10'],['#a47551','','Other','Finder','Quick Look — chair.jpg',14,'12:10'],
+['#c4d7d1','','Figma','Figma','Onboarding — Frame 12',16,'15:33'],['#0f3d3e','','Figma','Figma','Onboarding — Frame 12',16,'15:35'],['#f7f4ef','','Figma','Figma','Onboarding — Frame 14',16,'15:44'],
+['#ba3b46','','PDF','Preview','Pantone — Fall 2026.pdf',17,'09:30'],['#ed9b40','','PDF','Preview','Pantone — Fall 2026.pdf',17,'09:31'],['#61988e','','PDF','Preview','Pantone — Fall 2026.pdf',17,'09:31'],
+['#c8623e','','Browser','Safari','aesop.com/stores/kyoto',20,'19:02'],['#3a3a32','','Browser','Safari','aesop.com',20,'19:04'],
+['#9bb7d4','','Photos','Photos','IMG_4790 — Ocean Beach',24,'17:48'],['#e3a587','','Photos','Photos','IMG_4791 — Ocean Beach',24,'17:52'],['#4b4e6d','','Photos','Photos','IMG_4791 — Ocean Beach',24,'17:53'],
+['#3f6a4a','','Figma','Figma','Brand refresh — v3',29,'10:12'],['#ebe4d6','','Figma','Figma','Brand refresh — v3',29,'10:14'],
+['#c75f3d','','Browser','Safari','cooper-hewitt.org/objects/18',30,'09:40'],['#d4c4a0','','Browser','Safari','cooper-hewitt.org/objects/18',30,'09:41'],['#283845','','Browser','Safari','cooper-hewitt.org',30,'09:44']];
+const MON=['September','October'],WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const dateOf=d=>{const t=new Date(2026,8,15+d);return t};
+const today=30;
+const dayLabel=d=>d===today?'Today':d===today-1?'Yesterday':WD[dateOf(d).getDay()]+', '+MON[dateOf(d).getMonth()-8]+' '+dateOf(d).getDate();
+const shortDay=d=>{const t=dateOf(d);return MON[t.getMonth()-8].slice(0,3)+' '+t.getDate()};
+// color math (Ottosson)
+const lin=c=>(c/=255)<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);
+const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function oklab(h){const[r,g,b]=rgb(h).map(lin);
+const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]}
+function oklch(h){const[L,a,b]=oklab(h);let H=Math.atan2(b,a)*180/Math.PI;if(H<0)H+=360;return[L,Math.hypot(a,b),H]}
+const dE=(x,y)=>{const a=oklab(x),b=oklab(y);return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])*100};
+function reads(h){const[L,C,H]=oklch(h),r=[];
+if(C<.03)r.push('Neutral');else r.push(H<110||H>330?'Warm':H>=150&&H<=300?'Cool':'Between warm and cool');
+r.push(L<.42?'Dark':L<.72?'Mid value':'Light');if(C>=.03)r.push(C<.09?'Muted':'Saturated');return r}
+const shade=(h,k)=>'#'+rgb(h).map(v=>Math.max(0,Math.min(255,Math.round(v+k))).toString(16).padStart(2,'0')).join('');
+const C=RAW.map((r,i)=>({i,no:i+1,hex:r[0],name:r[1],kind:r[2],app:r[3],where:r[4],day:r[5],time:r[6],
+ nb:[-14,-8,-18,6,0,10,-4,14,-22].map((k,j)=>j==4?r[0]:shade(r[0],k+((i*7+j*13)%9)-4))}));
+const num=n=>'No. '+String(n).padStart(3,'0');
+let mode='even',filt=null,q='',sel=C.length-1,br=[0.78,1];
+const $=id=>document.getElementById(id);
+const matches=c=>(!filt||c.kind===filt)&&(!q||(c.name+' '+c.app+' '+c.where+' '+c.hex).toLowerCase().includes(q));
+const span=today+1;
+function pos(c){if(mode==='even')return[c.i/C.length,1/C.length];
+ const sameDay=C.filter(x=>x.day===c.day),k=sameDay.indexOf(c),w=.9/span/sameDay.length;return[(c.day+.05)/span+k*w,w]}
+function drawRibbon(){const t=$('track');t.querySelectorAll('.band').forEach(e=>e.remove());
+ C.forEach(c=>{const b=document.createElement('div'),[x,w]=pos(c);b.className='band'+(matches(c)?'':' dim')+(c.i===sel?' sel':'');
+  b.style.cssText=`left:${x*100}%;width:calc(${w*100}% + .5px);background:${c.hex}`;
+  b.setAttribute('role','button');b.setAttribute('aria-label',`${num(c.no)}, ${c.name||'Unnamed'}, ${c.hex}`);
+  b.onmouseenter=()=>{const tp=$('tip');tp.textContent=`${num(c.no)} · ${c.hex.toUpperCase()} · ${shortDay(c.day)}`;tp.style.left=(x+w/2)*100+'%';tp.style.opacity=1};
+  b.onmouseleave=()=>$('tip').style.opacity=0;
+  b.onclick=()=>{sel=c.i;centerBrush(c);render()};t.insertBefore(b,$('brush'))});
+ const d=$('days');d.innerHTML='';const seen=new Set();
+ C.forEach(c=>{if(seen.has(c.day))return;seen.add(c.day);const[x]=pos(c),n=C.filter(z=>z.day===c.day).length;
+  if(mode==='even'&&n<2&&c.day!==today)return;
+  d.insertAdjacentHTML('beforeend',`<div class="day" style="left:${x*100}%">${shortDay(c.day)}<span>${n}</span></div>`)});
+ $('brush').style.left=br[0]*100+'%';$('brush').style.width=(br[1]-br[0])*100+'%'}
+function inBrush(c){const[x,w]=pos(c),m=x+w/2;return m>=br[0]&&m<=br[1]}
+function centerBrush(c){const[x,w]=pos(c),m=x+w/2;if(m>=br[0]&&m<=br[1])return;const s=br[1]-br[0];let a=Math.max(0,Math.min(1-s,m-s/2));br=[a,a+s]}
+function drawStretch(){const list=C.filter(c=>inBrush(c)&&matches(c));const s=$('stretch');
+ if(!list.length){s.innerHTML='<p class="empty">Nothing kept in this stretch matches. Drag the window or clear the filter.</p>';return}
+ const days=[...new Set(list.map(c=>c.day))].reverse();
+ s.innerHTML=days.map(d=>{const L=list.filter(c=>c.day===d).reverse(),srcs=[...new Set(L.map(c=>c.app))];
+  return`<div class="sh"><h3>${dayLabel(d)}</h3><p>${L.length} color${L.length>1?'s':''} from ${srcs.join(' and ')}</p></div><div class="row">`+
+  L.map(c=>`<div class="card${c.i===sel?' sel':''}" data-i="${c.i}" role="button" aria-label="${num(c.no)}, ${c.name||'Unnamed'}, ${c.hex}"><div class="sw" style="background:${c.hex}"></div><div class="no">${num(c.no)}</div><div class="nm">${c.name||'Unnamed'}</div></div>`).join('')+'</div>'}).join('');
+ s.querySelectorAll('.card').forEach(e=>e.onclick=()=>{sel=+e.dataset.i;render()})}
+function drawInsp(){const c=C[sel],[L,Ch,H]=oklch(c.hex),[r,g,b]=rgb(c.hex);
+ const kept=C.filter(x=>x.i<c.i).map(x=>({x,d:dE(c.hex,x.hex)})).filter(o=>o.d<7).sort((a,b)=>a.d-b.d);
+ $('insp').innerHTML=`<div class="big" style="background:${c.hex}"></div>
+ <div class="meta"><b>${num(c.no)}</b><span>${shortDay(c.day)}, ${c.time}</span></div>
+ <div class="nm2${c.name?'':' u'}">${c.name||'Unnamed'}</div>
+ <div class="val"><em>HEX</em>${c.hex.toUpperCase()}<button>Copy</button></div>
+ <div class="val"><em>RGB</em>${r} ${g} ${b}<button>Copy</button></div>
+ <div class="val"><em>OKLCH</em>${L.toFixed(2)} ${Ch.toFixed(3)} ${H.toFixed(0)}°<button>Copy</button></div>
+ <div class="lbl">Source</div><div class="src"><div><b>${c.app}</b><small>${c.where}</small></div>
+ <div class="nb" aria-label="Surrounding samples">${c.nb.map((h,j)=>`<i class="${j==4?'c':''}" style="background:${h}"></i>`).join('')}</div></div>
+ <div class="lbl">Reads as</div><div class="reads">${reads(c.hex).map(t=>`<span>${t}</span>`).join('')}</div>
+ <div class="lbl">Kept before</div>${kept.length?kept.slice(0,4).map(o=>`<div class="kb"><i style="background:${o.x.hex}"></i><span class="no">${num(o.x.no)}</span><span>${o.d<2?'Nearly identical':o.d<5?'Close':'Similar'}</span><span class="d">ΔE ${o.d.toFixed(1)}</span></div>`).join(''):'<p class="none">Nothing close to this yet.</p>'}`}
+function drawChips(){const kinds=['Figma','Browser','Photos','PDF','Other'];
+ $('chips').innerHTML=`<button class="chip${filt?'':' on'}" data-k="">All colors <b>${C.length}</b></button>`+kinds.map(k=>`<button class="chip${filt===k?' on':''}" data-k="${k}"><span class="dot" style="background:${SRC[k]}"></span>${k}<b>${C.filter(c=>c.kind===k).length}</b></button>`).join('');
+ $('chips').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{filt=e.dataset.k||null;render()})}
+function render(){const n=C.filter(matches).length;$('count').textContent=`${C.length} colors kept`;
+ $('rsub').textContent=filt||q?`${n} of ${C.length} match`:`${shortDay(0)} – ${shortDay(today)}`;
+ const inb=C.filter(inBrush);$('range').textContent=inb.length?`Looking at ${shortDay(inb[0].day)} – ${shortDay(inb[inb.length-1].day)} · ${inb.length} colors`:'Window is empty';
+ drawChips();drawRibbon();drawStretch();drawInsp()}
+// brush drag
+const tr=$('track');let drag=null;
+tr.addEventListener('mousedown',e=>{const R=tr.getBoundingClientRect(),x=(e.clientX-R.left)/R.width;drag={x0:x,moved:false}});
+addEventListener('mousemove',e=>{if(!drag)return;const R=tr.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-R.left)/R.width));
+ if(Math.abs(x-drag.x0)>.01){drag.moved=true;br=[Math.min(x,drag.x0),Math.max(x,drag.x0)];$('brush').style.transition='none';render()}});
+addEventListener('mouseup',()=>{if(drag&&drag.moved)$('brush').style.transition='';setTimeout(()=>drag=null)});
+tr.addEventListener('click',e=>{if(drag&&drag.moved)e.stopPropagation()},true);
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));mode=b.dataset.m;centerBrush(C[sel]);render()});
+$('q').oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowLeft'&&sel>0)sel--;else if(e.key==='ArrowRight'&&sel<C.length-1)sel++;else return;centerBrush(C[sel]);render()});
+render();
+</script>
+</body></html>

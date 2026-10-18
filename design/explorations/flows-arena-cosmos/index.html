@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palette · Flow Ideations (Cosmos & Are.na Synthesis)</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --ink: #1d1d1f;
+  --ink-secondary: #6b6b70;
+  --ink-tertiary: #9c9ca1;
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.16);
+  --r1: 6px;
+  --r2: 10px;
+  --r3: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #c4552d;
+}
+.brand-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.brand-sub {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  margin-left: 4px;
+}
+.nav-flows {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  padding: 3px;
+  border-radius: var(--r2);
+  border: 1px solid var(--line);
+}
+.flow-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: var(--r1);
+  border: none;
+  background: none;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 120ms ease-out;
+}
+.flow-btn:hover { color: var(--ink); }
+.flow-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.subbar {
+  background: #fafafa;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.directions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dir-btn {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: var(--r1);
+  border: 1px solid transparent;
+  background: none;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 120ms ease-out;
+}
+.dir-btn:hover { color: var(--ink); }
+.dir-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line-strong);
+  font-weight: 600;
+}
+.dir-brief {
+  font-size: 12px;
+  color: var(--ink-secondary);
+}
+
+.content-row {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+.viewer {
+  flex: 1;
+  position: relative;
+  background: #202022;
+}
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Reference Inspector Side Panel */
+.ref-inspector {
+  width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.ref-inspector h3 {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-secondary);
+}
+.ref-card {
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: var(--r1);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ref-card b { font-size: 13px; color: var(--ink); }
+.ref-card p { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.4; }
+.ref-card .badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(0,0,0,.06);
+  color: var(--ink);
+  align-self: flex-start;
+}
+.ref-thumb {
+  width: 100%;
+  height: 120px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <span class="brand-title">Palette</span>
+    <span class="brand-sub">Round 3: Cosmos & Are.na Ideations</span>
+  </div>
+
+  <div class="nav-flows" id="flowNav">
+    <button class="flow-btn active" data-flow="0">1. Capture</button>
+    <button class="flow-btn" data-flow="1">2. Card</button>
+    <button class="flow-btn" data-flow="2">3. Archive</button>
+    <button class="flow-btn" data-flow="3">4. Collect</button>
+  </div>
+
+  <a style="font-size:12px;color:var(--ink-secondary);text-decoration:none;padding:5px 10px;border-radius:var(--r1);border:1px solid var(--line);background:#fff" id="extLink" href="#" target="_blank">Open standalone &rarr;</a>
+</header>
+
+<div class="subbar">
+  <div class="directions" id="dirNav"></div>
+  <div class="dir-brief" id="dirBrief"></div>
+</div>
+
+<div class="content-row">
+  <div class="viewer">
+    <iframe id="previewFrame" src="about:blank"></iframe>
+  </div>
+
+  <!-- Reference Inspector Side Panel -->
+  <div class="ref-inspector" id="refInspector">
+    <h3>Active Inspiration</h3>
+    <div id="refCardContainer"></div>
+  </div>
+</div>
+
+<script>
+const data = [
+  {
+    name: "1. Capture",
+    variants: [
+      {
+        title: "Ravex Ticket Dispenser",
+        brief: "Perforated industrial ticket slides out of the menu bar iris with tear-to-open interaction.",
+        path: "01-capture/ravex-ticket.html",
+        ref: {
+          title: "Ravex Industrial Packaging",
+          source: "Cosmos Collection · palit-ideation",
+          badge: "COSMOS REF 2",
+          body: "Color-blocked top header band with precise mechanical typography and tear-away ticket physics.",
+          img: "../../references/arena-palit-ideation/02-13851041.jpg"
+        }
+      },
+      {
+        title: "Mineral Crosshair Loupe",
+        brief: "Geological loupe with live 8-neighbor orbital sample nodes and Albers hue-angle readout.",
+        path: "01-capture/specimen-crosshair.html",
+        ref: {
+          title: "Strontianite Mineral Specimen",
+          source: "Are.na Channel 5873698 · palit ideation",
+          badge: "ARE.NA REF 5",
+          body: "Precise extraction crosshair stamping Catalogue No. 028 and logging the 12px contextual matrix.",
+          img: "../../references/arena-palit-ideation/05-51267562.jpg"
+        }
+      },
+      {
+        title: "Aesop Receipt Tape",
+        brief: "Minimal packaging receipt tape rolls down beneath the iris with bold title and heavy divider line.",
+        path: "01-capture/aesop-receipt.html",
+        ref: {
+          title: "Aesop × RIMOWA Köln Label",
+          source: "Are.na Channel 5873698 · Block 13851041",
+          badge: "ARE.NA REF 2",
+          body: "Bold headline, thick divider rule, and fine-print specification hierarchy on tactile paper stock.",
+          img: "../../references/arena-palit-ideation/02-13851041.jpg"
+        }
+      }
+    ]
+  },
+  {
+    name: "2. Card",
+    variants: [
+      {
+        title: "Industrial Specimen",
+        brief: "Ravex solid color top band over Aesop packaging label with complete technical matrix.",
+        path: "02-card/industrial-specimen.html",
+        ref: {
+          title: "Ravex & Aesop Köln Synthesis",
+          source: "Cosmos + Are.na Synthesis",
+          badge: "CORE DIRECTION",
+          body: "Solid saturated header block with bold No. 028, crisp 2.5px dividing rule, and high-density technical specs below.",
+          img: "../../references/arena-palit-ideation/02-13851041.jpg"
+        }
+      },
+      {
+        title: "Pantone Context Bleed",
+        brief: "Pantone chip floating over source crop backdrop + Albers simultaneous contrast test strip.",
+        path: "02-card/pantone-context.html",
+        ref: {
+          title: "Pantone & Olive Photo Collage",
+          source: "Cosmos Reference 821815376",
+          badge: "COSMOS REF 1",
+          body: "A clean Pantone color chip superimposed over the extraction photo, with Albers ground testing.",
+          img: "../../references/arena-palit-ideation/03-4887164.jpg"
+        }
+      },
+      {
+        title: "Field Catalogue",
+        brief: "Landscape mineral specimen card with full left-edge photo bleed, locality, and Albers notes.",
+        path: "02-card/field-catalogue.html",
+        ref: {
+          title: "Crocoite Specimen No. 725.2",
+          source: "Are.na Channel 5873698 · Block 51267499",
+          badge: "ARE.NA REF 6",
+          body: "Full left photo bleed with crosshair, Catalogue No. 028.1, postal stamp, and Albers eye-training notes.",
+          img: "../../references/arena-palit-ideation/06-51267499.jpg"
+        }
+      }
+    ]
+  },
+  {
+    name: "3. Archive",
+    variants: [
+      {
+        title: "Radial Fan Deck",
+        brief: "Circular rotating fan deck of color tickets inspired by the Núria Garcia business card fan.",
+        path: "03-archive/radial-fan-deck.html",
+        ref: {
+          title: "Núria Garcia Circular Business Cards",
+          source: "Are.na Channel 5873698 · Block 2232775",
+          badge: "ARE.NA REF 1",
+          body: "Radial fan of color cards with central brass hub. Drag to spin the wheel or click to inspect.",
+          img: "../../references/arena-palit-ideation/01-2232775.jpg"
+        }
+      },
+      {
+        title: "Specimen Cabinet",
+        brief: "Museum-grade shallow specimen drawer grid with labeled compartments and locality cards.",
+        path: "03-archive/specimen-cabinet.html",
+        ref: {
+          title: "Mineral Collection Drawers",
+          source: "Are.na References 5 & 6",
+          badge: "ARE.NA ARCHIVE",
+          body: "Every color treated as a collected mineral specimen with species name, locality, and matrix grid.",
+          img: "../../references/arena-palit-ideation/05-51267562.jpg"
+        }
+      },
+      {
+        title: "Ravex Paint Shelf",
+        brief: "Industrial formulation shelves categorizing captures by project, finish, and temperature.",
+        path: "03-archive/paint-shelf.html",
+        ref: {
+          title: "Ravex Formulation Shelves",
+          source: "Cosmos Reference 2",
+          badge: "COSMOS INDUSTRIAL",
+          body: "Paint cans and formulation labels sitting on studio shelves, organized by project batch.",
+          img: "../../references/arena-palit-ideation/04-20574356.jpg"
+        }
+      }
+    ]
+  },
+  {
+    name: "4. Collect",
+    variants: [
+      {
+        title: "Swatch Ring Binder",
+        brief: "Physical brass swatch ring where cards are bound into curated project palettes.",
+        path: "04-collect/swatch-ring.html",
+        ref: {
+          title: "Bound Swatch Ring Deck",
+          source: "Cosmos + Are.na Synthesis",
+          badge: "ANALOG CURATION",
+          body: "Cards threaded on a solid brass ring, fanning out for direct physical comparison and reordering.",
+          img: "../../references/arena-palit-ideation/01-2232775.jpg"
+        }
+      },
+      {
+        title: "Albers Workbench",
+        brief: "Interactive laboratory testing simultaneous contrast: how grounds alter perceived color.",
+        path: "04-collect/albers-workbench.html",
+        ref: {
+          title: "Josef Albers Interaction of Color",
+          source: "Design Brief Principle 2",
+          badge: "EYE TRAINING",
+          body: "Direct interactive testing of one color placed across contrasting grounds to train the eye.",
+          img: "../../references/arena-palit-ideation/03-4887164.jpg"
+        }
+      },
+      {
+        title: "Rapid Triage Stack",
+        brief: "Fast card-stack swipe interface for triaging, naming, and categorizing new captures.",
+        path: "04-collect/triage-stack.html",
+        ref: {
+          title: "Tactile Flashcard Stack",
+          source: "Are.na References 3 & 4",
+          badge: "WORKFLOW",
+          body: "Keyboard-driven arrow navigation (Left to file library, Right to file project) with instant naming.",
+          img: "../../references/arena-palit-ideation/04-20574356.jpg"
+        }
+      }
+    ]
+  }
+];
+
+let curFlow = 0;
+let curDir = 0;
+
+const flowNav = document.getElementById("flowNav");
+const dirNav = document.getElementById("dirNav");
+const dirBrief = document.getElementById("dirBrief");
+const frame = document.getElementById("previewFrame");
+const extLink = document.getElementById("extLink");
+const refCardContainer = document.getElementById("refCardContainer");
+
+function renderDirections() {
+  dirNav.innerHTML = "";
+  const flow = data[curFlow];
+  flow.variants.forEach((v, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "dir-btn" + (idx === curDir ? " active" : "");
+    btn.textContent = (idx + 1) + ". " + v.title;
+    btn.onclick = () => selectDirection(idx);
+    dirNav.appendChild(btn);
+  });
+  updateView();
+}
+
+function selectFlow(idx) {
+  curFlow = idx;
+  curDir = 0;
+  document.querySelectorAll(".flow-btn").forEach((b, i) => {
+    b.classList.toggle("active", i === idx);
+  });
+  renderDirections();
+}
+
+function selectDirection(idx) {
+  curDir = idx;
+  document.querySelectorAll(".dir-btn").forEach((b, i) => {
+    b.classList.toggle("active", i === idx);
+  });
+  updateView();
+}
+
+function updateView() {
+  const v = data[curFlow].variants[curDir];
+  frame.src = v.path;
+  extLink.href = v.path;
+  dirBrief.textContent = v.brief;
+
+  // Update Reference Card
+  refCardContainer.innerHTML = `
+    <div class="ref-card">
+      <span class="badge">${v.ref.badge}</span>
+      <b>${v.ref.title}</b>
+      <small style="color:var(--ink-secondary);font-size:10.5px">${v.ref.source}</small>
+      <img class="ref-thumb" src="${v.ref.img}" alt="Reference image">
+      <p>${v.ref.body}</p>
+    </div>
+  `;
+}
+
+flowNav.querySelectorAll(".flow-btn").forEach((btn, idx) => {
+  btn.onclick = () => selectFlow(idx);
+});
+
+// Keyboard shortcuts: 1-4 for flows, ArrowLeft/ArrowRight for directions
+window.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key >= "1" && e.key <= "4" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    selectFlow(parseInt(e.key) - 1);
+  } else if (e.key === "ArrowRight") {
+    selectDirection((curDir + 1) % data[curFlow].variants.length);
+  } else if (e.key === "ArrowLeft") {
+    selectDirection((curDir - 1 + data[curFlow].variants.length) % data[curFlow].variants.length);
+  }
+});
+
+renderDirections();
+</script>
+
+</body>
+</html>

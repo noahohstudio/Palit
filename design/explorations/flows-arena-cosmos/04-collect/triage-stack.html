@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · Flow 4 · Rapid Triage Stack</title>
+<style>
+:root{
+  --chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;
+  --r1:6px;--r2:10px;--r3:14px;--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.2,1);
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;color:var(--ink);background:#d9d9db;display:grid;place-items:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.desk{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:var(--r2);background:#c0c2c7;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.mbar{height:28px;display:flex;align-items:center;gap:18px;padding:0 14px;background:rgba(246,246,246,.72);backdrop-filter:blur(24px) saturate(1.4);font-size:13px;z-index:20}
+.mbar b{font-weight:600}.mbar .sp{flex:1}
+
+.win{flex:1;margin:12px;background:#fff;border-radius:var(--r2);box-shadow:0 10px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}
+.tb{height:46px;background:var(--chrome);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(0,0,0,.08)}
+.tb h2{font-size:14px;font-weight:700}
+
+/* Triage Arena */
+.triage-stage{flex:1;background:#ececed var(--grain);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+
+/* Stack Cards */
+.card-stack{position:relative;width:340px;height:480px}
+.triage-card{position:absolute;inset:0;background:#fff var(--grain);border-radius:10px;box-shadow:0 16px 36px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;transition:transform 300ms var(--ease),opacity 300ms ease;cursor:pointer}
+.triage-card.swiped-left{transform:translateX(-160%) rotate(-14deg)!important;opacity:0}
+.triage-card.swiped-right{transform:translateX(160%) rotate(14deg)!important;opacity:0}
+
+.t-color{height:280px;background:#c4552d;position:relative;padding:12px;color:#fff}
+.t-badge{font-size:11px;font-weight:700;letter-spacing:.05em}
+
+.t-body{flex:1;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+.t-input{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.15);font-size:18px;font-weight:700;padding:4px 0;background:none;color:var(--ink)}
+.t-input:focus{outline:none;border-color:var(--ink)}
+
+.triage-controls{margin-top:24px;display:flex;gap:16px;align-items:center}
+.t-btn{padding:8px 16px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 5px rgba(0,0,0,.06)}
+.t-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="desk">
+  <div class="mbar">
+    <span aria-hidden="true">&#63743;</span><b>Palette Triage</b>
+    <span class="sp"></span>
+    <span>4 Unnamed Captures</span>
+  </div>
+
+  <div class="win">
+    <div class="tb">
+      <h2>Rapid Triage & Naming Stack</h2>
+      <span style="font-size:12px;color:var(--ink2)">Arrow Keys or Buttons to File</span>
+    </div>
+
+    <div class="triage-stage">
+      <div class="card-stack" id="stack">
+        <!-- Card 1 -->
+        <div class="triage-card" id="c1" style="z-index:3">
+          <div class="t-color" style="background:#c4552d">
+            <span class="t-badge">No. 028 · WARM CHROMA</span>
+          </div>
+          <div class="t-body">
+            <div>
+              <small style="color:var(--ink2);font-size:10px;text-transform:uppercase">Name this capture</small>
+              <input class="t-input" value="" placeholder="Name it so you remember it" id="inp1">
+            </div>
+            <div style="font-size:11px;color:var(--ink2)">
+              HEX #c4552d · Safari (are.na / NYC)
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="triage-card" id="c2" style="z-index:2;transform:scale(.96) translateY(12px)">
+          <div class="t-color" style="background:#76877d">
+            <span class="t-badge">No. 029 · MUTED SAGE</span>
+          </div>
+          <div class="t-body">
+            <div>
+              <small style="color:var(--ink2);font-size:10px;text-transform:uppercase">Name this capture</small>
+              <input class="t-input" value="Lichen Wall" placeholder="Name it">
+            </div>
+            <div style="font-size:11px;color:var(--ink2)">
+              HEX #76877d · Photos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="triage-controls">
+        <button class="t-btn" onclick="swipe('left')">&larr; File to Library</button>
+        <button class="t-btn primary" onclick="swipe('right')">Assign to Tea Project &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let topIdx=1;
+function swipe(dir){
+  const el=document.getElementById('c'+topIdx);
+  if(!el)return;
+  el.classList.add(dir==='left'?'swiped-left':'swiped-right');
+  topIdx++;
+  const next=document.getElementById('c'+topIdx);
+  if(next){
+    next.style.transform='none';
+    next.style.zIndex=5;
+  }
+}
+document.onkeydown=e=>{
+  if(e.key==='ArrowLeft')swipe('left');
+  if(e.key==='ArrowRight')swipe('right');
+};
+</script>
+</body>
+</html>

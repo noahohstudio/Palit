@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · Flow 3 · Núria Garcia Radial Fan Deck</title>
+<style>
+:root{
+  --chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;
+  --r1:6px;--r2:10px;--r3:14px;--fast:120ms;--mid:200ms;--slow:360ms;--ease:cubic-bezier(.2,.7,.2,1);
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;color:var(--ink);background:#d9d9db;display:grid;place-items:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.desk{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:var(--r2);background:#c9cbd0;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.mbar{height:28px;display:flex;align-items:center;gap:18px;padding:0 14px;background:rgba(246,246,246,.72);backdrop-filter:blur(24px) saturate(1.4);font-size:13px;z-index:20}
+.mbar b{font-weight:600}.mbar .sp{flex:1}
+.iris{width:26px;height:22px;border-radius:5px;display:grid;place-items:center;background:none;border:none;cursor:pointer}
+
+/* Window Chrome */
+.win{flex:1;margin:12px;background:#fff;border-radius:var(--r2);box-shadow:0 10px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.tb{height:46px;background:var(--chrome);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(0,0,0,.08)}
+.tb h2{font-size:14px;font-weight:700}
+.tb .meta{font-size:12px;color:var(--ink2)}
+
+/* Fan Stage */
+.fan-stage{flex:1;position:relative;background:#f3f3f1 var(--grain);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.wheel-center{position:relative;width:600px;height:600px;border-radius:50%;display:grid;place-items:center}
+
+/* Fan Deck Cards */
+.fan-card{position:absolute;left:50%;top:50%;width:90px;height:260px;margin-left:-45px;margin-top:-260px;transform-origin:center bottom;background:#fff var(--grain);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.15);cursor:pointer;transition:transform 200ms var(--ease),box-shadow 200ms;overflow:hidden;display:flex;flex-direction:column}
+.fan-card:hover{transform:scale(1.08) translateY(-18px)!important;z-index:100;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.card-color-top{height:160px;width:100%}
+.card-info-bot{flex:1;padding:8px;font-size:10px;display:flex;flex-direction:column;justify-content:space-between}
+.card-no{font-weight:700;font-size:11px}
+.card-hex{color:var(--ink2)}
+
+/* Center Hub */
+.hub{width:120px;height:120px;border-radius:50%;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.2),0 0 0 1px rgba(0,0,0,.1);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px}
+.hub b{font-size:13px;font-weight:700}
+.hub span{font-size:10px;color:var(--ink2);margin-top:2px}
+
+/* Detail Drawer */
+.detail-drawer{position:absolute;bottom:20px;right:24px;width:280px;background:#fff;border-radius:var(--r1);box-shadow:0 12px 30px rgba(0,0,0,.2);padding:14px;border:1px solid rgba(0,0,0,.1);z-index:80}
+.detail-drawer h3{font-size:13px;font-weight:700;margin-bottom:6px}
+.detail-drawer p{font-size:11.5px;color:var(--ink2);line-height:1.4}
+</style>
+</head>
+<body>
+
+<div class="desk">
+  <div class="mbar">
+    <span aria-hidden="true">&#63743;</span><b>Palette</b><span>File</span><span>Edit</span><span>Archive</span>
+    <span class="sp"></span>
+    <button class="iris" id="iris"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1D1D1F" stroke-width="1.2"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5 10.6 7M14.5 8 9 10.2M8 14.5 5.4 9M1.5 8 7 5.8M3.4 3.4l5.5 2.3M12.6 12.6 7.1 10.3"/></svg></button>
+    <span>Fri Oct 16&nbsp; 2:24 PM</span>
+  </div>
+
+  <div class="win">
+    <div class="tb">
+      <h2>Palette Archive · Radial Fan Deck</h2>
+      <div class="meta">28 colors kept · Inspired by Núria Garcia business card fan</div>
+    </div>
+
+    <div class="fan-stage">
+      <div class="wheel-center" id="wheel">
+        <div class="hub">
+          <b>PALETTE</b>
+          <span>Radial Spectrum<br>Drag to rotate</span>
+        </div>
+      </div>
+
+      <div class="detail-drawer" id="detailDrawer">
+        <h3 id="dTitle">No. 028 Warm Light</h3>
+        <p id="dMeta">#c4552d · Safari · are.na<br>OKLCH: 58.5% 0.152 39°<br>Click any card to inspect provenance</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const wheel=document.getElementById('wheel');
+const dTitle=document.getElementById('dTitle');
+const dMeta=document.getElementById('dMeta');
+
+const colors=[
+  {no:'001',name:'Oxblood',hex:'#6c2e3a',src:'Photos'},
+  {no:'003',name:'Mango',hex:'#f0c23b',src:'Photos'},
+  {no:'004',name:'Pool Tile',hex:'#2e6b6f',src:'Safari'},
+  {no:'006',name:'Graphite',hex:'#3b3f46',src:'Figma'},
+  {no:'011',name:'Clay Pot',hex:'#c25a35',src:'Safari'},
+  {no:'019',name:'Brick',hex:'#b5462e',src:'Photos'},
+  {no:'024',name:'Lichen',hex:'#a9b9a0',src:'Photos'},
+  {no:'026',name:'Blush',hex:'#f3d9cf',src:'Figma'},
+  {no:'027',name:'Plum',hex:'#5b3a63',src:'Figma'},
+  {no:'028',name:'Warm Light',hex:'#c4552d',src:'are.na'},
+  {no:'029',name:'Sage',hex:'#76877d',src:'Safari'},
+  {no:'030',name:'Ochre',hex:'#d99e32',src:'Preview'},
+  {no:'031',name:'Cobalt',hex:'#284a75',src:'Safari'},
+  {no:'032',name:'Pale Sand',hex:'#e8e1d5',src:'are.na'}
+];
+
+const total=colors.length;
+colors.forEach((c,i)=>{
+  const angle=(i/total)*360;
+  const card=document.createElement('div');
+  card.className='fan-card';
+  card.style.transform=`rotate(${angle}deg)`;
+  card.dataset.angle=angle;
+  card.innerHTML=`
+    <div class="card-color-top" style="background:${c.hex}"></div>
+    <div class="card-info-bot">
+      <div class="card-no">No. ${c.no}</div>
+      <div class="card-hex">${c.hex}</div>
+    </div>
+  `;
+  card.onclick=()=>{
+    dTitle.textContent=`No. ${c.no} ${c.name}`;
+    dMeta.innerHTML=`HEX: ${c.hex} &nbsp;·&nbsp; Source: ${c.src}<br>Permanent capture in archive`;
+  };
+  wheel.appendChild(card);
+});
+
+let isDragging=false,startAngle=0,curRot=0;
+wheel.onmousedown=e=>{
+  isDragging=true;
+  startAngle=Math.atan2(e.clientY-wheel.offsetTop,e.clientX-wheel.offsetLeft);
+};
+window.onmousemove=e=>{
+  if(!isDragging)return;
+  curRot+=2;
+  wheel.querySelectorAll('.fan-card').forEach(c=>{
+    const base=+c.dataset.angle;
+    c.style.transform=`rotate(${base+curRot}deg)`;
+  });
+};
+window.onmouseup=()=>{isDragging=false};
+</script>
+</body>
+</html>

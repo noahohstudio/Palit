@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palette · lofi round 2 · minimal</title>
+<style>
+:root{--chrome:#F5F5F5;--well:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--hair:#E3E3E6;--r1:6px;--r2:10px;--r3:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--chrome);color:var(--ink);font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:64px 32px 96px}
+header.top{margin-bottom:64px}
+h1{font-size:22px;font-weight:500}
+.lede{color:var(--ink2);font-size:15px;margin-top:8px;max-width:640px}
+section.group{margin-top:64px}
+h2{font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
+.mock{display:flex;flex-direction:column;gap:12px}
+.note .t{font-size:15px;font-weight:500}
+.note .d{color:var(--ink2);margin-top:4px}
+.idx{color:var(--ink3);font-size:11px}
+.frame{background:var(--well);border:1px solid var(--hair);border-radius:var(--r3);min-height:340px;overflow:hidden;position:relative}
+.bar{height:32px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:6px;padding:0 12px}
+.dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--hair)}
+.bar .ttl{margin-left:12px;color:var(--ink3);font-size:11px}
+.sw{border-radius:var(--r1);display:block}
+.s2{color:var(--ink2)}.s3{color:var(--ink3)}.sm{font-size:11px}.md{font-weight:500}.lg{font-size:15px}.xl{font-size:22px;font-weight:500}
+.lbl{font-size:13px;font-weight:500;color:var(--ink2)}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:4px}
+.hl{border-top:1px solid var(--hair)}
+.p16{padding:16px}.p24{padding:24px}.p32{padding:32px}
+.btn{font:inherit;font-size:13px;color:var(--ink);background:none;border:1px solid var(--hair);border-radius:var(--r1);padding:4px 12px;cursor:pointer}
+.btn.ink{background:var(--ink);color:#fff;border-color:var(--ink)}
+.link{color:var(--ink);font-weight:500;text-decoration:none;cursor:pointer}
+.field{border:1px solid var(--hair);border-radius:var(--r1);padding:8px 12px;color:var(--ink3)}
+.nb{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:72px}
+.nb i{aspect-ratio:1;border-radius:2px;display:block}
+.nb i.c{outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.mat{background:rgba(250,250,250,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--hair);border-radius:var(--r2)}
+.ph{background:var(--chrome);border-radius:var(--r1)}
+/* flows */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px}
+.step{display:flex;flex-direction:column;gap:8px}
+.mini{background:var(--chrome);border-radius:var(--r2);height:150px;position:relative;overflow:hidden;padding:8px}
+.cap{font-size:11px;color:var(--ink2)}
+.cap b{font-weight:500;color:var(--ink)}
+.loupe{width:56px;height:56px;border-radius:50%;border:1px solid var(--ink3);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)}
+.toast{position:absolute;left:8px;right:8px;bottom:8px;padding:8px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.key{display:inline-block;border:1px solid var(--ink3);border-radius:4px;padding:0 4px;font-size:11px}
+.menu{position:absolute;top:8px;right:8px;width:12px;height:8px;border-radius:2px;background:var(--ink3)}
+/* live demo */
+.fade{animation:arrive .4s ease-out both}
+@keyframes arrive{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.tabs{display:flex;gap:16px}
+.tabs span{color:var(--ink3);cursor:pointer}
+.tabs span.on{color:var(--ink);font-weight:500}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile .sw{height:64px}
+footer{margin-top:64px;color:var(--ink3);font-size:11px}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top">
+  <h1>Palette, very lofi, round 2</h1>
+  <p class="lede">Minimal direction. Twelve wireframes: four archive dashboards, four capture cards, four flows. Ink tone carries hierarchy; the captured colors are the only color here.</p>
+</header>
+
+<!-- DASHBOARDS -->
+<section class="group">
+<h2>Dashboards · the archive window</h2>
+<div class="grid">
+
+<!-- D1 -->
+<div class="mock">
+<div class="frame">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="ttl">Archive</span></div>
+  <div class="p24 col" style="gap:0" id="d1">
+  </div>
+</div>
+<div class="note"><span class="idx">D1</span><p class="t">The ledger</p><p class="d">One column, newest first. Number, swatch, name, hex, source. No grid, no sidebar. Reads like a diary of looking.</p></div>
+</div>
+
+<!-- D2 -->
+<div class="mock">
+<div class="frame">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="ttl">Archive</span></div>
+  <div class="p24">
+    <div class="row" style="justify-content:space-between;margin-bottom:24px">
+      <div class="tabs" id="d2tabs"><span class="on" data-k="all">All 28</span><span data-k="un">Unnamed</span><span data-k="warm">Warm</span><span data-k="cool">Cool</span></div>
+      <span class="s3 sm">Stored on this Mac</span>
+    </div>
+    <div class="tiles" id="d2"></div>
+  </div>
+</div>
+<div class="note"><span class="idx">D2</span><p class="t">Quiet filters</p><p class="d">Large tiles, four filters as plain words. Click a word to filter (live). Unnamed is a filter, a gentle nudge rather than a badge.</p></div>
+</div>
+
+<!-- D3 -->
+<div class="mock">
+<div class="frame">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="ttl">Archive · by value</span></div>
+  <div class="p24">
+    <p class="lbl" style="margin-bottom:16px">Dark to light</p>
+    <div style="display:flex;height:120px;gap:2px;border-radius:var(--r2);overflow:hidden" id="d3"></div>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><span class="s3 sm">Dark</span><span class="s3 sm">Mid value</span><span class="s3 sm">Light</span></div>
+    <div class="hl" style="margin-top:24px;padding-top:16px">
+      <p class="s2">Most of what you keep sits in the mid values.</p>
+      <p class="s3 sm" style="margin-top:4px">Draft copy. Describes, does not suggest.</p>
+    </div>
+  </div>
+</div>
+<div class="note"><span class="idx">D3</span><p class="t">One band</p><p class="d">The whole archive sorted into a single value strip. Browse by eye, not by list; hover any slice for its number.</p></div>
+</div>
+
+<!-- D4 -->
+<div class="mock">
+<div class="frame">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="ttl">Archive · by source</span></div>
+  <div class="p24 col" style="gap:20px">
+    <div><p class="lbl">Figma</p><div class="row" style="gap:8px;margin-top:8px"><i class="sw" style="width:40px;height:40px;background:#3b3f46"></i><i class="sw" style="width:40px;height:40px;background:#f3d9cf"></i></div></div>
+    <div><p class="lbl">Safari</p><div class="row" style="gap:8px;margin-top:8px"><i class="sw" style="width:40px;height:40px;background:#c25a35"></i><i class="sw" style="width:40px;height:40px;background:#a9b9a0"></i></div></div>
+    <div><p class="lbl">Photos</p><div class="row" style="gap:8px;margin-top:8px"><i class="sw" style="width:40px;height:40px;background:#6c2e3a"></i><i class="sw" style="width:40px;height:40px;background:#2e6b6f"></i></div></div>
+    <div><p class="lbl">are.na</p><div class="row" style="gap:8px;margin-top:8px"><i class="sw" style="width:40px;height:40px;background:#c4552d"></i><i class="sw" style="width:40px;height:40px;background:#f0c23b"></i></div></div>
+  </div>
+</div>
+<div class="note"><span class="idx">D4</span><p class="t">Where you looked</p><p class="d">Grouped by source app. The archive as a map of places that caught your eye; context first, color second.</p></div>
+</div>
+
+</div>
+</section>
+
+<!-- CARDS -->
+<section class="group">
+<h2>Capture cards · one color in depth</h2>
+<div class="grid">
+
+<!-- C1 -->
+<div class="mock">
+<div class="frame p32">
+  <i class="sw" style="height:140px;background:#c4552d;border-radius:var(--r2)"></i>
+  <div class="row" style="justify-content:space-between;margin-top:16px"><span class="xl">No. 028</span><span class="lg s2">#c4552d</span></div>
+  <p class="s3" style="margin-top:4px">Unnamed. Name it so you remember it.</p>
+  <p class="s3 sm" style="margin-top:24px">are.na · Mon 16 Oct, 14:02</p>
+</div>
+<div class="note"><span class="idx">C1</span><p class="t">Just the color</p><p class="d">Swatch, number, hex, source. Everything else (values, neighbors, kept before) lives one click down. The sparest possible card.</p></div>
+</div>
+
+<!-- C2 -->
+<div class="mock">
+<div class="frame p24">
+  <div class="row" style="align-items:flex-start;gap:24px">
+    <i class="sw" style="width:96px;height:96px;background:#c4552d;border-radius:var(--r2)"></i>
+    <div class="col" style="flex:1">
+      <span class="s3 sm">No. 028</span>
+      <input class="field" placeholder="Unnamed. Name it so you remember it." style="font:inherit;color:var(--ink);width:100%">
+    </div>
+  </div>
+  <div style="margin-top:24px;display:grid;grid-template-columns:96px 1fr;row-gap:8px">
+    <span class="lbl">Hex</span><span>#c4552d</span>
+    <span class="lbl">RGB</span><span>196 85 45</span>
+    <span class="lbl">OKLCH</span><span>0.59 0.15 39°</span>
+    <span class="lbl">Source</span><span>are.na · Studio walls, 1970</span>
+  </div>
+</div>
+<div class="note"><span class="idx">C2</span><p class="t">Name first</p><p class="d">The name field sits right beside the swatch and is live. Values drop to a quiet key-value list. Naming is the act of noticing.</p></div>
+</div>
+
+<!-- C3 -->
+<div class="mock">
+<div class="frame p24">
+  <div class="row" style="gap:24px;align-items:flex-start">
+    <div class="nb" style="width:144px;gap:4px">
+      <i style="background:#b94f2a"></i><i style="background:#c75a33"></i><i style="background:#be5530"></i>
+      <i style="background:#c0502b"></i><i class="c" style="background:#c4552d"></i><i style="background:#cc6038"></i>
+      <i style="background:#a8462a"></i><i style="background:#b64e2c"></i><i style="background:#c95c34"></i>
+    </div>
+    <div class="col">
+      <span class="xl">No. 028</span><span class="s2">#c4552d</span>
+      <p class="s3 sm" style="margin-top:12px;max-width:180px">Sampled 12 px out from the point you clicked.</p>
+    </div>
+  </div>
+  <div class="hl" style="margin-top:24px;padding-top:16px"><p class="lbl">Reads as</p><p style="margin-top:4px">Warm · Mid value · Saturated</p></div>
+</div>
+<div class="note"><span class="idx">C3</span><p class="t">The neighborhood</p><p class="d">The 3×3 is the hero; your pick is the center cell. Shows that a color is never alone. Reads as sits underneath as a single line.</p></div>
+</div>
+
+<!-- C4 -->
+<div class="mock">
+<div class="frame p24">
+  <div class="row"><i class="sw" style="width:48px;height:48px;background:#c4552d"></i><div class="col"><span class="md">No. 028 · Unnamed</span><span class="s2 sm">#c4552d · are.na</span></div></div>
+  <p class="lbl" style="margin-top:24px">You’ve kept this before</p>
+  <div class="col" style="margin-top:12px;gap:12px">
+    <div class="row"><i class="sw" style="width:32px;height:32px;background:#c25a35"></i><span style="flex:1">No. 011 Clay pot</span><span class="s2">Nearly identical</span></div>
+    <div class="row"><i class="sw" style="width:32px;height:32px;background:#6c2e3a"></i><span style="flex:1">No. 001 Oxblood</span><span class="s3">ΔE 31</span></div>
+  </div>
+  <p class="s3 sm" style="margin-top:24px">Seven months apart. Safari, then are.na.</p>
+</div>
+<div class="note"><span class="idx">C4</span><p class="t">Memory first</p><p class="d">The card leads with history. What matters most is not the new color but that you keep returning to it.</p></div>
+</div>
+
+</div>
+</section>
+
+<!-- FLOWS -->
+<section class="group">
+<h2>Flows · sequences</h2>
+<div class="grid">
+
+<!-- F1 -->
+<div class="mock">
+<div class="frame" style="min-height:0">
+  <div class="strip">
+    <div class="step"><div class="mini"><span class="menu"></span><p class="sm s2" style="margin-top:56px;text-align:center"><span class="key">⌥⇧C</span></p></div><p class="cap"><b>1</b> Press the hotkey</p></div>
+    <div class="step"><div class="mini"><p class="sm s2">Steal a color</p><p class="sm s3">Hover anything. Click to keep it.</p><div class="loupe"><i style="background:#b94f2a"></i><i style="background:#c75a33"></i><i style="background:#be5530"></i><i style="background:#c0502b"></i><i style="background:#c4552d"></i><i style="background:#cc6038"></i><i style="background:#a8462a"></i><i style="background:#b64e2c"></i><i style="background:#c95c34"></i></div></div><p class="cap"><b>2</b> Loupe</p></div>
+    <div class="step"><div class="mini"><div class="toast mat"><span class="row" style="gap:6px"><i class="sw" style="width:12px;height:12px;background:#c4552d;border-radius:3px"></i>Kept · No. 028</span><span class="s2">Undo</span></div></div><p class="cap"><b>3</b> Toast, 2 s</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><i class="sw" style="height:60px;background:#c4552d"></i><p class="sm md" style="margin-top:8px">No. 028</p><p class="sm s3">#c4552d</p></div><p class="cap"><b>4</b> Open card</p></div>
+  </div>
+</div>
+<div class="note"><span class="idx">F1</span><p class="t">The one-breath capture</p><p class="d">Hotkey, loupe, toast, card. The toast is the only confirmation; no sound, no spinner. Card opens only if you ask.</p></div>
+</div>
+
+<!-- F2 -->
+<div class="mock">
+<div class="frame" style="min-height:0">
+  <div class="strip">
+    <div class="step"><div class="mini"><span class="menu"></span><div class="mat" style="position:absolute;top:20px;right:8px;left:24px;padding:8px"><p class="sm s2">3 unnamed</p><div class="row" style="gap:4px;margin-top:4px"><i class="sw" style="width:16px;height:16px;background:#c4552d"></i><i class="sw" style="width:16px;height:16px;background:#a9b9a0"></i><i class="sw" style="width:16px;height:16px;background:#f0c23b"></i></div></div></div><p class="cap"><b>1</b> Popover, later</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><i class="sw" style="height:40px;background:#c4552d"></i><p class="sm s3" style="margin-top:8px">Unnamed. Name it so you remember it.</p></div><p class="cap"><b>2</b> Card, empty name</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><i class="sw" style="height:40px;background:#c4552d"></i><p class="sm" style="margin-top:8px;border-bottom:1px solid var(--ink);display:inline-block">Studio brick|</p></div><p class="cap"><b>3</b> Type, Return</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><i class="sw" style="height:40px;background:#c4552d"></i><p class="sm md" style="margin-top:8px">No. 028 Studio brick</p><p class="sm s3">Named 2 days after</p></div><p class="cap"><b>4</b> Saved, no fuss</p></div>
+  </div>
+</div>
+<div class="note"><span class="idx">F2</span><p class="t">Naming later</p><p class="d">Unnamed colors wait quietly in the popover count. Naming is a deliberate return visit, never prompted at capture time.</p></div>
+</div>
+
+<!-- F3 -->
+<div class="mock">
+<div class="frame" style="min-height:0">
+  <div class="strip">
+    <div class="step"><div class="mini"><div class="loupe" style="grid-template-columns:1fr"><i style="background:#c4552d"></i></div></div><p class="cap"><b>1</b> Click</p></div>
+    <div class="step"><div class="mini"><div class="toast mat"><span>Kept · No. 028</span><span class="s2">Open card</span></div><p class="sm s2" style="position:absolute;left:8px;right:8px;bottom:48px">You’ve kept this before</p></div><p class="cap"><b>2</b> Toast gains one line</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><div class="row" style="gap:4px"><i class="sw" style="flex:1;height:56px;background:#c25a35"></i><i class="sw" style="flex:1;height:56px;background:#c4552d"></i></div><p class="sm s2" style="margin-top:8px">No. 011 · No. 028</p><p class="sm md">Nearly identical</p></div><p class="cap"><b>3</b> Side by side</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><p class="sm s2">Both kept.</p><p class="sm s3" style="margin-top:4px">Nothing merged. Numbers stay.</p></div><p class="cap"><b>4</b> Both stay</p></div>
+  </div>
+</div>
+<div class="note"><span class="idx">F3</span><p class="t">The kept-before moment</p><p class="d">A near-match adds one line to the toast, never a dialog. The card shows both; nothing is deduped or renumbered.</p></div>
+</div>
+
+<!-- F4 -->
+<div class="mock">
+<div class="frame" style="min-height:0">
+  <div class="strip">
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><p class="sm md">Show neighbors in the loupe</p><p class="sm s3" style="margin-top:4px">Off</p></div><p class="cap"><b>1</b> Settings toggle</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><p class="sm">Palette needs Screen Recording to see around your cursor.</p><div class="row" style="gap:4px;margin-top:12px"><span class="btn ink sm" style="padding:2px 8px;font-size:11px">Allow</span><span class="btn sm" style="padding:2px 8px;font-size:11px">Not now</span></div></div><p class="cap"><b>2</b> One line, draft</p></div>
+    <div class="step"><div class="mini"><div class="loupe" style="grid-template-columns:1fr"><i style="background:#2e6b6f"></i></div><p class="sm s3" style="position:absolute;bottom:8px;left:8px">System loupe</p></div><p class="cap"><b>3</b> Said no: still picks</p></div>
+    <div class="step"><div class="mini" style="background:#fff;border:1px solid var(--hair)"><i class="sw" style="height:40px;background:#2e6b6f"></i><p class="sm s3" style="margin-top:8px">No neighbors for this one.</p></div><p class="cap"><b>4</b> Card, honest gap</p></div>
+  </div>
+</div>
+<div class="note"><span class="idx">F4</span><p class="t">Permission at the point of need</p><p class="d">Asked only when you turn neighbors on. Saying no changes nothing else; the card states the gap plainly.</p></div>
+</div>
+
+</div>
+</section>
+
+<footer>Copy marked draft is new and needs Noah’s review. Stored on this Mac.</footer>
+</div>
+
+<script>
+const caps=[
+ {n:28,name:null,hex:'#c4552d',src:'are.na',t:'warm',L:.59},
+ {n:26,name:'Blush ground',hex:'#f3d9cf',src:'Figma',t:'warm',L:.90},
+ {n:24,name:'Lichen',hex:'#a9b9a0',src:'Safari',t:'between',L:.76},
+ {n:19,name:null,hex:'#8a9bb0',src:'Safari',t:'cool',L:.67},
+ {n:11,name:'Clay pot',hex:'#c25a35',src:'Safari',t:'warm',L:.59},
+ {n:6,name:'Graphite',hex:'#3b3f46',src:'Figma',t:'neutral',L:.36},
+ {n:4,name:'Pool tile',hex:'#2e6b6f',src:'Photos',t:'cool',L:.48},
+ {n:3,name:'Mango',hex:'#f0c23b',src:'Photos',t:'warm',L:.83},
+ {n:1,name:'Oxblood',hex:'#6c2e3a',src:'Photos',t:'warm',L:.36}];
+const no=n=>'No. '+String(n).padStart(3,'0');
+const nm=c=>c.name||'<span class="s3">Unnamed</span>';
+document.getElementById('d1').innerHTML=caps.slice(0,6).map((c,i)=>`<div class="row fade" style="padding:10px 0;${i?'border-top:1px solid var(--hair)':''};animation-delay:${i*40}ms"><span class="s3 sm" style="width:52px">${no(c.n)}</span><i class="sw" style="width:24px;height:24px;background:${c.hex}" aria-label="${no(c.n)}, ${c.name||'Unnamed'}, ${c.hex}"></i><span style="flex:1">${nm(c)}</span><span class="s2" style="width:72px">${c.hex}</span><span class="s3 sm" style="width:48px;text-align:right">${c.src}</span></div>`).join('');
+function d2(k){
+ const list=caps.filter(c=>k==='all'||(k==='un'&&!c.name)||c.t===k).slice(0,8);
+ document.getElementById('d2').innerHTML=list.length?list.map((c,i)=>`<div class="tile col fade" style="animation-delay:${i*30}ms"><i class="sw" style="background:${c.hex}"></i><span class="sm md">${no(c.n)}</span><span class="sm s2">${c.name||'Unnamed'}</span></div>`).join(''):'<p class="s3" style="grid-column:1/-1">Nothing in the archive matches that yet.</p>';
+}
+d2('all');
+document.querySelectorAll('#d2tabs span').forEach(s=>s.onclick=()=>{document.querySelectorAll('#d2tabs span').forEach(x=>x.classList.remove('on'));s.classList.add('on');d2(s.dataset.k)});
+document.getElementById('d3').innerHTML=[...caps].sort((a,b)=>a.L-b.L).map(c=>`<i title="${no(c.n)} ${c.hex}" style="flex:1;background:${c.hex}"></i>`).join('');
+</script>
+</body>
+</html>

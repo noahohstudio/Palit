@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit prototype v2</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* Prototype v2 (entries 94–106): real pages on a real Mac wallpaper, in the look Noah picked in the
+     look and flow workshop. Clean, functional and considered (A65); nothing on screen competes with the color. */
+  html, body { margin: 0; height: 100%; background: #1c1c1e; color: var(--ink); font: 13px/1.4 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  button { font: inherit; color: inherit; }
+  p { margin: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  #viewport { position: fixed; inset: 0 0 var(--ctl, 76px) 0; overflow: hidden; }
+  body.clean #viewport { bottom: 0; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1440px; height: 900px; transform-origin: 50% 50%; transform: translate(-50%, -50%); overflow: hidden; background: #d6d6db; user-select: none; -webkit-user-select: none; }
+  #desk { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #stage.picking, #stage.picking * { cursor: none !important; }
+
+  /* Palit in the menu bar */
+  /* No logo yet, not even a placeholder: the menu bar shows the word (entry 107). Daeun designs the mark. */
+  .mbi { position: absolute; z-index: 25; height: 22px; transform: translate(-50%, -50%); border: 0; padding: 0 7px; background: none; border-radius: 5px; font: 13px var(--font); letter-spacing: -0.003em; color: #1d1d1f; cursor: default; }
+  .mbi:hover, .mbi[aria-expanded="true"], .mbi.picking { background: rgba(0, 0, 0, 0.1); }
+
+  /* The desktop palette: slim strips at the edge (A64) */
+  .strips { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 15; display: flex; flex-direction: column; gap: 3px; padding: 7px 6px; background: rgba(246, 246, 248, 0.72); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-radius: 10px 0 0 10px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.2); }
+  .strips button { width: 6px; height: 26px; border: 0; padding: 0; background: var(--c); cursor: pointer; transition: width 240ms cubic-bezier(.2, .8, .2, 1); }
+  .strips:hover button, .strips:focus-within button, .strips.open button { width: 26px; }
+  .strips button.landed { animation: land 900ms ease-out; }
+  @keyframes land { 0% { box-shadow: 0 0 0 2px #fff, 0 0 0 3px #1d1d1f; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .strips .pinmark { height: 2px; background: #1d1d1f; margin: -1px 0 3px; }
+  .note { position: absolute; z-index: 16; padding: 4px 9px; background: rgba(255, 255, 255, 0.94); border-radius: 6px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.16); font-size: 12px; white-space: nowrap; pointer-events: none; animation: fadeIn 180ms ease-out both; }
+
+  /* Keeping a color: the loupe, the ring, the name beside the cursor */
+  .loupe { position: absolute; z-index: 60; width: 54px; height: 54px; border-radius: 50%; background: var(--c, #ccc); transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.28); }
+  .loupe::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.45); }
+  .loupe .hx { position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%); padding: 2px 7px; border-radius: 5px; background: rgba(29, 29, 31, 0.82); color: #fff; font-size: 11px; white-space: nowrap; }
+  .ring { position: absolute; z-index: 59; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); pointer-events: none; animation: ring 560ms ease-out forwards; }
+  @keyframes ring { from { opacity: 1; transform: translate(-50%, -50%) scale(0.7); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.7); } }
+  .namer { position: absolute; z-index: 61; display: grid; grid-template-columns: 22px 220px; gap: 8px; align-items: center; padding: 8px 10px; background: rgba(255, 255, 255, 0.97); border-radius: 8px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); animation: fadeIn 160ms ease-out both; }
+  .namer i { width: 22px; height: 22px; background: var(--c); }
+  .namer input { border: 0; outline: none; font: 14px var(--font); background: none; }
+  .namer p { grid-column: 2; font-size: 11px; color: var(--ink-2); }
+
+  /* Palit's window: a native shell around the collection */
+  .pw { position: absolute; left: 150px; top: 62px; width: 1120px; height: 776px; z-index: 20; display: flex; flex-direction: column; background: var(--paper); border-radius: 12px; overflow: hidden; box-shadow: 0 32px 90px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.26); animation: fadeIn 240ms ease-out both; }
+  .pw[hidden] { display: none; }
+  .pw-tb { flex: none; height: 52px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px; background: #f6f6f7; border-bottom: 0.5px solid rgba(0, 0, 0, 0.12); }
+  .lights { display: flex; gap: 8px; }
+  .lights button { width: 12px; height: 12px; border-radius: 50%; border: 0; padding: 0; background: #ff5f57; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.14); cursor: pointer; }
+  .lights button:nth-child(2) { background: #febc2e; } .lights button:nth-child(3) { background: #28c840; }
+  .seg { display: inline-flex; padding: 2px; background: rgba(0, 0, 0, 0.07); border-radius: 8px; }
+  .seg button { border: 0; background: none; padding: 4px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .seg button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); }
+  .zoom { justify-self: end; display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+  .zoom button { width: 24px; height: 22px; border: 0; background: none; border-radius: 5px; cursor: pointer; font-size: 15px; line-height: 1; color: var(--ink-2); }
+  .zoom button:hover { background: rgba(0, 0, 0, 0.07); color: var(--ink); }
+  .zoom input { width: 84px; accent-color: #1d1d1f; }
+  .zoom[hidden] { display: none; }
+  .pw-nav { flex: none; height: 46px; display: flex; align-items: center; gap: 2px; padding: 0 18px; }
+  .letters button { position: relative; width: 30px; height: 30px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .letters button:hover { color: var(--ink); }
+  .letters button[aria-pressed="true"] { color: var(--ink); }
+  .letters button[aria-pressed="true"]::after { content: ""; position: absolute; left: 9px; right: 9px; bottom: 3px; height: 2px; background: var(--band); }
+  .letters button:disabled { color: #D8D8DB; cursor: default; }
+  .subnav button { border: 0; background: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .subnav button:hover { color: var(--ink); }
+  .subnav button[aria-pressed="true"] { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
+  .pw-nav .act { margin-left: auto; display: flex; gap: 8px; }
+  .pw-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+  .pw-body > * { animation: fadeIn 260ms ease-out both; }
+  .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.86); padding: 1px 6px; border-radius: 4px; }
+  .tbtn { border: 0; background: rgba(0, 0, 0, 0.05); padding: 4px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .tbtn:hover { background: rgba(0, 0, 0, 0.09); }
+  .tbtn.ink { background: #1d1d1f; color: #fff; }
+  .tbtn:disabled { opacity: 0.4; cursor: default; }
+
+  /* Days: a wall with nothing on it but color (A57). Zoom sets the tile size; names only when there's room. */
+  .days { padding: 2px 18px 46px; --tw: 104px; --th: 92px; --ts: 12px; --tl: 1; --today: 1.7; --tts: 17px; }
+  .days.z0 { --tw: 46px; --th: 46px; --today: 1.45; }
+  .days.z2 { --tw: 186px; --th: 166px; --ts: 17px; --tl: 3; --tts: 30px; --today: 1.45; }
+  .day + .day { margin-top: 18px; }
+  .dl { font-size: 11px; color: var(--ink-2); margin-bottom: 6px; }
+  .day.today .dl { color: var(--ink); }
+  .drow { display: flex; flex-wrap: wrap; gap: 3px; }
+  .t { position: relative; flex: 1 0 var(--tw); height: var(--th); min-width: 0; max-width: calc(var(--tw) * 2.6); border: 0; padding: 0; background: var(--c); color: var(--on); cursor: pointer; overflow: hidden; text-align: left; transition: flex-grow 360ms cubic-bezier(.2, .8, .2, 1); animation: fadeIn 320ms ease-out both; }
+  .day.today .t { height: calc(var(--th) * var(--today)); }
+  .t.join { margin-left: -3px; }
+  .t:hover, .t:focus-visible { flex-grow: 2.4; outline: none; z-index: 2; }
+  .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts); line-height: 1.12; letter-spacing: -0.01em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: var(--tl); -webkit-box-orient: vertical; }
+  .days.z0 .t .nm { display: none; }
+  .day.today .t .nm { font-size: var(--tts); letter-spacing: -0.025em; }
+  .t .nm.ph { opacity: 0.82; }
+  .t .dt { position: absolute; left: 10px; right: 10px; top: 9px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 200ms; }
+  .t:hover .dt, .t:focus-visible .dt { opacity: 0.86; }
+  .days.z0 .t:hover .dt { opacity: 0; }
+  .t .pin { position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--on); }
+  .empty { padding: 60px 22px; color: var(--ink-2); font-size: 13px; }
+
+  /* Spectrum: every color you've found, fanned by hue, one long scroll */
+  .fan { position: absolute; inset: 0; cursor: grab; touch-action: none; overflow: hidden; }
+  .fan:active { cursor: grabbing; }
+  .fan-cap { position: absolute; left: 28px; top: 14px; z-index: 300; max-width: 52%; pointer-events: none; }
+  .fan-cap .nm { font-size: 52px; line-height: 1; letter-spacing: -0.045em; }
+  .fan-cap .nm.ph { color: var(--ink-2); }
+  .fan-cap .mt { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .fan-card { position: absolute; left: calc(50% - 66px); bottom: 74px; width: 132px; height: 214px; background: var(--c); color: var(--on); transform-origin: 50% 500px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 10px 22px rgba(0, 0, 0, 0.12); cursor: pointer; }
+  .fan-card::before { content: ""; position: absolute; inset: 7px 7px 32px; border: 1px solid currentColor; opacity: 0.28; }
+  .fan-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 26px; border-top: 1px dashed currentColor; opacity: 0.4; }
+  .fan-card .st { position: absolute; left: 12px; bottom: 7px; font-size: 10px; opacity: 0.85; }
+  .fan-hint { position: absolute; left: 28px; bottom: 12px; font-size: 11px; color: var(--ink-2); }
+
+  /* Collections: pins, palettes, and what's shared with you */
+  .col { padding: 6px 18px 46px; }
+  .pins { display: flex; flex-wrap: wrap; gap: 3px; }
+  .pins .t { flex: 0 0 168px; height: 150px; max-width: none; }
+  .pins .t .nm { display: -webkit-box; font-size: 16px; -webkit-line-clamp: 2; }
+  .pins.selecting .t { cursor: copy; }
+  .pins .t.sel { box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 4px #1d1d1f; }
+  .pal { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule-soft); animation: fadeIn 300ms ease-out both; }
+  .pal:first-child { border-top: 0; }
+  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; }
+  .pal .pn.ph { color: var(--ink-2); }
+  .pal .pm { margin-top: 4px; font-size: 11px; color: var(--ink-2); }
+  .pal .strip { display: flex; height: 64px; }
+  .pal .strip button { flex: 1; border: 0; padding: 0; background: var(--c); cursor: pointer; transition: flex-grow 300ms cubic-bezier(.2, .8, .2, 1); }
+  .pal .strip button:hover { flex-grow: 1.8; }
+  .pal .acts { display: flex; gap: 6px; }
+  .pal .acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  .col-note { margin: 4px 0 10px; font-size: 12px; color: var(--ink-2); }
+
+  /* The specimen card (A60, A61): the color over where you found it, your name as the hero, the scratch pad */
+  .sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(246, 246, 247, 0.74); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); animation: fadeIn 220ms ease-out both; }
+  .spec { position: relative; width: 880px; height: 580px; display: grid; grid-template-columns: 45% 55%; background: var(--paper); box-shadow: 0 26px 64px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .sp-src { position: relative; overflow: hidden; background: #e9e9eb; }
+  .sp-src .crop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .sp-src .nb { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .sp-chip { position: absolute; left: 50%; top: 48%; width: 46%; transform: translate(-50%, -50%); background: var(--paper); padding: 8px 8px 0; box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26); }
+  .sp-chip .sw { width: auto; height: auto; aspect-ratio: 1 / 1.05; box-shadow: none; }
+  .sp-chip .lb { display: flex; justify-content: space-between; font-size: 11px; padding: 7px 2px 8px; }
+  .sp-cap { position: absolute; left: 16px; right: 16px; bottom: 14px; font-size: 11px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); }
+  .sp-form { display: flex; flex-direction: column; min-width: 0; padding: 24px 28px 20px; }
+  .sp-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--ink-2); }
+  .sp-x { border: 0; background: none; font-size: 18px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 2px; }
+  .sp-x:hover { color: var(--ink); }
+  .sp-nm { margin-top: 8px; font-size: 54px; line-height: 0.98; letter-spacing: -0.045em; outline: none; overflow-wrap: anywhere; border-radius: 3px; }
+  .sp-nm:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .sp-nm:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+  .sp-hint { margin-top: 6px; font-size: 11px; color: var(--ink-2); }
+  .sp-rows { display: grid; grid-template-columns: 76px minmax(0, 1fr); margin: 16px 0 0; font-size: 12px; }
+  .sp-rows dt { color: var(--ink-2); padding: 6px 0; border-top: 1px solid var(--rule-soft); }
+  .sp-rows dd { margin: 0; padding: 6px 0; border-top: 1px solid var(--rule-soft); min-width: 0; }
+  .sp-rows dd button { border: 0; background: none; padding: 0; cursor: pointer; text-align: left; }
+  .sp-rows dd button:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .vals { display: flex; gap: 14px; flex-wrap: wrap; }
+  .sim { display: flex; flex-direction: column; gap: 3px; }
+  .sim button { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: center; }
+  .sim i { width: 14px; height: 14px; }
+  .sp-strip { display: flex; height: 14px; margin-top: 2px; }
+  .sp-strip i { flex: 1; }
+  .sp-acts { display: flex; gap: 6px; margin-top: 12px; }
+  .sp-acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  .pad { margin-top: auto; padding-top: 12px; }
+  .pad label { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 2px; }
+  .pad textarea { display: block; width: 100%; height: 60px; resize: none; border: 0; outline: none; padding: 0; font: 13px/20px var(--font); background: repeating-linear-gradient(transparent 0 19px, var(--rule-soft) 19px 20px); box-sizing: border-box; }
+
+  /* A share card (entry 109): the colors and their codes, ready to send */
+  .share { width: 600px; background: var(--paper); box-shadow: 0 26px 64px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.18); padding: 22px; }
+  .sc { border: 1px solid var(--rule-soft); }
+  .sc-chips { display: flex; height: 190px; }
+  .sc-chips i { flex: 1; }
+  .sc-names { display: grid; border-top: 1px solid var(--rule-soft); }
+  .sc-names div { padding: 9px 10px 11px; font-size: 12px; min-width: 0; }
+  .sc-names div + div { border-left: 1px solid var(--rule-soft); }
+  .sc-names b { display: block; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-names span { color: var(--ink-2); font-size: 11px; }
+  .sc-foot { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 12px 12px; border-top: 1px solid var(--rule-soft); }
+  .sc-foot .tt { font-size: 22px; letter-spacing: -0.025em; }
+  .sc-foot .by { font-size: 11px; color: var(--ink-2); }
+  .share .acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+  /* The controls under the stage */
+  #controls { position: fixed; left: 0; right: 0; bottom: 0; height: var(--ctl, 76px); box-sizing: border-box; padding: 10px 20px; background: #1c1c1e; color: #e5e5ea; font-size: 12px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  body.clean #controls { display: none; }
+  .c-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .c-lb { color: #8e8e93; }
+  .c-seg { display: inline-flex; background: #2c2c2e; border-radius: 7px; padding: 2px; }
+  .c-seg button, .c-btn { border: 0; background: none; color: #e5e5ea; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+  .c-seg button[aria-pressed="true"] { background: #48484a; }
+  .c-btn { background: #2c2c2e; }
+  .c-btn:hover, .c-seg button:hover { background: #3a3a3c; }
+  .c-hint { color: #8e8e93; }
+  .c-hint b { color: #e5e5ea; font-weight: 400; }
+  kbd { font: inherit; font-size: 11px; color: #8e8e93; margin-left: 4px; }
+  .c-grow { flex: 1; }
+  .c-row2 { flex-wrap: nowrap; align-items: baseline; }
+  .c-row2 .c-hint { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .c-credit { flex: 0 1 auto; max-width: 42%; color: #636366; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage" aria-label="Palit v2 on a Mac desktop">
+    <img id="desk" alt="A Mac desktop with a Wikipedia article in Safari and a photo open in Preview" draggable="false">
+    <button type="button" class="mbi" id="mbi" aria-expanded="false">Palit</button>
+    <div class="strips" id="strips" role="toolbar" aria-label="Desktop palette"></div>
+    <section class="pw" id="pw" hidden aria-label="Palit">
+      <div class="pw-tb">
+        <div class="lights"><button type="button" id="pw-close" aria-label="Close Palit"></button><button type="button" aria-label="Minimize" tabindex="-1"></button><button type="button" aria-label="Zoom" tabindex="-1"></button></div>
+        <div class="seg" id="views" role="group" aria-label="View"></div>
+        <div class="zoom" id="zoom"><button type="button" id="z-out" aria-label="Smaller">−</button><input type="range" id="z" min="0" max="2" step="1" value="1" aria-label="Zoom"><button type="button" id="z-in" aria-label="Larger">+</button></div>
+      </div>
+      <div class="pw-nav" id="nav"></div>
+      <div class="pw-body" id="body"></div>
+      <p class="pw-count num" id="count" aria-live="polite"></p>
+    </section>
+  </div>
+</div>
+
+<div id="controls">
+  <div class="c-row">
+    <span class="c-lb">Screen</span><span class="c-seg" id="c-screen"></span>
+    <span class="c-lb">Sound</span><span class="c-seg" id="c-sound"></span>
+    <button type="button" class="c-btn" id="c-reset">Start over</button>
+    <button type="button" class="c-btn" id="c-hide">Hide<kbd>H</kbd></button>
+  </div>
+  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum.</p><span class="c-credit" id="c-credit"></span></div>
+</div>
+
+<script src="../system/sample.js"></script>
+<script src="../system/color.js"></script>
+<script src="../system/components.js"></script>
+<script src="screens/screens.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI, SCREENS = (window.PALIT_V2_SCREENS || {}).list || [];
+  var el = U.el, pad = U.pad, no = U.no;
+  function $(id) { return document.getElementById(id); }
+  var W = 1440, H = 900, TODAY = "October 18";
+  var q = new URLSearchParams(location.search);
+  if (q.has("clean")) document.body.classList.add("clean");
+
+  /* ---------- Color ---------- */
+  function lum(hex) {
+    var v = [1, 3, 5].map(function (i) { var c = parseInt(hex.slice(i, i + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  var INK_L = lum("#1d1d1f");
+  function inkOn(hex) { var l = lum(hex); return 1.05 / (l + 0.05) >= (l + 0.05) / (INK_L + 0.05) ? "#ffffff" : "#1d1d1f"; }
+  function toHex(r, g, b) { return "#" + [r, g, b].map(function (v) { return ("0" + v.toString(16)).slice(-2); }).join(""); }
+  // ROYGBIV, strictly seven letters (A58). Neutrals have no letter; they show when no letter is picked.
+  var LETTERS = [["R", "Red", "#b5462e"], ["O", "Orange", "#d9822b"], ["Y", "Yellow", "#e2b93b"], ["G", "Green", "#6e9a5a"], ["B", "Blue", "#3f78a8"], ["I", "Indigo", "#4b4fa0"], ["V", "Violet", "#7a5aa6"]];
+  function bandOf(c) {
+    if (c.C < 0.03) return null;
+    var h = c.h;
+    return h < 40 || h >= 350 ? "R" : h < 75 ? "O" : h < 115 ? "Y" : h < 190 ? "G" : h < 265 ? "B" : h < 290 ? "I" : "V";
+  }
+  function hueKey(c) { var b = bandOf(c); return b ? "ROYGBIV".indexOf(b) * 1000 + ((c.h + 10) % 360) : 9000 - c.L * 100; }
+
+  /* ---------- Sounds: duller than the old chime (A63). Pick one by ear (Q22). ---------- */
+  var actx = null, noiseBuf = null;
+  function audio() {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!noiseBuf) { noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.2, actx.sampleRate); var d = noiseBuf.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    return actx;
+  }
+  function env(g, t, peak, attack, decay) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay); }
+  function noise(ctx, t, freq, q, peak, decay, out) {
+    var n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    n.buffer = noiseBuf; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q;
+    env(g, t, peak, 0.002, decay); n.connect(f); f.connect(g); g.connect(out); n.start(t); n.stop(t + decay + 0.05);
+  }
+  var SOUNDS = {
+    felt: { label: "Felt", play: function (ctx, t, out) {   // a soft, low, rounded note
+      var lp = ctx.createBiquadFilter(), g = ctx.createGain(); lp.type = "lowpass"; lp.frequency.value = 1000; env(g, t, 0.2, 0.006, 0.34);
+      [[392, 1], [784, 0.16]].forEach(function (p) { var o = ctx.createOscillator(), og = ctx.createGain(); o.type = "sine"; o.frequency.value = p[0]; og.gain.value = p[1]; o.connect(og); og.connect(lp); o.start(t); o.stop(t + 0.4); });
+      lp.connect(g); g.connect(out);
+    } },
+    wood: { label: "Wood", play: function (ctx, t, out) {   // a short, dry tock
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle";
+      o.frequency.setValueAtTime(640, t); o.frequency.exponentialRampToValueAtTime(390, t + 0.05);
+      env(g, t, 0.26, 0.002, 0.11); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.15);
+      noise(ctx, t, 2400, 1.2, 0.05, 0.014, out);
+    } },
+    stamp: { label: "Stamp", play: function (ctx, t, out) {   // a soft press on paper
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(82, t + 0.07);
+      env(g, t, 0.34, 0.003, 0.15); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.2);
+      noise(ctx, t, 900, 0.8, 0.07, 0.06, out);
+    } },
+    off: { label: "Off", play: null }
+  };
+  function sound() { var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
+
+  /* ---------- The real screens ---------- */
+  var stage = $("stage"), desk = $("desk"), canvases = {};
+  function canvasFor(sc, done) {
+    if (canvases[sc.id]) { done(canvases[sc.id]); return; }
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight;
+      var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0);
+      canvases[sc.id] = { canvas: c, ctx: ctx, k: img.naturalWidth / W }; done(canvases[sc.id]);
+    };
+    img.src = sc.data || "screens/" + sc.file;
+  }
+  function px(cv, x, y) { var d = cv.ctx.getImageData(Math.round(x * cv.k), Math.round(y * cv.k), 1, 1).data; return toHex(d[0], d[1], d[2]); }
+  function cropOf(cv, x, y) {
+    var r = 90, c = document.createElement("canvas"); c.width = 360; c.height = 360;
+    c.getContext("2d").drawImage(cv.canvas, (x - r) * cv.k, (y - r) * cv.k, 2 * r * cv.k, 2 * r * cv.k, 0, 0, 360, 360);
+    try { return c.toDataURL("image/jpeg", 0.86); } catch (e) { return null; }
+  }
+  function sourceOf(sc, x, y) {
+    var r = sc.regions.filter(function (g) { return x >= g.x && y >= g.y && x < g.x + g.w && y < g.y + g.h; })[0];
+    return r || sc.fallback;
+  }
+
+  /* ---------- The collection ---------- */
+  var st = { screen: 0, sound: "felt", view: "days", band: null, zoom: 1, sub: "pins", selecting: false, selected: [], picking: false, run: null, deskPal: null };
+  var colors = [], palettes = [], shared = [], next = 1;
+  function make(o) {
+    var k = PC.oklch(o.hex), c = Object.assign({ name: null, note: "", pinned: false, palette: null, crop: null, url: null, screen: null, x: null, y: null }, o);
+    c.L = k.L; c.C = k.C; c.h = k.h; c.on = inkOn(o.hex); c.band = bandOf(c);
+    c.placeholder = c.placeholder || PC.placeholder(o.hex, o.place);
+    return c;
+  }
+  function title(c) { return c.name || c.placeholder; }
+  function byNo(n) { return colors.filter(function (c) { return c.number === n; })[0]; }
+  function label(c) { return no(c.number) + ", " + (c.name || "Unnamed") + ", " + c.hex; }
+  function vars(c) { return "--c:" + c.hex + ";--on:" + c.on; }
+  function seedSample() {
+    colors = S.captures.map(function (s) {
+      return make({ number: s.number, hex: s.hex, name: s.name, placeholder: s.placeholder, app: s.sourceType, place: U.place(s), src: U.sourceTitle(s), day: U.day(s.capturedAt), at: s.capturedAt, neighbors: s.neighbors });
+    });
+    next = colors.length + 1;
+    palettes = [
+      { id: "p-plant", name: "Plant shop", members: [11, 12], day: "August 12" },
+      { id: "p-tea", name: "Tea packaging", members: [26, 27], day: "October 4" }
+    ];
+    shared = [
+      { id: "s-site", name: "Studio site refresh", from: "Sam", day: "October 16", hexes: ["#1f2a44", "#e8e1d3", "#c4552d", "#f2c14e"], names: ["Ink navy", "Paper", "Brick", "Signal yellow"] },
+      { id: "s-legend", name: "Site plan legend", from: "Dana", day: "October 12", hexes: ["#2e6b6f", "#d98e04", "#a8432a", "#7a8b99", "#141414"], names: ["Water", "Grading", "Demolition", "Existing", "Linework"] }
+    ];
+    [1, 4].forEach(function (n) { byNo(n).pinned = true; });
+  }
+  function keep(sc, cv, x, y, extra) {
+    var src = sourceOf(sc, x, y), hex = px(cv, x, y);
+    var nb = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].map(function (d) { return px(cv, clampX(x + d[0] * 12), clampY(y + d[1] * 12)); });
+    var c = make(Object.assign({ number: next++, hex: hex, app: src.app, place: src.place, src: src.title, url: src.url || null, day: TODAY, at: new Date(2026, 9, 18, 14, 22 + colors.length % 30).toISOString(), neighbors: nb, crop: cropOf(cv, x, y), screen: sc.id, x: x, y: y }, extra || {}));
+    colors.push(c);
+    return c;
+  }
+  function clampX(x) { return Math.max(1, Math.min(W - 2, x)); }
+  function clampY(y) { return Math.max(1, Math.min(H - 2, y)); }
+  function seedToday(done) {
+    var left = SCREENS.length;
+    if (!left) { done(); return; }
+    SCREENS.forEach(function (sc) {
+      canvasFor(sc, function (cv) {
+        var runs = {};
+        sc.seeds.forEach(function (sd) {
+          var c = keep(sc, cv, sd.x, sd.y, { name: sd.name || null, pinned: !!sd.pinned });
+          if (sd.run) { (runs[sd.run] = runs[sd.run] || []).push(c.number); }
+        });
+        Object.keys(runs).forEach(function (r) {
+          var p = { id: "p-" + r, name: null, members: runs[r], day: TODAY, placeholder: "Palette from " + byNo(runs[r][0]).place };
+          palettes.unshift(p);
+          runs[r].forEach(function (n) { byNo(n).palette = p.id; });
+        });
+        if (--left === 0) { colors.sort(function (a, b) { return a.number - b.number; }); done(); }
+      });
+    });
+  }
+  // Seeds are numbered in screen order, so renumber them once both screens have answered.
+  function renumber() {
+    var sample = colors.filter(function (c) { return !c.screen; }), today = colors.filter(function (c) { return c.screen; });
+    var order = SCREENS.map(function (s) { return s.id; });
+    var map = {};
+    today.sort(function (a, b) { return order.indexOf(a.screen) - order.indexOf(b.screen) || a.number - b.number; });
+    today.forEach(function (c, i) { map[c.number] = sample.length + 1 + i; c.number = sample.length + 1 + i; });
+    palettes.forEach(function (p) { p.members = p.members.map(function (n) { return map[n] || n; }); });
+    colors = sample.concat(today);
+    next = colors.length + 1;
+  }
+
+  /* ---------- The desktop palette (A64) ---------- */
+  var strips = $("strips");
+  function deskColors() {
+    if (st.deskPal) { var p = palById(st.deskPal); if (p) return p.members.map(byNo).filter(Boolean); }
+    return colors.slice().sort(function (a, b) { return b.number - a.number; }).slice(0, 8);
+  }
+  function drawStrips(landed) {
+    strips.textContent = "";
+    if (st.deskPal) strips.appendChild(el("div", { class: "pinmark", title: "Pinned: " + palName(palById(st.deskPal)) }));
+    deskColors().forEach(function (c) {
+      var b = el("button", { type: "button", style: vars(c), "aria-label": "Copy " + label(c) + (st.deskPal ? ", from the pinned palette" : "") });
+      if (landed && c.number === landed) b.classList.add("landed");
+      b.addEventListener("click", function (e) { copyColor(c, e, b); });
+      strips.appendChild(b);
+    });
+  }
+  function copyColor(c, e, from) {
+    var rgb = PC.displayRgb(c.hex), text = e && e.altKey ? "rgb(" + rgb.split(" ").join(", ") + ")" : e && (e.metaKey || e.ctrlKey) ? "oklch(" + PC.displayOklch(c.hex) + ")" : c.hex;
+    try { navigator.clipboard.writeText(text); } catch (err) {}
+    var r = from.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
+    note("Copied " + text, (r.left - s.left) / k - 12, (r.top - s.top) / k + 2, true);
+  }
+  var noteEl = null, noteT = null;
+  function note(text, x, y, rightAlign) {
+    if (noteEl) noteEl.remove();
+    noteEl = el("div", { class: "note num", role: "status", text: text });
+    stage.appendChild(noteEl);
+    noteEl.style.top = y + "px";
+    if (rightAlign) noteEl.style.right = (W - x) + "px"; else noteEl.style.left = x + "px";
+    clearTimeout(noteT); noteT = setTimeout(function () { if (noteEl) { noteEl.remove(); noteEl = null; } }, 1600);
+  }
+
+  /* ---------- Keeping a color ---------- */
+  var loupe = null, pointer = { x: 700, y: 450 }, namer = null;
+  function toStage(e) { var r = stage.getBoundingClientRect(), k = r.width / W; return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k }; }
+  function startPicking() {
+    closeWindow();
+    st.picking = true; stage.classList.add("picking"); $("mbi").classList.add("picking");
+    loupe = el("div", { class: "loupe", "aria-hidden": "true" }, [el("span", { class: "hx num" })]);
+    stage.appendChild(loupe); moveLoupe(pointer.x, pointer.y);
+  }
+  function stopPicking() {
+    st.picking = false; stage.classList.remove("picking"); $("mbi").classList.remove("picking");
+    if (loupe) { loupe.remove(); loupe = null; }
+    if (st.run) endRun();
+  }
+  function moveLoupe(x, y) {
+    if (!loupe) return;
+    var cv = canvases[screen().id]; if (!cv) return;
+    var hex = px(cv, clampX(x), clampY(y));
+    loupe.style.left = x + "px"; loupe.style.top = y + "px"; loupe.style.setProperty("--c", hex);
+    loupe.querySelector(".hx").textContent = hex;
+  }
+  function ring(x, y) { var r = el("span", { class: "ring" }); r.style.left = x + "px"; r.style.top = y + "px"; stage.appendChild(r); setTimeout(function () { r.remove(); }, 700); }
+  function pick(x, y, opts) {
+    var sc = screen(), cv = canvases[sc.id]; if (!cv) return null;
+    var c = keep(sc, cv, clampX(x), clampY(y));
+    ring(x, y); sound();
+    if (opts.more || st.run) {
+      if (!st.run) { st.run = { id: "p-" + Date.now(), name: null, members: [], day: TODAY, placeholder: "Palette from " + c.place }; palettes.unshift(st.run); }
+      st.run.members.push(c.number); c.palette = st.run.id;
+      if (!opts.more) endRun();
+    }
+    drawStrips(c.number);
+    if (!$("pw").hidden) render();
+    return c;
+  }
+  function endRun() {
+    var r = st.run; st.run = null;
+    if (r && r.members.length < 2) { palettes = palettes.filter(function (p) { return p !== r; }); r.members.forEach(function (n) { byNo(n).palette = null; }); }
+  }
+  function nameBeside(c, x, y) {
+    if (namer) namer.remove();
+    var input = el("input", { type: "text", placeholder: c.placeholder, "aria-label": "Name " + no(c.number) });
+    namer = el("div", { class: "namer", style: "--c:" + c.hex }, [el("i"), input, el("p", { text: "Return names it. Esc leaves it for later." })]);
+    namer.style.left = Math.min(x + 18, W - 290) + "px"; namer.style.top = Math.min(y + 18, H - 90) + "px";
+    stage.appendChild(namer);
+    setTimeout(function () { input.focus(); }, 0);
+    input.addEventListener("keydown", function (e) {
+      e.stopPropagation();
+      if (e.key === "Enter") { var v = input.value.trim(); if (v) c.name = v; finish(); }
+      if (e.key === "Escape") finish();
+    });
+    function finish() { if (namer) { namer.remove(); namer = null; } drawStrips(); if (!$("pw").hidden) render(); }
+  }
+  stage.addEventListener("pointermove", function (e) { var p = toStage(e); pointer = p; if (st.picking) moveLoupe(p.x, p.y); });
+  stage.addEventListener("click", function (e) {
+    if (!st.picking || e.target.closest(".strips, .mbi, .namer")) return;
+    var p = toStage(e); pick(p.x, p.y, { more: e.shiftKey });
+    if (!e.shiftKey) stopPicking();
+  }, true);
+  stage.addEventListener("contextmenu", function (e) {
+    if (!st.picking) return;
+    e.preventDefault();
+    var p = toStage(e), c = pick(p.x, p.y, {});
+    stopPicking();
+    if (c) nameBeside(c, p.x, p.y);
+  });
+
+  /* ---------- Palit's window: Days, Collections, Spectrum (A58) ---------- */
+  var VIEWS = [["days", "Days"], ["collections", "Collections"], ["spectrum", "Spectrum"]];
+  VIEWS.forEach(function (v) {
+    var b = el("button", { type: "button", "aria-pressed": "false", text: v[1] });
+    b.addEventListener("click", function () { st.view = v[0]; st.selecting = false; st.selected = []; render(); });
+    $("views").appendChild(b);
+  });
+  function openWindow() { if (st.picking) stopPicking(); $("pw").hidden = false; $("mbi").setAttribute("aria-expanded", "true"); render(); }
+  function closeWindow() { closeSheet(); $("pw").hidden = true; $("mbi").setAttribute("aria-expanded", "false"); }
+  $("mbi").addEventListener("click", function (e) { e.stopPropagation(); if ($("pw").hidden) openWindow(); else closeWindow(); });
+  $("pw-close").addEventListener("click", closeWindow);
+  function setZoom(z) { st.zoom = Math.max(0, Math.min(2, z)); $("z").value = String(st.zoom); render(); }
+  $("z").addEventListener("input", function () { setZoom(Number($("z").value)); });
+  $("z-out").addEventListener("click", function () { setZoom(st.zoom - 1); });
+  $("z-in").addEventListener("click", function () { setZoom(st.zoom + 1); });
+
+  function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }); }
+  function render() {
+    Array.prototype.forEach.call($("views").children, function (b, i) { b.setAttribute("aria-pressed", String(VIEWS[i][0] === st.view)); });
+    $("zoom").hidden = st.view !== "days";
+    renderNav();
+    var body = $("body"); body.textContent = ""; body.scrollTop = 0;
+    if (st.view === "days") body.appendChild(daysView());
+    else if (st.view === "spectrum") body.appendChild(spectrumView());
+    else body.appendChild(collectionsView());
+    countLine();
+  }
+  function renderNav() {
+    var nav = $("nav"); nav.textContent = "";
+    if (st.view === "collections") {
+      var sub = el("div", { class: "subnav", role: "group", "aria-label": "Collections" });
+      [["pins", "Pinned"], ["palettes", "Palettes"], ["shared", "Shared with you"]].forEach(function (s) {
+        var b = el("button", { type: "button", "aria-pressed": String(st.sub === s[0]), text: s[1] });
+        b.addEventListener("click", function () { st.sub = s[0]; st.selecting = false; st.selected = []; render(); });
+        sub.appendChild(b);
+      });
+      nav.appendChild(sub);
+      if (st.sub === "pins") {
+        var acts = el("div", { class: "act" });
+        if (st.selecting) {
+          var grp = el("button", { type: "button", class: "tbtn ink", text: st.selected.length ? "Group " + st.selected.length + " as a palette" : "Pick pins to group" });
+          grp.disabled = st.selected.length < 2;
+          grp.addEventListener("click", groupSelected);
+          var cancel = el("button", { type: "button", class: "tbtn", text: "Cancel" });
+          cancel.addEventListener("click", function () { st.selecting = false; st.selected = []; render(); });
+          acts.appendChild(cancel); acts.appendChild(grp);
+        } else {
+          var sel = el("button", { type: "button", class: "tbtn", text: "Group as a palette" });
+          sel.addEventListener("click", function () { st.selecting = true; st.selected = []; render(); });
+          acts.appendChild(sel);
+        }
+        nav.appendChild(acts);
+      }
+      return;
+    }
+    var row = el("div", { class: "letters", role: "group", "aria-label": "Filter by hue" });
+    LETTERS.forEach(function (L) {
+      var has = colors.some(function (c) { return c.band === L[0]; });
+      var b = el("button", { type: "button", "aria-pressed": String(st.band === L[0]), "aria-label": L[1], title: L[1], style: "--band:" + L[2], text: L[0] });
+      b.disabled = !has;
+      b.addEventListener("click", function () { st.band = st.band === L[0] ? null : L[0]; render(); });
+      row.appendChild(b);
+    });
+    nav.appendChild(row);
+  }
+  function countLine() {
+    var n;
+    if (st.view === "collections") n = st.sub === "pins" ? colors.filter(function (c) { return c.pinned; }).length + " pinned" : st.sub === "palettes" ? palettes.length + (palettes.length === 1 ? " palette" : " palettes") : shared.length + " shared with you";
+    else n = (st.band ? shown().length + " of " : "") + colors.length + " colors";
+    $("count").textContent = n;
+  }
+  function tile(c, i, opts) {
+    opts = opts || {};
+    var b = el("button", { type: "button", class: "t" + (opts.join ? " join" : "") + (opts.sel ? " sel" : ""), style: vars(c) + ";animation-delay:" + Math.min(i * 14, 280) + "ms", "aria-label": label(c) + (c.pinned ? ", pinned" : "") }, [
+      el("span", { class: "dt num", text: [no(c.number), c.place, c.day].join(", ") }),
+      el("span", { class: "nm" + (c.name ? "" : " ph"), text: title(c) }),
+      c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null
+    ]);
+    b.addEventListener("click", function () { if (opts.onClick) opts.onClick(c, b); else openCard(c); });
+    return b;
+  }
+
+  /* Days: today first (A59), then each earlier day; a palette's colors sit together with no gap */
+  function daysView() {
+    var box = el("div", { class: "days z" + st.zoom }), list = shown(), groups = [];
+    list.slice().sort(function (a, b) { return b.number - a.number; }).forEach(function (c) {
+      var g = groups[groups.length - 1];
+      if (g && g.day === c.day) g.list.push(c); else groups.push({ day: c.day, list: [c] });
+    });
+    if (!groups.length) { box.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return box; }
+    var i = 0;
+    groups.forEach(function (g) {
+      var row = el("div", { class: "drow" }), prev = null;
+      g.list.forEach(function (c) { row.appendChild(tile(c, i++, { join: prev && c.palette && prev.palette === c.palette })); prev = c; });
+      box.appendChild(el("section", { class: "day" + (g.day === TODAY ? " today" : "") }, [el("p", { class: "dl num", text: g.day === TODAY ? "Today" : g.day }), row]));
+    });
+    return box;
+  }
+
+  /* Spectrum: the fan (A58), one long scroll; letters narrow it */
+  var fanPos = null;
+  function spectrumView() {
+    var list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+    var stageF = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "Every color you've found, by hue. Scroll or use the arrow keys to turn it." });
+    if (!list.length) { stageF.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return stageF; }
+    var nm = el("p", { class: "nm" }), mt = el("p", { class: "mt num" });
+    stageF.appendChild(el("div", { class: "fan-cap", "aria-live": "polite" }, [nm, mt]));
+    stageF.appendChild(el("p", { class: "fan-hint", text: "Scroll to turn it. Click the top card to open it." }));
+    var STEP = list.length > 24 ? 5.6 : 8, pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
+    var cards = list.map(function (c, i) {
+      var d = el("div", { class: "fan-card", style: vars(c), role: "img", "aria-label": label(c) }, [el("span", { class: "st num", text: new Date(c.at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) })]);
+      d.addEventListener("click", function () { if (Math.round(pos) === i) openCard(c); else { pos = i; place(true); } });
+      stageF.appendChild(d);
+      return d;
+    });
+    function place(ease) {
+      fanPos = Math.round(pos);
+      cards.forEach(function (d, i) {
+        var off = i - pos, a = off * STEP, top = Math.abs(off) < 0.5;
+        d.style.transition = ease ? "transform 340ms cubic-bezier(.2,.8,.2,1), opacity 340ms" : "none";
+        d.style.transform = "rotate(" + a.toFixed(2) + "deg)" + (top ? " translateY(-34px)" : "");
+        d.style.opacity = Math.abs(a) > 84 ? "0" : "1";
+        d.style.zIndex = String(200 - Math.round(Math.abs(off) * 2));
+      });
+      var c = list[Math.round(pos)];
+      nm.textContent = title(c); nm.className = "nm" + (c.name ? "" : " ph");
+      mt.textContent = c.place + ", " + c.day;
+    }
+    var acc = 0, drag = null;
+    stageF.addEventListener("wheel", function (e) {
+      e.preventDefault(); acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(acc) < 34) return;
+      pos = Math.max(0, Math.min(list.length - 1, Math.round(pos) + (acc > 0 ? 1 : -1))); acc = 0; place(true);
+    }, { passive: false });
+    stageF.addEventListener("pointerdown", function (e) { if (e.target.closest(".fan-card")) return; drag = { x: e.clientX, p: pos }; stageF.setPointerCapture(e.pointerId); });
+    stageF.addEventListener("pointermove", function (e) { if (!drag) return; pos = Math.max(0, Math.min(list.length - 1, drag.p - (e.clientX - drag.x) / 24)); place(false); });
+    stageF.addEventListener("pointerup", function () { if (!drag) return; drag = null; pos = Math.round(pos); place(true); });
+    stageF.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); pos = Math.max(0, Math.min(list.length - 1, Math.round(pos) + (e.key === "ArrowRight" ? 1 : -1))); place(true); }
+      if (e.key === "Enter") openCard(list[Math.round(pos)]);
+    });
+    place(false);
+    setTimeout(function () { stageF.focus({ preventScroll: true }); }, 0);
+    return stageF;
+  }
+
+  /* Collections: what matters most is what you pin; pins group into palettes; palettes can be shared */
+  function palById(id) { return palettes.filter(function (p) { return p.id === id; })[0]; }
+  function palName(p) { return p.name || p.placeholder || "Untitled palette"; }
+  function collectionsView() {
+    var box = el("div", { class: "col" });
+    if (st.sub === "pins") {
+      var pins = colors.filter(function (c) { return c.pinned; });
+      if (st.selecting) box.appendChild(el("p", { class: "col-note", text: "Pick the pins that belong together, then group them." }));
+      if (!pins.length) { box.appendChild(el("p", { class: "empty", text: "Pin a color from its card, and it waits here." })); return box; }
+      var grid = el("div", { class: "pins" + (st.selecting ? " selecting" : "") });
+      pins.forEach(function (c, i) {
+        grid.appendChild(tile(c, i, { sel: st.selected.indexOf(c.number) >= 0, onClick: st.selecting ? function (cc, b) {
+          var k = st.selected.indexOf(cc.number);
+          if (k >= 0) st.selected.splice(k, 1); else st.selected.push(cc.number);
+          b.classList.toggle("sel", k < 0); renderNav();
+        } : null }));
+      });
+      box.appendChild(grid);
+    } else if (st.sub === "palettes") {
+      palettes.forEach(function (p) { box.appendChild(paletteRow(p)); });
+    } else {
+      shared.forEach(function (s) { box.appendChild(sharedRow(s)); });
+    }
+    return box;
+  }
+  function paletteRow(p) {
+    var cs = p.members.map(byNo).filter(Boolean);
+    var onDesk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
+    onDesk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(); });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    return el("div", { class: "pal" }, [
+      el("div", null, [el("p", { class: "pn" + (p.name ? "" : " ph"), text: palName(p) }), el("p", { class: "pm num", text: cs.length + " colors, " + p.day })]),
+      el("div", { class: "strip" }, cs.map(function (c) { var b = el("button", { type: "button", style: vars(c), "aria-label": label(c) }); b.addEventListener("click", function () { openCard(c); }); return b; })),
+      el("div", { class: "acts" }, [share, onDesk])
+    ]);
+  }
+  function sharedRow(s) {
+    var keepB = el("button", { type: "button", class: "tbtn", text: "Keep a copy" });
+    keepB.addEventListener("click", function () {
+      var members = s.hexes.map(function (h, i) { var c = make({ number: next++, hex: h, name: s.names[i], app: "Shared", place: "Shared by " + s.from, src: s.name, day: TODAY, at: new Date().toISOString(), neighbors: null }); colors.push(c); return c.number; });
+      var p = { id: "p-" + s.id, name: s.name, members: members, day: TODAY };
+      members.forEach(function (n) { byNo(n).palette = p.id; });
+      palettes.unshift(p); keepB.disabled = true; keepB.textContent = "Kept"; drawStrips();
+    });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(s.name, s.hexes.map(function (h, i) { return { hex: h, name: s.names[i] }; })); });
+    return el("div", { class: "pal" }, [
+      el("div", null, [el("p", { class: "pn", text: s.name }), el("p", { class: "pm num", text: "From " + s.from + ", " + s.day })]),
+      el("div", { class: "strip" }, s.hexes.map(function (h, i) { return el("button", { type: "button", style: "--c:" + h, "aria-label": s.names[i] + ", " + h, title: s.names[i] + ", " + h }); })),
+      el("div", { class: "acts" }, [share, keepB])
+    ]);
+  }
+  function groupSelected() {
+    if (st.selected.length < 2) return;
+    var p = { id: "p-" + Date.now(), name: null, members: st.selected.slice(), day: TODAY, placeholder: "Palette from your pins" };
+    palettes.unshift(p);
+    st.selecting = false; st.selected = []; st.sub = "palettes"; render();
+  }
+
+  /* ---------- The specimen card ---------- */
+  var sheet = null;
+  function closeSheet() { if (sheet) { sheet.remove(); sheet = null; } }
+  function openCard(c) {
+    closeSheet();
+    var src = c.crop ? el("img", { class: "crop", src: c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
+    var name = el("p", { class: "sp-nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", "data-placeholder": c.placeholder, spellcheck: "false" });
+    name.textContent = c.name || "";
+    name.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); name.blur(); } });
+    name.addEventListener("input", function () { var v = name.textContent.trim(); c.name = v || null; if (!v) name.textContent = ""; drawStrips(); });
+    var dl = el("dl", { class: "sp-rows" });
+    function row(k, v) { dl.appendChild(el("dt", { text: k })); dl.appendChild(el("dd", null, [v])); }
+    var found = el("span", null, [c.app + ", " + c.src]);
+    if (c.screen) {
+      var back = el("button", { type: "button", text: c.url ? c.url : "Back to the source" });
+      back.addEventListener("click", function () { goToSource(c); });
+      found = el("span", null, [c.app + ", " + c.src + ". ", back]);
+    }
+    row("Found", found);
+    row("Kept", el("span", { class: "num", text: c.day + (c.screen ? ", 2:22 PM" : "") }));
+    var vals = el("span", { class: "vals num" });
+    [["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)], ["OKLCH", PC.displayOklch(c.hex)]].forEach(function (v) {
+      var b = el("button", { type: "button", title: "Copy " + v[0], text: v[1] });
+      b.addEventListener("click", function () { try { navigator.clipboard.writeText(v[1]); } catch (e) {} b.textContent = "Copied"; setTimeout(function () { b.textContent = v[1]; }, 900); });
+      vals.appendChild(b);
+    });
+    row("Values", vals);
+    row("Reads as", el("span", { text: PC.reads(c.hex).join(", ") }));
+    var sims = colors.filter(function (o) { return o !== c && PC.deltaE(o.hex, c.hex) < 7; }).sort(function (a, b) { return PC.deltaE(a.hex, c.hex) - PC.deltaE(b.hex, c.hex); }).slice(0, 3);
+    var simBox = el("span", { class: "sim" });
+    if (!sims.length) simBox.appendChild(el("span", { text: "Nothing close yet. This one is new to your collection." }));
+    sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: o.place + ", " + o.day })]); b.addEventListener("click", function () { openCard(o); }); simBox.appendChild(b); });
+    row("Similar", simBox);
+    var p = c.palette && palById(c.palette);
+    if (p) row("Palette", el("span", null, [palName(p), el("span", { class: "sp-strip" }, p.members.map(byNo).filter(Boolean).map(function (m) { return el("i", { style: "background:" + m.hex }); }))]));
+    var pin = el("button", { type: "button", class: "tbtn", "aria-pressed": String(c.pinned), text: c.pinned ? "Pinned" : "Pin" });
+    pin.addEventListener("click", function () { c.pinned = !c.pinned; pin.setAttribute("aria-pressed", String(c.pinned)); pin.textContent = c.pinned ? "Pinned" : "Pin"; render(); });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(title(c), [{ hex: c.hex, name: title(c) }]); });
+    var padArea = el("textarea", { id: "pad", placeholder: "Anything you want to remember about it" });
+    padArea.value = c.note || "";
+    padArea.addEventListener("input", function () { c.note = padArea.value; });
+    padArea.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    var x = el("button", { type: "button", class: "sp-x", "aria-label": "Close", text: "×" });
+    x.addEventListener("click", closeSheet);
+    var card = el("div", { class: "spec", role: "dialog", "aria-label": title(c) }, [
+      el("div", { class: "sp-src" }, [src,
+        el("div", { class: "sp-chip" }, [el("div", { class: "sw", style: "background:" + c.hex }), el("p", { class: "lb num" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })])]),
+        el("p", { class: "sp-cap", text: c.crop ? "Where you found it" : "The eight samples around it" })]),
+      el("div", { class: "sp-form" }, [
+        el("p", { class: "sp-top num" }, [el("span", { text: no(c.number) }), x]),
+        name,
+        el("p", { class: "sp-hint", text: c.name ? "Your name for it." : "Click the name to give it yours." }),
+        dl,
+        el("div", { class: "sp-acts" }, [pin, share]),
+        el("div", { class: "pad" }, [el("label", { for: "pad", text: "Scratch pad" }), padArea])
+      ])
+    ]);
+    sheet = el("div", { class: "sheet" }, [card]);
+    sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(); });
+    $("pw").appendChild(sheet);
+  }
+  function goToSource(c) {
+    closeWindow();
+    var i = SCREENS.map(function (s) { return s.id; }).indexOf(c.screen);
+    if (i >= 0 && i !== st.screen) showScreen(i);
+    setTimeout(function () { ring(c.x, c.y); setTimeout(function () { ring(c.x, c.y); }, 260); }, 240);
+  }
+
+  /* ---------- A share card ---------- */
+  function openShare(name, items) {
+    closeSheet();
+    var n = items.length;
+    var codes = items.map(function (it) { return it.name + "  " + it.hex; }).join("\n");
+    var copyB = el("button", { type: "button", class: "tbtn ink", text: "Copy the codes" });
+    copyB.addEventListener("click", function () { try { navigator.clipboard.writeText(name + "\n" + codes); } catch (e) {} copyB.textContent = "Copied"; });
+    var closeB = el("button", { type: "button", class: "tbtn", text: "Close" });
+    closeB.addEventListener("click", closeSheet);
+    var box = el("div", { class: "share", role: "dialog", "aria-label": "Share " + name }, [
+      el("div", { class: "sc" }, [
+        el("div", { class: "sc-chips" }, items.map(function (it) { return el("i", { style: "background:" + it.hex }); })),
+        el("div", { class: "sc-names", style: "grid-template-columns:repeat(" + n + ",minmax(0,1fr))" }, items.map(function (it) { return el("div", null, [el("b", { text: it.name }), el("span", { class: "num", text: it.hex })]); })),
+        el("div", { class: "sc-foot" }, [el("span", { class: "tt", text: name }), el("span", { class: "by", text: "Kept with Palit" })])
+      ]),
+      el("div", { class: "acts" }, [closeB, copyB])
+    ]);
+    sheet = el("div", { class: "sheet" }, [box]);
+    sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(); });
+    $("pw").appendChild(sheet);
+  }
+
+  /* ---------- Screens, sound, keys ---------- */
+  function screen() { return SCREENS[st.screen]; }
+  function showScreen(i) {
+    st.screen = i; var sc = screen();
+    desk.src = sc.data || "screens/" + sc.file;
+    var m = $("mbi"); m.style.left = sc.icon[0] + "px"; m.style.top = sc.icon[1] + "px";
+    $("c-credit").textContent = sc.credit || ""; $("c-credit").title = sc.credit || "";
+    Array.prototype.forEach.call($("c-screen").children, function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
+  }
+  SCREENS.forEach(function (sc, i) {
+    var b = el("button", { type: "button", "aria-pressed": "false", text: sc.label });
+    b.addEventListener("click", function () { showScreen(i); });
+    $("c-screen").appendChild(b);
+  });
+  Object.keys(SOUNDS).forEach(function (k) {
+    var b = el("button", { type: "button", "aria-pressed": String(k === st.sound), text: SOUNDS[k].label });
+    b.addEventListener("click", function () { st.sound = k; Array.prototype.forEach.call($("c-sound").children, function (x) { x.setAttribute("aria-pressed", String(x === b)); }); sound(); });
+    $("c-sound").appendChild(b);
+  });
+  $("c-hide").addEventListener("click", function () { document.body.classList.toggle("clean"); fit(); });
+  $("c-reset").addEventListener("click", start);
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea, [contenteditable=true]")) return;
+    if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
+    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else closeWindow(); return; }
+    if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === "h" || e.key === "H") { document.body.classList.toggle("clean"); fit(); }
+    if (!$("pw").hidden && st.view === "days") { if (e.key === "-") setZoom(st.zoom - 1); if (e.key === "=" || e.key === "+") setZoom(st.zoom + 1); }
+  });
+
+  function fit() {
+    var vp = $("viewport").getBoundingClientRect(), k = Math.min(vp.width / W, vp.height / H);
+    stage.style.transform = "translate(-50%, -50%) scale(" + k + ")";
+  }
+  addEventListener("resize", fit);
+
+  function start() {
+    closeWindow(); if (st.picking) stopPicking();
+    st.view = "days"; st.band = null; st.zoom = 1; st.sub = "pins"; st.deskPal = null; fanPos = null;
+    $("z").value = "1";
+    seedSample();
+    seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); });
+  }
+  /* Scenes, for the dashboard's Work page: ?scene=picking, landed, desk, days, zoom-out, zoom-in, spectrum, pins, palettes, shared, card, share */
+  function scene(name) {
+    var sd = screen().seeds[0];
+    if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
+    if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
+    if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }
+    if (name === "zoom-out" || name === "zoom-in") { st.zoom = name === "zoom-out" ? 0 : 2; $("z").value = String(st.zoom); st.view = "days"; openWindow(); return; }
+    if (name === "pins" || name === "palettes" || name === "shared") { st.view = "collections"; st.sub = name; openWindow(); return; }
+    if (name === "card") { st.view = "days"; openWindow(); openCard(byNo(Number(q.get("n")) || 29)); return; }
+    if (name === "share") { st.view = "collections"; st.sub = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
+    if (name === "days" || name === "spectrum" || name === "collections") { st.view = name; openWindow(); }
+  }
+  showScreen(Math.max(0, SCREENS.map(function (s) { return s.id; }).indexOf(q.get("screen") || "crocoite")));
+  fit();
+  start();
+  window.PalitV2 = { colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
+})();
+</script>
+</body>
+</html>

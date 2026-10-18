@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette · 12 lofi mockups</title>
+<style>
+:root{--chrome:#F5F5F5;--well:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--hair:#E3E3E6;--hair2:#D2D2D6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--chrome);color:var(--ink);font-size:13px;line-height:1.4;font-variant-numeric:tabular-nums;padding:32px}
+h1{font-size:22px;font-weight:500}
+h2{font-size:15px;font-weight:500;margin:32px 0 4px}
+.lede{color:var(--ink2);max-width:640px;margin-top:4px}
+.sub{color:var(--ink3);font-size:11px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.mock{background:var(--well);border:1px solid var(--hair);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.idea{font-size:15px;font-weight:500}
+.note{color:var(--ink2);font-size:13px}
+.tag{color:var(--ink3);font-size:11px}
+.frame{border:1px solid var(--hair2);border-radius:10px;background:var(--chrome);overflow:hidden;min-height:260px;position:relative}
+.bar{height:24px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:4px;padding:0 8px;background:var(--chrome)}
+.bar i{width:8px;height:8px;border-radius:50%;border:1px solid var(--hair2)}
+.bar span{margin-left:8px;color:var(--ink3);font-size:11px}
+.sw{border-radius:6px;display:block}
+.lbl{font-size:13px;font-weight:500;color:var(--ink2)}
+.s{color:var(--ink2)}.t{color:var(--ink3)}.xs{font-size:11px}.m{font-weight:500}
+.row{display:flex;gap:8px;align-items:center}
+.col{display:flex;flex-direction:column;gap:4px}
+.hl{border-top:1px solid var(--hair)}
+.btn{border:1px solid var(--hair2);border-radius:6px;padding:2px 8px;font-size:11px;background:var(--well);color:var(--ink)}
+.btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.field{border:1px solid var(--hair2);border-radius:6px;padding:4px 8px;color:var(--ink3);background:var(--well)}
+.ph{background:repeating-linear-gradient(45deg,#EDEDEF 0 6px,#F5F5F5 6px 12px);border-radius:6px}
+.nb{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:60px}
+.nb b{aspect-ratio:1;border-radius:2px;display:block}
+.flow{display:flex;gap:8px;align-items:stretch}
+.step{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.step .frame{min-height:150px;padding:8px}
+.step p{font-size:11px;color:var(--ink2)}
+.arrow{align-self:center;color:var(--ink3)}
+.mat{background:rgba(250,250,250,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--hair2);border-radius:10px}
+.toast{animation:arrive 2.4s ease-out infinite}
+@keyframes arrive{0%{opacity:0;transform:translateY(4px)}12%,80%{opacity:1;transform:none}100%{opacity:0}}
+.mb{height:16px;background:var(--well);border-bottom:1px solid var(--hair);display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:0 8px;font-size:11px;color:var(--ink3)}
+.dot{width:8px;height:8px;border-radius:2px;border:1px solid var(--ink2);display:inline-block}
+</style>
+</head>
+<body>
+<h1>Palette · 12 lofi mockups</h1>
+<p class="lede">Faithful to the reference restraint: one small presence on screen, hierarchy from ink tone, a sparse core with depth tucked away, no spinners. Captured colors are the only color on the page.</p>
+
+<h2>Dashboards: the archive window</h2>
+<p class="sub">How you browse and revisit everything you have kept.</p>
+<div class="grid">
+
+<!-- D1 -->
+<div class="mock">
+<div class="idea">1 · The quiet list</div>
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div style="padding:12px 16px" class="col">
+<div class="row" style="justify-content:space-between"><span class="lbl">Today</span><span class="t xs">Stored on this Mac</span></div>
+<div class="row"><span class="sw" style="width:24px;height:24px;background:#c4552d"></span><span class="t">No. 028</span><span class="t">Unnamed</span><span class="s" style="margin-left:auto">#c4552d · are.na</span></div>
+<div class="row"><span class="sw" style="width:24px;height:24px;background:#f3d9cf"></span><span class="t">No. 026</span><span>Blush ground</span><span class="s" style="margin-left:auto">#f3d9cf · Figma</span></div>
+<div class="row"><span class="sw" style="width:24px;height:24px;background:#a9b9a0"></span><span class="t">No. 024</span><span>Lichen</span><span class="s" style="margin-left:auto">#a9b9a0 · Safari</span></div>
+<span class="lbl" style="margin-top:8px">Last week</span>
+<div class="row"><span class="sw" style="width:24px;height:24px;background:#c25a35"></span><span class="t">No. 011</span><span>Clay pot</span><span class="s" style="margin-left:auto">#c25a35 · Safari</span></div>
+<div class="row"><span class="sw" style="width:24px;height:24px;background:#3b3f46"></span><span class="t">No. 006</span><span>Graphite</span><span class="s" style="margin-left:auto">#3b3f46 · Figma</span></div>
+</div></div>
+<div class="note">Granola's notes list as an archive. No boxes, no sidebar; date groups and ink tone carry all the hierarchy.</div>
+</div>
+
+<!-- D2 -->
+<div class="mock">
+<div class="idea">2 · Spectrum shelf</div>
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive · by hue</span></div>
+<div style="padding:16px" class="col">
+<div class="row" style="gap:4px;align-items:flex-end;height:96px">
+<span class="sw" style="width:28px;height:40px;background:#6c2e3a"></span><span class="sw" style="width:28px;height:64px;background:#c4552d"></span><span class="sw" style="width:28px;height:60px;background:#c25a35"></span><span class="sw" style="width:28px;height:84px;background:#f3d9cf"></span><span class="sw" style="width:28px;height:90px;background:#f0c23b"></span><span class="sw" style="width:28px;height:70px;background:#a9b9a0"></span><span class="sw" style="width:28px;height:44px;background:#2e6b6f"></span><span class="sw" style="width:28px;height:28px;background:#3b3f46"></span></div>
+<div class="hl"></div>
+<div class="row xs t" style="justify-content:space-between"><span>Warm</span><span>Between</span><span>Cool</span><span>Neutral</span></div>
+<p class="s" style="margin-top:8px">Height is value. Hover a bar for its number.</p>
+</div></div>
+<div class="note">Browse by what the eye sees, not when. Ordered by OKLCH hue so your own leanings show up as clusters.</div>
+</div>
+
+<!-- D3 -->
+<div class="mock">
+<div class="idea">3 · One at a time</div>
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div style="display:grid;grid-template-columns:1fr 120px;height:236px">
+<div style="padding:16px" class="col"><span class="sw" style="height:120px;background:#2e6b6f;border-radius:10px"></span><span class="t" style="margin-top:8px">No. 004</span><span class="m" style="font-size:15px">Pool tile</span><span class="s">Cool · Mid value · Muted</span></div>
+<div style="border-left:1px solid var(--hair);padding:8px" class="col">
+<span class="t xs">No. 006</span><span class="t xs">No. 004 ·</span><span class="t xs">No. 003</span><span class="t xs">No. 001</span><div class="ph" style="height:60px;margin-top:8px"></div><span class="t xs">← → to step</span></div>
+</div></div>
+<div class="note">Flashcard mode. The archive opens on one color, large; the numbered rail is the only navigation. Slows you down on purpose.</div>
+</div>
+
+<!-- D4 -->
+<div class="mock">
+<div class="idea">4 · Search is the surface</div>
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div style="padding:16px" class="col">
+<div class="field">warm, dark, Figma…</div>
+<div class="row xs t"><span>Recent: Safari</span><span>· Unnamed</span><span>· Kept before</span></div>
+<div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px">
+<span class="sw" style="width:40px;height:40px;background:#6c2e3a"></span><span class="sw" style="width:40px;height:40px;background:#c25a35"></span><span class="sw" style="width:40px;height:40px;background:#c4552d"></span><span class="sw" style="width:40px;height:40px;background:#f0c23b"></span><span class="sw" style="width:40px;height:40px;background:#f3d9cf"></span></div>
+<p class="s" style="margin-top:12px">5 warm captures</p>
+<p class="t xs">Try "#2e6b6f": Nothing in the archive matches that yet.</p>
+</div></div>
+<div class="note">Wispr's "just type" spirit. One field accepts hex, words like warm or muted, or a source app. Filters stay tucked behind the field.</div>
+</div>
+</div>
+
+<h2>Capture cards: one color in depth</h2>
+<p class="sub">Number, swatch, name field, values, source, neighbors, reads as, kept before.</p>
+<div class="grid">
+
+<!-- C1 -->
+<div class="mock">
+<div class="idea">5 · The index card</div>
+<div class="frame" style="padding:16px;background:var(--well)">
+<div class="col">
+<span class="t">No. 028</span>
+<span class="sw" style="height:72px;background:#c4552d;border-radius:10px"></span>
+<div class="field">Unnamed. Name it so you remember it.</div>
+<div class="row s"><span>#c4552d</span><span>· rgb 196 85 45</span><span>· oklch 0.58 0.15 38</span></div>
+<span class="lbl">Reads as</span><span>Warm · Mid value · Saturated</span>
+<span class="lbl">Source</span><span class="s">are.na · "Terracotta studies" · 14:02</span>
+</div></div>
+<div class="note">Everything in one calm column, read top to bottom. The name field sits right under the swatch so naming is the obvious next act.</div>
+</div>
+
+<!-- C2 -->
+<div class="mock">
+<div class="idea">6 · Neighbors lead</div>
+<div class="frame" style="padding:16px;background:var(--well)">
+<div class="row" style="align-items:flex-start;gap:16px">
+<div class="nb" style="width:112px;gap:4px"><b style="background:#b84f2b"></b><b style="background:#c75a33"></b><b style="background:#bf522e"></b><b style="background:#c9603a"></b><b style="background:#c4552d;outline:1px solid var(--ink)"></b><b style="background:#be5030"></b><b style="background:#d06a45"></b><b style="background:#c25a35"></b><b style="background:#b44b29"></b></div>
+<div class="col"><span class="t">No. 028 · Unnamed</span><span class="m">#c4552d</span><span class="s xs">Sampled 12 px out from the point you clicked.</span><span class="lbl" style="margin-top:8px">Reads as</span><span>Warm · Mid value · Saturated</span></div>
+</div>
+<div class="hl" style="margin:12px 0"></div>
+<span class="t xs">Values, source and history below ↓</span>
+</div></div>
+<div class="note">The 3×3 is the hero, not a footnote. Seeing the color among its surroundings is what trains the eye.</div>
+</div>
+
+<!-- C3 -->
+<div class="mock">
+<div class="idea">7 · Kept before, side by side</div>
+<div class="frame" style="padding:16px;background:var(--well)">
+<div class="row" style="gap:4px"><span class="sw" style="flex:1;height:64px;background:#c4552d"></span><span class="sw" style="flex:1;height:64px;background:#c25a35"></span></div>
+<div class="row xs s" style="justify-content:space-between;margin-top:4px"><span>No. 028 · Unnamed · are.na</span><span>No. 011 · Clay pot · Safari</span></div>
+<div class="col" style="margin-top:12px"><span class="lbl">You’ve kept this before</span><span>Close · ΔE 3.1</span><span class="s">Slightly lighter and more saturated than No. 011.</span></div>
+</div></div>
+<div class="note">The card frames itself around a match. Describes the difference in plain words; never says which one is better.</div>
+</div>
+
+<!-- C4 -->
+<div class="mock">
+<div class="idea">8 · Tabs tucked away</div>
+<div class="frame" style="padding:16px;background:var(--well)">
+<div class="row"><span class="sw" style="width:48px;height:48px;background:#f3d9cf"></span><div class="col"><span class="t">No. 026</span><span class="m" style="font-size:15px">Blush ground</span></div></div>
+<div class="row xs" style="gap:12px;margin-top:12px"><span class="m">Overview</span><span class="t">Values</span><span class="t">Source</span><span class="t">Neighbors</span></div>
+<div class="hl" style="margin:4px 0 8px"></div>
+<span class="lbl">Reads as</span><span>Warm · Light · Muted</span>
+<span class="s" style="margin-top:8px">Figma · "Landing v3" · Oct 14</span>
+</div></div>
+<div class="note">Sparse core with depth one click away, like Granola's transcript behind the note. Overview shows only name and reads as.</div>
+</div>
+</div>
+
+<h2>Flows: multi-step sequences</h2>
+<p class="sub">Each row reads left to right.</p>
+<div class="grid">
+
+<!-- F1 -->
+<div class="mock" style="grid-column:1/-1">
+<div class="idea">9 · Hotkey to card</div>
+<div class="flow">
+<div class="step"><div class="frame"><div class="mb"><span class="dot"></span></div><p style="margin-top:40px;text-align:center;color:var(--ink)">⌥⇧C</p></div><p>Press the hotkey anywhere.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame"><div class="ph" style="height:60px"></div><div class="row" style="justify-content:center;margin-top:-28px"><span style="width:40px;height:40px;border-radius:50%;border:1px solid var(--ink);background:#c4552d"></span></div><p style="text-align:center;margin-top:8px">Hover anything. Click to keep it.</p></div><p>System loupe, one line of help.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame"><div class="mat toast row" style="padding:8px;margin-top:40px"><span class="sw" style="width:16px;height:16px;background:#c4552d"></span><span class="xs m">Kept · No. 028</span><span class="xs s" style="margin-left:auto">Undo</span><span class="xs s">Open card</span></div></div><p>The toast is the confirmation. No spinner.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><span class="t xs">No. 028</span><span class="sw" style="height:40px;background:#c4552d;margin:4px 0"></span><div class="field xs">Unnamed. Name it so you remember it.</div></div><p>Card, only if you ask.</p></div>
+</div>
+<div class="note">The whole loop in four beats. If you ignore the toast it fades and you never leave what you were doing.</div>
+</div>
+
+<!-- F2 -->
+<div class="mock">
+<div class="idea">10 · Naming later</div>
+<div class="flow">
+<div class="step"><div class="frame mat" style="padding:8px"><span class="xs lbl">Unnamed · 3</span><div class="row" style="margin-top:8px;gap:4px"><span class="sw" style="width:20px;height:20px;background:#c4552d"></span><span class="sw" style="width:20px;height:20px;background:#a9b9a0"></span><span class="sw" style="width:20px;height:20px;background:#f0c23b"></span></div><p style="margin-top:12px">Open archive →</p></div><p>Popover counts what's unnamed.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><span class="sw" style="height:48px;background:#c4552d"></span><div class="field xs" style="margin-top:8px;color:var(--ink)">Brick dust|</div></div><p>Type a name. Return saves.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><span class="t xs">No. 028</span><p style="color:var(--ink);font-size:13px">Brick dust</p></div><p>The name simply appears.</p></div>
+</div>
+<div class="note">A gentle count, never a nag or notification. Naming is the friction that makes you look again.</div>
+</div>
+
+<!-- F3 -->
+<div class="mock">
+<div class="idea">11 · The kept-before moment</div>
+<div class="flow">
+<div class="step"><div class="frame"><div class="mat toast" style="padding:8px;margin-top:24px"><span class="xs m">Kept · No. 028</span><p class="xs">You’ve kept this before</p></div></div><p>Toast adds one line.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><div class="row" style="gap:2px"><span class="sw" style="flex:1;height:40px;background:#c4552d"></span><span class="sw" style="flex:1;height:40px;background:#c25a35"></span></div><p style="margin-top:8px;color:var(--ink)">Close · No. 011</p></div><p>Click it: both, side by side.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><p style="color:var(--ink)">Kept both.</p><p>Nothing merged.</p></div><p>Both numbers stay. (Draft copy)</p></div>
+</div>
+<div class="note">Recognition, not dedupe. The archive points out the pattern and keeps every capture exactly as taken.</div>
+</div>
+
+<!-- F4 -->
+<div class="mock" style="grid-column:1/-1">
+<div class="idea">12 · Permission in one line</div>
+<div class="flow">
+<div class="step"><div class="frame" style="background:var(--well)"><div class="nb"><b class="ph"></b><b class="ph"></b><b class="ph"></b><b class="ph"></b><b style="background:#6c2e3a"></b><b class="ph"></b><b class="ph"></b><b class="ph"></b><b class="ph"></b></div><p style="margin-top:8px">Neighbors not sampled.</p></div><p>Card shows the gap honestly. (Draft)</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><p style="color:var(--ink)">Allow Screen Recording to keep the 8 colors around your click.</p><div class="row" style="margin-top:8px"><span class="btn p">Allow</span><span class="btn">Not now</span></div></div><p>One line, asked only here. (Draft)</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><span class="sw" style="height:40px;background:#6c2e3a"></span><p style="margin-top:8px;color:var(--ink)">No. 001 · Oxblood</p><p>#6c2e3a · Photos</p></div><p>Said no: picking still works.</p></div><span class="arrow">→</span>
+<div class="step"><div class="frame" style="background:var(--well)"><div class="nb"><b style="background:#5e2732"></b><b style="background:#73323f"></b><b style="background:#682c37"></b><b style="background:#70303c"></b><b style="background:#6c2e3a"></b><b style="background:#662b36"></b><b style="background:#7a3845"></b><b style="background:#6a2d39"></b><b style="background:#612a34"></b></div><p style="margin-top:8px">Sampled 12 px out from the point you clicked.</p></div><p>Said yes: the grid fills in.</p></div>
+</div>
+<div class="note">The ask arrives in context, where the missing grid is visible. No onboarding, and the app stays fully usable on no.</div>
+</div>
+</div>
+</body>
+</html>

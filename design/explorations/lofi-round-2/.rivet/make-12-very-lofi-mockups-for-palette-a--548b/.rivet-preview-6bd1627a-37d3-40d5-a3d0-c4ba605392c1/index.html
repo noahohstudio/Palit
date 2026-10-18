@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palette — lofi round 2 · minimal</title>
+<style>
+:root{--chrome:#F5F5F5;--well:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--line:#E3E3E6;--r1:6px;--r2:10px;--r3:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--chrome);color:var(--ink);font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums;padding:64px 32px 96px}
+.wrap{max-width:1120px;margin:0 auto}
+h1{font-size:22px;font-weight:500}
+.lede{color:var(--ink2);font-size:15px;margin-top:8px;max-width:620px}
+.sec{margin-top:96px}
+.sec>h2{font-size:15px;font-weight:500}
+.sec>p{color:var(--ink2);margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}
+.mock{display:flex;flex-direction:column;gap:12px}
+.mock .t{font-size:13px;font-weight:500}
+.mock .n{font-size:13px;color:var(--ink2);max-width:460px}
+.mock .k{font-size:11px;color:var(--ink3)}
+.frame{background:var(--well);border:1px solid var(--line);border-radius:var(--r3);overflow:hidden;min-height:300px;position:relative}
+.bar{height:28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 12px;background:var(--chrome)}
+.bar i{width:8px;height:8px;border-radius:50%;border:1px solid var(--ink3)}
+.bar span{margin-left:8px;font-size:11px;color:var(--ink3)}
+.sw{border-radius:var(--r1);flex:none}
+.lab{font-size:13px;font-weight:500;color:var(--ink2)}
+.s2{color:var(--ink2)}.s3{color:var(--ink3)}.sm{font-size:11px}.md{font-weight:500}.lg{font-size:15px}.xl{font-size:22px;font-weight:500}
+.row{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column;gap:4px}
+.hr{height:1px;background:var(--line)}
+.p16{padding:16px}.p24{padding:24px}.p32{padding:32px}
+.btn{display:inline-block;font-size:13px;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ink3)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:var(--r1);padding:2px 8px;font-size:11px;color:var(--ink2)}
+.field{border-bottom:1px solid var(--line);padding:4px 0;color:var(--ink3)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:var(--r1);overflow:hidden}
+.g3 b{aspect-ratio:1}
+.mat{background:rgba(245,245,245,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:var(--r2)}
+.strip{display:flex;gap:12px;align-items:stretch;margin-top:0}
+.step{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+.step .frame{min-height:168px;border-radius:var(--r2)}
+.step .c{font-size:11px;color:var(--ink3)}
+.arrow{align-self:center;color:var(--ink3);font-size:13px;flex:none}
+.flowcol{grid-column:1/-1}
+.ph{background:repeating-linear-gradient(0deg,transparent 0 11px,var(--line) 11px 12px)}
+.menubar{height:22px;background:var(--chrome);border-bottom:1px solid var(--line);display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:0 12px;font-size:11px;color:var(--ink2)}
+.dot{width:10px;height:10px;border-radius:3px;border:1.5px solid var(--ink)}
+.cursor{position:absolute;width:12px;height:12px;border:1px solid var(--ink);border-radius:50%}
+.loupe{position:absolute;width:64px;height:64px;border-radius:50%;border:1px solid var(--ink);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.toast{animation:rise .24s ease-out both}
+.focus{outline:1px solid var(--ink);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Palette, very lofi · round 2</h1>
+<p class="lede">Minimal direction. Each idea removes rather than adds: one surface, ink tone for hierarchy, captured colors as the only color on the page.</p>
+
+<!-- DASHBOARDS -->
+<section class="sec">
+<h2>Archive window</h2>
+<p>Four ways to browse and revisit what you've kept.</p>
+<div class="grid">
+
+<div class="mock">
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div class="p24 col" style="gap:0">
+ <div class="row s3 sm" style="padding-bottom:8px"><span style="width:72px">No.</span><span style="flex:1">Name</span><span style="width:80px">Hex</span><span style="width:64px">From</span></div>
+ <div class="hr"></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 028</span><b class="sw" style="width:16px;height:16px;background:#c4552d"></b><span class="s3" style="flex:1">Unnamed</span><span style="width:80px">#c4552d</span><span class="s2" style="width:64px">are.na</span></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 026</span><b class="sw" style="width:16px;height:16px;background:#f3d9cf"></b><span style="flex:1">Blush ground</span><span style="width:80px">#f3d9cf</span><span class="s2" style="width:64px">Figma</span></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 024</span><b class="sw" style="width:16px;height:16px;background:#a9b9a0"></b><span style="flex:1">Lichen</span><span style="width:80px">#a9b9a0</span><span class="s2" style="width:64px">Safari</span></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 011</span><b class="sw" style="width:16px;height:16px;background:#c25a35"></b><span style="flex:1">Clay pot</span><span style="width:80px">#c25a35</span><span class="s2" style="width:64px">Safari</span></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 006</span><b class="sw" style="width:16px;height:16px;background:#3b3f46"></b><span style="flex:1">Graphite</span><span style="width:80px">#3b3f46</span><span class="s2" style="width:64px">Figma</span></div>
+ <div class="row" style="padding:8px 0"><span class="s3" style="width:56px">No. 004</span><b class="sw" style="width:16px;height:16px;background:#2e6b6f"></b><span style="flex:1">Pool tile</span><span style="width:80px">#2e6b6f</span><span class="s2" style="width:64px">Photos</span></div>
+</div></div>
+<span class="t">1 · The ledger</span>
+<span class="n">A plain list, newest first, like a notes app. Swatches stay tiny so the numbers and sources do the remembering.</span>
+</div>
+
+<div class="mock">
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div class="p32" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#c4552d;border-radius:var(--r2)"></b><span class="sm s3">No. 028</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#f3d9cf;border-radius:var(--r2)"></b><span class="sm s3">No. 026</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#a9b9a0;border-radius:var(--r2)"></b><span class="sm s3">No. 024</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#c25a35;border-radius:var(--r2)"></b><span class="sm s3">No. 011</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#3b3f46;border-radius:var(--r2)"></b><span class="sm s3">No. 006</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#2e6b6f;border-radius:var(--r2)"></b><span class="sm s3">No. 004</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#f0c23b;border-radius:var(--r2)"></b><span class="sm s3">No. 003</span></div>
+ <div class="col"><b class="sw" style="aspect-ratio:1;background:#6c2e3a;border-radius:var(--r2)"></b><span class="sm s3">No. 001</span></div>
+</div>
+<div class="row" style="position:absolute;bottom:16px;left:32px;right:32px;justify-content:space-between"><span class="sm s3">8 kept · Stored on this Mac</span><span class="sm s2">Hover for name and source</span></div>
+</div>
+<span class="t">2 · Wall of chips</span>
+<span class="n">Only color and number on the surface. Names and sources appear on hover, so the eye judges the color before the label.</span>
+</div>
+
+<div class="mock">
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div class="p24">
+ <span class="lab">Arranged by hue</span>
+ <div style="position:relative;height:150px;margin-top:16px;border-bottom:1px solid var(--line)">
+  <b class="sw" style="position:absolute;left:2%;bottom:30px;width:22px;height:22px;background:#6c2e3a"></b>
+  <b class="sw" style="position:absolute;left:12%;bottom:70px;width:22px;height:22px;background:#c4552d"></b>
+  <b class="sw" style="position:absolute;left:15%;bottom:60px;width:22px;height:22px;background:#c25a35"></b>
+  <b class="sw" style="position:absolute;left:18%;bottom:118px;width:22px;height:22px;background:#f3d9cf"></b>
+  <b class="sw" style="position:absolute;left:30%;bottom:106px;width:22px;height:22px;background:#f0c23b"></b>
+  <b class="sw" style="position:absolute;left:44%;bottom:92px;width:22px;height:22px;background:#a9b9a0"></b>
+  <b class="sw" style="position:absolute;left:62%;bottom:40px;width:22px;height:22px;background:#2e6b6f"></b>
+  <b class="sw" style="position:absolute;left:78%;bottom:20px;width:22px;height:22px;background:#3b3f46"></b>
+ </div>
+ <div class="row sm s3" style="justify-content:space-between;margin-top:8px"><span>Warm</span><span>Between warm and cool</span><span>Cool</span><span>Neutral</span></div>
+ <p class="sm s2" style="margin-top:16px">Height is value. Two reds sit close: No. 011 and No. 028.</p>
+</div></div>
+<span class="t">3 · One spectrum</span>
+<span class="n">No grid at all: a single strip across hue, raised by value. Clusters reveal habits you didn't know you had.</span>
+</div>
+
+<div class="mock">
+<div class="frame"><div class="bar"><i></i><i></i><i></i><span>Archive</span></div>
+<div class="p24 col" style="gap:16px">
+ <div class="field lg" style="color:var(--ink3)">Search, or paste a hex</div>
+ <div class="col"><span class="lab">Unnamed</span><div class="row" style="margin-top:8px"><b class="sw" style="width:28px;height:28px;background:#c4552d"></b><span class="s2">No. 028 · are.na · Today</span></div></div>
+ <div class="col"><span class="lab">This week</span><div class="row" style="margin-top:8px;gap:8px"><b class="sw" style="width:28px;height:28px;background:#f3d9cf"></b><b class="sw" style="width:28px;height:28px;background:#a9b9a0"></b></div></div>
+ <div class="col"><span class="lab">Earlier</span><div class="row" style="margin-top:8px;gap:8px"><b class="sw" style="width:28px;height:28px;background:#c25a35"></b><b class="sw" style="width:28px;height:28px;background:#3b3f46"></b><b class="sw" style="width:28px;height:28px;background:#2e6b6f"></b><b class="sw" style="width:28px;height:28px;background:#f0c23b"></b><b class="sw" style="width:28px;height:28px;background:#6c2e3a"></b></div></div>
+</div></div>
+<span class="t">4 · Search first</span>
+<span class="n">Opens on an empty field, like Granola's single input. Unnamed captures float to the top as gentle homework.</span>
+</div>
+
+</div>
+</section>
+
+<!-- CARDS -->
+<section class="sec">
+<h2>Capture card</h2>
+<p>Four ways to read one color in depth.</p>
+<div class="grid">
+
+<div class="mock">
+<div class="frame p24 col" style="gap:16px">
+ <span class="s3">No. 028</span>
+ <b class="sw" style="height:120px;background:#c4552d;border-radius:var(--r2)"></b>
+ <div class="field">Unnamed. Name it so you remember it.</div>
+ <div class="row s2" style="gap:24px"><span>#c4552d</span><span>rgb 196 85 45</span><span>oklch 0.59 0.15 40</span></div>
+ <span class="s2">are.na · “Kiln notes” · Today 14:02</span>
+</div>
+<span class="t">5 · Single column</span>
+<span class="n">Everything in one quiet stack, top to bottom. Neighbors and reads-as are left off; one line of source is enough.</span>
+</div>
+
+<div class="mock">
+<div class="frame" style="display:grid;grid-template-columns:1fr 1fr">
+ <div style="background:#c4552d"></div>
+ <div class="p24 col" style="gap:12px">
+  <span class="xl">No. 028</span>
+  <div class="field">Unnamed. Name it so you remember it.</div>
+  <span class="lab" style="margin-top:8px">Reads as</span>
+  <span>Warm · Mid value · Saturated</span>
+  <span class="lab" style="margin-top:8px">You’ve kept this before</span>
+  <div class="row"><b class="sw" style="width:20px;height:20px;background:#c25a35"></b><span class="s2">No. 011 Clay pot · Close</span></div>
+ </div>
+</div>
+<span class="t">6 · Half the card is the color</span>
+<span class="n">The swatch is the left half, edge to edge. The right half is about seeing: reads as, and what you've kept before.</span>
+</div>
+
+<div class="mock">
+<div class="frame p24" style="display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:start">
+ <div class="col" style="gap:8px">
+  <div class="g3"><b style="background:#b84e2a"></b><b style="background:#c25330"></b><b style="background:#c95a34"></b><b style="background:#bd5130"></b><b style="background:#c4552d;outline:1.5px solid var(--ink);outline-offset:-2px"></b><b style="background:#cc5d36"></b><b style="background:#b04a28"></b><b style="background:#c0532e"></b><b style="background:#c75a33"></b></div>
+  <span class="sm s3">Sampled 12 px out from the point you clicked.</span>
+ </div>
+ <div class="col" style="gap:8px">
+  <span class="s3">No. 028</span>
+  <span class="lg md">Unnamed</span>
+  <span class="s2">#c4552d · are.na</span>
+  <div class="hr" style="margin:8px 0"></div>
+  <span class="s2">The center is warmer than its surroundings. It sits a little lighter than the four below it.</span>
+ </div>
+</div>
+<span class="t">7 · Neighbors lead</span>
+<span class="n">The 3×3 grid is the hero, not a footnote. Context is part of the color, so the card opens on where it lived.</span>
+</div>
+
+<div class="mock">
+<div class="frame p24 col" style="gap:12px">
+ <div class="row"><b class="sw" style="width:40px;height:40px;background:#c4552d"></b><div class="col" style="gap:0"><span class="md">No. 028 · Unnamed</span><span class="s2">#c4552d</span></div></div>
+ <div class="hr"></div>
+ <div class="row" style="justify-content:space-between"><span>Reads as</span><span class="s3">Warm, mid value, saturated ›</span></div>
+ <div class="hr"></div>
+ <div class="row" style="justify-content:space-between"><span>Source</span><span class="s3">are.na ›</span></div>
+ <div class="hr"></div>
+ <div class="row" style="justify-content:space-between"><span>Neighbors</span><span class="s3">3 × 3 ›</span></div>
+ <div class="hr"></div>
+ <div class="row" style="justify-content:space-between"><span>You’ve kept this before</span><span class="s3">1 ›</span></div>
+ <div class="hr"></div>
+ <div class="row" style="justify-content:space-between"><span>Values</span><span class="s3">Hex, RGB, OKLCH ›</span></div>
+</div>
+<span class="t">8 · Disclosure rows</span>
+<span class="n">Sparse core, details tucked away. Each row opens in place, like System Settings. Good for a small popover card.</span>
+</div>
+
+</div>
+</section>
+
+<!-- FLOWS -->
+<section class="sec">
+<h2>Flows</h2>
+<p>Four sequences, read left to right.</p>
+<div class="grid">
+
+<div class="mock flowcol">
+<div class="strip">
+ <div class="step"><div class="frame"><div class="menubar"><span>⌥⇧C</span><span class="dot"></span><span>14:02</span></div><div class="p16 ph" style="height:120px;opacity:.6"></div></div><span class="c">Press ⌥⇧C</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame ph"><div class="loupe" style="left:40%;top:40px"><b style="background:#b84e2a"></b><b style="background:#c25330"></b><b style="background:#c95a34"></b><b style="background:#bd5130"></b><b style="background:#c4552d"></b><b style="background:#cc5d36"></b><b style="background:#b04a28"></b><b style="background:#c0532e"></b><b style="background:#c75a33"></b></div><span class="mat sm s2" style="position:absolute;left:12px;bottom:12px;padding:4px 8px">Hover anything. Click to keep it.</span></div><span class="c">System loupe</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame ph"><div class="mat toast row" style="position:absolute;right:12px;top:12px;padding:8px 12px;gap:8px"><b class="sw" style="width:16px;height:16px;background:#c4552d"></b><span class="sm">Kept · No. 028</span><span class="sm s2">Undo</span></div></div><span class="c">Toast, 2 s, no sound</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame ph"></div><span class="c">Gone. Nothing else.</span></div>
+</div>
+<span class="t">9 · Capture, and nothing after</span>
+<span class="n">The result arriving is the confirmation. No card opens by default; “Open card” lives in the menu bar popover instead.</span>
+</div>
+
+<div class="mock flowcol">
+<div class="strip">
+ <div class="step"><div class="frame"><div class="menubar"><span class="dot"></span></div><div class="mat p16 col" style="margin:8px;gap:8px"><span class="md">Steal a color</span><div class="row" style="gap:8px"><b class="sw" style="width:16px;height:16px;background:#c4552d"></b><span class="sm s2">No. 028 · Unnamed</span></div><span class="sm">Open archive →</span></div></div><span class="c">Popover shows the last one</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><b class="sw" style="height:48px;background:#c4552d"></b><div class="field focus sm">Unnamed. Name it so you remember it.</div></div><span class="c">Open card, field focused</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><b class="sw" style="height:48px;background:#c4552d"></b><div class="field sm" style="color:var(--ink)">Kiln orange|</div></div><span class="c">Type, press Return</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><b class="sw" style="height:48px;background:#c4552d"></b><span class="md">Kiln orange</span><span class="sm s3">No. 028</span></div><span class="c">Saved as you type</span></div>
+</div>
+<span class="t">10 · Naming a color later</span>
+<span class="n">Naming is never asked for at capture. The popover nudges by showing “Unnamed”; one click lands you in the field. No save button.</span>
+</div>
+
+<div class="mock flowcol">
+<div class="strip">
+ <div class="step"><div class="frame ph"><div class="mat toast row" style="position:absolute;right:12px;top:12px;padding:8px 12px;gap:8px"><b class="sw" style="width:16px;height:16px;background:#c25d37"></b><span class="sm">Kept · No. 029</span></div></div><span class="c">A new capture</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame ph"><div class="mat row" style="position:absolute;right:12px;top:12px;padding:8px 12px;gap:8px"><b class="sw" style="width:16px;height:16px;background:#c25d37"></b><b class="sw" style="width:16px;height:16px;background:#c25a35"></b><span class="sm">You’ve kept this before</span></div></div><span class="c">Toast grows one line</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><div class="row" style="gap:4px"><b class="sw" style="flex:1;height:56px;background:#c25d37"></b><b class="sw" style="flex:1;height:56px;background:#c25a35"></b></div><div class="row sm s2" style="justify-content:space-between"><span>No. 029</span><span>No. 011 Clay pot</span></div><span class="sm">Nearly identical · ΔE 1.4</span></div><span class="c">Side by side on the card</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><span class="sm">Both are kept.</span><span class="sm s2">No. 029 stays its own capture. Nothing is merged.</span></div><span class="c">Draft copy</span></div>
+</div>
+<span class="t">11 · The kept-before moment</span>
+<span class="n">A mirror, not a warning. It shows the two side by side and the distance, then keeps both. It never dedupes.</span>
+</div>
+
+<div class="mock flowcol">
+<div class="strip">
+ <div class="step"><div class="frame p16 col" style="gap:8px"><span class="lab">Neighbors</span><div class="g3" style="width:72px;opacity:.25"><b style="background:var(--ink3)"></b><b style="background:var(--line)"></b><b style="background:var(--ink3)"></b><b style="background:var(--line)"></b><b style="background:#c4552d"></b><b style="background:var(--line)"></b><b style="background:var(--ink3)"></b><b style="background:var(--line)"></b><b style="background:var(--ink3)"></b></div></div><span class="c">Card without permission</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><span class="sm">Neighbors need Screen Recording to see around the point you click.</span><div class="row" style="gap:12px"><span class="btn sm">Allow</span><span class="sm s2">Not now</span></div></div><span class="c">One line, in place (draft)</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><span class="sm md">Not now</span><span class="sm s2">Captures still work. Hex, source and name are kept.</span></div><span class="c">Say no: fully usable</span></div>
+ <span class="arrow">→</span>
+ <div class="step"><div class="frame p16 col" style="gap:8px"><div class="g3" style="width:72px"><b style="background:#b84e2a"></b><b style="background:#c25330"></b><b style="background:#c95a34"></b><b style="background:#bd5130"></b><b style="background:#c4552d"></b><b style="background:#cc5d36"></b><b style="background:#b04a28"></b><b style="background:#c0532e"></b><b style="background:#c75a33"></b></div><span class="sm s3">Sampled 12 px out from the point you clicked.</span></div><span class="c">Say yes: next capture</span></div>
+</div>
+<span class="t">12 · Asking for Screen Recording</span>
+<span class="n">Asked only where the feature lives, inside the empty neighbors grid, never at launch. The faded grid explains the why without words.</span>
+</div>
+
+</div>
+</section>
+
+<p class="sm s3" style="margin-top:96px">Stored on this Mac · Draft copy is flagged in captions for Noah.</p>
+</div>
+</body>
+</html>

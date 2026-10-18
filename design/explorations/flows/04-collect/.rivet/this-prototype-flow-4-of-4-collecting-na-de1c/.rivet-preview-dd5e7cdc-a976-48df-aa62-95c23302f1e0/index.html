@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Palette — Flow 4: collecting (expressive)</title>
+<style>
+:root{--chrome:#F5F5F5;--content:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--line:#E4E4E6;--e:cubic-bezier(.2,.7,.2,1);
+--grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+*{box-sizing:border-box;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",sans-serif;font-variant-numeric:tabular-nums;color:var(--ink);background:#d9d9dc;display:grid;place-items:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.desk{width:1280px;height:800px;position:relative;overflow:hidden;border-radius:14px;background:linear-gradient(160deg,#c9cbd0,#a9adb5 60%,#9a9ea6);box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.mbar{height:24px;background:rgba(245,245,245,.82);backdrop-filter:blur(20px);display:flex;align-items:center;gap:16px;padding:0 16px;font-size:13px}
+.mbar b{font-weight:600}.mbar .sp{flex:1}
+.iris{width:16px;height:16px;display:grid;place-items:center;border-radius:4px}
+.iris.on{background:rgba(0,0,0,.1)}
+.win{position:absolute;left:56px;top:48px;width:1168px;height:704px;background:var(--content);border-radius:14px;box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 24px 60px rgba(0,0,0,.22);display:grid;grid-template-columns:220px 1fr;grid-template-rows:44px 1fr;overflow:hidden}
+.tb{grid-column:1/3;background:var(--chrome);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:12px;font-size:13px}
+.lights{display:flex;gap:8px;margin-right:72px}.lights i{width:12px;height:12px;border-radius:50%;background:#d0d0d3}
+.tb .ttl{font-weight:600}.tb .sp{flex:1}.tb .meta{color:var(--ink2)}
+.side{background:var(--chrome);border-right:1px solid var(--line);padding:12px 8px;font-size:13px;overflow:auto}
+.side h6{font-size:11px;font-weight:500;color:var(--ink3);padding:16px 8px 4px}
+.si{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:6px;text-align:left;transition:background 120ms var(--e)}
+.si:hover{background:rgba(0,0,0,.04)}.si.on{background:rgba(0,0,0,.08);font-weight:500}
+.si .ct{margin-left:auto;color:var(--ink3);font-size:12px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2);transition:background 360ms var(--e)}
+.dot.pulse{animation:pulse 600ms var(--e)}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.8)}100%{transform:scale(1)}}
+.side .foot{color:var(--ink3);font-size:11px;padding:24px 8px 0}
+.main{position:relative;overflow:auto;background:var(--content)}
+.steps{position:absolute;right:16px;bottom:16px;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-radius:10px;padding:12px 16px;font-size:11px;color:var(--ink3);box-shadow:0 4px 20px rgba(0,0,0,.12);width:204px}
+.steps p{color:var(--ink2);font-weight:500;margin-bottom:4px}
+.steps li{list-style:none;padding:2px 0;display:flex;gap:8px}
+.steps li.done{color:var(--ink2)}.steps li.done:before{content:"✓"}.steps li:before{content:"·";width:8px}
+.steps li.now{color:var(--ink);font-weight:500}.steps li.now:before{content:"→"}
+/* paper card */
+.card{background:#fff var(--grain);border-radius:10px;box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 1px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.08);overflow:hidden;position:relative}
+.card:after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(0,0,0,.05);pointer-events:none}
+/* grid of chips */
+.head{padding:24px 32px 8px;display:flex;align-items:baseline;gap:12px}
+.head h1{font-size:28px;font-weight:700;letter-spacing:-.02em}
+.head .sub{color:var(--ink2);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:16px;padding:16px 32px 120px}
+.chip{cursor:pointer;transition:transform 200ms var(--e),box-shadow 200ms var(--e);text-align:left;padding:0;display:block;width:100%}
+.chip:hover{transform:translateY(-3px)}
+.chip .sw{height:132px;margin:6px 6px 0;border-radius:6px}
+.chip .lb{padding:8px 12px 12px}
+.chip .no{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.chip .nm{font-size:11px;color:var(--ink2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .nm.u{color:var(--ink3)}
+.chip.sel{box-shadow:0 0 0 2px var(--ink),0 10px 28px rgba(0,0,0,.14);transform:translateY(-3px)}
+.chip .ck{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;display:grid;place-items:center;opacity:0;transform:scale(.6);transition:all 120ms var(--e)}
+.chip.sel .ck{opacity:1;transform:none}
+.bar{position:sticky;bottom:16px;margin:0 auto;width:max-content;background:var(--ink);color:#fff;border-radius:10px;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:12px;font-size:13px;transform:translateY(80px);opacity:0;transition:all 200ms var(--e);z-index:4}
+.bar.show{transform:none;opacity:1}
+.bar button{background:#fff;color:var(--ink);border-radius:6px;padding:6px 12px;font-weight:500}
+.bar .ghost{background:none;color:#c9c9cc}
+.pop{position:absolute;bottom:60px;left:50%;transform:translateX(-50%) translateY(8px);background:#fff;color:var(--ink);border-radius:10px;box-shadow:0 0 0 .5px rgba(0,0,0,.15),0 12px 40px rgba(0,0,0,.2);width:260px;padding:8px;opacity:0;pointer-events:none;transition:all 200ms var(--e)}
+.pop.show{opacity:1;pointer-events:auto;transform:translateX(-50%)}
+.pop h6{font-size:11px;font-weight:500;color:var(--ink3);padding:4px 8px}
+.pop .si{font-size:13px}
+.pop input{width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px;margin-top:4px;outline:none}
+.pop input:focus{border-color:var(--ink)}
+/* naming stack */
+.stage{display:grid;grid-template-columns:1fr 280px;height:100%}
+.stack{position:relative;display:grid;place-items:center}
+.nc{position:absolute;width:380px;height:540px;transition:transform 360ms var(--e),opacity 360ms var(--e)}
+.nc.b1{transform:translate(10px,10px) rotate(2.5deg)}.nc.b2{transform:translate(-8px,18px) rotate(-3deg)}
+.nc.out{transform:translate(520px,-40px) rotate(14deg);opacity:0}
+.nc.skip{transform:translate(-30px,40px) rotate(-6deg) scale(.96);opacity:0}
+.nc .big{height:330px;position:relative}
+.nc .big .tag{position:absolute;left:16px;bottom:12px;font-size:12px;opacity:.85}
+.nc .nb{position:absolute;right:12px;top:12px;display:grid;grid-template-columns:repeat(3,12px);gap:2px;padding:3px;background:rgba(255,255,255,.85);border-radius:4px}
+.nc .nb i{width:12px;height:12px;border-radius:2px}
+.nc .pp{padding:16px 24px}
+.nc .num{font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.nc .rule{height:3px;background:var(--ink);margin:12px 0 8px}
+.nc input.name{border:0;outline:0;background:transparent;font-size:20px;font-weight:500;width:100%;padding:4px 0}
+.nc input.name::placeholder{color:var(--ink3);font-weight:400;font-size:15px}
+.nc .fine{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:8px}
+.nc .kept{font-size:11px;color:var(--ink);margin-top:4px}
+.ctl{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);display:flex;gap:8px;font-size:13px}
+.ctl button{padding:8px 16px;border-radius:6px;border:1px solid var(--line);background:#fff}
+.ctl button.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ctl kbd{font:inherit;font-size:11px;opacity:.6;margin-left:6px}
+.prog{position:absolute;top:24px;left:32px;font-size:13px;color:var(--ink2)}
+.prog b{font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-right:8px}
+.pile{border-left:1px solid var(--line);background:var(--chrome);padding:24px 16px;overflow:auto}
+.pile h6{font-size:11px;font-weight:500;color:var(--ink3);margin-bottom:12px}
+.pi{display:flex;gap:8px;align-items:center;font-size:12px;padding:6px;margin-bottom:8px;animation:in 360ms var(--e)}
+.pi i{width:28px;height:36px;border-radius:4px;flex:none}
+.pi span{color:var(--ink3)}
+@keyframes in{from{opacity:0;transform:translateX(-12px)}}
+.empty{text-align:center;color:var(--ink2);font-size:13px}
+.empty h2{font-size:28px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.02em}
+.empty button{margin-top:16px;padding:8px 16px;border-radius:6px;background:var(--ink);color:#fff}
+/* project deck */
+.ph{padding:32px 32px 0}
+.ph input{border:0;outline:0;font-size:56px;font-weight:700;letter-spacing:-.04em;width:100%;background:transparent;padding:0;border-bottom:3px solid var(--ink)}
+.ph input:focus{border-bottom-color:var(--ink3)}
+.ph .fine{display:flex;gap:24px;font-size:11px;color:var(--ink2);margin-top:8px}
+.deck{display:flex;padding:48px 32px 120px;align-items:flex-start;min-height:420px}
+.dc{width:190px;flex:none;margin-right:-34px;cursor:grab;transition:transform 200ms var(--e),margin 200ms var(--e)}
+.dc:nth-child(odd){transform:rotate(-2deg)}.dc:nth-child(even){transform:rotate(1.5deg) translateY(10px)}
+.dc:hover{transform:translateY(-16px) rotate(0);z-index:3}
+.deck:hover .dc{margin-right:12px}
+.dc.drag{opacity:.35}.dc.over{box-shadow:-4px 0 0 0 var(--ink),0 8px 24px rgba(0,0,0,.1)}
+.dc .sw{height:220px;margin:0}
+.dc .lb{padding:12px 16px 16px}
+.dc .no{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.dc .nm{font-size:12px;margin-top:2px}
+.dc .hx{font-size:11px;color:var(--ink2);margin-top:12px;display:flex;justify-content:space-between}
+.dc .pos{position:absolute;top:8px;left:10px;font-size:11px;color:#fff;mix-blend-mode:difference}
+.hint{padding:0 32px;font-size:12px;color:var(--ink3)}
+</style></head><body>
+<div class="desk">
+ <div class="mbar"><b></b><b>Figma</b><span>File</span><span>Edit</span><span>View</span><span class="sp"></span>
+  <span class="iris on" title="Palette"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1D1D1F" stroke-width="1.2"><circle cx="7" cy="7" r="6"/><path d="M7 1l2.5 4.5M13 7l-5 .5M10 12.2L7.5 8M1.7 10.5l4.3-2.8M2 3.2l3.5 3.3M8 1.1L5 5"/></svg></span>
+  <span>Fri 16 Oct 10:42</span></div>
+ <div class="win">
+  <div class="tb"><div class="lights"><i></i><i></i><i></i></div><span class="ttl">Archive</span><span class="meta" id="tbmeta"></span><span class="sp"></span><span class="meta">17 kept</span></div>
+  <nav class="side" id="side"></nav>
+  <main class="main" id="main"></main>
+  <ol class="steps" id="steps"></ol>
+ </div>
+</div>
+<script>
+const C=[["002","e7d6be","","are.na","Paper samples","Browser"],["005","9fc4c0","","Photos","IMG_4417","Photos"],["008","2f2a2c","","Browser","nytimes.com","Browser"],["018","4b5560","","Photos","Rain, Ridgewood","Photos"],["020","ede3cf","","Figma","Moodboard v2","Figma"],["023","5e4b8b","","Browser","bandcamp.com","Browser"],["025","2f5d62","","Browser","kinfolk.com","Browser"],["028","c4552d","","are.na","Warm light","NYC"],
+["001","6c2e3a","Oxblood","are.na","Leather","Browser"],["003","f0c23b","Mango","Photos","Market","Photos"],["004","2e6b6f","Pool tile","Photos","Bath house","Photos"],["006","3b3f46","Graphite","Figma","Dashboard","Figma"],["011","c25a35","Clay pot","Photos","Garden","Photos"],["014","c9b8e8","Lilac","Browser","Pinterest","Browser"],["024","a9b9a0","Lichen","Photos","Trail","Photos"],["026","f3d9cf","Blush ground","Browser","Riso print","Browser"],["027","5b3a63","Plum label","are.na","Tea tin","Browser"]]
+.map(([n,h,name,src,ctx,app])=>({n,hex:'#'+h,name,src,ctx,app}));
+const by=n=>C.find(c=>c.n===n);
+let filedAt=0;
+const P=[{id:'tea',name:'Packaging — tea',items:['003','024','027']},{id:'port',name:'Portfolio site',items:['006','014']},{id:'zine',name:'Editorial zine',items:['001','011','026']}];
+P.forEach(p=>p.last=p.items[p.items.length-1]);
+const STEPS=["Open Unnamed","Name or skip each","Select captures","Add to a project","Open the project","Reorder the cards","Rename the project","See its dot update"];
+let S={view:'all',sel:new Set(),queue:[],pile:[],step:0,pop:false};
+function step(i){if(i>S.step)S.step=i;drawSteps()}
+function drawSteps(){steps.innerHTML='<p>Flow 4 · Collecting</p>'+STEPS.map((s,i)=>`<li class="${i<S.step?'done':i==S.step?'now':''}">${s}</li>`).join('')}
+// color math (OKLab)
+function lab(hex){const[R,G,B]=[1,3,5].map(i=>parseInt(hex.substr(i,2),16)/255).map(c=>c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4));
+const l=Math.cbrt(.4122214708*R+.5363325363*G+.0514459929*B),m=Math.cbrt(.2119034982*R+.6806995451*G+.1073969566*B),s=Math.cbrt(.0883024619*R+.2817188376*G+.6299787005*B);
+const L=.2104542553*l+.793617785*m-.0040720468*s,a=1.9779984951*l-2.428592205*m+.4505937099*s,b=.0259040371*l+.7827717662*m-.808675766*s;
+return{L,a,b,C:Math.hypot(a,b),h:(Math.atan2(b,a)*180/Math.PI+360)%360}}
+function reads(hex){const{L,C:c,h}=lab(hex);const v=L<.42?'dark':L<.72?'mid value':'light';if(c<.03)return`Neutral, ${v}`;
+const t=(h<110||h>330)?'Warm':(h>=150&&h<=300)?'Cool':'Between warm and cool';return`${t}, ${v}, ${c<.09?'muted':'saturated'}`}
+function dE(x,y){const p=lab(x),q=lab(y);return Math.hypot(p.L-q.L,p.a-q.a,p.b-q.b)*100}
+function kept(cap){let best=null;C.forEach(o=>{if(o===cap||!o.name)return;const d=dE(cap.hex,o.hex);if(d<7&&(!best||d<best.d))best={o,d}});return best}
+const onInk=h=>lab(h).L>.62?'#1D1D1F':'#fff';
+function shade(hex,k){return'#'+[1,3,5].map(i=>Math.max(0,Math.min(255,Math.round(parseInt(hex.substr(i,2),16)*(1+k))))).map(v=>v.toString(16).padStart(2,'0')).join('')}
+const NB=[-.12,-.06,-.1,.04,0,-.03,.08,.05,.02];
+const label=c=>`No. ${c.n}, ${c.name||'Unnamed'}, ${c.hex}`;
+const projOf=c=>P.filter(p=>p.items.includes(c.n));
+function drawSide(pulse){const un=C.filter(c=>!c.name).length,uns=C.filter(c=>!projOf(c).length).length;
+const it=(v,t,ct,dot)=>`<button class="si ${S.view==v?'on':''}" onclick="go('${v}')">${dot||''}<span>${t}</span><span class="ct">${ct}</span></button>`;
+side.innerHTML=it('all','Archive',C.length)+it('unnamed','Unnamed',un)+'<h6>Projects</h6>'+P.map(p=>it('p:'+p.id,p.name,p.items.length,`<i class="dot ${pulse===p.id?'pulse':''}" style="background:${by(p.last).hex}"></i>`)).join('')+it('unsorted','Unsorted',uns)+'<p class="foot">Stored on this Mac</p>'}
+function go(v){S.view=v;S.pop=false;if(v=='unnamed'){S.queue=C.filter(c=>!c.name).sort((a,b)=>b.n-a.n);S.pile=[];step(1)}
+if(v.startsWith('p:')&&S.step>=4)step(5);render()}
+function render(){drawSide();const v=S.view;tbmeta.textContent='';
+if(v=='unnamed')return drawStack();if(v.startsWith('p:'))return drawDeck(P.find(p=>'p:'+p.id==v));drawGrid()}
+// grid
+function drawGrid(){const list=(S.view=='unsorted'?C.filter(c=>!projOf(c).length):C).slice().sort((a,b)=>b.n-a.n);
+main.innerHTML=`<div class="head"><h1>${S.view=='unsorted'?'Unsorted':'Archive'}</h1><span class="sub">Click to select. Shift-click for a run.</span></div>
+<div class="grid">${list.map(c=>`<button class="card chip ${S.sel.has(c.n)?'sel':''}" data-n="${c.n}" aria-label="${label(c)}" aria-pressed="${S.sel.has(c.n)}"><div class="sw" style="background:${c.hex}"></div><div class="lb"><div class="no">No. ${c.n}</div><div class="nm ${c.name?'':'u'}">${c.name||'Unnamed'} · ${c.hex}</div></div><span class="ck">✓</span></button>`).join('')}</div>
+<div class="bar ${S.sel.size?'show':''}" id="bar"><span>${S.sel.size} selected</span><button class="ghost" onclick="S.sel.clear();drawGrid()">Clear</button><button onclick="togglePop()">Add to project</button>
+<div class="pop ${S.pop?'show':''}"><h6>Add to project</h6>${P.map(p=>`<button class="si" onclick="file('${p.id}')"><i class="dot" style="background:${by(p.last).hex}"></i>${p.name}<span class="ct">${p.items.length}</span></button>`).join('')}
+<h6 style="margin-top:8px">New project</h6><input id="np" placeholder="Name the project, then Return" onkeydown="if(event.key=='Enter'&&this.value.trim())newProj(this.value.trim())"></div></div>`;
+let lastI=null;main.querySelectorAll('.chip').forEach((el,i)=>el.onclick=e=>{const n=el.dataset.n;
+if(e.shiftKey&&lastI!=null){const[a,b]=[Math.min(lastI,i),Math.max(lastI,i)];list.slice(a,b+1).forEach(c=>S.sel.add(c.n))}else S.sel.has(n)?S.sel.delete(n):S.sel.add(n);
+lastI=i;if(S.sel.size>1)step(3);const sc=main.scrollTop;S.pop=false;drawGrid();main.scrollTop=sc;window._li=lastI});
+if(window._li!=null)lastI=window._li}
+function togglePop(){S.pop=!S.pop;const sc=main.scrollTop;drawGrid();main.scrollTop=sc;if(S.pop)setTimeout(()=>np.focus(),200)}
+function file(id){const p=P.find(x=>x.id==id);const add=[...S.sel].sort().filter(n=>!p.items.includes(n));p.items.push(...add);if(add.length)p.last=add[add.length-1];
+S.sel.clear();S.pop=false;step(4);drawGrid();drawSide(id);tbmeta.textContent=`· Filed ${add.length} to ${p.name}`}
+function newProj(name){const id='n'+Date.now();P.push({id,name,items:[],last:null});file(id)}
+// naming stack
+function drawStack(){const q=S.queue;tbmeta.textContent='· Unnamed';
+const cardH=(c,cls)=>{const k=kept(c);return`<div class="card nc ${cls}" data-n="${c.n}"><div class="big" style="background:${c.hex};color:${onInk(c.hex)}"><span class="tag">${c.src} · ${c.ctx}${c.app!=c.src?' · '+c.app:''}</span><div class="nb">${NB.map(x=>`<i style="background:${shade(c.hex,x)}"></i>`).join('')}</div></div>
+<div class="pp"><div class="num">No. ${c.n}</div><div class="rule"></div>${cls?'':`<input class="name" id="nm" placeholder="Unnamed. Name it so you remember it." aria-label="Name for No. ${c.n}">`}
+<div class="fine"><span>${c.hex}</span><span>Reads as ${reads(c.hex).toLowerCase()}</span></div>${k?`<div class="kept">You’ve kept this before · No. ${k.o.n} ${k.o.name}</div>`:''}</div></div>`};
+const left=q.length;main.innerHTML=`<div class="stage"><div class="stack">${left?`<div class="prog"><b>${left}</b>left to look at</div>`+(q[2]?cardH(q[2],'b2'):'')+(q[1]?cardH(q[1],'b1'):'')+cardH(q[0],'')+
+`<div class="ctl"><button onclick="skip()">Skip<kbd>Tab</kbd></button><button class="pri" onclick="nameIt()">Name<kbd>Return</kbd></button></div>`:
+`<div class="empty"><h2>Stack cleared</h2><p>${C.filter(c=>!c.name).length} still unnamed. That’s fine.</p><button onclick="go('all')">Select captures to file</button></div>`}</div>
+<aside class="pile"><h6>Named this round</h6>${S.pile.map(c=>`<div class="pi"><i style="background:${c.hex}"></i><div><b>${c.name}</b><br><span>No. ${c.n}</span></div></div>`).join('')||'<p class="empty" style="text-align:left;font-size:12px">Nothing yet. Each card waits for your word.</p>'}</aside></div>`;
+if(left){nm.focus();nm.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();nameIt()}else if(e.key=='Tab'){e.preventDefault();skip()}}}}
+function topCard(){return main.querySelector('.nc:not(.b1):not(.b2)')}
+function nameIt(){const v=nm.value.trim();if(!v){nm.focus();return}const c=S.queue.shift();c.name=v;S.pile.unshift(c);step(2);
+topCard().classList.add('out');setTimeout(()=>{drawStack();drawSide()},360)}
+function skip(){const c=S.queue.shift();topCard().classList.add('skip');step(2);setTimeout(drawStack,360)}
+// project deck
+function drawDeck(p){tbmeta.textContent='· Project';
+main.innerHTML=`<div class="ph"><input id="pn" value="${p.name}" aria-label="Project name"><div class="fine"><span>Project</span><span>${p.items.length} cards</span><span>Latest: No. ${p.last||'—'}</span></div></div>
+<div class="deck" id="deck">${p.items.map((n,i)=>{const c=by(n);return`<div class="card dc" draggable="true" tabindex="0" data-i="${i}" aria-label="${label(c)}"><span class="pos">${i+1}</span><div class="sw" style="background:${c.hex}"></div><div class="lb"><div class="no">No. ${c.n}</div><div class="nm">${c.name||'Unnamed'}</div><div class="hx"><span>${c.hex}</span><span>${c.src}</span></div></div></div>`}).join('')}</div>
+<p class="hint">Hover to fan the set open. Drag a card to reorder, or focus one and use Option-arrow.</p>`;
+pn.onchange=pn.onblur=()=>{const v=pn.value.trim();if(v&&v!=p.name){p.name=v;step(7);drawSide(p.id);setTimeout(()=>step(8),600)}};
+pn.onkeydown=e=>{if(e.key=='Enter')pn.blur()};
+let from=null;deck.querySelectorAll('.dc').forEach(el=>{const i=+el.dataset.i;
+el.ondragstart=e=>{from=i;el.classList.add('drag');e.dataTransfer.effectAllowed='move'};
+el.ondragend=()=>el.classList.remove('drag');
+el.ondragover=e=>{e.preventDefault();el.classList.add('over')};el.ondragleave=()=>el.classList.remove('over');
+el.ondrop=e=>{e.preventDefault();move(p,from,i)};
+el.onkeydown=e=>{if(e.altKey&&(e.key=='ArrowLeft'||e.key=='ArrowRight')){const t=i+(e.key=='ArrowLeft'?-1:1);if(t>=0&&t<p.items.length){move(p,i,t);deck.querySelector(`[data-i="${t}"]`).focus()}}}})}
+function move(p,a,b){if(a==null||a==b)return;const[x]=p.items.splice(a,1);p.items.splice(b,0,x);step(6);drawDeck(p)}
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&S.pop){S.pop=false;drawGrid()}});
+drawSteps();render();
+</script>
+</body></html>

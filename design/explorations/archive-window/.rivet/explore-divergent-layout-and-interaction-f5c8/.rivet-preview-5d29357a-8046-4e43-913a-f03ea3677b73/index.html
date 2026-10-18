@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Palette — Archive · Spectrum-forward</title>
+<style>
+:root{--ink:#1d1d1f;--ink2:#6e6e73;--ink3:#a1a1a6;--line:#e5e5ea;--bg:#fbfbfd;--side:#f2f2f5;--acc:#0a84ff;--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;--mono:"SF Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d9d9de;font:13px/1.35 var(--ui);color:var(--ink);display:grid;place-items:center;min-height:100vh;padding:24px}
+.win{width:1280px;height:820px;background:var(--bg);border-radius:12px;box-shadow:0 0 0 .5px rgba(0,0,0,.25),0 30px 80px rgba(0,0,0,.25);display:grid;grid-template-rows:52px 1fr;overflow:hidden}
+.tb{display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid var(--line);background:#f6f6f8}
+.lights{display:flex;gap:8px;width:70px}.lights i{width:12px;height:12px;border-radius:50%;background:#ff5f57}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.ttl b{font-weight:600;font-size:13px}.ttl span{color:var(--ink2);margin-left:8px;font-size:12px}
+.seg{display:flex;background:#e3e3e8;border-radius:7px;padding:2px;margin-left:auto}
+.seg button{border:0;background:none;font:12px var(--ui);padding:3px 12px;border-radius:5px;color:var(--ink)}
+.seg button.on{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.search{width:240px;height:26px;border-radius:7px;background:#e3e3e8;border:0;padding:0 10px 0 26px;font:12px var(--ui);background-image:radial-gradient(circle at 12px 12px,transparent 4px,#8e8e93 4.5px,transparent 5.5px);outline:none}
+.body{display:grid;grid-template-columns:200px 1fr 300px;min-height:0}
+aside{background:var(--side);border-right:1px solid var(--line);padding:14px 10px;overflow:auto}
+aside h4{font-size:11px;font-weight:600;color:var(--ink3);margin:14px 8px 4px}
+aside h4:first-child{margin-top:0}
+.it{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;cursor:default;font-size:13px}
+.it.on{background:rgba(0,0,0,.08)}.it em{margin-left:auto;font-style:normal;color:var(--ink3);font-size:12px;font-variant-numeric:tabular-nums}
+.it .dot{width:10px;height:10px;border-radius:50%}
+.fam{display:inline-block;width:10px;height:10px;border-radius:2px}
+main{display:grid;grid-template-rows:1fr auto;min-width:0;min-height:0}
+.stage{position:relative;display:grid;grid-template-columns:1fr 210px;gap:0;min-height:0}
+.wheelwrap{position:relative;display:grid;place-items:center}
+.cap{position:absolute;left:20px;top:16px}
+.cap b{font-size:15px;font-weight:600;display:block}.cap span{color:var(--ink2);font-size:12px}
+#wheel{position:relative;width:500px;height:500px}
+.ring{position:absolute;border-radius:50%;border:1px dashed #e0e0e6;pointer-events:none}
+.hueband{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,oklch(.7 .12 0),oklch(.7 .12 60),oklch(.7 .12 120),oklch(.7 .12 180),oklch(.7 .12 240),oklch(.7 .12 300),oklch(.7 .12 360));-webkit-mask:radial-gradient(circle,transparent 244px,#000 245px,#000 249px,transparent 250px);mask:radial-gradient(circle,transparent 244px,#000 245px,#000 249px,transparent 250px);opacity:.55}
+.lbl{position:absolute;font-size:10px;color:var(--ink3);transform:translate(-50%,-50%);letter-spacing:.02em}
+.c{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:0;cursor:pointer;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.c:hover{transform:scale(1.25);z-index:3}
+.c.dim{opacity:.16}
+.c.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink);z-index:4}
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:150px}
+.center .n{font:600 26px var(--ui)}.center small{color:var(--ink2);font-size:11px;display:block}
+.neutrals{position:absolute;left:50%;top:50%;transform:translate(-50%,28px);display:flex;gap:4px}
+.neutrals i{width:14px;height:14px;border-radius:3px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.legend{position:absolute;right:22px;bottom:14px;font-size:11px;color:var(--ink2);text-align:right;line-height:1.6}
+.fams{border-left:1px solid var(--line);padding:16px 14px;overflow:auto}
+.fams h5{font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:8px}
+.fr{display:grid;grid-template-columns:52px 1fr 22px;align-items:center;gap:8px;padding:5px 0;font-size:12px;cursor:pointer;border-radius:5px}
+.fr:hover .bar{filter:brightness(.95)}
+.fr .bar{height:12px;border-radius:3px;display:flex;overflow:hidden}.fr .bar i{flex:1}
+.fr em{font-style:normal;color:var(--ink3);text-align:right;font-variant-numeric:tabular-nums}
+.fams p{font-size:11px;color:var(--ink2);margin-top:14px;line-height:1.5}
+.strip{border-top:1px solid var(--line);padding:10px 20px 14px}
+.strip .hd{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-bottom:6px}
+.hs{position:relative;height:40px;display:flex;border-radius:6px;overflow:hidden}
+.hs i{flex:1;transition:opacity .25s}.hs i.dim{opacity:.16}
+.time{display:flex;align-items:center;gap:10px;margin-top:10px}
+.time span{font-size:11px;color:var(--ink2);white-space:nowrap}
+.tl{flex:1;position:relative;height:22px}
+.tl b{position:absolute;bottom:0;width:4px;border-radius:1px;background:var(--ink3)}
+.tl .win2{position:absolute;top:-2px;bottom:-2px;border:1.5px solid var(--acc);border-radius:4px;background:rgba(10,132,255,.06)}
+.insp{border-left:1px solid var(--line);padding:16px;overflow:auto;background:#fff}
+.sw{height:120px;border-radius:10px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.meta{display:flex;justify-content:space-between;margin:10px 0 2px;font:12px var(--mono);color:var(--ink2)}
+.nm{font-size:17px;font-weight:600}.nm.un{color:var(--ink3);font-weight:500}
+.sec{margin-top:16px}.sec h6{font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:6px}
+.val{display:grid;grid-template-columns:48px 1fr auto;align-items:center;padding:4px 0;font-size:12px;border-bottom:1px solid #f0f0f3}
+.val code{font:12px var(--mono)}.val button{border:0;background:none;color:var(--acc);font:12px var(--ui);cursor:pointer}
+.src{display:flex;gap:10px;align-items:center}
+.nb{display:grid;grid-template-columns:repeat(3,16px);gap:1px;border-radius:4px;overflow:hidden}.nb i{height:16px}
+.src small{display:block;color:var(--ink2);font-size:11px;word-break:break-all}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips span{font-size:11px;padding:3px 8px;border-radius:10px;background:#f0f0f3}
+.kb{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}
+.kb i{width:22px;height:22px;border-radius:5px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.kb code{font:11px var(--mono);color:var(--ink2)}.kb em{margin-left:auto;font-style:normal;font-size:11px;color:var(--ink2)}
+.neigh{margin-top:6px;display:flex;gap:3px}.neigh i{flex:1;height:18px;border-radius:3px;cursor:pointer}
+</style></head><body>
+<div class="win">
+ <div class="tb">
+  <div class="lights"><i></i><i></i><i></i></div>
+  <div class="ttl"><b>Archive</b><span id="count"></span></div>
+  <div class="seg"><button class="on">Wheel</button><button>Strip</button><button>Timeline</button></div>
+  <input class="search" id="q" placeholder="Search name, source, or hex">
+ </div>
+ <div class="body">
+  <aside>
+   <h4>Library</h4>
+   <div class="it on" data-f="all">All colors<em id="cAll"></em></div>
+   <div class="it" data-f="unnamed">Unnamed<em id="cUn"></em></div>
+   <h4>Hue families</h4><div id="famSide"></div>
+   <h4>When</h4>
+   <div class="it" data-f="t0">Today<em id="ct0"></em></div>
+   <div class="it" data-f="t7">This week<em id="ct7"></em></div>
+   <div class="it" data-f="t30">Last 30 days<em id="ct30"></em></div>
+   <h4>Projects</h4>
+   <div class="it" data-f="p:Harbor"><span class="dot" style="background:#2f5d73"></span>Harbor rebrand<em></em></div>
+   <div class="it" data-f="p:Field"><span class="dot" style="background:#c8743a"></span>Field notes<em></em></div>
+   <div class="it" data-f="p:"><span class="dot" style="background:#c7c7cc"></span>Unsorted<em></em></div>
+   <h4>Captured from</h4><div id="srcSide"></div>
+  </aside>
+  <main>
+   <div class="stage">
+    <div class="wheelwrap">
+     <div class="cap"><b>Where your eye goes</b><span>Angle is hue. Closer to the center is darker.</span></div>
+     <div id="wheel"><div class="hueband"></div></div>
+     <div class="legend">Inner ring · dark<br>Middle · mid value<br>Outer · light</div>
+    </div>
+    <div class="fams"><h5>By hue family</h5><div id="famList"></div>
+     <p id="famNote"></p></div>
+   </div>
+   <div class="strip">
+    <div class="hd"><span>Every color, by hue — neutrals last</span><span id="stripN"></span></div>
+    <div class="hs" id="hs"></div>
+    <div class="time"><span>Sep 14</span><div class="tl" id="tl"><div class="win2" id="win2"></div></div><span>Today</span></div>
+   </div>
+  </main>
+  <div class="insp" id="insp"></div>
+ </div>
+</div>
+<script>
+const D=[// [hex,name,src,title,daysAgo,time,project]
+["#2f5d73","","Figma","Harbor — Brand v3",0,"10:42","Harbor"],["#e8d9c4","Sand plaster","Photos","IMG_4021.HEIC",0,"10:15",""],["#c8743a","","Safari","kinfolk.com/rust-season",0,"09:58","Field"],["#1f2a36","","Figma","Harbor — Nav",0,"09:30","Harbor"],
+["#9bb7a4","Sage","Photos","IMG_3998.HEIC",1,"18:20","Field"],["#d64b3c","","Safari","are.na/block/1882",1,"16:02",""],["#f3efe7","","PDF","Albers_Interaction.pdf",1,"14:44",""],["#5a6b3c","","Photos","IMG_3987.HEIC",1,"11:10","Field"],
+["#3d7ea6","","Figma","Harbor — Brand v3",2,"15:31","Harbor"],["#e7b04a","Mustard","Safari","pentagram.com/work",2,"12:05",""],["#8a4f7d","","PDF","Pantone_FW26.pdf",3,"17:40",""],["#2e2e2e","","Figma","Harbor — Type",3,"10:02","Harbor"],
+["#b7d3e0","","Safari","nytimes.com/interactive",4,"20:12",""],["#a63d40","Brick","Photos","IMG_3901.HEIC",4,"13:33","Field"],["#efc7b8","","Safari","aesop.com",5,"09:47",""],["#4b8f6e","","Figma","Field — Moodboard",5,"09:20","Field"],
+["#6b6f75","","PDF","Albers_Interaction.pdf",6,"21:05",""],["#f2d16b","","Photos","IMG_3870.HEIC",7,"16:44",""],["#274b8a","","Safari","stripe.com/press",7,"11:30",""],["#cf8f6b","","Photos","IMG_3866.HEIC",8,"18:51","Field"],
+["#7fa9c9","","Figma","Harbor — Brand v2",9,"14:10","Harbor"],["#3a2f2a","Espresso","Photos","IMG_3840.HEIC",10,"08:12",""],["#d9a7c7","","Safari","glossier.com",10,"19:22",""],["#88a33f","","Safari","are.na/block/1740",11,"15:05",""],
+["#c4c1b8","","PDF","Muji_catalog.pdf",12,"12:40",""],["#e05d2f","","Figma","Field — Cover",13,"16:16","Field"],["#5c4a8f","","Safari","linear.app",14,"10:58",""],["#1e6f6a","Deep teal","Photos","IMG_3790.HEIC",15,"17:30","Harbor"],
+["#f5e6a8","","PDF","Pantone_FW26.pdf",16,"13:02",""],["#b45a2c","","Photos","IMG_3771.HEIC",17,"18:44","Field"],["#2d6a9f","","Figma","Harbor — Brand v1",18,"11:11","Harbor"],["#e9e4dc","","Safari","kinfolk.com",19,"09:09",""],
+["#9a3b5c","","Safari","itsnicethat.com",20,"22:15",""],["#6f8f9a","","Photos","IMG_3740.HEIC",21,"07:58","Harbor"],["#d8b98a","","PDF","Muji_catalog.pdf",22,"14:27",""],["#3f5f3a","","Photos","IMG_3722.HEIC",23,"16:40","Field"],
+["#ffb48a","","Safari","dribbble.com/shots/22",24,"20:31",""],["#40e0d0","","Other","Keynote — Pitch",25,"10:10",""],["#7a1f2b","","PDF","Wine_list.pdf",26,"19:45",""],["#2b3a55","","Figma","Harbor — Brand v1",27,"12:00","Harbor"]];
+const lin=v=>(v/=255)<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
+function oklab(h){const r=lin(parseInt(h.substr(1,2),16)),g=lin(parseInt(h.substr(3,2),16)),b=lin(parseInt(h.substr(5,2),16));
+const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+return[.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s]}
+const C=D.map((d,i)=>{const[L,a,b]=oklab(d[0]),c=Math.hypot(a,b);let h=Math.atan2(b,a)*180/Math.PI;if(h<0)h+=360;
+return{no:40-i,hex:d[0],name:d[1],src:d[2],title:d[3],ago:d[4],time:d[5],proj:d[6],L,a,b,c,h}});
+const FAM=[["Reds",0,30],["Oranges",30,70],["Yellows",70,110],["Greens",110,170],["Teals",170,220],["Blues",220,280],["Purples",280,330],["Pinks",330,360]];
+const fam=x=>x.c<.03?"Neutrals":(FAM.find(f=>x.h>=f[1]&&x.h<f[2])||FAM[0])[0];
+const num=n=>"No. "+String(n).padStart(3,"0");
+const day=a=>a==0?"Today":a==1?"Yesterday":new Date(2026,9,15-a).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+const temp=x=>x.c<.03?"Neutral":(x.h<110||x.h>330)?"Warm":(x.h>=150&&x.h<=300)?"Cool":"Between warm and cool";
+const val=x=>x.L<.42?"Dark":x.L<.72?"Mid value":"Light";
+const chr=x=>x.c<.09?"Muted":"Saturated";
+const dE=(x,y)=>Math.hypot(x.L-y.L,x.a-y.a,x.b-y.b)*100;
+const rgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)).join(", ");
+let sel=C[0],filt=()=>true,fkey="all";
+const W=document.getElementById("wheel");
+[90,165,240].forEach(r=>{const e=document.createElement("div");e.className="ring";Object.assign(e.style,{left:250-r+"px",top:250-r+"px",width:2*r+"px",height:2*r+"px"});W.appendChild(e)});
+FAM.forEach(f=>{const a=(f[1]+f[2])/2*Math.PI/180,e=document.createElement("div");e.className="lbl";e.textContent=f[0];e.style.left=250+Math.cos(a)*262+"px";e.style.top=250-Math.sin(a)*262+"px";W.appendChild(e)});
+const ctr=document.createElement("div");ctr.className="center";ctr.innerHTML='<div class="n" id="cn"></div><small id="cs"></small>';W.appendChild(ctr);
+const neu=document.createElement("div");neu.className="neutrals";W.appendChild(neu);
+// place chips: angle = hue, radius = lightness; nudge collisions
+const pos=[];
+C.filter(x=>x.c>=.03).sort((p,q)=>p.no-q.no).forEach(x=>{let r=60+x.L*210,a=x.h*Math.PI/180,px,py,t=0;
+do{px=250+Math.cos(a)*r;py=250-Math.sin(a)*r;if(!pos.some(p=>Math.hypot(p[0]-px,p[1]-py)<27))break;r+=(t%2?-1:1)*(8+t*3);t++}while(t<12);
+pos.push([px,py]);const e=document.createElement("button");e.className="c";e.style.cssText=`left:${px}px;top:${py}px;background:${x.hex}`;
+e.setAttribute("aria-label",`${num(x.no)}, ${x.name||"Unnamed"}, ${x.hex.toUpperCase()}`);e.onclick=()=>pick(x);x.el=e;W.appendChild(e)});
+C.filter(x=>x.c<.03).sort((p,q)=>q.L-p.L).forEach(x=>{const e=document.createElement("i");e.style.background=x.hex;e.title=num(x.no);e.onclick=()=>pick(x);x.el=e;neu.appendChild(e)});
+const sorted=[...C].sort((p,q)=>(p.c<.03)-(q.c<.03)||(p.c<.03?q.L-p.L:p.h-q.h));
+const HS=document.getElementById("hs");sorted.forEach(x=>{const e=document.createElement("i");e.style.background=x.hex;e.onclick=()=>pick(x);x.band=e;HS.appendChild(e)});
+const TL=document.getElementById("tl");for(let a=0;a<28;a++){const n=C.filter(x=>x.ago==a).length;if(!n)continue;const b=document.createElement("b");b.style.left=(27-a)/27*98+"%";b.style.height=n*5+"px";TL.appendChild(b)}
+const fams=["Reds","Oranges","Yellows","Greens","Teals","Blues","Purples","Pinks","Neutrals"];
+document.getElementById("famSide").innerHTML=fams.map(f=>{const g=C.filter(x=>fam(x)==f);return g.length?`<div class="it" data-f="f:${f}"><span class="fam" style="background:${g[0].hex}"></span>${f}<em>${g.length}</em></div>`:""}).join("");
+document.getElementById("famList").innerHTML=fams.map(f=>{const g=C.filter(x=>fam(x)==f).sort((p,q)=>p.L-q.L);return g.length?`<div class="fr" data-f="f:${f}"><span>${f}</span><div class="bar">${g.map(x=>`<i style="background:${x.hex}"></i>`).join("")}</div><em>${g.length}</em></div>`:""}).join("");
+const srcs=["Safari","Figma","Photos","PDF","Other"],lab={Safari:"Browser"};
+document.getElementById("srcSide").innerHTML=srcs.map(s=>`<div class="it" data-f="s:${s}">${lab[s]||s}<em>${C.filter(x=>x.src==s).length}</em></div>`).join("");
+const top=fams.map(f=>[f,C.filter(x=>fam(x)==f).length]).sort((p,q)=>q[1]-p[1]);
+document.getElementById("famNote").textContent=`You've kept more ${top[0][0].toLowerCase()} than anything else, and ${top[1][0].toLowerCase()} next. Fewest: ${top.filter(t=>t[1])[top.filter(t=>t[1]).length-1][0].toLowerCase()}.`;
+document.getElementById("count").textContent=C.length+" colors kept";
+document.getElementById("cAll").textContent=C.length;document.getElementById("cUn").textContent=C.filter(x=>!x.name).length;
+[["ct0",0],["ct7",6],["ct30",29]].forEach(([id,n])=>document.getElementById(id).textContent=C.filter(x=>x.ago<=n).length);
+document.querySelectorAll('[data-f^="p:"]').forEach(e=>e.querySelector("em").textContent=C.filter(x=>x.proj==e.dataset.f.slice(2)).length);
+const F={all:()=>true,unnamed:x=>!x.name,t0:x=>x.ago==0,t7:x=>x.ago<=6,t30:x=>x.ago<=29};
+function setF(k){fkey=k;const[t,v]=k.split(":");filt=F[k]||(t=="f"?x=>fam(x)==v:t=="s"?x=>x.src==v:x=>x.proj==v);
+document.querySelectorAll("[data-f]").forEach(e=>e.classList.toggle("on",e.dataset.f==k));
+const win=document.getElementById("win2"),rng={t0:[0,0],t7:[0,6]}[k]||[0,27];win.style.left=(27-rng[1])/27*98-.5+"%";win.style.width=(rng[1]-rng[0])/27*98+2+"%";render()}
+document.querySelectorAll("[data-f]").forEach(e=>e.onclick=()=>setF(fkey==e.dataset.f?"all":e.dataset.f));
+document.getElementById("q").oninput=e=>{const q=e.target.value.toLowerCase();filt=q?x=>(x.name+x.src+x.title+x.hex).toLowerCase().includes(q):F.all;render()};
+function render(){let n=0;C.forEach(x=>{const on=filt(x);n+=on;x.el.classList.toggle("dim",!on);x.el.style.opacity=on?"":".16";x.band.classList.toggle("dim",!on);x.el.classList.toggle("sel",x==sel)});
+document.getElementById("cn").textContent=n;document.getElementById("cs").textContent=n==C.length?"colors on the wheel":"of "+C.length+" match";
+document.getElementById("stripN").textContent=n+" shown";}
+function pick(x){sel=x;const kept=C.filter(y=>y!=x&&y.no<x.no).map(y=>[y,dE(x,y)]).filter(p=>p[1]<7).sort((p,q)=>p[1]-q[1]);
+const near=C.filter(y=>y!=x&&fam(y)==fam(x)).sort((p,q)=>Math.abs(p.h-x.h)-Math.abs(q.h-x.h)).slice(0,6);
+const nb=[...Array(9)].map((_,i)=>{const k=i==4?0:(i-4)*3,f=v=>Math.max(0,Math.min(255,v+k));return i==4?x.hex:`rgb(${rgb(x.hex).split(", ").map(Number).map(f)})`});
+document.getElementById("insp").innerHTML=`<div class="sw" style="background:${x.hex}"></div>
+<div class="meta"><span>${num(x.no)}</span><span>${day(x.ago)}, ${x.time}</span></div>
+<div class="nm ${x.name?"":"un"}">${x.name||"Unnamed"}</div>
+<div class="sec"><h6>Values</h6>
+<div class="val"><span>HEX</span><code>${x.hex.toUpperCase()}</code><button>Copy</button></div>
+<div class="val"><span>RGB</span><code>${rgb(x.hex)}</code><button>Copy</button></div>
+<div class="val"><span>OKLCH</span><code>${x.L.toFixed(2)} ${x.c.toFixed(3)} ${Math.round(x.h)}</code><button>Copy</button></div></div>
+<div class="sec"><h6>Source</h6><div class="src"><div class="nb">${nb.map(c=>`<i style="background:${c}"></i>`).join("")}</div><div>${x.src}<small>${x.title}</small></div></div></div>
+<div class="sec"><h6>Reads as</h6><div class="chips"><span>${temp(x)}</span><span>${val(x)}</span><span>${chr(x)}</span></div></div>
+<div class="sec"><h6>Kept before</h6>${kept.length?kept.map(([y,d])=>`<div class="kb" data-n="${y.no}"><i style="background:${y.hex}"></i><span>${num(y.no)}</span><code>ΔE ${d.toFixed(1)}</code><em>${d<2?"Nearly identical":d<5?"Close":"Similar"}</em></div>`).join(""):'<div style="font-size:12px;color:var(--ink2)">Nothing close yet. This one is new to you.</div>'}</div>
+<div class="sec"><h6>Same family on the wheel · ${fam(x)}</h6><div class="neigh">${near.map(y=>`<i data-n="${y.no}" title="${num(y.no)}" style="background:${y.hex}"></i>`).join("")}</div></div>`;
+document.querySelectorAll("#insp [data-n]").forEach(e=>e.onclick=()=>pick(C.find(y=>y.no==+e.dataset.n)));render()}
+pick(C[0]);
+</script>
+</body></html>

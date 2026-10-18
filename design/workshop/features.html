@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit feature workshop</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The feature workshop, October 18. Built on the design system's tokens (../system/). */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 96px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, figure { margin: 0; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; gap: 16px; font-size: 13px; }
+
+  .intro { padding: 48px 0 8px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: end; }
+  .intro h1 { font-size: clamp(44px, 6vw, 72px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 52ch; }
+
+  .part { margin-top: 64px; }
+  .part-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  .part-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 400; }
+  .part-head p { color: var(--ink-2); font-size: 15px; max-width: 50ch; }
+
+  /* An item: the question, Noah's words, the options, a note */
+  .item { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 32px; padding: 28px 0; border-bottom: 1px solid var(--rule-soft); }
+  .item-no { font-size: 13px; color: var(--ink-2); }
+  .item h3 { font-size: 22px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 400; margin-top: 2px; }
+  .item .why { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .item blockquote { margin: 10px 0 0; padding-left: 10px; border-left: 2px solid var(--ink); font-size: 13px; color: var(--ink); }
+  .item blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+  .item .refs { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .item .refs a { font-size: 11px; padding: 1px 6px; border: 1px solid var(--rule-soft); text-decoration: none; color: var(--ink-2); }
+  .item .refs a:hover { border-color: var(--ink); color: var(--ink); }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+  .opt { position: relative; display: block; background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 14px 16px 16px; cursor: pointer; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt .ol { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 13px; color: var(--ink-2); }
+  .opt .rec { font-size: 11px; color: var(--ink); border: 1px solid var(--rule); padding: 0 5px; }
+  .opt .on { font-size: 17px; letter-spacing: -0.01em; margin-top: 6px; line-height: 1.25; }
+  .opt .ot { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .opt:hover { background: var(--chrome); }
+  .opt.picked { background: var(--ink); color: var(--paper); }
+  .opt.picked .ol, .opt.picked .ot { color: #D6D6D9; }
+  .opt.picked .rec { color: var(--paper); border-color: var(--paper); }
+  .opt:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; z-index: 1; }
+  .rec-why { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .rec-why b { font-weight: 400; color: var(--ink); }
+  .note { margin-top: 12px; }
+  .note label { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .note textarea { width: 100%; min-height: 56px; resize: vertical; padding: 8px 10px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.45 var(--font); }
+  .note textarea:focus { border-color: var(--ink); outline: none; }
+  .info { margin-top: 24px; padding: 14px 16px; border: 1px dashed var(--ink-3); background: var(--paper); font-size: 13px; color: var(--ink-2); }
+  .info b { font-weight: 400; color: var(--ink); }
+
+  /* The live desk: the desktop palette and the chip, together */
+  .live { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule-soft); align-items: start; }
+  .live .side p { font-size: 13px; color: var(--ink-2); }
+  .live .side p + p { margin-top: 8px; }
+  .live .side b { font-weight: 400; color: var(--ink); }
+  .live .side .btn { margin-top: 12px; }
+  .live .state { margin-top: 12px; font-size: 13px; }
+  .live .state li { margin: 2px 0; }
+  .live .warn { margin-top: 10px; font-size: 13px; color: var(--ink); border-left: 2px solid var(--ink); padding-left: 8px; }
+  .mdesk { position: relative; aspect-ratio: 16 / 10; background: var(--desk); border: 1px solid var(--rule); overflow: hidden; container-type: inline-size; user-select: none; -webkit-user-select: none; }
+  .m-bar { position: absolute; inset: 0 0 auto 0; height: 3.6cqw; display: flex; align-items: center; gap: 2.2cqw; padding: 0 1.6cqw; background: rgba(255, 255, 255, 0.6); font-size: 1.55cqw; z-index: 5; }
+  .m-bar b { font-weight: 700; }
+  .m-bar .r { margin-left: auto; display: flex; gap: 1.8cqw; align-items: center; }
+  .m-bar .iris { width: 1.9cqw; height: 1.9cqw; border-width: 0.2cqw; }
+  .m-bar .iris::after { width: 0.7cqw; height: 0.7cqw; }
+  .m-win { position: absolute; left: 5%; top: 9%; width: 68%; height: 84%; background: var(--paper); border-radius: 1.1cqw; overflow: hidden; box-shadow: 0 1.6cqw 4cqw rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; }
+  .m-win .tb { height: 3.6cqw; flex: none; display: flex; align-items: center; gap: 0.8cqw; padding: 0 1.2cqw; background: var(--material); border-bottom: 0.5px solid rgba(0, 0, 0, 0.14); font-size: 1.4cqw; color: var(--ink-2); }
+  .m-win .tb i { width: 1.1cqw; height: 1.1cqw; border-radius: 50%; background: #DADADC; }
+  .m-win .tb span { flex: 1; text-align: center; margin-right: 4cqw; }
+  .m-page { flex: 1; display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .m-page button { border: 0; padding: 0; cursor: crosshair; }
+  .m-page button:focus-visible { outline: 0.4cqw solid var(--paper); outline-offset: -0.8cqw; }
+  .m-page button:first-child { grid-row: span 2; }
+  .m-slot { position: absolute; top: 4.4cqw; right: 1.4cqw; z-index: 6; transform-origin: top right; transform: scale(0.62); }
+  .m-chip { width: 300px; background: var(--paper); border: 1px solid var(--rule); font-size: 13px; line-height: 1.3; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); transition: opacity var(--dur-appear) ease-out, transform var(--dur-appear) ease-out; }
+  .m-chip.gone { opacity: 0; transform: translateY(-6px); }
+  .m-chip .t { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px 0 8px; }
+  .m-chip .cs { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+  .m-chip .cn { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-chip .cno, .m-chip .l { font-size: 11px; color: var(--ink-2); }
+  .m-chip .l { display: flex; justify-content: space-between; padding: 3px 10px 8px 32px; }
+  .m-chip .l u { color: var(--ink); text-underline-offset: 2px; }
+
+  .dpal { position: absolute; z-index: 4; display: flex; gap: 0.35cqw; padding: 0.7cqw; background: var(--material); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 0.6cqw 2cqw rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.2); transition: transform var(--dur-appear) ease-out, opacity var(--dur-appear) ease-out; }
+  .dpal button { border: 0; padding: 0; cursor: pointer; box-shadow: inset 0 0 0 1px var(--swatch-edge); transition: width var(--dur-appear) ease-out, height var(--dur-appear) ease-out; }
+  .dpal button.landed { animation: landed 900ms ease-out; }
+  @keyframes landed { 0% { box-shadow: 0 0 0 0.5cqw var(--paper), 0 0 0 0.7cqw var(--ink); } 100% { box-shadow: 0 0 0 0 var(--paper), inset 0 0 0 1px var(--swatch-edge); } }
+  .dpal .empty-slot { width: 2.6cqw; height: 2.6cqw; border: 1px dashed var(--ink-3); }
+  .dpal.edge { right: 0; top: 50%; flex-direction: column; border-radius: 0.9cqw 0 0 0.9cqw; transform: translateY(-50%); }
+  .dpal.edge button { width: 0.7cqw; height: 2.6cqw; }
+  .dpal.edge:hover button, .dpal.edge:focus-within button, .dpal.edge.open button { width: 2.6cqw; }
+  .dpal.float { right: 3.5%; bottom: 7%; flex-direction: row; border-radius: 1cqw; }
+  .dpal.float button { width: 2.6cqw; height: 2.6cqw; }
+  .dpal.float .grip { width: 1.2cqw; cursor: grab; background: repeating-linear-gradient(90deg, transparent 0 0.25cqw, rgba(0, 0, 0, 0.25) 0.25cqw 0.4cqw); align-self: stretch; }
+  .dpal.called { right: 0; top: 50%; flex-direction: column; border-radius: 0.9cqw 0 0 0.9cqw; transform: translate(110%, -50%); opacity: 0; }
+  .dpal.called button { width: 2.6cqw; height: 2.6cqw; }
+  .dpal.called.open { transform: translate(0, -50%); opacity: 1; }
+  .dpal.off { display: none; }
+  .dp-note { position: absolute; z-index: 7; right: 5cqw; bottom: 2cqw; background: var(--paper); border: 1px solid var(--rule); padding: 0.4cqw 0.9cqw; font-size: 1.5cqw; opacity: 0; transition: opacity var(--dur-appear) ease-out; pointer-events: none; }
+  .dp-note.on { opacity: 1; }
+  .dp-menu { position: absolute; z-index: 8; background: var(--material); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 0.8cqw; box-shadow: 0 1cqw 3cqw rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.2); padding: 0.5cqw; display: grid; font-size: 1.5cqw; }
+  .dp-menu button { border: 0; background: none; text-align: left; padding: 0.4cqw 1cqw; border-radius: 0.5cqw; cursor: pointer; }
+  .dp-menu button:hover { background: rgba(0, 0, 0, 0.08); }
+
+  /* Similar, side by side */
+  .sims { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); margin-top: 16px; }
+  .sim { background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 12px 14px 14px; }
+  .sim.picked { box-shadow: inset 0 0 0 2px var(--ink); }
+  .sim .sl { font-size: 11px; color: var(--ink-2); }
+  .sim h4 { margin: 8px 0 6px; font-size: 11px; font-weight: 400; color: var(--ink-2); }
+  .sim .row { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--rule-soft); }
+  .sim .sw { width: 24px; height: 24px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+  .sim .nm { font-size: 13px; }
+  .sim .nm.ph { color: var(--ink-2); }
+  .sim .sub { display: block; font-size: 11px; color: var(--ink-2); }
+
+  /* The surface */
+  .surf { margin-top: 16px; border: 1px solid var(--rule); }
+  .surf-stage { padding: 28px; transition: background-color var(--dur-appear) ease-out; }
+  .surf-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; max-width: 560px; }
+  .surf-tiles div { aspect-ratio: 1; }
+  .surf-ctl { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 12px 14px; border-top: 1px solid var(--rule); background: var(--paper); font-size: 13px; }
+  .surf-ctl input[type=range] { width: 200px; accent-color: var(--ink); }
+  .surf-ctl .presets { display: flex; border: 1px solid var(--rule); }
+  .surf-ctl .presets button { border: 0; border-right: 1px solid var(--rule); background: var(--paper); padding: 4px 10px; font-size: 13px; cursor: pointer; }
+  .surf-ctl .presets button:last-child { border-right: 0; }
+  .surf-ctl .presets button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .surf-ctl .val { color: var(--ink-2); }
+  .twin { display: grid; grid-template-columns: 1fr 1fr; max-width: 560px; margin-top: 20px; border: 1px solid var(--rule); }
+  .twin div { display: grid; place-items: center; aspect-ratio: 2 / 1; }
+  .twin i { display: block; width: 28%; aspect-ratio: 1; }
+  .twin-cap { margin-top: 6px; font-size: 11px; }
+  .research { margin-top: 16px; font-size: 13px; }
+  .research ul { padding-left: 18px; margin: 6px 0 12px; }
+  .grays { border-collapse: collapse; font-size: 12px; }
+  .grays th { text-align: left; font-weight: 400; color: var(--ink-2); font-size: 11px; padding: 4px 14px 4px 0; border-bottom: 1px solid var(--rule); }
+  .grays td { padding: 5px 14px 5px 0; border-bottom: 1px solid var(--rule-soft); }
+  .grays i { display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -2px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+  .pair { display: grid; grid-template-columns: repeat(2, 56px); margin-top: 18px; }
+  .pair div { aspect-ratio: 1; }
+  .research li { margin: 6px 0; }
+  .research .src { color: var(--ink-2); font-size: 11px; }
+
+  /* The bar at the bottom */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--paper); border-top: 1px solid var(--rule); }
+  .bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding-top: 12px; padding-bottom: 12px; }
+  .bar .count { font-size: 13px; }
+  .bar .status { font-size: 13px; color: var(--ink-2); }
+  .bar .btn.primary { background: var(--ink); color: var(--paper); }
+  .bar .grow { flex: 1; }
+  .btn { font-family: var(--font); }
+
+  @media (max-width: 960px) {
+    .intro, .part-head, .item, .live { grid-template-columns: 1fr; gap: 16px; }
+  }
+  @media (max-width: 700px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    .sims { grid-template-columns: 1fr; }
+    .surf-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .top .links { margin-left: 0; }
+  }
+  /* The capture card as it stood when Noah decided on it. A55 cut it from the design system,
+     so the workshop keeps its own copy as a record. */
+  .card-eph { width: 280px; background: var(--paper); border: 1px solid var(--rule); }
+  .card-eph .cs { height: 120px; border-bottom: 1px solid var(--rule); }
+  .card-eph .cb { padding: 12px 14px 14px; }
+  .card-eph .cn { font-size: 20px; letter-spacing: -0.015em; font-weight: 400; line-height: 1.1; }
+  .card-eph .cn.placeholder { font-weight: 400; color: var(--ink-2); }
+  .card-eph .cm { margin-top: 8px; display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .card-eph .act { margin-top: 12px; font-size: 13px; background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html">Palit</a>
+    <span class="where">Feature workshop. October 18, 2026.</span>
+    <span class="links"><a href="../journey/index.html">Prototype</a><a href="../system/index.html">Design system</a><a href="../history/index.html#screens">Dashboard</a></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Feature workshop</h1>
+    <p>Your answers on the prototype's calls opened a few things: a palette that lives on the desktop, whether the chip stays, how Similar reads, and which surface colors sit on. Each question has two or three options, and the recommended one is marked. Try the live desk, pick, add a note if you like, then copy your picks into chat. The dashboard's revamp follows your own direction, so it isn't a question here.</p>
+  </section>
+
+  <section class="part" id="desk" aria-labelledby="desk-h">
+    <div class="part-head">
+      <h2 id="desk-h">The desktop palette and the chip</h2>
+      <p>Four questions that change one screen, so they share one live desk. It shows your picks as you make them; until you pick, it shows the recommendation.</p>
+    </div>
+    <div class="live">
+      <div class="mdesk" id="mdesk" aria-label="A small Mac desktop with the desktop palette">
+        <div class="m-bar"><b>Browser</b><span>File</span><span>Edit</span><span>View</span><span class="r"><span>Palit</span><span class="num">Sun Oct 18</span><span class="num">2:22 PM</span></span></div>
+        <div class="m-win"><div class="tb"><i></i><i></i><i></i><span>Bergen Street, golden hour</span></div><div class="m-page" id="m-page"></div></div>
+        <div class="dpal" id="dpal" role="toolbar" aria-label="Desktop palette"></div>
+        <div class="m-slot" id="m-slot" aria-live="polite"></div>
+        <div class="dp-note" id="dp-note" role="status"></div>
+      </div>
+      <div class="side">
+        <p><b>Click any block on the page</b> to keep its color, as if you'd pressed ⌥⇧C first.</p>
+        <p><b>Click a color in the desktop palette</b> to copy it. Try ⌥-click, ⌘-click and right-click too, depending on question 3. It copies for real.</p>
+        <ul class="state" id="desk-state"></ul>
+        <p class="warn" id="desk-warn" hidden></p>
+        <button type="button" class="btn" id="desk-show">Show the palette</button>
+        <button type="button" class="btn" id="desk-reset">Start the desk over</button>
+      </div>
+    </div>
+    <div id="items-desk"></div>
+  </section>
+
+  <section class="part" id="similar" aria-labelledby="similar-h">
+    <div class="part-head">
+      <h2 id="similar-h">How Similar reads</h2>
+      <p>Similar picks now live in the archive, not the chip (A47), with no count (A48). What each row says is still open.</p>
+    </div>
+    <div id="items-similar"></div>
+  </section>
+
+  <section class="part" id="surface" aria-labelledby="surface-h">
+    <div class="part-head">
+      <h2 id="surface-h">The surface colors sit on</h2>
+      <p>Pure white is the current call (A36). You asked for research on the most neutral surface, and whether the background could move along the grayscale.</p>
+    </div>
+    <div id="items-surface"></div>
+  </section>
+
+  <section class="part" id="card" aria-labelledby="card-h">
+    <div class="part-head">
+      <h2 id="card-h">The capture card</h2>
+      <p>The bigger card in the design system isn't in the journey. Whether it stays is Q17.</p>
+    </div>
+    <div id="items-card"></div>
+  </section>
+
+  <p class="info"><b>Rediscover isn't a pick here.</b> You want to test it in the prototype and decide then (A42), so it's test T5 on the dashboard: a button you press, against Palit bringing an older color back on its own.</p>
+</main>
+
+<div class="bar" role="region" aria-label="Your picks">
+  <div class="wrap">
+    <span class="count num" id="count"></span>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="reset">Clear my picks</button>
+    <button type="button" class="btn" id="copy">Copy my picks</button>
+    <button type="button" class="btn primary" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+
+<script src="../system/sample.js"></script>
+<script src="../system/color.js"></script>
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI;
+  var el = U.el, title = U.title, no = U.no, swatchLabel = U.swatchLabel;
+  function $(id) { return document.getElementById(id); }
+  var HUB = "../history/index.html#";
+
+  /* The questions. Noah's words are quoted exactly; everything else is Claude's draft. */
+  var ITEMS = [
+    { id: "contents", part: "desk", title: "What lives in the desktop palette?",
+      quote: ["This is why we have the subtle palette that lives on the desktop, apart from the chip and dashboard - the palette is clickable and copies hex when you need the color.", "Noah, on A38"],
+      refs: [["D8", "e71"], ["A46", "e68"]],
+      options: [
+        { k: "A", name: "Your latest picks", text: "The last 8, newest first. It always holds what you just kept.", rec: true },
+        { k: "B", name: "Today's picks", text: "It starts empty each morning and fills as you go. The archive keeps the rest." },
+        { k: "C", name: "A palette you pin", text: "One palette from the archive, like your latest ⇧-palette, stays until you pin another." }
+      ],
+      why: "It needs no setup and always holds what you're working with. Today's picks start empty, and a pinned palette has to be managed, and gives a new pick nowhere to land." },
+    { id: "place", part: "desk", title: "Where does it sit?",
+      quote: ["the subtle palette that lives on the desktop", "Noah, on A38"],
+      refs: [["D1", "e28"], ["D8", "e71"]],
+      options: [
+        { k: "A", name: "Docked at an edge", text: "Thin bars at the screen's edge that open into swatches when you point at them.", rec: true },
+        { k: "B", name: "A floating strip", text: "A small strip you drag anywhere. It stays on top of other windows." },
+        { k: "C", name: "Hidden until called", text: "It slides in while you hold ⌥⇧, or when a new color lands, then slides away." }
+      ],
+      why: "Always within reach and barely there, without covering your work. It keeps the capture moment nearly invisible (D1), the way Wispr Flow keeps one small bar on screen." },
+    { id: "copy", part: "desk", title: "Copying from it",
+      quote: ["Different keybinds mean different things - you can copy the hex, rgb, etc with a different keybind whilst clicking the desktop palette", "Noah, on A38"],
+      refs: [["A46", "e68"]],
+      options: [
+        { k: "A", name: "One key per format", text: "Click copies the hex. ⌥-click copies RGB. ⌘-click copies OKLCH.", rec: true },
+        { k: "B", name: "Your format, or a menu", text: "Click copies the format you set once. Right-click lists every format." },
+        { k: "C", name: "Click again for the next", text: "Click copies the hex. Click again within a second for RGB, then OKLCH." }
+      ],
+      why: "It's closest to your own words, one gesture per format with nothing to set up. ⇧ stays free, because ⇧-click keeps a palette while you pick (A45)." },
+    { id: "chip", part: "desk", title: "Do we even need the chip?",
+      quote: ["This could also be a major design decision - do we even need the chip? If the decision is reflected on the desktop palette. Lets workshop this.", "Noah, on A44"],
+      refs: [["Q18", "e72"], ["A37", "e59"], ["A40", "e62"]],
+      options: [
+        { k: "A", name: "Keep the chip", text: "It comes and goes under the menu bar, and you can name the color in it (A37)." },
+        { k: "B", name: "No chip", text: "The new color lands in the desktop palette with a small ring. Name it there, or later in the archive.", rec: true },
+        { k: "C", name: "Only when the palette's off", text: "The chip shows up only if you've hidden or turned off the desktop palette." }
+      ],
+      why: "One less thing on screen, and you still see the color land, which keeps it feeling recognized and documented (A40). It depends on question 1: a pinned palette gives a new pick nowhere to land, and the desk below warns you when that happens." },
+    { id: "similar", part: "similar", title: "What does each Similar row say?",
+      quote: ["Instead of having an objectiveness to the similarities, we should keep it encouraging and rewarding. \"Similar\" is a much better word for that feature, minus the numbering.", "Noah, on A41"],
+      refs: [["A48", "e70"], ["A47", "e69"], ["A43", "e65"]],
+      options: [
+        { k: "A", name: "The color and its name", text: "Nothing else. No words, no numbers." },
+        { k: "B", name: "Plus one word", text: "“Very similar” or “Similar”, and no ΔE." },
+        { k: "C", name: "Plus where it came from", text: "The place and the day, like “McCarren pool, June 17”. Your own history, not a score.", rec: true }
+      ],
+      why: "It rewards you with your own story instead of a measure, which is what you asked Similar to be, and it carries the context A43 says tells the story. The surface research adds one more reason to keep numbers out: color-difference formulas assume a mid-gray background, so on white paper ΔE describes the math more than what you see." },
+    { id: "surface", part: "surface", title: "Which surface do colors sit on?",
+      quote: ["I also want research done on the most neutral surface we can present colors on - maybe a feature? Changing the background color of Palit to anything on the greyscale?", "Noah"],
+      refs: [["A36", "e56"], ["W1", "e09"]],
+      options: [
+        { k: "A", name: "Pure white", text: "As now (A36). Right for “how will this look on a white page?”, with the best text contrast. But it's the extreme the ISO standard rules out for judging color." },
+        { k: "B", name: "A fixed mid gray", text: "L* 50 (#777777) behind the swatches: the CIE's gray for judging color differences. Text stays on white paper." },
+        { k: "C", name: "A few named grays", text: "Paper, Light, Mid and Dark behind the swatches, each tied to a standard. Paper stays the default, and text stays on white.", rec: true }
+      ],
+      why: "No gray is neutral for every color. Differences look biggest near the surface's own lightness, by up to 8 times (Xin, Lam & Luo, 2004), so a few fixed stops let you check a color where it matters, while staying consistent, which the standards stress. It's your grayscale idea within the research's limits: no free slider, since people don't reliably pick the surface that helps them (While & Sarvghad, 2024)." },
+    { id: "card", part: "card", title: "Keep the capture card in the design system?",
+      quote: ["the chip is less distracting, with less visual clutter. The desktop already has the subtle palette, and adding a whole card adds another screen to look at.", "Noah, on A44"],
+      refs: [["Q17", "e66"], ["A44", "e66"]],
+      options: [
+        { k: "A", name: "Cut it", text: "The chip or the desktop palette does its job. The color card in the archive holds everything else.", rec: true },
+        { k: "B", name: "Keep it for later", text: "Keep it in the design system for another moment, like opening a color from the desktop palette." }
+      ],
+      why: "It's another screen to look at, in your words, and one less piece to keep in sync." }
+  ];
+
+  /* Picks and notes stay in this browser until you copy them. */
+  var KEY = "palit-feature-workshop";
+  var st = { picks: {}, notes: {} };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) st = { picks: saved.picks || {}, notes: saved.notes || {} }; } catch (e) {}
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+    handoff();
+  }
+  // The handoff (entry 89): your picks, as text, kept where Claude can read them from this page.
+  function handoff() {
+    if (!window.PalitHandoff) return;
+    PalitHandoff.put("feature-workshop", { title: "Feature workshop", text: picksText() });
+    doneState();
+  }
+  function doneState() {
+    var rec = window.PalitHandoff ? PalitHandoff.get("feature-workshop") : null, b = document.getElementById("done");
+    if (!b) return;
+    b.textContent = rec && rec.done ? "Done" : "I'm done";
+    b.setAttribute("aria-pressed", String(!!(rec && rec.done)));
+  }
+  function pick(id) { var it = ITEMS.filter(function (i) { return i.id === id; })[0]; return st.picks[id] || it.options.filter(function (o) { return o.rec; })[0].k; }
+
+  function renderItem(it, n) {
+    var box = el("div", { class: "item", id: "item-" + it.id });
+    var left = el("div", null, [
+      el("p", { class: "item-no num", text: "Question " + n + " of " + ITEMS.length }),
+      el("h3", { text: it.title }),
+      it.quote ? el("blockquote", null, [it.quote[0], el("cite", { text: it.quote[1] })]) : null,
+      it.refs.length ? el("div", { class: "refs" }, it.refs.map(function (r) { return el("a", { href: HUB + r[1], text: r[0] }); })) : null
+    ]);
+    var opts = el("div", { class: "opts", role: "radiogroup", "aria-label": it.title });
+    it.options.forEach(function (o) {
+      var input = el("input", { type: "radio", name: "pick-" + it.id, value: o.k, "aria-label": o.k + ": " + o.name });
+      input.checked = st.picks[it.id] === o.k;
+      var lab = el("label", { class: "opt" + (input.checked ? " picked" : "") }, [
+        input,
+        el("span", { class: "ol" }, [el("span", { text: o.k }), o.rec ? el("span", { class: "rec", text: "Recommended" }) : null]),
+        el("p", { class: "on", text: o.name }),
+        el("p", { class: "ot", text: o.text })
+      ]);
+      input.addEventListener("change", function () {
+        st.picks[it.id] = o.k; save();
+        opts.querySelectorAll(".opt").forEach(function (l) { l.classList.toggle("picked", l.querySelector("input").checked); });
+        changed(it.id);
+      });
+      opts.appendChild(lab);
+    });
+    var note = el("textarea", { id: "note-" + it.id, placeholder: "Anything to add, change or ask" });
+    note.value = st.notes[it.id] || "";
+    note.addEventListener("input", function () { st.notes[it.id] = note.value; save(); });
+    var right = el("div", null, [
+      opts,
+      el("p", { class: "rec-why" }, [el("b", { text: "Why the recommendation: " }), it.why]),
+      el("div", { class: "extra", id: "extra-" + it.id }),
+      el("div", { class: "note" }, [el("label", { for: "note-" + it.id, text: "Your note" }), note])
+    ]);
+    box.appendChild(left);
+    box.appendChild(right);
+    return box;
+  }
+  ITEMS.forEach(function (it, i) { $("items-" + it.part).appendChild(renderItem(it, i + 1)); });
+
+  /* ---------- The live desk ---------- */
+  var SITE = ["#2d696e", "#b3492f", "#efb98e", "#ece2cf", "#2b3036", "#e9a15a"];
+  var PINNED = { name: "Palette from stoopnotes.studio", colors: ["#2d696e", "#b3492f", "#e9a15a", "#ece2cf"] };
+  var NOW = new Date(2026, 9, 18, 14, 22);
+  var picks = [];
+  function seed() {
+    picks = S.captures.slice().sort(function (a, b) { return b.number - a.number; }).slice(0, 6).map(function (c) {
+      return { number: c.number, hex: c.hex, name: c.name, placeholder: c.placeholder, today: false };
+    });
+  }
+  seed();
+  var page = $("m-page");
+  SITE.forEach(function (hex) {
+    var b = el("button", { type: "button", style: "background:" + hex, "aria-label": "Keep this color, " + hex });
+    b.addEventListener("click", function () { keep(hex); });
+    page.appendChild(b);
+  });
+  var showUntil = 0, peekTimer = null, chipTimer = null, noteTimer = null, lastLanded = null;
+
+  function inPalette() {
+    var c = pick("contents");
+    if (c === "C") return PINNED.colors.map(function (hex, i) { return { number: null, hex: hex, name: i === 0 ? PINNED.name : null, placeholder: PINNED.name, pinned: true }; });
+    var list = c === "B" ? picks.filter(function (p) { return p.today; }) : picks;
+    return list.slice(0, 8);
+  }
+  function drawPalette() {
+    var pal = $("dpal"), place = pick("place");
+    pal.className = "dpal " + (place === "A" ? "edge" : place === "B" ? "float" : "called") + (Date.now() < showUntil ? " open" : "");
+    pal.textContent = "";
+    if (place === "B") pal.appendChild(el("span", { class: "grip", "aria-hidden": "true" }));
+    var list = inPalette();
+    if (!list.length) pal.appendChild(el("span", { class: "empty-slot", title: "Nothing kept yet today" }));
+    list.forEach(function (p) {
+      var label = p.pinned ? PINNED.name + ", " + p.hex : (p.number ? no(p.number) + ", " : "") + (p.name || "unnamed, " + p.placeholder) + ", " + p.hex;
+      var b = el("button", { type: "button", style: "background:" + p.hex, "aria-label": "Copy " + label, title: label });
+      if (lastLanded && p.number === lastLanded) b.classList.add("landed");
+      b.addEventListener("click", function (e) { copyFrom(p, e); });
+      b.addEventListener("contextmenu", function (e) { if (pick("copy") === "B") { e.preventDefault(); menuFor(p, b); } });
+      pal.appendChild(b);
+    });
+    lastLanded = null;
+    drawState();
+  }
+  function drawState() {
+    var labels = {};
+    ITEMS.forEach(function (it) { labels[it.id] = it.options.filter(function (o) { return o.k === pick(it.id); })[0].name; });
+    var ul = $("desk-state");
+    ul.textContent = "";
+    [["contents", "Holds"], ["place", "Sits"], ["copy", "Copies"], ["chip", "Chip"]].forEach(function (r) {
+      ul.appendChild(el("li", null, [r[1] + ": " + labels[r[0]] + (st.picks[r[0]] ? "" : " (recommended)")]));
+    });
+    var warn = $("desk-warn");
+    warn.hidden = !(pick("contents") === "C" && pick("chip") === "B");
+    warn.textContent = "A pinned palette with no chip: a new pick has nowhere to show, so it wouldn't feel kept.";
+  }
+  function peek(ms) {
+    showUntil = Date.now() + ms;
+    clearTimeout(peekTimer);
+    drawPalette();
+    peekTimer = setTimeout(drawPalette, ms + 20);
+  }
+  function keep(hex) {
+    var n = Math.max.apply(null, S.captures.map(function (c) { return c.number; }).concat(picks.map(function (p) { return p.number || 0; }))) + 1;
+    var p = { number: n, hex: hex, name: null, placeholder: PC.placeholder(hex, "stoopnotes.studio"), today: true };
+    picks.unshift(p);
+    var chip = pick("chip"), palOn = pick("place") !== "C" || Date.now() < showUntil;
+    var lands = pick("contents") !== "C";
+    if (lands) lastLanded = n;
+    if (chip === "A" || (chip === "C" && !palOn) ) showChip(p);
+    if (chip === "B" || chip === "C") { if (lands) peek(1600); else drawPalette(); }
+    else drawPalette();
+  }
+  function showChip(p) {
+    var slot = $("m-slot");
+    slot.textContent = "";
+    clearTimeout(chipTimer);
+    var c = el("div", { class: "m-chip gone", role: "status" }, [
+      el("div", { class: "t" }, [el("span", { class: "cs", style: "background:" + p.hex }), el("span", { class: "cn", text: p.placeholder }), el("span", { class: "cno num", text: no(p.number) })]),
+      el("div", { class: "l" }, [el("span", { class: "num", text: p.hex }), el("u", { text: "Name it" })])
+    ]);
+    slot.appendChild(c);
+    setTimeout(function () { c.classList.remove("gone"); }, 120);
+    chipTimer = setTimeout(function () { c.classList.add("gone"); }, 2620);
+  }
+  function formats(p) {
+    return { Hex: p.hex, RGB: PC.displayRgb(p.hex), OKLCH: PC.displayOklch(p.hex) };
+  }
+  var cycle = { hex: null, at: 0, i: 0 };
+  function copyFrom(p, e) {
+    var f = formats(p), mode = pick("copy"), which = "Hex";
+    if (mode === "A") which = e.altKey ? "RGB" : e.metaKey ? "OKLCH" : "Hex";
+    if (mode === "C") {
+      var again = cycle.hex === p.hex && Date.now() - cycle.at < 1000;
+      cycle.i = again ? (cycle.i + 1) % 3 : 0;
+      cycle.hex = p.hex; cycle.at = Date.now();
+      which = ["Hex", "RGB", "OKLCH"][cycle.i];
+    }
+    copyText(which, f[which]);
+  }
+  function menuFor(p, anchor) {
+    var old = document.querySelector(".dp-menu");
+    if (old) old.remove();
+    var f = formats(p), desk = $("mdesk"), r = anchor.getBoundingClientRect(), d = desk.getBoundingClientRect();
+    var m = el("div", { class: "dp-menu", role: "menu", style: "right:" + (d.right - r.left + 6) + "px;top:" + (r.top - d.top) + "px" });
+    Object.keys(f).forEach(function (k) {
+      var b = el("button", { type: "button", role: "menuitem", text: "Copy " + k + "  " + f[k] });
+      b.addEventListener("click", function () { copyText(k, f[k]); m.remove(); });
+      m.appendChild(b);
+    });
+    desk.appendChild(m);
+    setTimeout(function () { document.addEventListener("click", function close() { m.remove(); document.removeEventListener("click", close); }); }, 0);
+  }
+  function copyText(kind, text) {
+    var note = $("dp-note");
+    function show(ok) {
+      note.textContent = (ok ? "Copied " : "Would copy ") + text;
+      note.classList.add("on");
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(function () { note.classList.remove("on"); }, 1400);
+    }
+    try { navigator.clipboard.writeText(text).then(function () { show(true); }, function () { show(false); }); } catch (err) { show(false); }
+  }
+  // The floating strip can be dragged around the desk.
+  (function () {
+    var pal = $("dpal"), drag = null;
+    pal.addEventListener("pointerdown", function (e) {
+      if (!pal.classList.contains("float") || !e.target.classList.contains("grip")) return;
+      var d = $("mdesk").getBoundingClientRect(), r = pal.getBoundingClientRect();
+      drag = { dx: e.clientX - r.left, dy: e.clientY - r.top, d: d };
+      pal.setPointerCapture(e.pointerId);
+    });
+    pal.addEventListener("pointermove", function (e) {
+      if (!drag) return;
+      var x = e.clientX - drag.d.left - drag.dx, y = e.clientY - drag.d.top - drag.dy;
+      pal.style.left = Math.max(0, x) + "px"; pal.style.top = Math.max(0, y) + "px"; pal.style.right = "auto"; pal.style.bottom = "auto";
+    });
+    pal.addEventListener("pointerup", function () { drag = null; });
+  })();
+  addEventListener("keydown", function (e) { if (e.altKey && e.shiftKey && pick("place") === "C") peek(1500); });
+  $("desk-show").addEventListener("click", function () { peek(2500); });
+  $("desk-reset").addEventListener("click", function () { seed(); $("m-slot").textContent = ""; var pal = $("dpal"); pal.removeAttribute("style"); drawPalette(); });
+
+  /* ---------- Similar, three ways ---------- */
+  var mine = { number: 29, hex: "#2d696e", name: "Childhood home", capturedAt: "2026-10-18T14:22:00-04:00" };
+  function dayOf(iso) { return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric" }); }
+  function drawSimilar() {
+    var host = $("extra-similar");
+    host.textContent = "";
+    var list = PC.keptBefore(mine.hex, S.captures).map(function (k) { return { k: k, c: S.captures.filter(function (c) { return c.number === k.number; })[0] }; });
+    var wrap = el("div", { class: "sims" });
+    ["A", "B", "C"].forEach(function (v) {
+      var col = el("div", { class: "sim" + (pick("similar") === v ? " picked" : "") }, [
+        el("p", { class: "sl", text: v + (v === "A" ? ": the color and its name" : v === "B" ? ": plus one word" : ": plus where it came from") }),
+        el("h4", { text: "Similar" })
+      ]);
+      list.forEach(function (x) {
+        var sub = v === "B" ? (x.k.deltaE < 2 ? "Very similar" : "Similar") : v === "C" ? U.sourceTitle(x.c) + ", " + dayOf(x.c.capturedAt) : null;
+        col.appendChild(el("div", { class: "row" }, [
+          el("span", { class: "sw", style: "background:" + x.c.hex, role: "img", "aria-label": swatchLabel(x.c) }),
+          el("span", { class: "nm" + (x.c.name ? "" : " ph") }, [title(x.c), sub ? el("span", { class: "sub", text: sub }) : null])
+        ]));
+      });
+      wrap.appendChild(col);
+    });
+    host.appendChild(el("p", { class: "ts-caption", style: "margin-top:14px", text: "For No. 029, Childhood home: the teal door from the prototype." }));
+    host.appendChild(wrap);
+  }
+
+  /* ---------- The surface ---------- */
+  function grayFromL(L) {
+    var Y = L > 8 ? Math.pow((L + 16) / 116, 3) : L / 903.3;
+    var v = Y <= 0.0031308 ? 12.92 * Y : 1.055 * Math.pow(Y, 1 / 2.4) - 0.055;
+    var n = Math.round(Math.max(0, Math.min(1, v)) * 255);
+    var h = ("0" + n.toString(16)).slice(-2);
+    return "#" + h + h + h;
+  }
+  var surfL = 100;
+  function drawSurface() {
+    var host = $("extra-surface");
+    host.textContent = "";
+    var stage = el("div", { class: "surf-stage" });
+    var tiles = el("div", { class: "surf-tiles" }, [4, 11, 3, 15, 14, 1].map(function (n) {
+      var c = S.captures.filter(function (x) { return x.number === n; })[0];
+      return el("div", { style: "background:" + c.hex, role: "img", "aria-label": swatchLabel(c), title: title(c) });
+    }));
+    stage.appendChild(tiles);
+    var pair = [8, 21].map(function (n) { return S.captures.filter(function (x) { return x.number === n; })[0]; });
+    stage.appendChild(el("div", { class: "pair" }, pair.map(function (c) { return el("div", { style: "background:" + c.hex, role: "img", "aria-label": swatchLabel(c), title: title(c) }); })));
+    var twin = el("div", { class: "twin" }, [
+      el("div", { style: "background:#FFFFFF" }, [el("i", { style: "background:#2e6b6f" })]),
+      el("div", { style: "background:#000000" }, [el("i", { style: "background:#2e6b6f" })])
+    ]);
+    var range = el("input", { type: "range", min: "0", max: "100", step: "1", "aria-label": "Surface lightness, L* from black to white" });
+    range.value = String(surfL);
+    var val = el("span", { class: "val num" });
+    var STOPS = [["Paper", 100], ["Light", 82], ["Mid", 50], ["Dark", 20]];
+    var presets = el("span", { class: "presets", role: "group", "aria-label": "Surface stops" });
+    function apply() {
+      var g = grayFromL(surfL);
+      stage.style.backgroundColor = g;
+      val.textContent = "L* " + surfL + ", " + g;
+      presets.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(Number(b.dataset.l) === surfL)); });
+    }
+    STOPS.forEach(function (s) {
+      var b = el("button", { type: "button", "data-l": s[1], text: s[0] });
+      b.addEventListener("click", function () { surfL = s[1]; range.value = String(surfL); apply(); });
+      presets.appendChild(b);
+    });
+    range.addEventListener("input", function () { surfL = Number(range.value); apply(); });
+    host.appendChild(el("div", { class: "surf" }, [stage, el("div", { class: "surf-ctl" }, [presets, el("span", { text: "or try any gray:" }), range, val])]));
+    host.appendChild(el("p", { class: "twin-cap ts-small", text: "The small pair is two dark captures, No. 008 and No. 021. Differences look biggest near the surface's own lightness, so on Paper they read almost alike, and on Dark one of them nearly disappears." }));
+    host.appendChild(twin);
+    host.appendChild(el("p", { class: "twin-cap ts-small", text: "The same Pool tile teal, #2e6b6f, on white and on black." }));
+    host.appendChild(surfaceResearch());
+    apply();
+  }
+
+  // What the research found, October 18. Every line has its source; full detail is on the
+  // dashboard's research (Work page, Evidence: The surface colors sit on).
+  var FIND = [
+    ["For judging prints, ISO 3664 wants a neutral surround between 10% and 60% reflectance, recommends a 20% mid gray, and rules out extremely light or dark ones.", "ISO 3664:2000", "https://www.gtilite.com/pdf/ISO3664%20Standard.pdf"],
+    ["The CIE judges color differences on a uniform L* 50 gray, about #777777.", "CIE 116-1995, via Moroney 2000", "https://www.imaging.org/common/uploaded%20files/pdfs/Papers/2000/PICS-0-81/1611.pdf"],
+    ["The same pair of colors can look up to 8 times more different on one neutral background than another, most for dark pairs.", "Xin, Lam & Luo, 2004 (abstract)", "https://onlinelibrary.wiley.com/doi/abs/10.1002/col.20045"],
+    ["How much the surface matters depends on the color: crispening was 50% for grays and 4% for purples.", "Karimipour & Kandi, 2017", "https://onlinelibrary.wiley.com/doi/10.1002/col.22110"],
+    ["There's probably no single best level; a consistent, repeatable surround is what matters.", "SMPTE ST 2080-3:2017", "https://pub.smpte.org/latest/st2080-3/st2080-3-2017.pdf"],
+    ["Photoshop, Lightroom, Affinity, Figma and Preview all let you change the backdrop, but none show that mid gray removes bias, and no study shows a surface you choose yourself helps.", "Adobe, Affinity, Figma docs", "https://affinity.help/photo2/en-US.lproj/pages/Workspace/uiAppearance.html"]
+  ];
+  var GRAYS = [["Paper", "100", "#FFFFFF", "21:1"], ["Light, about Munsell N8", "82", "#CBCBCB", "12.9:1"], ["Mid, the CIE gray", "50", "#777777", "4.69:1"], ["Dark, ISO's 3% border", "20", "#303030", "1.6:1"]];
+  function surfaceResearch() {
+    return el("div", { class: "research", id: "surface-research" }, [
+      el("p", { class: "ts-small", text: "What the research found" }),
+      el("ul", null, FIND.map(function (f) { return el("li", null, [f[0] + " ", el("a", { class: "src", href: f[2], target: "_blank", rel: "noopener", text: f[1] })]); })),
+      el("table", { class: "grays" }, [
+        el("thead", null, [el("tr", null, ["Stop", "L*", "Hex", "Black text"].map(function (h) { return el("th", { text: h }); }))]),
+        el("tbody", null, GRAYS.map(function (g) { return el("tr", null, [el("td", null, [el("i", { style: "background:" + g[2] }), g[0]]), el("td", { class: "num", text: g[1] }), el("td", { class: "num", text: g[2].toLowerCase() }), el("td", { class: "num", text: g[3] })]); }))
+      ]),
+      el("p", { class: "ts-small", style: "margin-top:8px", text: "Values computed from L*. Black text on Dark fails contrast, which is why the grays sit behind the swatches and text stays on white." })
+    ]);
+  }
+
+  /* ---------- The capture card ---------- */
+  // Cut from the design system in this workshop (A55); kept here as it stood when Noah decided.
+  function capCard(c) {
+    return el("div", { class: "card-eph" }, [
+      el("div", { class: "cs", style: "background:" + c.hex, role: "img", "aria-label": swatchLabel(c) }),
+      el("div", { class: "cb" }, [
+        el("div", { class: "cn" + (c.name ? "" : " placeholder"), text: title(c) }),
+        el("div", { class: "cm" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })]),
+        el("button", { type: "button", class: "act", text: "Name it" })
+      ])
+    ]);
+  }
+  function drawCard() {
+    var UI = U.create(S.captures.slice(), { neighborOrder: S.neighborOrder });
+    var host = $("extra-card");
+    host.textContent = "";
+    host.appendChild(el("div", { style: "margin-top:14px;transform:scale(0.8);transform-origin:top left;height:200px" }, [capCard(UI.byNumber(28))]));
+  }
+
+  function changed(id) {
+    if (["contents", "place", "copy", "chip"].indexOf(id) >= 0) { $("m-slot").textContent = ""; drawPalette(); }
+    if (id === "similar") drawSimilar();
+    count();
+  }
+
+  /* ---------- Your picks, into chat ---------- */
+  function count() {
+    var n = ITEMS.filter(function (it) { return st.picks[it.id]; }).length;
+    $("count").textContent = n + " of " + ITEMS.length + " picked";
+  }
+  function picksText() {
+    var lines = ["Feature workshop, October 18. My picks:"];
+    ITEMS.forEach(function (it, i) {
+      var k = st.picks[it.id], o = it.options.filter(function (x) { return x.k === k; })[0];
+      var line = (i + 1) + ". " + it.title + (/\?$/.test(it.title) ? " " : ": ") + (o ? k + ", " + o.name + (o.rec ? " (the recommendation)" : "") + "." : "Not picked yet.");
+      if (it.id === "surface" && o && o.k !== "A") line += " The gray I liked best: L* " + surfL + ", " + grayFromL(surfL) + ".";
+      lines.push(line);
+      var note = (st.notes[it.id] || "").trim();
+      if (note) lines.push("   Note: " + note);
+    });
+    return lines.join("\n");
+  }
+  $("copy").addEventListener("click", function () {
+    var text = picksText(), status = $("status");
+    function fallback() {
+      var t = el("textarea", { readonly: "" });
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      t.remove();
+      status.textContent = ok ? "Copied. Paste it into chat." : "Couldn't copy. Select the text in the console instead.";
+    }
+    try { navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied. Paste it into chat."; }, fallback); } catch (e) { fallback(); }
+  });
+  $("reset").addEventListener("click", function () {
+    st = { picks: {}, notes: {} }; save();
+    document.querySelectorAll(".opts input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll(".opt").forEach(function (l) { l.classList.remove("picked"); });
+    document.querySelectorAll(".note textarea").forEach(function (t) { t.value = ""; });
+    drawPalette(); drawSimilar(); count();
+    $("status").textContent = "Cleared.";
+  });
+
+  drawPalette();
+  drawSimilar();
+  drawSurface();
+  drawCard();
+  count();
+  if (Object.keys(st.picks).length) handoff(); else doneState();
+  $("done").addEventListener("click", function () {
+    handoff();
+    PalitHandoff.done("feature-workshop");
+    doneState();
+    $("status").textContent = "Marked done. Tell Claude in chat, and Claude reads your picks from this page.";
+  });
+  window.PalitWorkshop = { redrawSurface: drawSurface, picksText: picksText };
+})();
+</script>
+</body>
+</html>

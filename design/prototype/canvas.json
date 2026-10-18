@@ -1,0 +1,17 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-04T18:40:00Z" },
+  "title": "Color Archive Prototype",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "1 · Capture moment", "is_interactive": true, "radius": 12 },
+    "Card.dc.html": { "x": 1360, "y": 0, "w": 440, "h": 1320, "title": "2 · Capture card", "is_interactive": true, "radius": 14 },
+    "Archive.dc.html": { "x": 0, "y": 1440, "w": 1280, "h": 820, "title": "3 · Archive", "is_interactive": true, "expand": "fill" }
+  },
+  "order": ["Main.dc.html", "Card.dc.html", "Archive.dc.html"],
+  "notes": {
+    "title": { "x": 0, "y": -300, "text": "Color archive — v0", "kind": "title1", "maxW": 1800 }
+  },
+  "designSystems": []
+}

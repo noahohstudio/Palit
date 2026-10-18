@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette — 12 lofi mockups, editorial</title>
+<style>
+:root{--chrome:#F5F5F5;--well:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--hair:#E3E3E6;--hair2:#CFCFD3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;background:var(--chrome);color:var(--ink);font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums;padding:32px}
+h1{font-size:22px;font-weight:500}
+.lede{color:var(--ink2);font-size:15px;max-width:640px;margin:8px 0 32px}
+h2{font-size:15px;font-weight:500;margin:32px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--hair2)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.grid.one{grid-template-columns:1fr}
+.m{background:var(--chrome)}
+.anno{margin-bottom:8px}
+.anno b{font-weight:500;font-size:13px;display:block}
+.anno span{color:var(--ink2);font-size:11px}
+.win{background:var(--well);border:1px solid var(--hair2);border-radius:10px;overflow:hidden;min-height:300px}
+.bar{height:24px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:4px;padding:0 8px;background:var(--chrome)}
+.bar i{width:8px;height:8px;border-radius:50%;border:1px solid var(--hair2)}
+.pad{padding:16px}
+.lbl{font-size:13px;font-weight:500;color:var(--ink2)}
+.t11{font-size:11px}.t15{font-size:15px}.t22{font-size:22px;line-height:1.2}
+.s{color:var(--ink2)}.t{color:var(--ink3)}.md{font-weight:500}
+.sw{border-radius:6px;display:inline-block;vertical-align:middle}
+.row{display:flex;gap:12px;align-items:baseline}
+.hr{border-top:1px solid var(--hair);margin:12px 0}
+.btn{display:inline-block;border:1px solid var(--hair2);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--ink)}
+.btn.k{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ph{background:repeating-linear-gradient(45deg,#f3f3f4 0 4px,#fafafa 4px 8px);border:1px solid var(--hair);border-radius:6px}
+.n3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:72px}
+.n3 div{aspect-ratio:1;border-radius:3px}
+.n3 .c{outline:1px solid var(--ink);outline-offset:-1px}
+.flow{display:flex;gap:12px;overflow-x:auto}
+.fr{flex:1;min-width:150px}
+.fr .win{min-height:170px}
+.fr .cap{font-size:11px;color:var(--ink3);margin-top:4px}
+.toast{background:rgba(245,245,245,.78);backdrop-filter:blur(20px);border:1px solid var(--hair2);border-radius:10px;padding:8px 12px;font-size:11px;display:inline-flex;gap:8px;align-items:center}
+.loupe{width:64px;height:64px;border-radius:50%;border:1px solid var(--ink);display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}
+.loupe div{border:.5px solid rgba(0,0,0,.08)}
+table{border-collapse:collapse;width:100%}
+td{padding:6px 0;border-bottom:1px solid var(--hair);vertical-align:middle}
+.ruler{display:flex;height:16px;border-radius:6px;overflow:hidden}
+.fade{animation:in .4s ease-out both}
+@keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.draft{color:var(--ink3);font-size:11px}
+</style>
+</head>
+<body>
+<h1>Palette, read like a magazine</h1>
+<p class="lede">Twelve wireframes, editorial direction. Hierarchy comes from type size and ink tone, not boxes. Captured colors are the only color on the page. Copy marked “draft” is new and needs Noah.</p>
+
+<h2>Dashboards · the archive window</h2>
+<div class="grid">
+
+<div class="m">
+<div class="anno"><b>1 · The index</b><span>Archive as a contents page. One line per capture, number first, swatch as a small mark. Scannable like a book index.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="pad">
+<div class="row" style="justify-content:space-between"><span class="t22">Archive</span><span class="t11 t">28 kept · Stored on this Mac</span></div>
+<div class="hr"></div>
+<table>
+<tr><td class="t" style="width:64px">No. 028</td><td style="width:28px"><span class="sw" style="width:16px;height:16px;background:#c4552d"></span></td><td class="t">Unnamed</td><td class="s t11">are.na</td><td class="t11 t" style="text-align:right">#c4552d</td></tr>
+<tr><td class="t">No. 026</td><td><span class="sw" style="width:16px;height:16px;background:#f3d9cf"></span></td><td>Blush ground</td><td class="s t11">Figma</td><td class="t11 t" style="text-align:right">#f3d9cf</td></tr>
+<tr><td class="t">No. 024</td><td><span class="sw" style="width:16px;height:16px;background:#a9b9a0"></span></td><td>Lichen</td><td class="s t11">Safari</td><td class="t11 t" style="text-align:right">#a9b9a0</td></tr>
+<tr><td class="t">No. 011</td><td><span class="sw" style="width:16px;height:16px;background:#c25a35"></span></td><td>Clay pot</td><td class="s t11">Safari</td><td class="t11 t" style="text-align:right">#c25a35</td></tr>
+<tr><td class="t">No. 006</td><td><span class="sw" style="width:16px;height:16px;background:#3b3f46"></span></td><td>Graphite</td><td class="s t11">Figma</td><td class="t11 t" style="text-align:right">#3b3f46</td></tr>
+<tr><td class="t">No. 004</td><td><span class="sw" style="width:16px;height:16px;background:#2e6b6f"></span></td><td>Pool tile</td><td class="s t11">Preview</td><td class="t11 t" style="text-align:right">#2e6b6f</td></tr>
+<tr><td class="t">No. 001</td><td><span class="sw" style="width:16px;height:16px;background:#6c2e3a"></span></td><td>Oxblood</td><td class="s t11">Photos</td><td class="t11 t" style="text-align:right">#6c2e3a</td></tr>
+</table></div></div></div>
+
+<div class="m">
+<div class="anno"><b>2 · Issues by week</b><span>Captures grouped like dated issues. A headline sentence describes the week’s color without judging it.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="pad">
+<div class="lbl">This week</div>
+<p class="t15" style="margin:4px 0 12px">Mostly warm, mid value. Two left unnamed.</p>
+<div class="row" style="gap:8px"><span class="sw" style="width:72px;height:72px;background:#c4552d"></span><span class="sw" style="width:72px;height:72px;background:#f3d9cf"></span><span class="sw" style="width:72px;height:72px;background:#a9b9a0"></span></div>
+<div class="row t11 t" style="gap:8px;margin-top:4px"><span style="width:72px">No. 028</span><span style="width:72px">No. 026</span><span style="width:72px">No. 024</span></div>
+<div class="hr"></div>
+<div class="lbl">Week of 5 Oct</div>
+<p class="t15 s" style="margin:4px 0 12px">One warm, one cool, one neutral.</p>
+<div class="row" style="gap:8px"><span class="sw" style="width:48px;height:48px;background:#c25a35"></span><span class="sw" style="width:48px;height:48px;background:#2e6b6f"></span><span class="sw" style="width:48px;height:48px;background:#3b3f46"></span></div>
+<p class="draft" style="margin-top:12px">Headline sentences are draft copy.</p>
+</div></div></div>
+
+<div class="m">
+<div class="anno"><b>3 · One color, full bleed</b><span>Archive opens on a single capture at large size; the rest is a thin filmstrip. Slows browsing down on purpose.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div>
+<div style="display:grid;grid-template-columns:1fr 140px">
+<div class="pad"><div class="sw" style="width:100%;height:150px;background:#2e6b6f;border-radius:10px"></div>
+<p class="t11 t" style="margin-top:12px">No. 004</p><p class="t22">Pool tile</p><p class="s">Cool · mid value · saturated</p></div>
+<div class="pad" style="border-left:1px solid var(--hair)">
+<div class="lbl" style="margin-bottom:8px">Earlier</div>
+<div style="display:grid;gap:4px">
+<span class="sw" style="height:20px;background:#f0c23b"></span><span class="sw" style="height:20px;background:#3b3f46"></span><span class="sw" style="height:20px;background:#6c2e3a"></span><span class="sw" style="height:20px;background:#c25a35"></span><span class="sw" style="height:20px;background:#a9b9a0"></span>
+</div><p class="t11 t" style="margin-top:8px">↑ ↓ to turn the page</p></div></div></div></div>
+
+<div class="m">
+<div class="anno"><b>4 · Spectrum as a sentence</b><span>A single hue ruler on top; beneath, plain-language groupings you can click. Search lives as one quiet line.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="pad">
+<p class="t" style="border-bottom:1px solid var(--hair);padding-bottom:8px">Find a color, a name or an app</p>
+<div class="ruler" style="margin:16px 0 8px">
+<div style="flex:1;background:#6c2e3a"></div><div style="flex:2;background:#c4552d"></div><div style="flex:2;background:#c25a35"></div><div style="flex:1;background:#f3d9cf"></div><div style="flex:1;background:#f0c23b"></div><div style="flex:1;background:#a9b9a0"></div><div style="flex:1;background:#2e6b6f"></div><div style="flex:1;background:#3b3f46"></div></div>
+<p class="t11 t">Warm ← → Cool, then neutrals</p>
+<div class="hr"></div>
+<p class="t15">You keep <span class="md">reds and oranges</span> most. <span class="s">Eleven of 28.</span></p>
+<p class="t15 s" style="margin-top:8px">Fewest kept: <span style="color:var(--ink)">blues</span>.</p>
+<p class="t15 s" style="margin-top:8px">Light captures: 4 · Dark: 9</p>
+<p class="draft" style="margin-top:12px">Draft copy. Describes counts, never suggests.</p>
+</div></div></div>
+</div>
+
+<h2>Capture cards · one color in depth</h2>
+<div class="grid">
+
+<div class="m">
+<div class="anno"><b>5 · The specimen page</b><span>Number set large like a folio. Everything else is a column of labeled text under the swatch.</span></div>
+<div class="win"><div class="pad">
+<p class="t22 t">No. 028</p>
+<div class="sw" style="width:100%;height:96px;background:#c4552d;margin:12px 0;border-radius:10px"></div>
+<p class="t15 t" style="border-bottom:1px solid var(--hair);padding-bottom:4px">Unnamed. Name it so you remember it.</p>
+<div style="display:grid;grid-template-columns:72px 1fr;gap:4px 12px;margin-top:12px" class="t11">
+<span class="s">Hex</span><span>#c4552d</span><span class="s">RGB</span><span>196 85 45</span><span class="s">OKLCH</span><span>0.60 0.15 41°</span><span class="s">From</span><span>are.na · Safari · 14:02, 16 Oct</span></div>
+<div class="hr"></div><div class="lbl">Reads as</div><p>Warm · mid value · saturated</p>
+</div></div></div>
+
+<div class="m">
+<div class="anno"><b>6 · Card as a paragraph</b><span>The values and context written as one calm sentence. Numbers stay available on hover, tucked away.</span></div>
+<div class="win"><div class="pad">
+<div class="row" style="align-items:center"><span class="sw" style="width:48px;height:48px;background:#c25a35"></span><div><p class="t11 t">No. 011</p><p class="t22">Clay pot</p></div></div>
+<p class="t15" style="margin-top:16px;line-height:1.6">A <span class="md">warm, mid-value, saturated</span> orange, kept from <span class="md">Safari</span> on a page called “Hand-thrown planters”, Tuesday afternoon.</p>
+<p class="s" style="margin-top:12px">You’ve kept this before — No. 028, <span class="md" style="color:var(--ink)">Close</span>.</p>
+<div class="hr"></div>
+<p class="t11 t">#c25a35 · 194 90 53 · Show values</p>
+<p class="draft" style="margin-top:8px">Sentence template is draft copy.</p>
+</div></div></div>
+
+<div class="m">
+<div class="anno"><b>7 · Neighbors are the headline</b><span>The 3×3 surroundings lead, enlarged; the kept color sits in the center. Context first, values second.</span></div>
+<div class="win"><div class="pad">
+<div class="n3" style="width:100%;gap:4px">
+<div style="background:#b84d2a"></div><div style="background:#c25433"></div><div style="background:#d2785a"></div>
+<div style="background:#bb5030"></div><div class="c" style="background:#c4552d"></div><div style="background:#cf6a45"></div>
+<div style="background:#a8442a"></div><div style="background:#b7502e"></div><div style="background:#e9e3dc"></div></div>
+<p class="t11 s" style="margin-top:8px">Sampled 12 px out from the point you clicked.</p>
+<div class="hr"></div>
+<div class="row" style="justify-content:space-between"><span class="md">No. 028 · Unnamed</span><span class="t11 t">#c4552d</span></div>
+<p class="t11 s">are.na · “Earth pigments, collected”</p>
+</div></div></div>
+
+<div class="m">
+<div class="anno"><b>8 · Margin notes</b><span>Main column holds swatch and name; a narrow margin carries source, reads-as and kept-before like footnotes.</span></div>
+<div class="win"><div style="display:grid;grid-template-columns:1fr 120px">
+<div class="pad"><p class="t11 t">No. 026</p><p class="t22">Blush ground</p>
+<div class="sw" style="width:100%;height:150px;background:#f3d9cf;margin-top:12px;border-radius:10px;border:1px solid var(--hair)"></div>
+<p class="t11 t" style="margin-top:8px">#f3d9cf · 243 217 207</p></div>
+<div class="pad t11" style="border-left:1px solid var(--hair)">
+<p class="s">¹ Figma</p><p>Poster v3</p>
+<p class="s" style="margin-top:12px">² Reads as</p><p>Warm · light · muted</p>
+<p class="s" style="margin-top:12px">³ You’ve kept this before</p>
+<div class="row" style="align-items:center;gap:4px;margin-top:4px"><span class="sw" style="width:16px;height:16px;background:#f3d9cf;border:1px solid var(--hair)"></span><span>Nearly identical</span></div>
+<p class="t">No. 019</p>
+</div></div></div></div>
+</div>
+
+<h2>Flows · multi-step sequences</h2>
+<div class="grid one">
+
+<div class="m">
+<div class="anno"><b>9 · Steal, in four beats</b><span>Hotkey to loupe to toast to card. No spinner: the toast arriving is the confirmation.</span></div>
+<div class="flow">
+<div class="fr"><div class="win pad"><p class="t22">⌥⇧C</p><p class="s t11" style="margin-top:8px">Any app, any moment.</p></div><p class="cap">1 · Press the hotkey</p></div>
+<div class="fr"><div class="win pad"><div class="ph" style="height:60px;position:relative"></div><div class="loupe" style="margin:-40px auto 0;position:relative;background:#fff">
+<div style="background:#b84d2a"></div><div style="background:#c25433"></div><div style="background:#d2785a"></div><div style="background:#cf6a45"></div><div style="background:#e9e3dc"></div>
+<div style="background:#bb5030"></div><div style="background:#c4552d"></div><div style="background:#c4552d"></div><div style="background:#cf6a45"></div><div style="background:#d2785a"></div>
+<div style="background:#a8442a"></div><div style="background:#c4552d"></div><div style="background:#c4552d;outline:1px solid #1D1D1F"></div><div style="background:#c4552d"></div><div style="background:#cf6a45"></div>
+<div style="background:#a8442a"></div><div style="background:#b7502e"></div><div style="background:#c4552d"></div><div style="background:#bb5030"></div><div style="background:#d2785a"></div>
+<div style="background:#a8442a"></div><div style="background:#b7502e"></div><div style="background:#b84d2a"></div><div style="background:#e9e3dc"></div><div style="background:#e9e3dc"></div></div>
+<p class="t11 s" style="margin-top:8px">Hover anything. Click to keep it.</p></div><p class="cap">2 · Steal a color</p></div>
+<div class="fr"><div class="win pad"><div class="ph" style="height:80px"></div><div class="toast fade" style="margin-top:8px"><span class="sw" style="width:12px;height:12px;background:#c4552d"></span>Kept · No. 028<span class="s">Undo</span></div></div><p class="cap">3 · Toast, then gone in 2 s</p></div>
+<div class="fr"><div class="win pad"><span class="sw" style="width:100%;height:48px;background:#c4552d"></span><p class="t11 t" style="margin-top:8px">No. 028</p><p class="t15 t">Unnamed. Name it so you remember it.</p></div><p class="cap">4 · Open card, only if asked</p></div>
+</div></div>
+
+<div class="m">
+<div class="anno"><b>10 · Naming later, from the margin</b><span>Unnamed captures collect quietly. Naming happens in the archive on your own time, inline, no dialog.</span></div>
+<div class="flow">
+<div class="fr"><div class="win pad"><p class="lbl">Unnamed</p><p class="t22" style="margin-top:4px">3</p><p class="t11 s">Waiting for a name.</p><p class="draft" style="margin-top:8px">Draft copy</p></div><p class="cap">1 · A count, not a badge</p></div>
+<div class="fr"><div class="win pad"><div class="row" style="align-items:center"><span class="sw" style="width:32px;height:32px;background:#c4552d"></span><span class="t">No. 028</span></div><p class="t15 t" style="margin-top:8px">Unnamed. Name it so you remember it.</p></div><p class="cap">2 · Click the line</p></div>
+<div class="fr"><div class="win pad"><div class="row" style="align-items:center"><span class="sw" style="width:32px;height:32px;background:#c4552d"></span><span class="t">No. 028</span></div><p class="t15" style="margin-top:8px;border-bottom:1px solid var(--ink)">Rust awning|</p><p class="t11 t" style="margin-top:4px">Return to keep</p></div><p class="cap">3 · Type in place</p></div>
+<div class="fr"><div class="win pad"><div class="row" style="align-items:center"><span class="sw" style="width:32px;height:32px;background:#c4552d"></span><span class="t">No. 028</span></div><p class="t22 fade" style="margin-top:8px">Rust awning</p><p class="t11 s">Next unnamed ↓</p></div><p class="cap">4 · The name is the confirmation</p></div>
+</div></div>
+
+<div class="m">
+<div class="anno"><b>11 · The kept-before moment</b><span>A near match changes only one line of the toast. Description, not a warning; capture is still kept and numbered.</span></div>
+<div class="flow">
+<div class="fr"><div class="win pad"><div class="ph" style="height:80px"></div><p class="t11 s" style="margin-top:8px">Clicks a terracotta tile in Safari.</p></div><p class="cap">1 · Steal as usual</p></div>
+<div class="fr"><div class="win pad"><div class="toast fade"><span class="sw" style="width:12px;height:12px;background:#c25a35"></span>Kept · No. 029</div><p class="t11 s" style="margin-top:8px">You’ve kept this before</p></div><p class="cap">2 · One extra line</p></div>
+<div class="fr"><div class="win pad"><div class="row" style="align-items:center;gap:4px"><span class="sw" style="width:48px;height:48px;background:#c25a35"></span><span class="sw" style="width:48px;height:48px;background:#c4552d"></span></div><p class="t11" style="margin-top:8px">No. 029 · No. 028</p><p class="t15 md">Close</p></div><p class="cap">3 · Side by side on the card</p></div>
+<div class="fr"><div class="win pad"><p class="lbl">You’ve kept this before</p><p class="t11" style="margin-top:8px">No. 011 Clay pot · Close</p><p class="t11">No. 028 Unnamed · Close</p><p class="t11 t" style="margin-top:8px">Both stay. Nothing merged.</p><p class="draft">Draft copy</p></div><p class="cap">4 · The family, listed</p></div>
+</div></div>
+
+<div class="m">
+<div class="anno"><b>12 · Permission, one line, and no is fine</b><span>Screen Recording is asked for only when you open neighbors. Saying no keeps everything else working.</span></div>
+<div class="flow">
+<div class="fr"><div class="win pad"><p class="lbl">Neighbors</p><div class="n3" style="margin-top:8px"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div style="background:#a9b9a0"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div><p class="cap">1 · Empty until allowed</p></div>
+<div class="fr"><div class="win pad"><p class="t15">Palette needs Screen Recording to keep the 8 colors around your click.</p><div class="row" style="margin-top:12px;gap:8px"><span class="btn k">Allow</span><span class="btn">Not now</span></div><p class="draft" style="margin-top:8px">Draft copy</p></div><p class="cap">2 · Asked once, in one line</p></div>
+<div class="fr"><div class="win pad"><div class="toast"><span class="sw" style="width:12px;height:12px;background:#a9b9a0"></span>Kept · No. 030</div><p class="t11 s" style="margin-top:8px">Center color only.</p></div><p class="cap">3 · On no: still kept</p></div>
+<div class="fr"><div class="win pad"><p class="t11 s">Neighbors are off.</p><p class="t11" style="margin-top:4px;text-decoration:underline">Turn on in Settings</p><p class="draft" style="margin-top:8px">Draft copy</p></div><p class="cap">4 · Quiet way back, later</p></div>
+</div></div>
+
+</div>
+<p class="t11 t" style="margin-top:32px">Stored on this Mac · Open archive →</p>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Palette · 12 lofi mockups</title>
+<style>
+:root{--chrome:#F5F5F5;--well:#FFFFFF;--ink:#1D1D1F;--ink2:#6B6B70;--ink3:#9C9CA1;--line:#E3E3E6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;color:var(--ink);background:var(--chrome);padding:32px;font-variant-numeric:tabular-nums}
+h1{font-size:22px;font-weight:500}
+.lede{color:var(--ink2);margin:4px 0 32px;max-width:640px}
+h2{font-size:15px;font-weight:500;margin:32px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.mock{background:var(--well);border:1px solid var(--line);border-radius:14px;padding:16px}
+.ann{margin-bottom:12px}.ann b{font-size:13px;font-weight:500;display:block}.ann span{color:var(--ink2);font-size:11px}
+.win{border:1px solid var(--line);border-radius:10px;background:var(--chrome);overflow:hidden;min-height:240px}
+.bar{height:24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:4px;padding:0 8px}
+.bar i{width:8px;height:8px;border-radius:50%;border:1px solid var(--ink3)}
+.body{background:var(--well);padding:12px}
+.lbl{font-size:13px;font-weight:500;color:var(--ink2);margin:8px 0 4px}
+.s{border-radius:6px;display:inline-block}
+.t3{color:var(--ink3)}.t2{color:var(--ink2)}.sm{font-size:11px}.md{font-weight:500}
+.row{display:flex;gap:8px;align-items:center}.col{display:flex;flex-direction:column;gap:4px}
+.hr{border-top:1px solid var(--line);margin:8px 0}
+.line{height:6px;border-radius:3px;background:var(--line)}
+.n3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:48px}.n3 div{aspect-ratio:1;border-radius:2px}
+.flow{display:flex;gap:8px;align-items:stretch}
+.fr{flex:1;border:1px solid var(--line);border-radius:10px;background:var(--chrome);padding:8px;min-height:150px;position:relative;display:flex;flex-direction:column;gap:6px}
+.fr .step{font-size:11px;color:var(--ink3)}
+.toast{background:rgba(255,255,255,.8);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:10px;padding:6px 8px;display:flex;gap:6px;align-items:center;font-size:11px}
+.btn{border:1px solid var(--ink3);border-radius:6px;padding:2px 8px;font-size:11px;background:var(--well);color:var(--ink)}
+.btn.k{background:var(--ink);color:#fff;border-color:var(--ink)}
+.field{border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--ink3);font-size:11px;background:var(--well)}
+.sel{background:var(--chrome);border-radius:6px}
+.side{width:96px;border-right:1px solid var(--line);padding:8px;font-size:11px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+.tl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}.tl .s{aspect-ratio:1;width:100%}
+.loupe{width:56px;height:56px;border-radius:50%;border:1px solid var(--ink);margin:auto;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden}
+.pulse{animation:p 2.4s ease-in-out infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.45}}
+.arrive{animation:a 3s ease-out infinite}@keyframes a{0%{opacity:0;transform:translateY(4px)}15%,85%{opacity:1;transform:none}100%{opacity:0}}
+</style></head><body>
+<h1>Palette, very lofi · round 2</h1>
+<p class="lede">Twelve wireframes. Grayscale chrome, ink for hierarchy, captured colors are the only color. Restraint borrowed from Wispr Flow and Granola: one small presence, result-as-confirmation, advanced things tucked away.</p>
+
+<h2>Dashboards · the archive window</h2>
+<div class="grid">
+
+<div class="mock"><div class="ann"><b>1 · The ledger</b><span>A plain numbered list, newest first. Like a Granola notes list: ink tone does the hierarchy, no boxes around rows.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="body">
+<div class="field" style="margin-bottom:8px">Search by name, hex or app</div>
+<div class="lbl">Today</div>
+<div class="col">
+<div class="row"><span class="s" style="width:20px;height:20px;background:#c4552d"></span><span class="md">No. 028</span><span class="t3">Unnamed</span><span class="t3 sm" style="margin-left:auto">#c4552d · are.na</span></div>
+<div class="row"><span class="s" style="width:20px;height:20px;background:#f3d9cf"></span><span class="md">No. 026</span><span>Blush ground</span><span class="t3 sm" style="margin-left:auto">#f3d9cf · Figma</span></div>
+<div class="row"><span class="s" style="width:20px;height:20px;background:#a9b9a0"></span><span class="md">No. 024</span><span>Lichen</span><span class="t3 sm" style="margin-left:auto">#a9b9a0 · Safari</span></div>
+</div>
+<div class="lbl">Last week</div>
+<div class="col">
+<div class="row"><span class="s" style="width:20px;height:20px;background:#c25a35"></span><span class="md">No. 011</span><span>Clay pot</span><span class="t3 sm" style="margin-left:auto">#c25a35 · Safari</span></div>
+<div class="row"><span class="s" style="width:20px;height:20px;background:#3b3f46"></span><span class="md">No. 006</span><span>Graphite</span><span class="t3 sm" style="margin-left:auto">#3b3f46 · Figma</span></div>
+</div></div></div></div>
+
+<div class="mock"><div class="ann"><b>2 · Spectrum shelf</b><span>Everything laid out by hue, value top to bottom. You browse by looking, not reading. Hovering shows the number only.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="body">
+<div class="row sm t2" style="margin-bottom:8px"><span class="md" style="color:var(--ink)">By hue</span><span>By date</span><span>By source</span><span class="t3" style="margin-left:auto">28 kept</span></div>
+<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;align-items:end;height:150px;border-bottom:1px solid var(--line);padding-bottom:4px">
+<div class="col"><span class="s" style="height:24px;background:#f3d9cf"></span><span class="s" style="height:24px;background:#6c2e3a"></span></div>
+<div class="col"><span class="s" style="height:24px;background:#c4552d"></span><span class="s" style="height:24px;background:#c25a35"></span></div>
+<div class="col"><span class="s" style="height:24px;background:#f0c23b"></span></div>
+<div class="col"><span class="s" style="height:24px;background:#a9b9a0"></span></div>
+<div class="col"><span class="s" style="height:24px;background:#2e6b6f"></span></div>
+<div class="col"></div><div class="col"></div>
+<div class="col"><span class="s" style="height:24px;background:#3b3f46"></span></div>
+</div>
+<div class="row sm t3" style="justify-content:space-between;margin-top:4px"><span>Red</span><span>Yellow</span><span>Green</span><span>Blue</span><span>Neutral</span></div>
+<p class="sm t2" style="margin-top:8px">No. 011 · Clay pot</p>
+</div></div></div>
+
+<div class="mock"><div class="ann"><b>3 · Sidebar and inspector</b><span>Three columns: sources on the left, a timeline grid, the selected card on the right. The full desk, for long sessions.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="row" style="align-items:stretch;background:var(--well);min-height:214px">
+<div class="side"><span class="md" style="color:var(--ink)">All</span><span>Unnamed</span><span>Figma</span><span>Safari</span><span>Photos</span><span class="t3" style="margin-top:auto">Stored on this Mac</span></div>
+<div style="flex:1;padding:8px"><div class="tl">
+<span class="s" style="background:#c4552d;outline:1px solid var(--ink);outline-offset:1px"></span><span class="s" style="background:#f3d9cf"></span><span class="s" style="background:#a9b9a0"></span><span class="s" style="background:#c25a35"></span><span class="s" style="background:#3b3f46"></span><span class="s" style="background:#2e6b6f"></span><span class="s" style="background:#f0c23b"></span><span class="s" style="background:#6c2e3a"></span></div></div>
+<div style="width:112px;border-left:1px solid var(--line);padding:8px" class="col sm"><span class="s" style="height:48px;background:#c4552d"></span><span class="md">No. 028</span><span class="t3">Unnamed. Name it so you remember it.</span><span class="t2">#c4552d</span><span class="t3">are.na</span></div>
+</div></div></div>
+
+<div class="mock"><div class="ann"><b>4 · Calendar of looking</b><span>Captures pinned to days, like a journal. Answers “what was I noticing that week?” Empty days stay empty, no nudges.</span></div>
+<div class="win"><div class="bar"><i></i><i></i><i></i></div><div class="body">
+<div class="row" style="margin-bottom:8px"><span class="md">October</span><span class="t3 sm" style="margin-left:auto">‹ ›</span></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" class="sm t3">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+<div style="height:36px;border-top:1px solid var(--line)">6</div>
+<div style="height:36px;border-top:1px solid var(--line)">7<br><span class="s" style="width:10px;height:10px;background:#6c2e3a"></span></div>
+<div style="height:36px;border-top:1px solid var(--line)">8</div>
+<div style="height:36px;border-top:1px solid var(--line)">9<br><span class="s" style="width:10px;height:10px;background:#f0c23b"></span> <span class="s" style="width:10px;height:10px;background:#2e6b6f"></span></div>
+<div style="height:36px;border-top:1px solid var(--line)">10</div>
+<div style="height:36px;border-top:1px solid var(--line)">11</div>
+<div style="height:36px;border-top:1px solid var(--line)">12<br><span class="s" style="width:10px;height:10px;background:#3b3f46"></span></div>
+<div style="height:36px;border-top:1px solid var(--line)">13<br><span class="s" style="width:10px;height:10px;background:#c25a35"></span></div>
+<div style="height:36px;border-top:1px solid var(--line)">14</div>
+<div style="height:36px;border-top:1px solid var(--line)">15<br><span class="s" style="width:10px;height:10px;background:#a9b9a0"></span></div>
+<div style="height:36px;border-top:1px solid var(--line);color:var(--ink)">16<br><span class="s" style="width:10px;height:10px;background:#f3d9cf"></span> <span class="s" style="width:10px;height:10px;background:#c4552d"></span></div>
+</div></div></div></div>
+</div>
+
+<h2>Capture cards · one color in depth</h2>
+<div class="grid">
+
+<div class="mock"><div class="ann"><b>5 · The index card</b><span>Swatch on top, everything else as quiet lines below. Context and kept-before sit behind one “More” fold.</span></div>
+<div class="win" style="max-width:260px;margin:auto"><div class="body col">
+<span class="s" style="height:96px;background:#c4552d;border-radius:10px"></span>
+<div class="row"><span class="md">No. 028</span><span class="t3 sm" style="margin-left:auto">Oct 16, 10:42</span></div>
+<div class="field">Unnamed. Name it so you remember it.</div>
+<span class="t2 sm">#c4552d · rgb 196 85 45 · oklch 0.59 0.15 40</span>
+<span class="t3 sm">are.na · “Terracotta studies”</span>
+<span class="t2 sm md">More ›</span>
+</div></div></div>
+
+<div class="mock"><div class="ann"><b>6 · Center of its neighborhood</b><span>The 3×3 grid is the hero, the clicked color in the middle. You see what it was sitting next to before you see any numbers.</span></div>
+<div class="win"><div class="body row" style="align-items:flex-start;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(3,40px);gap:2px">
+<div class="s" style="height:40px;background:#b84f2a"></div><div class="s" style="height:40px;background:#c95e36"></div><div class="s" style="height:40px;background:#a8472a"></div>
+<div class="s" style="height:40px;background:#d16a40"></div><div class="s" style="height:40px;background:#c4552d;outline:2px solid var(--ink)"></div><div class="s" style="height:40px;background:#bd5131"></div>
+<div class="s" style="height:40px;background:#e8d5c8"></div><div class="s" style="height:40px;background:#c45a33"></div><div class="s" style="height:40px;background:#9e4228"></div></div>
+<div class="col sm"><span class="md" style="font-size:13px">No. 028 · Unnamed</span><span class="t2">#c4552d</span><span class="t3">Sampled 12 px out from the point you clicked.</span><div class="hr"></div><span class="lbl" style="margin:0">Reads as</span><span>Warm · Mid value · Saturated</span></div>
+</div></div></div>
+
+<div class="mock"><div class="ann"><b>7 · Reads as, first</b><span>Leads with the description in words, values tucked below. Trains the eye to say what it sees before checking hex.</span></div>
+<div class="win"><div class="body col">
+<div class="row"><span class="s" style="width:40px;height:40px;background:#a9b9a0"></span><div class="col"><span class="md">No. 024 · Lichen</span><span class="t3 sm">Safari · rei.com</span></div></div>
+<div class="lbl">Reads as</div>
+<p style="font-size:15px">Cool, light and muted.</p>
+<div class="row sm t2"><span class="field" style="color:var(--ink)">Cool</span><span class="field" style="color:var(--ink)">Light</span><span class="field" style="color:var(--ink)">Muted</span></div>
+<div class="hr"></div>
+<span class="sm t3">#a9b9a0 · oklch 0.75 0.03 135</span>
+</div></div></div>
+
+<div class="mock"><div class="ann"><b>8 · Card with its echoes</b><span>Kept before is a strip along the bottom, ΔE written plainly. Shows you return to the same reds without judging it.</span></div>
+<div class="win"><div class="body col">
+<div class="row"><span class="s" style="width:56px;height:56px;background:#c25a35"></span><div class="col"><span class="md">No. 011 · Clay pot</span><span class="t2 sm">#c25a35</span><span class="t3 sm">Safari · “Hand-thrown planters”</span></div></div>
+<div class="lbl">You’ve kept this before</div>
+<div class="row sm"><span class="s" style="width:20px;height:20px;background:#c4552d"></span><span>No. 028</span><span class="t2">Nearly identical · ΔE 1.6</span></div>
+<div class="row sm"><span class="s" style="width:20px;height:20px;background:#6c2e3a"></span><span>No. 001 Oxblood</span><span class="t2">Close · ΔE 4.8</span></div>
+</div></div></div>
+</div>
+
+<h2>Flows · multi-step sequences</h2>
+<div class="col" style="gap:24px">
+
+<div class="mock"><div class="ann"><b>9 · Steal a color</b><span>Hotkey, loupe, toast, card. No spinner: the toast arriving is the confirmation, then it leaves on its own.</span></div>
+<div class="flow">
+<div class="fr"><span class="step">1 · ⌥⇧C</span><div class="toast" style="margin:auto"><span class="md">Steal a color</span></div></div>
+<div class="fr"><span class="step">2 · Loupe</span><div class="loupe pulse"><div style="background:#b84f2a"></div><div style="background:#c95e36"></div><div style="background:#a8472a"></div><div style="background:#d16a40"></div><div style="background:#c4552d"></div><div style="background:#bd5131"></div><div style="background:#e8d5c8"></div><div style="background:#c45a33"></div><div style="background:#9e4228"></div></div><span class="sm t2" style="text-align:center">Hover anything. Click to keep it.</span></div>
+<div class="fr"><span class="step">3 · Toast</span><div class="toast arrive" style="margin-top:auto"><span class="s" style="width:14px;height:14px;background:#c4552d"></span>Kept · No. 028<span class="md" style="margin-left:auto">Undo</span></div></div>
+<div class="fr"><span class="step">4 · If clicked</span><span class="s" style="height:40px;background:#c4552d"></span><span class="sm md">No. 028</span><span class="sm t3">Open card</span></div>
+</div></div>
+
+<div class="mock"><div class="ann"><b>10 · Naming it later</b><span>Unnamed is a fine state. Naming happens days later from a quiet filter, one field at a time, no suggestions offered.</span></div>
+<div class="flow">
+<div class="fr"><span class="step">1 · Archive, Unnamed</span><div class="row sm"><span class="s" style="width:14px;height:14px;background:#c4552d"></span>No. 028</div><div class="row sm"><span class="s" style="width:14px;height:14px;background:#f0c23b"></span>No. 003</div></div>
+<div class="fr"><span class="step">2 · Field</span><span class="s" style="height:32px;background:#f0c23b"></span><div class="field">Unnamed. Name it so you remember it.</div></div>
+<div class="fr"><span class="step">3 · Typing</span><span class="s" style="height:32px;background:#f0c23b"></span><div class="field" style="color:var(--ink);border-color:var(--ink)">Mango|</div></div>
+<div class="fr"><span class="step">4 · Saved, no toast</span><span class="s" style="height:32px;background:#f0c23b"></span><span class="sm md">No. 003 · Mango</span><span class="sm t3">The name in place is the confirmation.</span></div>
+</div></div>
+
+<div class="mock"><div class="ann"><b>11 · The kept-before moment</b><span>A near-match surfaces inside the toast as one extra line. It describes, never asks to merge. Both stay.</span></div>
+<div class="flow">
+<div class="fr"><span class="step">1 · Click</span><div class="loupe" style="background:#c4552d"></div></div>
+<div class="fr"><span class="step">2 · Toast grows one line</span><div class="toast col" style="align-items:flex-start;margin-top:auto"><div class="row"><span class="s" style="width:14px;height:14px;background:#c4552d"></span>Kept · No. 028</div><div class="row t2"><span class="s" style="width:14px;height:14px;background:#c25a35"></span>You’ve kept this before</div></div></div>
+<div class="fr"><span class="step">3 · Card</span><div class="row"><span class="s" style="width:32px;height:32px;background:#c4552d"></span><span class="s" style="width:32px;height:32px;background:#c25a35"></span></div><span class="sm">No. 011 Clay pot</span><span class="sm t2">Nearly identical</span></div>
+<div class="fr"><span class="step">4 · No match case</span><span class="sm t3" style="margin:auto">Nothing in the archive matches that yet.</span></div>
+</div></div>
+
+<div class="mock"><div class="ann"><b>12 · Asking for Screen Recording</b><span>Asked only when you open the neighbor preview. One line why. Saying no keeps the system loupe and every capture working.</span></div>
+<div class="flow">
+<div class="fr"><span class="step">1 · Card, neighbors off</span><div class="n3"><div style="background:var(--line)"></div><div style="background:var(--line)"></div><div style="background:var(--line)"></div><div style="background:var(--line)"></div><div style="background:#2e6b6f"></div><div style="background:var(--line)"></div><div style="background:var(--line)"></div><div style="background:var(--line)"></div><div style="background:var(--line)"></div></div><span class="sm t2">Show neighbors</span></div>
+<div class="fr"><span class="step">2 · One line</span><span class="sm">To see the 8 colors around your click, Palette needs Screen Recording. Nothing leaves this Mac.</span><span class="sm t3">Draft copy</span><div class="row" style="margin-top:auto"><span class="btn k">Allow</span><span class="btn">Not now</span></div></div>
+<div class="fr"><span class="step">3a · Allowed</span><div class="n3"><div style="background:#2a6266"></div><div style="background:#317075"></div><div style="background:#285a5e"></div><div style="background:#357a7e"></div><div style="background:#2e6b6f"></div><div style="background:#2c666a"></div><div style="background:#e9eeee"></div><div style="background:#306c70"></div><div style="background:#24585b"></div></div><span class="sm t3">Sampled 12 px out from the point you clicked.</span></div>
+<div class="fr"><span class="step">3b · Not now</span><span class="s" style="height:32px;background:#2e6b6f"></span><span class="sm md">No. 004 · Pool tile</span><span class="sm t3">Captures still work. Neighbors stay off.</span></div>
+</div></div>
+</div>
+<p class="sm t3" style="margin-top:32px">Stored on this Mac · Open archive →</p>
+</body></html>
