@@ -1771,6 +1771,55 @@ window.PALIT.decisions = {
       status: "done",
       links: [{ label: "v1 to v2: what changed", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=122-2" }, { label: "v2 Screens", href: "https://www.figma.com/design/z2QGOPbNn4LZo7ieT0Gw3b/Palette-Ideation?node-id=111-2" }],
       by: "Claude Code, in a separate session"
+    },
+    {
+      date: "2026-10-18",
+      kind: "decision",
+      area: "archive",
+      title: "Right-click a color to add it to a palette, and ⇧-click to gather several",
+      video: ["demo", "process"],
+      from: "Pinned had a Group as a palette mode: press it, pick the pins, then press Group (entry 96).",
+      to: "Right-click any color, in Days, Pinned, Spectrum or a palette, for a small Mac menu: Add to palette opens beside it with New palette and then each palette with its colors, like Spotify's Add to playlist; Pin or Unpin sits in the same menu, then Copy hex and Share, and inside a palette, Remove from this palette. ⇧-click gathers colors anywhere in the window, and a bar in the nav shows them with how many, Clear and Add to palette; a right-click on a gathered color acts on all of them. The specimen card has Add to palette too and lists every palette a color is in, since a color can now sit in more than one. A quiet line at the bottom of the window confirms each change. Pins stay under Collections, Pinned. Claude's calls, for Noah to check: a check marks a palette a color is already in and a dash when only some of what you gathered is, and choosing a checked one takes it out, the way Finder's tags work (Spotify asks before adding a duplicate instead); ⌘-click gathers too; what you gather stays while you move between views; a palette's name can be clicked and typed; new palettes get a placeholder from where their colors came from (Palette from your pins, or Palette from 2 places); and every new line of copy is a draft.",
+      why: "I would like a more clear area for pinned colors, and a way to right click and add to palette, similar to spotify's \"add to playlist\" feature. This could also be inside the card itself. Shift click to select multiple colors?\n\nI'm ok with them being in collections, under the sub nav of pinned, but the flow to create a palette from them is tedious. Lets add the right click and the shift + click to group and create/add to palettes easily. The small overlay could also entail a pin option",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      revises: 96,
+      refs: ["A67", "A45"],
+      links: [{ label: "The menu in v2", href: "../v2/index.html?scene=menu" }, { label: "Add to palette in the card", href: "../v2/index.html?scene=card&menu=1" }],
+      by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "decision",
+      area: "archive",
+      title: "The zoom is − and + at the top, with ⌘− and ⌘+, in seven stops",
+      video: ["demo"],
+      from: "A slider between − and + at the top right of the window, with three sizes (entry 100).",
+      to: "No slider: a quiet − and + at the top right of the window, and ⌘− and ⌘+ to step. Seven stops instead of three: the two smallest are only color, the largest carries the full name. Each step resizes what's there instead of drawing Days again. Claude's calls, for Noah to check: seven stops rather than five, ⌘0 back to the middle, and − or + greyed at either end.",
+      why: "also this slider doesn't need to exist, a subtle plus and minus at the top of the screen suffices, with the shortcuts of cmd +/-\n\nLets also add a few more stops in between, there are only 3 total currently",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      revises: 100,
+      refs: ["A68", "A62"],
+      links: [{ label: "Days, zoomed out", href: "../v2/index.html?scene=zoom-out" }, { label: "Days, zoomed in", href: "../v2/index.html?scene=zoom-in" }],
+      by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "decision",
+      area: "archive",
+      title: "Pinned gets the ROYGBIV letters",
+      video: ["demo", "visual"],
+      from: "Only Days and Spectrum had the seven letters (A58).",
+      to: "Noah asked: “The pinned area should also have our roygbiv nav”. Collections, Pinned now shows the same seven letters after its sub nav. A letter with no pins under it is greyed, and the count says how many of your pins it shows.",
+      whyStatus: "missing",
+      ask: "Why should Pinned have the letters too?",
+      status: "approved",
+      refs: ["A69", "A58"],
+      links: [{ label: "Pinned in v2", href: "../v2/index.html?scene=pins" }],
+      by: "Noah, built by Claude Code"
     }
   ]
 };

@@ -412,6 +412,14 @@ window.PALIT.screens = {
           105,
           107
         ]
+      ],
+      [
+        "Right-click any color to add it to a palette, ⇧-click to gather several, the letters on Pinned too, and a zoom of − and + with seven stops.",
+        [
+          116,
+          117,
+          118
+        ]
       ]
     ],
     "steps": [
@@ -508,9 +516,10 @@ window.PALIT.screens = {
           1120
         ],
         "title": "Zoomed out: only color",
-        "does": "At the smallest size there's no text at all. Point at a color for the rest.",
+        "does": "Seven stops, with − and + at the top, or ⌘− and ⌘+. At the two smallest there's no text at all; point at a color for the rest.",
         "entries": [
-          100
+          100,
+          117
         ],
         "research": []
       },
@@ -523,10 +532,11 @@ window.PALIT.screens = {
           1120
         ],
         "title": "Zoomed in: full names",
-        "does": "At the largest size each color carries its full name, and nothing else.",
+        "does": "At the largest size each color carries its full name, and nothing else. ⌘0 goes back to the middle.",
         "entries": [
           100,
-          99
+          99,
+          117
         ],
         "research": [
           {
@@ -565,9 +575,25 @@ window.PALIT.screens = {
           1120
         ],
         "title": "Pinned",
-        "does": "What matters most is what you pin. Pick a few pins and group them into a palette.",
+        "does": "What matters most is what you pin, narrowed by the same seven letters.",
         "entries": [
-          96
+          96,
+          118
+        ],
+        "research": []
+      },
+      {
+        "group": "Collections",
+        "scene": "menu",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Add to palette",
+        "does": "⇧-click gathers colors anywhere in the window, and a bar says how many. Right-click for Add to palette, like Spotify's Add to playlist, as a Mac menu: New palette, then each palette with its colors, a check where it's already in, and Pin in the same menu. The card has Add to palette too.",
+        "entries": [
+          116
         ],
         "research": []
       },
@@ -580,10 +606,11 @@ window.PALIT.screens = {
           1120
         ],
         "title": "Palettes",
-        "does": "Palettes kept with ⇧ or grouped from pins, each with Share and Pin to the desktop.",
+        "does": "Palettes kept with ⇧ while picking, or made with Add to palette, each with Share and Pin to the desktop. Click a palette's name to give it yours.",
         "entries": [
           96,
-          109
+          109,
+          116
         ],
         "research": []
       },
@@ -628,11 +655,12 @@ window.PALIT.screens = {
           1120
         ],
         "title": "The specimen card",
-        "does": "The color as a chip over a real crop of where you found it, your name as the hero, where it came from with a way back, Similar with places and days, its palette, Pin and Share, and the scratch pad.",
+        "does": "The color as a chip over a real crop of where you found it, your name as the hero, where it came from with a way back, Similar with places and days, every palette it's in, Pin, Add to palette and Share, and the scratch pad.",
         "entries": [
           98,
           99,
-          103
+          103,
+          116
         ],
         "research": [
           {

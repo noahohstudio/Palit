@@ -56,10 +56,12 @@
   .seg { display: inline-flex; padding: 2px; background: rgba(0, 0, 0, 0.07); border-radius: 8px; }
   .seg button { border: 0; background: none; padding: 4px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
   .seg button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); }
-  .zoom { justify-self: end; display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
-  .zoom button { width: 24px; height: 22px; border: 0; background: none; border-radius: 5px; cursor: pointer; font-size: 15px; line-height: 1; color: var(--ink-2); }
-  .zoom button:hover { background: rgba(0, 0, 0, 0.07); color: var(--ink); }
-  .zoom input { width: 84px; accent-color: #1d1d1f; }
+  /* The zoom is just − and +, with ⌘− and ⌘+ (entry 117): no slider */
+  .zoom { justify-self: end; display: flex; align-items: center; gap: 2px; }
+  .zoom button { width: 26px; height: 24px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1; color: var(--ink-2); }
+  .zoom button:hover { background: rgba(0, 0, 0, 0.06); color: var(--ink); }
+  .zoom button:disabled { color: #c7c7cc; background: none; cursor: default; }
+  .zoom button.flash { background: rgba(0, 0, 0, 0.08); color: var(--ink); }
   .zoom[hidden] { display: none; }
   .pw-nav { flex: none; height: 46px; display: flex; align-items: center; gap: 2px; padding: 0 18px; }
   .letters button { position: relative; width: 30px; height: 30px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
@@ -71,6 +73,12 @@
   .subnav button:hover { color: var(--ink); }
   .subnav button[aria-pressed="true"] { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
   .pw-nav .act { margin-left: auto; display: flex; gap: 8px; }
+  .pw-nav .subnav + .letters { margin-left: 12px; padding-left: 12px; border-left: 1px solid rgba(0, 0, 0, 0.1); }
+  /* What you've gathered with ⇧-click (entry 116): the colors, how many, and what to do with them */
+  .selbar { margin-left: auto; display: flex; align-items: center; gap: 8px; animation: fadeIn 160ms ease-out both; }
+  .selbar .ss { display: flex; height: 16px; }
+  .selbar .ss i { width: 16px; }
+  .selbar .sn { font-size: 12px; color: var(--ink-2); margin: 0 4px 0 2px; }
   .pw-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
   .pw-body > * { animation: fadeIn 260ms ease-out both; }
   .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.86); padding: 1px 6px; border-radius: 4px; }
@@ -80,9 +88,8 @@
   .tbtn:disabled { opacity: 0.4; cursor: default; }
 
   /* Days: a wall with nothing on it but color (A57). Zoom sets the tile size; names only when there's room. */
+  /* Seven stops, set from ZOOM in the script; the two smallest carry no text at all (A62) */
   .days { padding: 2px 18px 46px; --tw: 104px; --th: 92px; --ts: 12px; --tl: 1; --today: 1.7; --tts: 17px; }
-  .days.z0 { --tw: 46px; --th: 46px; --today: 1.45; }
-  .days.z2 { --tw: 186px; --th: 166px; --ts: 17px; --tl: 3; --tts: 30px; --today: 1.45; }
   .day + .day { margin-top: 18px; }
   .dl { font-size: 11px; color: var(--ink-2); margin-bottom: 6px; }
   .day.today .dl { color: var(--ink); }
@@ -105,14 +112,18 @@
   .t.phover { flex-grow: 2.4; z-index: 2; }
   .t.phover .dt { opacity: 0.86; }
   .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts); line-height: 1.12; letter-spacing: -0.01em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: var(--tl); -webkit-box-orient: vertical; }
-  .days.z0 .t .nm { display: none; }
+  .days.bare .t .nm { display: none; }
   .day.today .t .nm { font-size: var(--tts); letter-spacing: -0.025em; }
   .t .nm.ph { opacity: 0.82; }
   .t .dt { position: absolute; left: 10px; right: 10px; top: 9px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 200ms; }
   .t:hover .dt, .t:focus-visible .dt { opacity: 0.86; }
-  .days.z0 .t:hover .dt { opacity: 0; }
+  .days.bare .t:hover .dt { opacity: 0; }
   .t .pin { position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--on); }
-  .empty { padding: 60px 22px; color: var(--ink-2); font-size: 13px; }
+  .days.bare .t .pin { right: 5px; top: 5px; width: 4px; height: 4px; }
+  /* Selected with ⇧-click: an ink edge, then a white line inside it, so it shows on light colors and dark ones alike */
+  .t.sel, .pal .strip button.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff; }
+  .fan-card.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff, 0 1px 2px rgba(0, 0, 0, 0.1), 0 10px 22px rgba(0, 0, 0, 0.12); }
+  .empty { padding: 60px 22px; border: 0; color: var(--ink-2); font-size: 13px; }   /* no dashed box: that was v1's */
 
   /* Spectrum: every color you've found, fanned by hue, one long scroll */
   .fan { position: absolute; inset: 0; cursor: grab; touch-action: none; overflow: hidden; }
@@ -129,19 +140,41 @@
   .pins { display: flex; flex-wrap: wrap; gap: 3px; }
   .pins .t { flex: 0 0 168px; height: 150px; max-width: none; }
   .pins .t .nm { display: -webkit-box; font-size: 16px; -webkit-line-clamp: 2; }
-  .pins.selecting .t { cursor: copy; }
-  .pins .t.sel { box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 4px #1d1d1f; }
   .pal { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule-soft); animation: fadeIn 300ms ease-out both; }
   .pal:first-child { border-top: 0; }
-  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; }
-  .pal .pn.ph { color: var(--ink-2); }
+  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; outline: none; border-radius: 3px; overflow-wrap: anywhere; cursor: text; }
+  .pal .pn:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .pal .pn:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+  .pal .strip .none { flex: 1; align-self: center; font-size: 12px; color: var(--ink-2); }
   .pal .pm { margin-top: 4px; font-size: 11px; color: var(--ink-2); }
   .pal .strip { display: flex; height: 64px; }
   .pal .strip button { flex: 1; border: 0; padding: 0; background: var(--c); cursor: pointer; transition: flex-grow 300ms cubic-bezier(.2, .8, .2, 1); }
   .pal .strip button:hover { flex-grow: 1.8; }
   .pal .acts { display: flex; gap: 6px; }
   .pal .acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
-  .col-note { margin: 4px 0 10px; font-size: 12px; color: var(--ink-2); }
+
+  /* The menu (entry 116): right-click a color, or Add to palette. A Mac menu, kept neutral so only the colors have color. */
+  .menu { position: absolute; z-index: 80; min-width: 216px; max-width: 300px; padding: 5px; box-sizing: border-box; background: rgba(248, 248, 250, 0.95); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.26); font-size: 13px; animation: fadeIn 110ms ease-out both; }
+  .menu .mi { display: flex; align-items: center; gap: 8px; width: 100%; height: 24px; padding: 0 9px 0 7px; border: 0; background: none; border-radius: 4px; text-align: left; cursor: default; white-space: nowrap; }
+  .menu .mi:hover, .menu .mi:focus-visible, .menu .mi.open, .menu .mi.phover { background: rgba(0, 0, 0, 0.08); outline: none; }
+  .menu .mi:disabled { color: #b0b0b5; background: none; }
+  .menu .ck { flex: none; width: 12px; text-align: center; color: var(--ink); }
+  .menu .lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .menu .lb.ph { color: var(--ink-2); }
+  .menu .rt { flex: none; margin-left: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .menu .chev { flex: none; width: 6px; height: 10px; margin-left: 12px; }
+  .menu .ms { flex: none; display: flex; width: 30px; height: 12px; }
+  .menu .ms i { flex: 1; }
+  .menu .ms.blank { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18); }
+  .menu .mh { display: flex; align-items: center; gap: 8px; padding: 3px 9px 6px 7px; font-size: 11px; color: var(--ink-2); }
+  .menu .mh .ms { width: auto; }
+  .menu .mh .ms i { width: 12px; }
+  .menu hr { border: 0; height: 1px; margin: 5px 9px; background: rgba(0, 0, 0, 0.1); }
+  /* A quiet line at the bottom of the window when something is added (entry 116) */
+  .toast { position: absolute; left: 50%; bottom: 16px; z-index: 45; display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; transform: translateX(-50%); background: rgba(255, 255, 255, 0.96); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); font-size: 12px; white-space: nowrap; pointer-events: none; animation: fadeIn 160ms ease-out both; }
+  .toast .ms { display: flex; height: 18px; }
+  .toast .ms i { width: 14px; }
+  .toast.out { opacity: 0; transition: opacity 260ms; }
 
   /* The specimen card (A60, A61): the color over where you found it, your name as the hero, the scratch pad */
   .sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(246, 246, 247, 0.74); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); animation: fadeIn 220ms ease-out both; }
@@ -172,6 +205,10 @@
   .sim i { width: 14px; height: 14px; }
   .sp-strip { display: flex; height: 14px; margin-top: 2px; }
   .sp-strip i { flex: 1; }
+  .sp-pals { display: flex; flex-direction: column; gap: 5px; }
+  .sp-pal { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 12px; align-items: center; }
+  .sp-pal .pl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sp-pal .sp-strip { margin-top: 0; }
   .sp-acts { display: flex; gap: 6px; margin-top: 12px; }
   .sp-acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
   .pad { margin-top: auto; padding-top: 12px; }
@@ -223,7 +260,7 @@
       <div class="pw-tb">
         <div class="lights"><button type="button" id="pw-close" aria-label="Close Palit"></button><button type="button" aria-label="Minimize" tabindex="-1"></button><button type="button" aria-label="Zoom" tabindex="-1"></button></div>
         <div class="seg" id="views" role="group" aria-label="View"></div>
-        <div class="zoom" id="zoom"><button type="button" id="z-out" aria-label="Smaller">−</button><input type="range" id="z" min="0" max="2" step="1" value="1" aria-label="Zoom"><button type="button" id="z-in" aria-label="Larger">+</button></div>
+        <div class="zoom" id="zoom" role="group" aria-label="Zoom"><button type="button" id="z-out" aria-label="Zoom out" title="Zoom out  ⌘−">−</button><button type="button" id="z-in" aria-label="Zoom in" title="Zoom in  ⌘+">+</button></div>
       </div>
       <div class="pw-nav" id="nav"></div>
       <div class="pw-body" id="body"></div>
@@ -241,7 +278,7 @@
     <button type="button" class="c-btn" id="c-reset">Start over</button>
     <button type="button" class="c-btn" id="c-hide">Hide<kbd>H</kbd></button>
   </div>
-  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum. <b>P</b> plays the demo for recording; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
+  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum; there, <b>⇧</b>-click gathers colors, right-click adds them to a palette, and <b>⌘−</b> <b>⌘+</b> zoom. <b>P</b> plays the demo for recording; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
 </div>
 
 <script src="../system/sample.js"></script>
@@ -337,7 +374,8 @@
   }
 
   /* ---------- The collection ---------- */
-  var st = { screen: 0, sound: "felt", view: "days", band: null, zoom: 1, sub: "pins", selecting: false, selected: [], picking: false, run: null, deskPal: null };
+  // selected: the colors gathered with ⇧-click, by number (entry 116). zoom: a stop in ZOOM.
+  var st = { screen: 0, sound: "felt", view: "days", band: null, zoom: 3, sub: "pins", selected: [], picking: false, run: null, deskPal: null };
   var colors = [], palettes = [], shared = [], next = 1;
   function make(o) {
     var k = PC.oklch(o.hex), c = Object.assign({ name: null, note: "", pinned: false, palette: null, crop: null, url: null, screen: null, x: null, y: null }, o);
@@ -507,22 +545,57 @@
   var VIEWS = [["days", "Days"], ["collections", "Collections"], ["spectrum", "Spectrum"]];
   VIEWS.forEach(function (v) {
     var b = el("button", { type: "button", "aria-pressed": "false", text: v[1] });
-    b.addEventListener("click", function () { st.view = v[0]; st.selecting = false; st.selected = []; render(); });
+    b.addEventListener("click", function () { st.view = v[0]; render(); });
     $("views").appendChild(b);
   });
   function openWindow() { if (st.picking) stopPicking(); $("pw").hidden = false; $("mbi").setAttribute("aria-expanded", "true"); render(); }
-  function closeWindow() { closeSheet(); $("pw").hidden = true; $("mbi").setAttribute("aria-expanded", "false"); }
+  function closeWindow() { closeMenus(); closeSheet(); st.selected = []; $("pw").hidden = true; $("mbi").setAttribute("aria-expanded", "false"); }
   $("mbi").addEventListener("click", function (e) { e.stopPropagation(); if ($("pw").hidden) openWindow(); else closeWindow(); });
   $("pw-close").addEventListener("click", closeWindow);
-  function setZoom(z) { st.zoom = Math.max(0, Math.min(2, z)); $("z").value = String(st.zoom); render(); }
-  $("z").addEventListener("input", function () { setZoom(Number($("z").value)); });
+  // In the window, a right-click is Palit's, not the browser's, except where you type.
+  $("pw").addEventListener("contextmenu", function (e) { if (!e.target.closest("input, textarea, [contenteditable=true]")) e.preventDefault(); });
+
+  /* The zoom for Days (entry 117): seven stops, − and + at the top, ⌘− and ⌘+, ⌘0 back to the middle.
+     Each stop: tile width and height, name size and lines, how much larger today is, and today's name size.
+     The two smallest are only color; the largest carries the full name (A62). */
+  var ZOOM = [
+    { tw: 46, th: 46, today: 1.45, bare: true },
+    { tw: 62, th: 58, today: 1.5, bare: true },
+    { tw: 80, th: 72, ts: 11, tl: 1, today: 1.6, tts: 14 },
+    { tw: 104, th: 92, ts: 12, tl: 1, today: 1.7, tts: 17 },
+    { tw: 132, th: 118, ts: 14, tl: 2, today: 1.6, tts: 22 },
+    { tw: 158, th: 142, ts: 15.5, tl: 3, today: 1.5, tts: 26 },
+    { tw: 186, th: 166, ts: 17, tl: 3, today: 1.45, tts: 30 }
+  ], ZOOM_MID = 3;
+  function zoomVars(box) {
+    var z = ZOOM[st.zoom];
+    box.classList.toggle("bare", !!z.bare);
+    box.style.cssText = "--tw:" + z.tw + "px;--th:" + z.th + "px;--today:" + z.today + (z.bare ? "" : ";--ts:" + z.ts + "px;--tl:" + z.tl + ";--tts:" + z.tts + "px");
+  }
+  function zoomButtons() { $("z-out").disabled = st.zoom === 0; $("z-in").disabled = st.zoom === ZOOM.length - 1; }
+  // Resize what's there rather than drawing Days again, so a step reads as a zoom, not a reload.
+  function setZoom(z) {
+    z = Math.max(0, Math.min(ZOOM.length - 1, z));
+    if (z === st.zoom) return;
+    st.zoom = z; zoomButtons();
+    var days = $("body").querySelector(".days");
+    if (days) zoomVars(days); else render();
+  }
+  function zoomKey(d) {
+    if (!d) { setZoom(ZOOM_MID); return; }
+    var b = $(d < 0 ? "z-out" : "z-in");
+    b.classList.add("flash"); setTimeout(function () { b.classList.remove("flash"); }, 170);
+    setZoom(st.zoom + d);
+  }
   $("z-out").addEventListener("click", function () { setZoom(st.zoom - 1); });
   $("z-in").addEventListener("click", function () { setZoom(st.zoom + 1); });
 
   function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }); }
   function render() {
+    closeMenus();
     Array.prototype.forEach.call($("views").children, function (b, i) { b.setAttribute("aria-pressed", String(VIEWS[i][0] === st.view)); });
     $("zoom").hidden = st.view !== "days";
+    zoomButtons();
     renderNav();
     var body = $("body"); body.textContent = ""; body.scrollTop = 0;
     if (st.view === "days") body.appendChild(daysView());
@@ -531,63 +604,78 @@
     countLine();
   }
   function renderNav() {
-    var nav = $("nav"); nav.textContent = "";
+    var nav = $("nav"), hadBar = !!nav.querySelector(".selbar"); nav.textContent = "";
     if (st.view === "collections") {
       var sub = el("div", { class: "subnav", role: "group", "aria-label": "Collections" });
       [["pins", "Pinned"], ["palettes", "Palettes"], ["shared", "Shared with you"]].forEach(function (s) {
         var b = el("button", { type: "button", "aria-pressed": String(st.sub === s[0]), text: s[1] });
-        b.addEventListener("click", function () { st.sub = s[0]; st.selecting = false; st.selected = []; render(); });
+        b.addEventListener("click", function () { st.sub = s[0]; render(); });
         sub.appendChild(b);
       });
       nav.appendChild(sub);
-      if (st.sub === "pins") {
-        var acts = el("div", { class: "act" });
-        if (st.selecting) {
-          var grp = el("button", { type: "button", class: "tbtn ink", text: st.selected.length ? "Group " + st.selected.length + " as a palette" : "Pick pins to group" });
-          grp.disabled = st.selected.length < 2;
-          grp.addEventListener("click", groupSelected);
-          var cancel = el("button", { type: "button", class: "tbtn", text: "Cancel" });
-          cancel.addEventListener("click", function () { st.selecting = false; st.selected = []; render(); });
-          acts.appendChild(cancel); acts.appendChild(grp);
-        } else {
-          var sel = el("button", { type: "button", class: "tbtn", text: "Group as a palette" });
-          sel.addEventListener("click", function () { st.selecting = true; st.selected = []; render(); });
-          acts.appendChild(sel);
-        }
-        nav.appendChild(acts);
-      }
-      return;
-    }
+      if (st.sub === "pins") nav.appendChild(letters(pinnedColors()));   // Pinned gets the seven letters too (entry 118)
+    } else nav.appendChild(letters(colors));
+    if (st.selected.length) { var bar = selBar(); if (hadBar) bar.style.animation = "none"; nav.appendChild(bar); }
+  }
+  // ROYGBIV, strictly seven (A58). A letter with nothing under it is greyed, unless it's the one picked.
+  function letters(scope) {
     var row = el("div", { class: "letters", role: "group", "aria-label": "Filter by hue" });
     LETTERS.forEach(function (L) {
-      var has = colors.some(function (c) { return c.band === L[0]; });
-      var b = el("button", { type: "button", "aria-pressed": String(st.band === L[0]), "aria-label": L[1], title: L[1], style: "--band:" + L[2], text: L[0] });
-      b.disabled = !has;
-      b.addEventListener("click", function () { st.band = st.band === L[0] ? null : L[0]; render(); });
+      var has = scope.some(function (c) { return c.band === L[0]; }), on = st.band === L[0];
+      var b = el("button", { type: "button", "aria-pressed": String(on), "aria-label": L[1], title: L[1], style: "--band:" + L[2], text: L[0] });
+      b.disabled = !has && !on;
+      b.addEventListener("click", function () { st.band = on ? null : L[0]; render(); });
       row.appendChild(b);
     });
-    nav.appendChild(row);
+    return row;
   }
+  function pinnedColors() { return colors.filter(function (c) { return c.pinned; }); }
   function countLine() {
-    var n;
-    if (st.view === "collections") n = st.sub === "pins" ? colors.filter(function (c) { return c.pinned; }).length + " pinned" : st.sub === "palettes" ? palettes.length + (palettes.length === 1 ? " palette" : " palettes") : shared.length + " shared with you";
+    var n, pinned = pinnedColors();
+    if (st.view === "collections") n = st.sub === "pins" ? (st.band ? pinned.filter(function (c) { return c.band === st.band; }).length + " of " : "") + pinned.length + " pinned" : st.sub === "palettes" ? palettes.length + (palettes.length === 1 ? " palette" : " palettes") : shared.length + " shared with you";
     else n = (st.band ? shown().length + " of " : "") + colors.length + " colors";
     $("count").textContent = n;
   }
   function tile(c, i, opts) {
     opts = opts || {};
-    var b = el("button", { type: "button", class: "t" + (opts.join ? " join" : "") + (opts.sel ? " sel" : ""), style: vars(c) + ";animation-delay:" + Math.min(i * 14, 280) + "ms", "aria-label": label(c) + (c.pinned ? ", pinned" : "") }, [
+    var b = el("button", { type: "button", class: "t" + (opts.join ? " join" : "") + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + ";animation-delay:" + Math.min(i * 14, 280) + "ms", "aria-label": label(c) + (c.pinned ? ", pinned" : "") }, [
       el("span", { class: "dt num", text: [no(c.number), c.place, c.day].join(", ") }),
       el("span", { class: "nm" + (c.name ? "" : " ph"), text: title(c) }),
       c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null
     ]);
-    b.addEventListener("click", function () { if (opts.onClick) opts.onClick(c, b); else openCard(c); });
+    b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c); });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
     return b;
+  }
+
+  /* ---------- Gathering colors (entry 116): ⇧-click any color, anywhere in the window; the bar in the nav says
+     how many and adds them to a palette. ⇧ already means "more than one" when you pick (A45). ⌘-click works too, the Mac habit. ---------- */
+  function gathers(e) { return e.shiftKey || e.metaKey; }
+  function isSel(n) { return st.selected.indexOf(n) >= 0; }
+  function toggleSel(c) { var k = st.selected.indexOf(c.number); if (k >= 0) st.selected.splice(k, 1); else st.selected.push(c.number); syncSel(); }
+  function clearSel() { if (!st.selected.length) return; st.selected = []; syncSel(); }
+  function syncSel() {
+    stage.querySelectorAll("#body [data-n]").forEach(function (n) { n.classList.toggle("sel", isSel(Number(n.getAttribute("data-n")))); });
+    renderNav();
+  }
+  function sw(c) { return el("i", { style: "background:" + c.hex }); }
+  function selBar() {
+    var cs = st.selected.map(byNo).filter(Boolean);
+    var add = el("button", { type: "button", class: "tbtn ink", "aria-haspopup": "menu", text: "Add to palette" });
+    add.addEventListener("click", function () { paletteMenu(cs, add); });
+    var clr = el("button", { type: "button", class: "tbtn", text: "Clear" });
+    clr.addEventListener("click", clearSel);
+    return el("div", { class: "selbar" }, [
+      el("span", { class: "ss", "aria-hidden": "true" }, cs.slice(-14).map(sw)),
+      el("span", { class: "sn num", "aria-live": "polite", text: cs.length + " selected" }),
+      clr, add
+    ]);
   }
 
   /* Days: today first (A59), then each earlier day; a palette's colors sit together with no gap */
   function daysView() {
-    var box = el("div", { class: "days z" + st.zoom }), list = shown(), groups = [];
+    var box = el("div", { class: "days" }), list = shown(), groups = [];
+    zoomVars(box);
     list.slice().sort(function (a, b) { return b.number - a.number; }).forEach(function (c) {
       var g = groups[groups.length - 1];
       if (g && g.day === c.day) g.list.push(c); else groups.push({ day: c.day, list: [c] });
@@ -613,8 +701,10 @@
     stageF.appendChild(el("p", { class: "fan-hint", text: "Scroll to turn it. Click the top card to open it." }));
     var STEP = list.length > 24 ? 5.6 : 8, pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
     var cards = list.map(function (c, i) {
-      var d = el("div", { class: "fan-card", style: vars(c), role: "img", "aria-label": label(c) });   // just the color: its name and details sit top left (entry 113)
-      d.addEventListener("click", function () { if (Math.round(pos) === i) openCard(c); else { pos = i; place(true); } });
+      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c), role: "img", "aria-label": label(c) });   // just the color: its name and details sit top left (entry 113)
+      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (Math.round(pos) === i) openCard(c); else { pos = i; place(true); } });
+      // A right-click turns the fan to that card first, so the name top left is the color the menu acts on.
+      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (Math.round(pos) !== i) { pos = i; place(true); } colorMenu(c, toStage(e)); });
       stageF.appendChild(d);
       return d;
     });
@@ -637,7 +727,7 @@
       if (Math.abs(acc) < 34) return;
       pos = Math.max(0, Math.min(list.length - 1, Math.round(pos) + (acc > 0 ? 1 : -1))); acc = 0; place(true);
     }, { passive: false });
-    stageF.addEventListener("pointerdown", function (e) { if (e.target.closest(".fan-card")) return; drag = { x: e.clientX, p: pos }; stageF.setPointerCapture(e.pointerId); });
+    stageF.addEventListener("pointerdown", function (e) { if (e.button !== 0 || e.target.closest(".fan-card")) return; drag = { x: e.clientX, p: pos }; stageF.setPointerCapture(e.pointerId); });
     stageF.addEventListener("pointermove", function (e) { if (!drag) return; pos = Math.max(0, Math.min(list.length - 1, drag.p - (e.clientX - drag.x) / 24)); place(false); });
     stageF.addEventListener("pointerup", function () { if (!drag) return; drag = null; pos = Math.round(pos); place(true); });
     stageF.addEventListener("keydown", function (e) {
@@ -655,17 +745,11 @@
   function collectionsView() {
     var box = el("div", { class: "col" });
     if (st.sub === "pins") {
-      var pins = colors.filter(function (c) { return c.pinned; });
-      if (st.selecting) box.appendChild(el("p", { class: "col-note", text: "Pick the pins that belong together, then group them." }));
-      if (!pins.length) { box.appendChild(el("p", { class: "empty", text: "Pin a color from its card, and it waits here." })); return box; }
-      var grid = el("div", { class: "pins" + (st.selecting ? " selecting" : "") });
-      pins.forEach(function (c, i) {
-        grid.appendChild(tile(c, i, { sel: st.selected.indexOf(c.number) >= 0, onClick: st.selecting ? function (cc, b) {
-          var k = st.selected.indexOf(cc.number);
-          if (k >= 0) st.selected.splice(k, 1); else st.selected.push(cc.number);
-          b.classList.toggle("sel", k < 0); renderNav();
-        } : null }));
-      });
+      var pinned = pinnedColors(), pins = pinned.filter(function (c) { return !st.band || c.band === st.band; });
+      if (!pinned.length) { box.appendChild(el("p", { class: "empty", text: "Pin a color with a right-click or from its card, and it waits here." })); return box; }
+      if (!pins.length) { box.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return box; }
+      var grid = el("div", { class: "pins" });
+      pins.forEach(function (c, i) { grid.appendChild(tile(c, i)); });
       box.appendChild(grid);
     } else if (st.sub === "palettes") {
       palettes.forEach(function (p) { box.appendChild(paletteRow(p)); });
@@ -680,9 +764,20 @@
     onDesk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(); });
     var share = el("button", { type: "button", class: "tbtn", text: "Share" });
     share.addEventListener("click", function () { openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    share.disabled = !cs.length;
+    // Until you name a palette it keeps a placeholder from where its colors came from (A24); click the name to give it yours.
+    var pn = el("p", { class: "pn", contenteditable: "true", role: "textbox", "aria-label": "Name this palette", "data-placeholder": p.placeholder || "Untitled palette", spellcheck: "false" });
+    pn.textContent = p.name || "";
+    pn.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); pn.blur(); } });
+    pn.addEventListener("input", function () { var v = pn.textContent.trim(); p.name = v || null; if (!v) pn.textContent = ""; if (st.deskPal === p.id) drawStrips(); });
     return el("div", { class: "pal" }, [
-      el("div", null, [el("p", { class: "pn" + (p.name ? "" : " ph"), text: palName(p) }), el("p", { class: "pm num", text: cs.length + " colors, " + p.day })]),
-      el("div", { class: "strip" }, cs.map(function (c) { var b = el("button", { type: "button", style: vars(c), "aria-label": label(c) }); b.addEventListener("click", function () { openCard(c); }); return b; })),
+      el("div", null, [pn, el("p", { class: "pm num", text: cs.length + (cs.length === 1 ? " color, " : " colors, ") + p.day })]),
+      el("div", { class: "strip" }, cs.length ? cs.map(function (c) {
+        var b = el("button", { type: "button", class: isSel(c.number) ? "sel" : null, "data-n": String(c.number), style: vars(c), "aria-label": label(c) });
+        b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c); });
+        b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e), p); });
+        return b;
+      }) : [el("p", { class: "none", text: "No colors yet. Right-click a color to add it." })]),
       el("div", { class: "acts" }, [share, onDesk])
     ]);
   }
@@ -702,16 +797,184 @@
       el("div", { class: "acts" }, [share, keepB])
     ]);
   }
-  function groupSelected() {
-    if (st.selected.length < 2) return;
-    var p = { id: "p-" + Date.now(), name: null, members: st.selected.slice(), day: TODAY, placeholder: "Palette from your pins" };
+
+  /* ---------- Palettes: a color can sit in as many as you like (entry 116) ---------- */
+  function palettesOf(c) { return palettes.filter(function (p) { return p.members.indexOf(c.number) >= 0; }); }
+  function newPalette(list) {
+    var places = list.map(function (c) { return c.place; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    var ph = places.length === 1 ? "Palette from " + places[0] : list.every(function (c) { return c.pinned; }) ? "Palette from your pins" : "Palette from " + places.length + " places";
+    var p = { id: "p-" + Date.now(), name: null, placeholder: ph, members: list.map(function (c) { return c.number; }), day: TODAY };
     palettes.unshift(p);
-    st.selecting = false; st.selected = []; st.sub = "palettes"; render();
+    afterPalettes(p, "Added to ");
+    return p;
+  }
+  function addTo(p, list) {
+    var fresh = list.filter(function (c) { return p.members.indexOf(c.number) < 0; });
+    fresh.forEach(function (c) { p.members.push(c.number); });
+    afterPalettes(p, fresh.length ? "Added to " : "Already in ");
+  }
+  function removeFrom(p, list) {
+    var gone = list.map(function (c) { return c.number; });
+    p.members = p.members.filter(function (n) { return gone.indexOf(n) < 0; });
+    list.forEach(function (c) { if (c.palette === p.id) c.palette = null; });   // Days stops setting it beside the palette it was kept with
+    afterPalettes(p, "Removed from ");
+  }
+  function afterPalettes(p, verb) {
+    st.selected = [];
+    if (st.deskPal) drawStrips();
+    if (sheetRefresh) sheetRefresh();
+    if (st.view === "collections" && st.sub === "palettes") render(); else syncSel();
+    toast(verb + palName(p), p.members.map(byNo).filter(Boolean));
+  }
+  function setPinned(list, on) {
+    list.forEach(function (c) { c.pinned = on; });
+    if (sheetRefresh) sheetRefresh();
+    if (st.view === "collections" && st.sub === "pins") { render(); return; }
+    stage.querySelectorAll("#body .t[data-n]").forEach(function (t) {
+      var c = byNo(Number(t.getAttribute("data-n"))), dot = t.querySelector(".pin");
+      if (c.pinned && !dot) t.appendChild(el("span", { class: "pin", "aria-hidden": "true" }));
+      if (!c.pinned && dot) dot.remove();
+      t.setAttribute("aria-label", label(c) + (c.pinned ? ", pinned" : ""));
+    });
+  }
+
+  /* ---------- The menu (entry 116): right-click any color for Add to palette, the way Spotify adds a song to a
+     playlist, as a Mac menu. Palettes show their colors; a check marks the ones it's already in, a dash when only
+     some of what you gathered is, and choosing a checked one takes it out, the way Finder's tags work. ---------- */
+  var menus = [], menuGone = { at: 0, by: null }, sheetRefresh = null;
+  function rectIn(node) { var r = node.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W; return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k }; }
+  function closeMenus(from) {
+    from = from || 0;
+    while (menus.length > from) { var m = menus.pop(); m.node.remove(); if (m.opener) { m.opener.classList.remove("open"); m.opener.setAttribute("aria-expanded", "false"); } }
+  }
+  function chev() {
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("class", "chev"); s.setAttribute("viewBox", "0 0 6 10"); s.setAttribute("aria-hidden", "true");
+    s.innerHTML = '<path d="M1 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    return s;
+  }
+  // at: a point for a right-click, or { rect } to sit under a button, or { beside } for a submenu.
+  function openMenu(items, at, opts) {
+    opts = opts || {};
+    var level = opts.level || 0, col = items.some(function (it) { return it && it.checks; });
+    closeMenus(level);
+    var m = el("div", { class: "menu", role: "menu", "aria-label": opts.label || "Color" });
+    items.forEach(function (it) {
+      if (it === "-") { m.appendChild(el("hr")); return; }
+      if (it.head) { m.appendChild(it.head); return; }
+      var kids = [];
+      if (col) kids.push(el("span", { class: "ck", "aria-hidden": "true", text: it.check === true ? "✓" : it.check === "mixed" ? "–" : "" }));
+      if (it.strip) kids.push(it.strip);
+      kids.push(el("span", { class: "lb" + (it.ph ? " ph" : ""), text: it.label }));
+      if (it.right) kids.push(el("span", { class: "rt", text: it.right }));
+      if (it.sub) kids.push(chev());
+      var b = el("button", { type: "button", class: "mi", role: it.checks ? "menuitemcheckbox" : "menuitem", tabindex: "-1" }, kids);
+      if (it.checks) b.setAttribute("aria-checked", it.check === true ? "true" : it.check === "mixed" ? "mixed" : "false");
+      if (it.disabled) b.disabled = true;
+      if (it.sub) {
+        b.setAttribute("aria-haspopup", "menu"); b.setAttribute("aria-expanded", "false");
+        b._open = function (focus) {
+          if (menus[level + 1] && menus[level + 1].opener === b) return;
+          var sm = openMenu(it.sub(), { beside: rectIn(b), menu: rectIn(m) }, { level: level + 1, opener: b, label: it.label });
+          b.classList.add("open"); b.setAttribute("aria-expanded", "true");
+          if (focus) { var f = sm.querySelector(".mi:not(:disabled)"); if (f) f.focus(); }
+        };
+        var hov = null;
+        b.addEventListener("mouseenter", function () { clearTimeout(hov); hov = setTimeout(function () { b._open(false); }, 110); });
+        b.addEventListener("mouseleave", function () { clearTimeout(hov); });
+        b.addEventListener("click", function () { b._open(false); });
+      } else {
+        b.addEventListener("mouseenter", function () { closeMenus(level + 1); });
+        b.addEventListener("click", function () { closeMenus(); if (it.act) it.act(); });
+      }
+      m.appendChild(b);
+    });
+    m.style.visibility = "hidden"; stage.appendChild(m);
+    var w = m.offsetWidth, h = m.offsetHeight, x, y;
+    if (at.beside) {   // a submenu: to the right of its menu, its first row level with the row that opened it
+      x = at.menu.x + at.menu.w - 4; y = at.beside.y - 5;
+      if (x + w > W - 6) x = at.menu.x - w + 4;
+    } else if (at.rect) {   // under a button, or above it when there's no room
+      x = Math.min(at.rect.x, W - 6 - w); y = at.rect.y + at.rect.h + 4;
+      if (y + h > H - 6) y = at.rect.y - h - 4;
+    } else {   // at the pointer, flipped at the edges like a Mac menu
+      x = at.x + 1; y = at.y + 1;
+      if (x + w > W - 6) x = at.x - w - 1;
+    }
+    y = Math.max(6, Math.min(y, H - 6 - h)); x = Math.max(6, x);
+    m.style.left = x + "px"; m.style.top = y + "px"; m.style.visibility = "";
+    menus.push({ node: m, opener: opts.opener || null });
+    return m;
+  }
+  function colorMenu(c, at, inPal) {
+    if (!isSel(c.number)) clearSel();   // the Mac way: right-click outside what's selected acts on that color alone
+    var list = isSel(c.number) && st.selected.length > 1 ? st.selected.map(byNo).filter(Boolean) : [c];
+    var many = list.length > 1, allPinned = list.every(function (x) { return x.pinned; });
+    var items = [];
+    if (many) items.push({ head: el("div", { class: "mh" }, [el("span", { class: "ms", "aria-hidden": "true" }, list.slice(0, 14).map(sw)), el("span", { class: "num", text: list.length + " colors" })]) });
+    items.push({ label: "Add to palette", sub: function () { return paletteItems(list); } });
+    items.push({ label: allPinned ? "Unpin" : "Pin", act: function () { setPinned(list, !allPinned); } });
+    if (inPal) items.push({ label: "Remove from this palette", act: function () { removeFrom(inPal, list); } });
+    items.push("-");
+    items.push({ label: many ? "Copy hex codes" : "Copy hex", right: many ? null : c.hex, act: function () {
+      copy(list.map(function (x) { return x.hex; }).join("\n"));
+      toast("Copied " + (many ? list.length + " hex codes" : c.hex), list);
+    } });
+    items.push({ label: "Share", act: function () { openShare(many ? list.length + " colors" : title(c), list.map(function (x) { return { hex: x.hex, name: title(x) }; })); } });
+    openMenu(items, at, { label: many ? list.length + " colors" : title(c) });
+  }
+  function paletteItems(list) {
+    var nums = list.map(function (c) { return c.number; });
+    var items = [{ checks: true, strip: el("span", { class: "ms blank", "aria-hidden": "true" }), label: "New palette", act: function () { newPalette(list); } }];
+    if (palettes.length) items.push("-");
+    palettes.forEach(function (p) {
+      var n = nums.filter(function (k) { return p.members.indexOf(k) >= 0; }).length, state = n === nums.length ? true : n ? "mixed" : false;
+      var cs = p.members.map(byNo).filter(Boolean);
+      items.push({ checks: true, check: state, label: palName(p), ph: !p.name,
+        strip: el("span", { class: "ms" + (cs.length ? "" : " blank"), "aria-hidden": "true" }, cs.slice(0, 8).map(sw)),
+        act: function () { if (state === true) removeFrom(p, list); else addTo(p, list); } });
+    });
+    return items;
+  }
+  function paletteMenu(list, btn) {
+    if (menuGone.by === btn && performance.now() - menuGone.at < 400) return;   // the click that closed it shouldn't open it again
+    openMenu(paletteItems(list), { rect: rectIn(btn) }, { opener: btn, label: "Add to palette" });
+    btn.classList.add("open");
+  }
+  stage.addEventListener("pointerdown", function (e) {
+    if (!menus.length || e.target.closest(".menu")) return;
+    var op = menus[0].opener;
+    menuGone = { at: performance.now(), by: op && op.contains(e.target) ? op : null };   // pressing the button that opened it closes it
+    closeMenus();
+  }, true);
+  stage.addEventListener("wheel", function (e) { if (menus.length && !e.target.closest(".menu")) closeMenus(); }, { capture: true, passive: true });
+  $("body").addEventListener("scroll", function () { closeMenus(); });
+  // Arrow keys move through a menu, → opens a submenu, ← and Esc step back out.
+  document.addEventListener("keydown", function (e) {
+    if (!menus.length) return;
+    var top = menus[menus.length - 1], its = Array.prototype.filter.call(top.node.querySelectorAll(".mi"), function (b) { return !b.disabled; });
+    var i = its.indexOf(document.activeElement), k = e.key;
+    if (k === "ArrowDown" || k === "ArrowUp") { e.preventDefault(); e.stopPropagation(); var n = i < 0 ? (k === "ArrowDown" ? 0 : its.length - 1) : (i + (k === "ArrowDown" ? 1 : its.length - 1)) % its.length; if (its[n]) its[n].focus(); }
+    else if (k === "ArrowRight") { if (i >= 0 && its[i]._open) { e.preventDefault(); e.stopPropagation(); its[i]._open(true); } }
+    else if (k === "ArrowLeft" || k === "Escape") {
+      e.preventDefault(); e.stopPropagation();
+      if (menus.length > 1) { var op = top.opener; closeMenus(menus.length - 1); if (op) op.focus(); } else closeMenus();
+    }
+  }, true);
+
+  /* A quiet line at the bottom of the window: what just happened, with the colors it happened to */
+  var toastEl = null, toastT = null;
+  function toast(text, cs) {
+    if (toastEl) toastEl.remove();
+    toastEl = el("div", { class: "toast", role: "status" }, [cs && cs.length ? el("span", { class: "ms", "aria-hidden": "true" }, cs.slice(0, 14).map(sw)) : null, el("span", { text: text })]);
+    $("pw").appendChild(toastEl);
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { var t = toastEl; if (!t) return; t.classList.add("out"); setTimeout(function () { t.remove(); if (toastEl === t) toastEl = null; }, 280); }, 2400);
   }
 
   /* ---------- The specimen card ---------- */
   var sheet = null;
-  function closeSheet() { if (sheet) { sheet.remove(); sheet = null; } }
+  function closeSheet() { closeMenus(); sheetRefresh = null; if (sheet) { sheet.remove(); sheet = null; } }
   function openCard(c) {
     closeSheet();
     var src = c.crop ? el("img", { class: "crop", src: c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
@@ -742,10 +1005,24 @@
     if (!sims.length) simBox.appendChild(el("span", { text: "Nothing close yet. This one is new to your collection." }));
     sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: o.place + ", " + o.day })]); b.addEventListener("click", function () { openCard(o); }); simBox.appendChild(b); });
     row("Similar", simBox);
-    var p = c.palette && palById(c.palette);
-    if (p) row("Palette", el("span", null, [palName(p), el("span", { class: "sp-strip" }, p.members.map(byNo).filter(Boolean).map(function (m) { return el("i", { style: "background:" + m.hex }); }))]));
-    var pin = el("button", { type: "button", class: "tbtn", "aria-pressed": String(c.pinned), text: c.pinned ? "Pinned" : "Pin" });
-    pin.addEventListener("click", function () { c.pinned = !c.pinned; pin.setAttribute("aria-pressed", String(c.pinned)); pin.textContent = c.pinned ? "Pinned" : "Pin"; render(); });
+    // Every palette it's in, each with its colors (entry 116); the row hides until there's one.
+    var palDt = el("dt"), palDd = el("dd");
+    dl.appendChild(palDt); dl.appendChild(palDd);
+    var pin = el("button", { type: "button", class: "tbtn" });
+    pin.addEventListener("click", function () { setPinned([c], !c.pinned); });
+    var addB = el("button", { type: "button", class: "tbtn", "aria-haspopup": "menu", text: "Add to palette" });
+    addB.addEventListener("click", function () { paletteMenu([c], addB); });
+    function refresh() {
+      var mine = palettesOf(c);
+      palDt.textContent = mine.length > 1 ? "Palettes" : "Palette";
+      palDt.hidden = palDd.hidden = !mine.length;
+      palDd.textContent = "";
+      palDd.appendChild(el("span", { class: "sp-pals" }, mine.map(function (p) {
+        return el("span", { class: "sp-pal" }, [el("span", { class: "pl", text: palName(p) }), el("span", { class: "sp-strip", "aria-hidden": "true" }, p.members.map(byNo).filter(Boolean).map(sw))]);
+      })));
+      pin.setAttribute("aria-pressed", String(c.pinned)); pin.textContent = c.pinned ? "Pinned" : "Pin";
+    }
+    refresh();
     var share = el("button", { type: "button", class: "tbtn", text: "Share" });
     share.addEventListener("click", function () { openShare(title(c), [{ hex: c.hex, name: title(c) }]); });
     var padArea = el("textarea", { id: "pad", placeholder: "Anything you want to remember about it" });
@@ -763,13 +1040,14 @@
         name,
         el("p", { class: "sp-hint", text: c.name ? "Your name for it." : "Click the name to give it yours." }),
         dl,
-        el("div", { class: "sp-acts" }, [pin, share]),
+        el("div", { class: "sp-acts" }, [pin, addB, share]),
         el("div", { class: "pad" }, [el("label", { for: "pad", text: "Scratch pad" }), padArea])
       ])
     ]);
     sheet = el("div", { class: "sheet" }, [card]);
     sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(); });
     $("pw").appendChild(sheet);
+    sheetRefresh = refresh;
   }
   function goToSource(c) {
     closeWindow();
@@ -831,11 +1109,15 @@
     if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); runPlay(); return; }
     if ((e.key === "k" || e.key === "K") && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleKeys(); return; }
     if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
-    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else closeWindow(); return; }
+    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else if (st.selected.length) clearSel(); else closeWindow(); return; }
     if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
+    // ⌘− and ⌘+ zoom Days, ⌘0 goes back to the middle (entry 117). While the window is open they're Palit's, not the browser's.
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && !$("pw").hidden) {
+      var zk = e.key === "-" || e.key === "_" ? -1 : e.key === "=" || e.key === "+" ? 1 : e.key === "0" ? 0 : null;
+      if (zk !== null) { e.preventDefault(); if (st.view === "days" && !sheet) zoomKey(zk); return; }
+    }
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === "h" || e.key === "H") { document.body.classList.toggle("clean"); fit(); }
-    if (!$("pw").hidden && st.view === "days") { if (e.key === "-") setZoom(st.zoom - 1); if (e.key === "=" || e.key === "+") setZoom(st.zoom + 1); }
   });
 
   function fit() {
@@ -847,13 +1129,14 @@
   function start(done) {
     closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
     strips.classList.remove("open");
-    st.view = "days"; st.band = null; st.zoom = 1; st.sub = "pins"; st.deskPal = null; fanPos = null;
-    $("z").value = "1";
+    st.view = "days"; st.band = null; st.zoom = ZOOM_MID; st.sub = "pins"; st.deskPal = null; st.selected = []; fanPos = null;
+    if (toastEl) { toastEl.remove(); toastEl = null; }
     seedSample();
     seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); if (typeof done === "function") done(); });
   }
   /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, days, zoom-out, zoom-in,
-     spectrum, pins, palettes, shared, card, share; add &band=R (or O Y G B I V) to filter by a letter. */
+     spectrum, pins, menu, palettes, shared, card, share; add &band=R (or O Y G B I V) to filter by a letter,
+     and &menu=1 with card to open its Add to palette. */
   function scene(name) {
     var sd = screen().seeds[0];
     if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
@@ -861,9 +1144,20 @@
     if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
     if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
     if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }
-    if (name === "zoom-out" || name === "zoom-in") { st.zoom = name === "zoom-out" ? 0 : 2; $("z").value = String(st.zoom); st.view = "days"; openWindow(); return; }
+    if (name === "zoom-out" || name === "zoom-in") { st.zoom = name === "zoom-out" ? 0 : ZOOM.length - 1; st.view = "days"; openWindow(); return; }
     if (name === "pins" || name === "palettes" || name === "shared") { st.view = "collections"; st.sub = name; openWindow(); return; }
-    if (name === "card") { st.view = "days"; openWindow(); openCard(byNo(Number(q.get("n")) || 29)); return; }
+    if (name === "menu") {   // two pins gathered with ⇧-click, right-clicked, Add to palette open
+      st.view = "collections"; st.sub = "pins"; openWindow();
+      st.selected = [29, 4].filter(function (n) { return byNo(n) && byNo(n).pinned; }); syncSel();
+      var t4 = stage.querySelector('#body .t[data-n="4"]');
+      if (t4) { var r4 = rectIn(t4); colorMenu(byNo(4), { x: r4.x + r4.w * 0.56, y: r4.y + r4.h * 0.42 }); var sub = menus[0] && menus[0].node.querySelector(".mi[aria-haspopup]"); if (sub) sub._open(false); }
+      return;
+    }
+    if (name === "card") {
+      st.view = "days"; openWindow(); openCard(byNo(Number(q.get("n")) || 29));
+      if (q.get("menu") === "1") { var ab = sheet.querySelector('.sp-acts [aria-haspopup]'); if (ab) paletteMenu([byNo(Number(q.get("n")) || 29)], ab); }
+      return;
+    }
     if (name === "share") { st.view = "collections"; st.sub = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
     if (name === "days" || name === "spectrum" || name === "collections") { st.view = name; openWindow(); }
   }
@@ -899,6 +1193,15 @@
   function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); }
   async function clickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.click(); }
   async function typeInto(set, text, tok) { for (var i = 1; i <= text.length; i++) { set(text.slice(0, i)); await sleep(70 + Math.random() * 50, tok); } }
+  async function shiftClickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, shiftKey: true })); }
+  async function rightClickOn(node, ms, tok) {
+    await goTo(node, ms, tok); await sleep(160, tok); press();
+    if (!node) return;
+    var s = stage.getBoundingClientRect(), k = s.width / W;
+    node.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: s.left + play.pos.x * k, clientY: s.top + play.pos.y * k }));
+  }
+  async function menuPick(node, ms, tok) { await goTo(node, ms, tok); if (node) node.classList.add("phover"); await sleep(200, tok); press(); if (node) node.click(); }
+  function byText(sel, text) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return n.textContent === text; })[0]; }
   function q1(sel) { return stage.querySelector(sel); }
   function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
   function stopPlay() {
@@ -962,10 +1265,14 @@
       await goTo(tile, 1100, tok); if (tile) tile.classList.add("phover");
       await sleep(3400, tok); if (tile) tile.classList.remove("phover");
 
-      // 6. Zoom out, zoom in (0:38 to 0:46)
+      // 6. Zoom out, zoom in (0:38 to 0:46): ⌘− down the stops to only color, then ⌘+ up to the full names (entry 117)
       await until(38, tok);
-      showKeys(["−"]); await clickOn($("z-out"), 800, tok); await sleep(2300, tok);
-      showKeys(["+"]); await clickOn($("z-in"), 700, tok); await sleep(700, tok); press(); $("z-in").click();
+      await glide(1150, 170, 700, tok);
+      showKeys(["⌘", "−"]);
+      for (var zs = 0; zs < 3; zs++) { zoomKey(-1); await sleep(430, tok); }
+      await sleep(1500, tok);
+      showKeys(["⌘", "+"]);
+      for (zs = 0; zs < 6; zs++) { zoomKey(1); await sleep(390, tok); }
       await sleep(600, tok); showKeys([]);
 
       // 7. Seven letters (0:46 to 0:52)
@@ -994,16 +1301,24 @@
       await sleep(900, tok);
       await goTo(q1(".sim button") || padEl, 1200, tok);
 
-      // 10. Pins into palettes (1:16 to 1:24)
+      // 10. Pins into a palette (1:16 to 1:24): ⇧-click two pins, right-click, Add to palette, New palette (entry 116)
       await until(76, tok);
-      await clickOn(q1(".sp-x"), 700, tok);
-      await clickOn($("views").children[1], 800, tok);
-      await sleep(500, tok);
-      await clickOn(q1(".pw-nav .act .tbtn"), 800, tok);
+      await clickOn(q1(".sp-x"), 600, tok);
+      await clickOn($("views").children[1], 700, tok);   // Collections opens on Pinned
       await sleep(300, tok);
-      await clickOn(byLabel(".pins .t", "No. 029"), 700, tok);
-      await clickOn(byLabel(".pins .t", "No. 004"), 600, tok);
-      await clickOn(q1(".pw-nav .act .tbtn.ink"), 700, tok);
+      var pinA = byLabel(".pins .t", "No. 029"), pinB = byLabel(".pins .t", "No. 004");
+      showKeys(["⇧", "Click"]);
+      await shiftClickOn(pinA, 550, tok);
+      await shiftClickOn(pinB, 450, tok);
+      await sleep(250, tok);
+      showKeys(["Right-click"]);
+      await rightClickOn(pinB, 200, tok);
+      await sleep(300, tok); showKeys([]);
+      await menuPick(q1(".menu .mi[aria-haspopup]"), 450, tok);   // Add to palette: the palettes open beside it
+      await sleep(250, tok);
+      await menuPick(menus[1] ? menus[1].node.querySelector(".mi") : null, 450, tok);   // New palette
+      await sleep(1100, tok);
+      await clickOn(byText(".subnav button", "Palettes"), 600, tok);
 
       // 11. A share card (1:24 to 1:35)
       await until(84, tok);
