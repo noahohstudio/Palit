@@ -90,6 +90,19 @@
   .day.today .t { height: calc(var(--th) * var(--today)); }
   .t.join { margin-left: -3px; }
   .t:hover, .t:focus-visible { flex-grow: 2.4; outline: none; z-index: 2; }
+  /* Playback (entry 112): a drawn cursor and keystroke chips, so the demo records hands-free */
+  .pcursor { position: absolute; left: 0; top: 0; z-index: 100; width: 22px; height: 30px; pointer-events: none; }
+  .pcursor[hidden] { display: none; }
+  .pcursor svg { display: block; transform-origin: 3px 3px; transition: transform 110ms ease-out; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35)); }
+  .pcursor.down svg { transform: scale(0.84); }
+  .pkeys { position: absolute; left: 50%; bottom: 34px; z-index: 95; display: flex; gap: 6px; transform: translateX(-50%); opacity: 0; transition: opacity 180ms ease-out; pointer-events: none; }
+  .pkeys.on { opacity: 1; }
+  .pkeys kbd { min-width: 18px; padding: 7px 13px; border-radius: 9px; background: rgba(29, 29, 31, 0.84); color: #fff; font: 16px var(--font); text-align: center; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
+  body.nokeys .pkeys { display: none; }
+  body.playing #stage { pointer-events: none; }
+  body.playing #stage, body.playing #stage * { cursor: none !important; }
+  .t.phover { flex-grow: 2.4; z-index: 2; }
+  .t.phover .dt { opacity: 0.86; }
   .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts); line-height: 1.12; letter-spacing: -0.01em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: var(--tl); -webkit-box-orient: vertical; }
   .days.z0 .t .nm { display: none; }
   .day.today .t .nm { font-size: var(--tts); letter-spacing: -0.025em; }
@@ -108,9 +121,6 @@
   .fan-cap .nm.ph { color: var(--ink-2); }
   .fan-cap .mt { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
   .fan-card { position: absolute; left: calc(50% - 66px); bottom: 74px; width: 132px; height: 214px; background: var(--c); color: var(--on); transform-origin: 50% 500px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 10px 22px rgba(0, 0, 0, 0.12); cursor: pointer; }
-  .fan-card::before { content: ""; position: absolute; inset: 7px 7px 32px; border: 1px solid currentColor; opacity: 0.28; }
-  .fan-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 26px; border-top: 1px dashed currentColor; opacity: 0.4; }
-  .fan-card .st { position: absolute; left: 12px; bottom: 7px; font-size: 10px; opacity: 0.85; }
   .fan-hint { position: absolute; left: 28px; bottom: 12px; font-size: 11px; color: var(--ink-2); }
 
   /* Collections: pins, palettes, and what's shared with you */
@@ -225,10 +235,12 @@
   <div class="c-row">
     <span class="c-lb">Screen</span><span class="c-seg" id="c-screen"></span>
     <span class="c-lb">Sound</span><span class="c-seg" id="c-sound"></span>
+    <button type="button" class="c-btn" id="c-play">Play<kbd>P</kbd></button>
+    <button type="button" class="c-btn" id="c-keys" aria-pressed="true">Keystrokes<kbd>K</kbd></button>
     <button type="button" class="c-btn" id="c-reset">Start over</button>
     <button type="button" class="c-btn" id="c-hide">Hide<kbd>H</kbd></button>
   </div>
-  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum.</p><span class="c-credit" id="c-credit"></span></div>
+  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum. <b>P</b> plays the demo for recording; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
 </div>
 
 <script src="../system/sample.js"></script>
@@ -252,6 +264,8 @@
   }
   var INK_L = lum("#1d1d1f");
   function inkOn(hex) { var l = lum(hex); return 1.05 / (l + 0.05) >= (l + 0.05) / (INK_L + 0.05) ? "#ffffff" : "#1d1d1f"; }
+  // Copy quietly: the clipboard refuses when the page isn't focused, as during playback.
+  function copy(text) { try { var p = navigator.clipboard.writeText(text); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
   function toHex(r, g, b) { return "#" + [r, g, b].map(function (v) { return ("0" + v.toString(16)).slice(-2); }).join(""); }
   // ROYGBIV, strictly seven letters (A58). Neutrals have no letter; they show when no letter is picked.
   var LETTERS = [["R", "Red", "#b5462e"], ["O", "Orange", "#d9822b"], ["Y", "Yellow", "#e2b93b"], ["G", "Green", "#6e9a5a"], ["B", "Blue", "#3f78a8"], ["I", "Indigo", "#4b4fa0"], ["V", "Violet", "#7a5aa6"]];
@@ -407,7 +421,7 @@
   }
   function copyColor(c, e, from) {
     var rgb = PC.displayRgb(c.hex), text = e && e.altKey ? "rgb(" + rgb.split(" ").join(", ") + ")" : e && (e.metaKey || e.ctrlKey) ? "oklch(" + PC.displayOklch(c.hex) + ")" : c.hex;
-    try { navigator.clipboard.writeText(text); } catch (err) {}
+    copy(text);
     var r = from.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
     note("Copied " + text, (r.left - s.left) / k - 12, (r.top - s.top) / k + 2, true);
   }
@@ -598,7 +612,7 @@
     stageF.appendChild(el("p", { class: "fan-hint", text: "Scroll to turn it. Click the top card to open it." }));
     var STEP = list.length > 24 ? 5.6 : 8, pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
     var cards = list.map(function (c, i) {
-      var d = el("div", { class: "fan-card", style: vars(c), role: "img", "aria-label": label(c) }, [el("span", { class: "st num", text: new Date(c.at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) })]);
+      var d = el("div", { class: "fan-card", style: vars(c), role: "img", "aria-label": label(c) });   // just the color: its name and details sit top left (entry 113)
       d.addEventListener("click", function () { if (Math.round(pos) === i) openCard(c); else { pos = i; place(true); } });
       stageF.appendChild(d);
       return d;
@@ -717,7 +731,7 @@
     var vals = el("span", { class: "vals num" });
     [["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)], ["OKLCH", PC.displayOklch(c.hex)]].forEach(function (v) {
       var b = el("button", { type: "button", title: "Copy " + v[0], text: v[1] });
-      b.addEventListener("click", function () { try { navigator.clipboard.writeText(v[1]); } catch (e) {} b.textContent = "Copied"; setTimeout(function () { b.textContent = v[1]; }, 900); });
+      b.addEventListener("click", function () { copy(v[1]); b.textContent = "Copied"; setTimeout(function () { b.textContent = v[1]; }, 900); });
       vals.appendChild(b);
     });
     row("Values", vals);
@@ -769,7 +783,7 @@
     var n = items.length;
     var codes = items.map(function (it) { return it.name + "  " + it.hex; }).join("\n");
     var copyB = el("button", { type: "button", class: "tbtn ink", text: "Copy the codes" });
-    copyB.addEventListener("click", function () { try { navigator.clipboard.writeText(name + "\n" + codes); } catch (e) {} copyB.textContent = "Copied"; });
+    copyB.addEventListener("click", function () { copy(name + "\n" + codes); copyB.textContent = "Copied"; });
     var closeB = el("button", { type: "button", class: "tbtn", text: "Close" });
     closeB.addEventListener("click", closeSheet);
     var box = el("div", { class: "share", role: "dialog", "aria-label": "Share " + name }, [
@@ -805,9 +819,16 @@
     $("c-sound").appendChild(b);
   });
   $("c-hide").addEventListener("click", function () { document.body.classList.toggle("clean"); fit(); });
-  $("c-reset").addEventListener("click", start);
+  $("c-reset").addEventListener("click", function () { stopPlay(); start(); });
+  $("c-play").addEventListener("click", function () { if (play.on) stopPlay(); else runPlay(); });
+  $("c-keys").addEventListener("click", toggleKeys);
+  function toggleKeys() { var off = document.body.classList.toggle("nokeys"); $("c-keys").setAttribute("aria-pressed", String(!off)); }
   addEventListener("keydown", function (e) {
     if (e.target.closest && e.target.closest("input, textarea, [contenteditable=true]")) return;
+    if (play.on && (e.key === "Escape" || e.key === "p" || e.key === "P")) { e.preventDefault(); stopPlay(); return; }
+    if (play.on) return;
+    if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); runPlay(); return; }
+    if ((e.key === "k" || e.key === "K") && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleKeys(); return; }
     if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
     if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else closeWindow(); return; }
     if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
@@ -822,12 +843,13 @@
   }
   addEventListener("resize", fit);
 
-  function start() {
-    closeWindow(); if (st.picking) stopPicking();
+  function start(done) {
+    closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
+    strips.classList.remove("open");
     st.view = "days"; st.band = null; st.zoom = 1; st.sub = "pins"; st.deskPal = null; fanPos = null;
     $("z").value = "1";
     seedSample();
-    seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); });
+    seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); if (typeof done === "function") done(); });
   }
   /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, days, zoom-out, zoom-in,
      spectrum, pins, palettes, shared, card, share; add &band=R (or O Y G B I V) to filter by a letter. */
@@ -844,10 +866,160 @@
     if (name === "share") { st.view = "collections"; st.sub = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
     if (name === "days" || name === "spectrum" || name === "collections") { st.view = name; openWindow(); }
   }
+
+  /* ---------- Playback (entry 112): the demo storyboard, shot by shot, for recording hands-free.
+     P or ?play starts it, Esc or P stops it, K hides the keystrokes. Times are the storyboard's (entry 111). ---------- */
+  var play = { on: false, token: 0, pos: { x: 1180, y: 700 }, t0: 0 };
+  var pcur = el("div", { class: "pcursor", "aria-hidden": "true", hidden: "" });
+  pcur.innerHTML = '<svg width="22" height="30" viewBox="0 0 22 30"><path d="M3 3 L3 24 L8.4 18.6 L12.2 27.2 L15.9 25.6 L12.2 17.2 L19.4 17.2 Z" fill="#111" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+  var pkeys = el("div", { class: "pkeys", "aria-hidden": "true" });
+  stage.appendChild(pcur); stage.appendChild(pkeys);
+  if (q.get("keys") === "0") toggleKeys();
+  function closeShare() { closeSheet(); }
+  function stopped(tok) { return tok !== play.token; }
+  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms)); }); }
+  function until(sec, tok) { return sleep(play.t0 + sec * 1000 - performance.now(), tok); }
+  function setCur(x, y) { play.pos = { x: x, y: y }; pcur.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; if (st.picking) moveLoupe(x, y); }
+  function glide(x, y, ms, tok) {
+    var from = play.pos, t0 = performance.now();
+    return new Promise(function (res, rej) {
+      function step(now) {
+        if (stopped(tok)) { rej("stopped"); return; }
+        var k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        setCur(from.x + (x - from.x) * e, from.y + (y - from.y) * e);
+        if (k < 1) requestAnimationFrame(step); else res();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  function centerOf(node) { var r = node.getBoundingClientRect(), sr = stage.getBoundingClientRect(), k = sr.width / W; return { x: (r.left - sr.left + r.width / 2) / k, y: (r.top - sr.top + r.height / 2) / k }; }
+  async function goTo(node, ms, tok) { if (!node) return; var c = centerOf(node); await glide(c.x, c.y, ms, tok); }
+  function showKeys(list) { pkeys.textContent = ""; (list || []).forEach(function (k) { pkeys.appendChild(el("kbd", { text: k })); }); pkeys.classList.toggle("on", !!(list && list.length)); }
+  function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); }
+  async function clickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.click(); }
+  async function typeInto(set, text, tok) { for (var i = 1; i <= text.length; i++) { set(text.slice(0, i)); await sleep(70 + Math.random() * 50, tok); } }
+  function q1(sel) { return stage.querySelector(sel); }
+  function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
+  function stopPlay() {
+    if (!play.on) return;
+    play.token++; play.on = false;
+    document.body.classList.remove("playing"); showKeys([]); pcur.hidden = true;
+    stage.querySelectorAll(".t.phover").forEach(function (t) { t.classList.remove("phover"); });
+    $("c-play").firstChild.textContent = "Play";
+  }
+  async function runPlay() {
+    if (play.on) return;
+    var tok = ++play.token;
+    play.on = true; document.body.classList.add("playing"); $("c-play").firstChild.textContent = "Stop";
+    try {
+      if (st.screen !== 0) showScreen(0);
+      await new Promise(function (res) { start(res); });
+      if (stopped(tok)) return;
+      setCur(1190, 720); pcur.hidden = false;
+      play.t0 = performance.now();
+      var croc = byNo(29);
+
+      // 1. A real desktop (0:00 to 0:06)
+      await sleep(1300, tok); await glide(1000, 560, 2800, tok);
+
+      // 2. One keystroke, real pixels (0:06 to 0:13)
+      await until(6, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
+      await sleep(900, tok); showKeys([]);
+      await glide(900, 380, 1700, tok); await glide(840, 470, 1500, tok); await glide(819, 452, 1100, tok);
+
+      // 3. It lands (0:13 to 0:20)
+      await until(13, tok);
+      showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
+      await sleep(900, tok); showKeys([]);
+      await glide(1424, 450, 1500, tok); strips.classList.add("open");
+      await sleep(2300, tok); strips.classList.remove("open"); await glide(1120, 560, 1700, tok);
+
+      // 4. Name it, or keep a palette (0:20 to 0:28)
+      await until(20, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
+      await glide(1040, 548, 800, tok);
+      showKeys(["Right-click"]);
+      var named = pick(1040, 548, {}); stopPicking(); nameBeside(named, 1040, 548, true);
+      var input = namer.querySelector("input");
+      await sleep(350, tok); showKeys([]);
+      await typeInto(function (v) { input.value = v; }, "Crocoite", tok);
+      await sleep(250, tok); showKeys(["Return"]);
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      await sleep(600, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking();
+      await glide(880, 360, 600, tok); showKeys(["⇧", "Click"]); pick(880, 360, { more: true });
+      await glide(980, 610, 600, tok); pick(980, 610, { more: true });
+      await glide(700, 300, 600, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
+      await sleep(500, tok); showKeys([]); pcur.hidden = false;
+
+      // 5. Days, today first (0:28 to 0:38)
+      await until(28, tok);
+      await clickOn($("mbi"), 1100, tok);
+      await sleep(1700, tok);
+      var tile = byLabel(".days .t", no(named.number));
+      await goTo(tile, 1100, tok); if (tile) tile.classList.add("phover");
+      await sleep(3400, tok); if (tile) tile.classList.remove("phover");
+
+      // 6. Zoom out, zoom in (0:38 to 0:46)
+      await until(38, tok);
+      showKeys(["−"]); await clickOn($("z-out"), 800, tok); await sleep(2300, tok);
+      showKeys(["+"]); await clickOn($("z-in"), 700, tok); await sleep(700, tok); press(); $("z-in").click();
+      await sleep(600, tok); showKeys([]);
+
+      // 7. Seven letters (0:46 to 0:52)
+      await until(46, tok);
+      await clickOn(byLabel(".letters button", "Orange"), 900, tok);
+      await sleep(3200, tok);
+      await clickOn(byLabel(".letters button", "Orange"), 300, tok);
+
+      // 8. Spectrum (0:52 to 1:01)
+      await until(52, tok);
+      await clickOn($("views").children[2], 900, tok);
+      await sleep(900, tok);
+      var fanEl = q1(".fan"), list = colors.slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      var target = list.indexOf(croc), steps = target - (fanPos || 0);
+      await glide(720, 620, 700, tok); showKeys(["Scroll"]);
+      for (var i = 0; i < Math.abs(steps); i++) { fanEl.dispatchEvent(new WheelEvent("wheel", { deltaY: steps > 0 ? 40 : -40, bubbles: true, cancelable: true })); await sleep(Math.max(140, 2600 / Math.max(1, Math.abs(steps))), tok); }
+      await sleep(500, tok); showKeys([]);
+
+      // 9. The specimen card (1:01 to 1:16)
+      await until(61, tok);
+      await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 1000, tok);
+      await sleep(2600, tok);
+      var padEl = q1(".pad textarea");
+      await goTo(padEl, 1000, tok); await sleep(300, tok);
+      await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
+      await sleep(900, tok);
+      await goTo(q1(".sim button") || padEl, 1200, tok);
+
+      // 10. Pins into palettes (1:16 to 1:24)
+      await until(76, tok);
+      await clickOn(q1(".sp-x"), 700, tok);
+      await clickOn($("views").children[1], 800, tok);
+      await sleep(500, tok);
+      await clickOn(q1(".pw-nav .act .tbtn"), 800, tok);
+      await sleep(300, tok);
+      await clickOn(byLabel(".pins .t", "No. 029"), 700, tok);
+      await clickOn(byLabel(".pins .t", "No. 004"), 600, tok);
+      await clickOn(q1(".pw-nav .act .tbtn.ink"), 700, tok);
+
+      // 11. A share card (1:24 to 1:35)
+      await until(84, tok);
+      await clickOn(q1(".pal .acts .tbtn"), 900, tok);
+      await sleep(3200, tok);
+      await clickOn(q1(".share .acts .tbtn.ink"), 1100, tok);
+      await until(95, tok);
+    } catch (err) {
+      if (err !== "stopped") throw err;
+      return;
+    }
+    stopPlay();
+  }
   showScreen(Math.max(0, SCREENS.map(function (s) { return s.id; }).indexOf(q.get("screen") || "crocoite")));
   fit();
-  start();
-  window.PalitV2 = { colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
+  if (q.has("play")) setTimeout(runPlay, 900); else start();
+  window.PalitV2 = { play: runPlay, stop: stopPlay, playing: function () { return play.on; }, colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
 })();
 </script>
 </body>

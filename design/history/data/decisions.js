@@ -1713,6 +1713,50 @@ window.PALIT.decisions = {
       status: "approved",
       links: [{ label: "Storyboards", href: "#video/storyboards" }],
       by: "Noah, asking Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "flows",
+      title: "A playback for recording v2 hands-free",
+      video: ["demo"],
+      to: "P (or ?play) plays the demo storyboard in prototype v2, shot by shot on its timing: a drawn cursor, keystroke chips (K hides them), the real picks, naming, a palette, Days, the zoom, the letters, Spectrum, the specimen card with a note typed in, pins grouped into a palette, and a share card. Esc or P stops it; ?clean hides the controls for recording.",
+      why: "Yes, add a playback to prototype v2 that follows the demo storyboard, so I can record it hands-free.",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      links: [{ label: "Play it", href: "../v2/index.html?clean&play" }],
+      by: "Noah, built by Claude Code"
+    },
+    {
+      date: "2026-10-18",
+      kind: "decision",
+      area: "archive",
+      title: "Spectrum's cards are just the color",
+      video: ["demo", "visual"],
+      from: "Each card in the fan had a printed frame, a dashed stub and the day it was kept.",
+      to: "No text and no lines on the cards: each is only its color. The top card's name, place and day stay top left.",
+      why: "I want to remove all the text and lines from the cards - they should be the cards themselves. The info is already shown top left",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      refs: ["A58"],
+      links: [{ label: "Spectrum in v2", href: "../v2/index.html?scene=spectrum" }],
+      by: "Noah"
+    },
+    {
+      date: "2026-10-18",
+      kind: "process",
+      area: "process",
+      title: "Feedback on every v2 screen",
+      video: ["process"],
+      to: "Each of v2's 12 steps on the Work page has its own feedback box, with who's writing (Noah or Daeun). It stays in the browser, Claude reads it from the page after “I'm done” (handoff v2-feedback), and Copy all feedback works from the public site.",
+      why: "Can we have a feedback feature with each screen of the flow/features in the v2 section? So we can fix up some things that could be worked on.",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "approved",
+      links: [{ label: "Work page, v2", href: "#work/v2" }],
+      by: "Noah, built by Claude Code"
     }
   ]
 };

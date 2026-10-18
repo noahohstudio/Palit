@@ -217,6 +217,12 @@
 
   .v2-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; padding: 18px 20px; margin-bottom: 18px; background: var(--paper); border: 1px solid var(--rule-soft); }
   .v2-q .quote + .quote { margin-top: 14px; }
+  .fbbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; margin: 0 0 16px; background: var(--paper); border: 1px solid var(--rule-soft); }
+  .fbbar .grow { flex: 1; }
+  .fbbar select { font: 13px var(--font); }
+  .fbta { display: block; width: 100%; min-height: 64px; margin-top: 6px; resize: vertical; padding: 7px 9px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.45 var(--font); box-sizing: border-box; }
+  .fbta:focus { outline: none; border-color: var(--ink); }
+  details.fb[open] > summary, details.fb.has > summary { color: var(--ink); }
   @media (max-width: 860px) { .v2-top { grid-template-columns: 1fr; } }
   .rounds { list-style: none; }
   .round { background: var(--paper); border: 1px solid var(--rule); padding: 12px 14px 14px; }
@@ -840,6 +846,39 @@
         ]),
         el("div", null, [el("span", { class: "k", text: "What changed from v1" }), el("ul", { class: "bullets" }, V2S.changes.map(function (c) { return el("li", null, [c[0] + " ", entryChips(c[1])]); }))])
       ]);
+      // Feedback on each v2 screen (entry 114): kept in this browser, handed to Claude with “I'm done”, or copied into chat
+      var FBKEY = "palit-v2-feedback", v2fb = { from: "Noah", notes: {} };
+      try { var fbSaved = JSON.parse(localStorage.getItem(FBKEY) || "null"); if (fbSaved) v2fb = { from: fbSaved.from || "Noah", notes: fbSaved.notes || {} }; } catch (e) {}
+      function fbText() {
+        var lines = ["Feedback on prototype v2, from " + v2fb.from + ":"];
+        V2S.steps.forEach(function (st, i) { var t = (v2fb.notes[st.scene] || "").trim(); if (t) lines.push((i + 1) + ". " + st.title + ": " + t); });
+        return lines.length > 1 ? lines.join("\n") : "";
+      }
+      var fbCountEl = el("span", { class: "s num" }), fbStatus = el("span", { class: "s", "aria-live": "polite" });
+      function fbCount() { var n = Object.keys(v2fb.notes).filter(function (k) { return (v2fb.notes[k] || "").trim(); }).length; fbCountEl.textContent = n ? n + (n === 1 ? " screen has feedback" : " screens have feedback") : "No feedback yet"; }
+      function fbSave() {
+        try { localStorage.setItem(FBKEY, JSON.stringify(fb)); } catch (e) {}
+        if (window.PalitHandoff) PalitHandoff.put("v2-feedback", { title: "Feedback on prototype v2", text: fbText() });
+        fbCount();
+      }
+      var who = el("select", { "aria-label": "Who's writing" }, ["Noah", "Daeun"].map(function (n) { return el("option", { value: n, text: n }); }));
+      who.value = v2fb.from;
+      who.addEventListener("change", function () { v2fb.from = who.value; fbSave(); });
+      var fbCopy = el("button", { type: "button", class: "btn", text: "Copy all feedback" });
+      fbCopy.addEventListener("click", function () { var t = fbText(); if (!t) { fbStatus.textContent = "No feedback to copy yet."; return; } copyText(t, function (ok) { fbStatus.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select it and copy it yourself."; }); });
+      var fbDone = el("button", { type: "button", class: "btn primary", text: "I'm done" });
+      fbDone.addEventListener("click", function () { if (!fbText()) { fbStatus.textContent = "No feedback yet."; return; } fbSave(); PalitHandoff.done("v2-feedback"); fbStatus.textContent = "Marked done. Tell Claude in chat, and Claude reads it from this page."; });
+      fbCount();
+      var fbBar = el("div", { class: "fbbar" }, [el("span", { class: "k", style: "margin:0", text: "Feedback on v2" }), el("label", { class: "s" }, ["From ", who]), fbCountEl, el("span", { class: "grow" }), fbStatus, fbCopy, fbDone]);
+      function fbBox(st) {
+        var ta = el("textarea", { class: "fbta", placeholder: "What could be better on this screen?", "aria-label": "Feedback on " + st.title });
+        ta.value = v2fb.notes[st.scene] || "";
+        var has = !!ta.value.trim(), sum = el("summary", { text: has ? "Feedback, written" : "Feedback" });
+        var d = el("details", { class: "more fb" + (has ? " has" : ""), open: has ? "" : null }, [sum, ta]);
+        ta.addEventListener("input", function () { v2fb.notes[st.scene] = ta.value; fbSave(); var h = !!ta.value.trim(); sum.textContent = h ? "Feedback, written" : "Feedback"; d.classList.toggle("has", h); });
+        return d;
+      }
+
       var vgroups = [];
       V2S.steps.forEach(function (st) { var g = vgroups[vgroups.length - 1]; if (g && g.name === st.group) g.list.push(st); else vgroups.push({ name: st.group, list: [st] }); });
       var vwrap = el("div"), vn = 0;
@@ -853,11 +892,11 @@
           ])]);
           return el("li", { class: "scr", id: "v2-" + st.scene }, [
             preview(V2S.href + "?clean&scene=" + st.scene, st.title, false, st.focus),
-            el("div", { class: "sb" }, [el("span", { class: "sn num", text: "Step " + vn }), el("h4", { text: st.title }), el("p", { class: "sd", text: st.does }), el("div", { class: "sf" }, [entryChips(st.entries)]), more])
+            el("div", { class: "sb" }, [el("span", { class: "sn num", text: "Step " + vn }), el("h4", { text: st.title }), el("p", { class: "sd", text: st.does }), el("div", { class: "sf" }, [entryChips(st.entries)]), more, fbBox(st)])
           ]);
         }))]));
       });
-      main.appendChild(sec("work-v2", "Prototype v2", "The new look on real pages and a real Mac wallpaper. Every frame is live; open “Why and research” under any of them.", [top, vwrap], [openLink("Open v2", V2S.href, "btn")]));
+      main.appendChild(sec("work-v2", "Prototype v2", "The new look on real pages and a real Mac wallpaper. Every frame is live; open “Why and research” under any of them, and leave feedback on any screen.", [top, fbBar, vwrap], [openLink("Open v2", V2S.href, "btn")]));
     }
 
     // Prototypes you can open
