@@ -42,7 +42,7 @@ window.PALIT.video = {
         crux: { text: "This is truly the crux of our deepdive 1: how do colors sit on a surface that shows them as they are? How do they change when you have a different background color or lightness? How does that inform our design decisions?", where: "Noah's note on the surface question, feature workshop" },
         noah: { text: "how do we build a color palette/design system for a tool that collects color?", why: "I think this ties in nicely with the process we're following - competitor research, UXR, what this tool means to users, our baseline, foundational reasoning. This ties into our design system, which we can then use to introduce features and problem solving" },
         also: [{ text: "I'm loving this minimal direction we're following, with extreme detail to what we keep and cut. The ROYGBIV nav is so stunning to me - totally something we need to integrate into deep dive #1 - how we choose elements that don't distract our eyes from the color itself", where: "October 18, after the look workshop (entry 104)" }],
-        arc: [[47, "Sip, documented as a whole"], [40, "For visual designers, in the ideation phase"], [8, "The foundations workshop"], [9, "A neutral canvas"], [10, "No accent color"], [48, "A native shell, a raw heart"], [53, "The design system, from atoms up"], [56, "Six calls"], [80, "Research: the most neutral surface"], [87, "Pure white stays"], [58, "The prototype, built from it"], [74, "The dashboard, built from it too"], [93, "v1 felt stagnant"], [103, "Clean, functional, considered"], [95, "Nothing on it but color"], [104, "What stays out of the color's way"], [117, "No slider, just − and +"]],
+        arc: [[47, "Sip, documented as a whole"], [40, "For visual designers, in the ideation phase"], [8, "The foundations workshop"], [9, "A neutral canvas"], [10, "No accent color"], [48, "A native shell, a raw heart"], [53, "The design system, from atoms up"], [56, "Six calls"], [80, "Research: the most neutral surface"], [87, "Pure white stays"], [58, "The prototype, built from it"], [74, "The dashboard, built from it too"], [93, "v1 felt stagnant"], [103, "Clean, functional, considered"], [95, "Nothing on it but color"], [104, "What stays out of the color's way"], [117, "No slider, just − and +"], [206, "Our real screens, from the ground up"]],
         beats: [
           "A tool for color can't bring a color of its own. Sip puts its blue and violet right next to the colors you're judging.",
           "Who it's for, and what it means to them: visual designers in the ideation phase, keeping colors with their names and their sources.",
@@ -91,7 +91,7 @@ window.PALIT.video = {
         open: "Settled for now (A53)"
       },
       {
-        id: "context", title: "Context is part of the color",
+        id: "context", pick: "Noah's pick for deep dive 3, October 19, as “Where the story lives” (entry 176)", title: "Context is part of the color",
         q: "How much of where a color came from should Palit keep and show?",
         arc: [[2, "v0: 8 neighbors and the source"], [42, "Color on screen, with its link, time and title"], [65, "Back to the source"]],
         show: "The neighbor grid, the trip back to the door on the page, and the same teal on white and on black.",
@@ -255,6 +255,7 @@ window.PALIT.video = {
       rock: null,
       dive: "system",
       seconds: 95,
+      reels: "It opens from the ground up and ends on what we cut, version by version, in our real screens (entry 206): twelve lo-fi sheets, the flows, the ideations, then v1, v2, v2 merged and v3",
       purpose: "Noah's pick (October 18): how do we build a color palette and design system for a tool that collects color? Told through the process: competitor research, UXR, what the tool means to users, the baseline and the reasons, then the design system, which then brings in the features and the problem solving. The competitors and the look live here now (A56).",
       line: "",
       ideas: [
@@ -308,29 +309,28 @@ window.PALIT.video = {
     {
       id: "rock2",
       part: "process",
-      title: "Deep dive 2",
+      title: "Deep dive 2: from day one to year four",
       rock: null,
-      seconds: 85,
-      purpose: "What we tried, what didn't work, and where we landed: 2–3 approaches, the one we chose, and why.",
+      seconds: 95,
+      purpose: "Noah's pick (entry 176), the user-centric deep dive: Palit for a first-time user, someone a few weeks in, and someone with years of colors (D25). v3 plays it (?play=users), with the research's numbers on screen.",
       line: "",
-      needs: ["2 curated directions", "The reason for the choice", "A test result"],
+      needs: ["The camera in the player"], reels: "Before each user, a reel of what we tried first (entry 206): v2's first open; naming as a stack and three specimen cards; the archive as a list and v2's half fan. The four-year chart is out, the day one screen and Spectrum years in stay",
       tags: [],
-      status: "blocked",
-      blockedBy: "Co-decided with Noah once the final prototype works"
+      status: "working",
+      links: [{ label: "Its script", href: "../video/index.html#dive2" }, { label: "Played by v3", href: "../v3/index.html?clean&play=users" }]
     },
     {
       id: "rock3",
       part: "process",
-      title: "Deep dive 3",
+      title: "Deep dive 3: where the story lives",
       rock: null,
-      optional: true,
-      seconds: 70,
-      purpose: "Optional. If it's cut, its time goes to deep dives 1 and 2.",
+      seconds: 95,
+      purpose: "Noah's pick (entry 176), the deep dive on the tool and the brief: memory drifts, the story was one click deep, three ways to bring it forward, days with their places, and the zoom as a dial.",
       line: "",
-      needs: ["2 curated directions", "The reason for the choice"],
+      needs: ["Noah's paper sketches, for the reel (design/video/sketches/)", "When the designer friend saw it (entry 209)"], reels: "After the audit, a designer friend's feedback and our prototyping from the lowest fidelity up: paper, the lo-fi sheets, the story workshop, the preview, then v3's zoom stop by stop (entry 206)",
       tags: [],
-      status: "blocked",
-      blockedBy: "Co-decided with Noah once the final prototype works"
+      status: "working",
+      links: [{ label: "Its script", href: "../video/index.html#dive3" }]
     },
     {
       id: "next",

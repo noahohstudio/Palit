@@ -669,7 +669,6 @@
   .w3-sp-chip { position: absolute; left: 50%; top: 48%; width: 46%; padding: 8px 8px 0; transform: translate(-50%, -50%); background: var(--paper); box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26); }
   .w3-sp-chip .w3-sw { aspect-ratio: 1 / 1.05; }
   .w3-sp-chip .w3-lb { display: flex; justify-content: space-between; padding: 7px 2px 8px; font-size: 11px; }
-  .w3-sp-cap { position: absolute; left: 16px; right: 16px; bottom: 14px; font-size: 11px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); }
   .w3-sp-form { display: flex; flex-direction: column; min-width: 0; padding: 24px 28px 20px; overflow-y: auto; }
   .w3-sp-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 11px; color: var(--ink-2); }
   .w3-sp-x { flex: none; border: 0; padding: 0 2px; background: none; cursor: pointer; font-size: 17px; line-height: 1; color: var(--ink-2); }
@@ -678,21 +677,25 @@
   .w3-sp-nm:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
   .w3-sp-nm:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
   .w3-sp-hint { margin-top: 6px; font-size: 11px; color: var(--ink-2); }
-  .w3-sp-rows { display: grid; grid-template-columns: 96px minmax(0, 1fr); margin: 16px 0 0; font-size: 13px; }
+  .w3-sp-rows { display: grid; grid-template-columns: 96px minmax(0, 1fr); margin: 16px 0 0; font-size: 13px; --w3-gut: 12px; }
   .w3-sp-rows dt { padding: 6px 0; border-top: 1px solid var(--rule-soft); color: var(--ink-2); }
   .w3-sp-rows dd { min-width: 0; margin: 0; padding: 6px 0; border-top: 1px solid var(--rule-soft); overflow-wrap: anywhere; }
   .w3-sp-rows dd button { border: 0; padding: 0; background: none; cursor: pointer; text-align: left; font-size: 13px; color: var(--ink); }
   .w3-sp-rows dd button:hover { text-decoration: underline; text-underline-offset: 2px; }
   .w3-vals { display: flex; flex-wrap: wrap; gap: 4px 14px; }
   .w3-sim { display: flex; flex-direction: column; gap: 3px; }
-  .w3-sim button { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: center; }
-  .w3-sim i { width: 14px; height: 14px; }
-  .w3-here { display: flex; height: 22px; max-width: 220px; }
+  .w3-sim button { display: grid; grid-template-columns: 1cap minmax(0, 1fr); gap: 8px; align-items: first baseline; }
+  .w3-sim i { width: 1cap; height: 1cap; }
+  /* A strip beside a label (Noah, October 19): as tall as the label's capitals and sitting on its baseline, it runs to the
+     card's edge, or to the middle of the value column when it holds one color. A palette's strip takes the right half,
+     and Similar's squares are cap height on their line's baseline too. */
+  .w3-here { display: inline-flex; vertical-align: baseline; width: 100%; height: 1cap; }
+  .w3-here.w3-one { width: calc((100% - var(--w3-gut)) / 2); }
   .w3-sp-rows .w3-here button { flex: 1 1 0; min-width: 0; height: 100%; background: var(--c); }
-  .w3-sp-rows .w3-here button:hover { box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px #1d1d1f; }
+  .w3-sp-rows .w3-here button:hover { position: relative; z-index: 1; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #1d1d1f; }
   .w3-sp-pals { display: flex; flex-direction: column; gap: 5px; }
-  .w3-sp-pal { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 12px; align-items: center; }
-  .w3-sp-strip { display: flex; height: 14px; }
+  .w3-sp-pal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--w3-gut); align-items: first baseline; }
+  .w3-sp-strip { display: flex; height: 1cap; }
   .w3-sp-strip i { flex: 1; }
   .w3-sp-acts { display: flex; gap: 6px; margin-top: 12px; }
   .w3-trail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; min-width: 0; font-size: 11px; color: var(--ink-2); }
@@ -701,7 +704,8 @@
   .w3-trail .w3-now { color: var(--ink); }
   .w3-pad { margin-top: auto; padding-top: 12px; }
   .w3-pad label { display: block; margin-bottom: 2px; font-size: 11px; color: var(--ink-2); }
-  .w3-pad textarea { display: block; width: 100%; height: 60px; resize: none; border: 0; padding: 0; outline: none; font: 13px/20px var(--font); color: var(--ink); background: repeating-linear-gradient(transparent 0 19px, var(--rule-soft) 19px 20px); }
+  /* The scratch pad says things about a color, so it takes 11, on rules 18px apart */
+  .w3-pad textarea { display: block; width: 100%; height: 54px; resize: none; border: 0; padding: 0; outline: none; font: 11px/18px var(--font); color: var(--ink); background: repeating-linear-gradient(transparent 0 17px, var(--rule-soft) 17px 18px); }
   .w3-pad textarea::placeholder { color: var(--ink-2); }
 
   /* A share card (entry 109) */
@@ -1188,7 +1192,7 @@
 
     <div class="spec w3-spec" id="w3-card">
       <div class="w3-text">
-        <div><h3>The specimen card</h3><p class="what">A color opens as the specimen card, over the window. Similar says only where and when, and Also from here stays. The labels sit in a 96px column, the rows are 13px, the trail is 11px and the name is 50px. The card fades out the way it came in.</p></div>
+        <div><h3>The specimen card</h3><p class="what">A color opens as the specimen card, over the window. Similar says only where and when, and Also from here stays. The labels sit in a 96px column, the rows are 13px, the trail and the scratch pad are 11px and the name is 50px. Every color beside text is as tall as the text's capitals and sits on its baseline: Similar's squares, and the strips, which run to the card's edge, or halfway when they hold one color; a palette's strip takes the right half of the row. The card fades out the way it came in.</p></div>
         <div><div class="why" data-why="A96 A53 A60 A61 D19 A54 A97"></div><span class="draft">Copy from v3, including “Scratch pad” and “Click the name to give it yours.”</span></div>
       </div>
       <div class="w3-ex" id="w3-card-ex"></div>
@@ -2977,6 +2981,7 @@
       w.closeSheet();
       trail = trail || w.defaultTrail(c);
       var nextTrail = trail.concat([{ label: title(c), go: function () { w.openCard(c, trail); } }]);
+      // As in v3 (entry 188): the crop, or the eight samples around the color, with no caption on either
       var src = c.crop ? el("img", { class: "w3-crop", src: c.crop, alt: "" }) : el("div", { class: "w3-nb", "aria-hidden": "true" }, (c.nb ? [c.nb[0], c.nb[1], c.nb[2], c.nb[3], c.hex, c.nb[4], c.nb[5], c.nb[6], c.nb[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
       var name = el("p", { class: "w3-sp-nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", "data-placeholder": c.ph, spellcheck: "false" });
       name.textContent = c.name || "";
@@ -3010,7 +3015,7 @@
       row("Similar", simBox);
       // Also from here: one joined strip, like a palette's
       var here = A.colors.filter(function (x) { return x !== c && keyOf(x) === keyOf(c); });
-      if (here.length) row("Also from here", el("span", { class: "w3-here" }, here.map(function (x) { var b = el("button", { type: "button", style: "--c:" + x.hex, title: title(x), "aria-label": label(x) }); b.addEventListener("click", function () { w.openCard(x, nextTrail); }); return b; })));
+      if (here.length) row("Also from here", el("span", { class: here.length === 1 ? "w3-here w3-one" : "w3-here" }, here.map(function (x) { var b = el("button", { type: "button", style: "--c:" + x.hex, title: title(x), "aria-label": label(x) }); b.addEventListener("click", function () { w.openCard(x, nextTrail); }); return b; })));
       // Every palette it's in, each with its colors; the row hides until there's one
       var palDt = el("dt"), palDd = el("dd");
       dl.appendChild(palDt); dl.appendChild(palDd);
@@ -3041,8 +3046,7 @@
       tr.appendChild(el("span", { class: "w3-now num", text: no(c.n) }));
       showSheet(el("div", { class: "w3-card", role: "dialog", "aria-label": title(c) }, [
         el("div", { class: "w3-sp-src" }, [src,
-          el("div", { class: "w3-sp-chip" }, [el("div", { class: "w3-sw", style: "background:" + c.hex }), el("p", { class: "w3-lb num" }, [el("span", { text: no(c.n) }), el("span", { text: c.hex })])]),
-          el("p", { class: "w3-sp-cap", text: c.crop ? "Where you found it" : "The eight samples around it" })]),
+          el("div", { class: "w3-sp-chip" }, [el("div", { class: "w3-sw", style: "background:" + c.hex }), el("p", { class: "w3-lb num" }, [el("span", { text: no(c.n) }), el("span", { text: c.hex })])])]),
         el("div", { class: "w3-sp-form" }, [
           el("div", { class: "w3-sp-top" }, [tr, x]),
           name,

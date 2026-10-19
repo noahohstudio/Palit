@@ -63,6 +63,250 @@ window.PALIT.compass = {
 
   notes: [
     {
+      date: "2026-10-19",
+      title: "The logo",
+      text: `we have the logo!`
+    },
+    {
+      date: "2026-10-19",
+      title: "Re-time the intro",
+      text: `Can you help re-time the intro? The text goes by way too fast - this will be easier with the actual footage, but for now, need your help`
+    },
+    {
+      date: "2026-10-19",
+      title: "Back to smooth fades",
+      text: `The text and how things appear is too janky - lets go back to smooth fades. I just want them to be sequential`
+    },
+    {
+      date: "2026-10-19",
+      title: "Notes on every clip of the video (the dashboard's Video page)",
+      text: `Palit (the splash): I don't think the caption underneath Palit is necessary, and I think the actual wordmark could be a little bigger.
+
+Walking in: We could shorten this down to 4 seconds. It's just going to be a series of clips before we sit down.
+
+Intro: This clip is too long. 17 seconds is way too long. I think we can cut this down to under 10, like 8 or 9 seconds. We just say our lines pretty quickly.
+
+The brief: The overlays in this kind of presentation: I've noticed that they're all centered or uncentered. They're all kind of flush left. I'd like them to be centered in the middle of the screen, if possible. I also don't really like the animation on them. It just feels really smooth. I want it to just be quick and sudden. Each word approaches or fades in. Almost clunky, which would be good. The underlining throughout the presentation is done in a weird way. I don't really like it. Why don't we just highlight the words with a box of the color that we're using for that section, or maybe just a random color that we pull from the archive, like a fun, bright, vibrant one (which would be good to show our thinking)? I think that would be much more effective.
+
+The problem: 33 of 51 designers. The statistic and visual data representation is pretty good, but I think it could be changed. The dots are not part of our visual language. It just does not make sense. Why don't we have just boxes of random colors that are low opacity and turn into high opacity as they fill in? I think it could also take just a little bit more space, just a little, because there's a lot of blank space on this page.
+
+2 of the 8 references. That looks pretty good and makes sense of what we're saying. More creative, looks good.
+
+Again, the palette self-ownership: the underline could probably just be a highlighted box. Let's just see how that looks.
+
+Who loves it, and who won't: When the Generate button is clicked on the "Who loves it, who won't?" picture or frame, the colors just pop in. I think that's effective, but I would like them to pop in, not all at the same time. Maybe a couple of milliseconds between them, so it feels a little random and a little off.
+
+Let's also make the colors a little bit uglier. Right now, it still feels like a palette that could work, just not very intentional. I would like to bring the point home by making them slightly uglier and making the colors on the left slightly brighter.
+
+When "You have to earn it" shows up, I would like it if the opacity could be just a little bit lower for the elements in the background. The line that connects them stays kind of black. I don't know why that is. Could we lose opacity on that too? "You have to earn it" could possibly be in the center. Let's try that, but I want to see how that looks.
+
+Demo: For the demo, I think showing keybinds would be helpful at the bottom of the screen. A thing I noticed is that in the scroll section, like the spectrum scroll, it's kind of clunky how we show it. The scroll wheel doesn't scroll like a mouse does. It just scrolls kind of one-quarter at a time in a very quick way. I don't like that. Let's make it as smooth as possible, like an actual person is scrolling through. Apply this to every single kind of instance where we use the spectrum scroll to show something.
+
+How we worked: The data visualization for how we worked is amazing, but I think, again, we could center the visualization. Have the color codes a little bit more at the bottom, and have the header a little bit near the center. The statistics staying on the right side is fine, but I think the blocks could move a little bit closer to it.
+
+Deep dive 1: Deep dive one is interesting, but I don't know. The way we're showing it is kind of redundant. We have these two screens: our no-file sheets, then the ideations. They just happen the exact same way. It's just three sheets that are faded in gradually.
+
+I think it could be more fun if we have one that appears on the majority of the page, like it's huge, and then we flip to the next one. I resume, pass it left to right to the next one, which then is interactive, which scrolls, which clicks. It shows how it evolved and what the tool looks like instead of just being static pages, which would be amazing.
+
+How about we do some little animation on our low-fi sheets? Same for ideations. When we put the ideations on the screen, I feel like we could have different ways of exploring them: following the cursor, having all three on the page at the same time when we zoom back out from them, having them be moving and alive rather than just stagnant and still screenshots.
+
+I think, for "from the ground up," my quote "a better one" could kind of be chosen. That one sounds very mid-sentence and inconsidered, and just a quick blurb shouted out with no pivotal point. I think we can choose another one. That's another entry that has more of a pivotal meaning to it.
+
+The SIP comparison is funny because it doesn't even show SIP. It just shows our idea of SIP. Why don't we show the actual SIP UI? Show how it's using a primary color already, how it's built for exports, and then we put our actual UI beside it, not just a card. It's also reactive. It shows how ours is a little bit more defined and conceptual.
+
+The one of 11 pictures is fun, but it cuts off the caption. Why don't we make the boxes a little bit taller? Put the header a little bit more to the bottom, leaving more space for the boxes themselves. Why aren't they colored with their signature colors? Just very lightweight. That might be cool.
+
+The "up to 8x" statistic: the caption, again, is kind of cut off by the 8. I don't think we need it to. Let's revisit this, but for now, let's fix the caption and make the whole thing a little bit more centered. Pure white is cool, but I think after we show all colors, they could drop down and show a sample palette on our actual app, so we can see how it works inside the app itself. That'd be cool.
+
+V1: great. Just really good ways of showing how we work. I actually don't think it needs to. Right now, we're showing it as a screenshot on a sample desktop, but why doesn't it start that way, and then we can lose the background and zoom in to the tool itself? I think throughout this project, we can start utilizing and changing the background color to black or a different color during bold moments or important moments. Let's definitely play around with that. Please remember that for future use.
+
+V2 merge: I like the transition from them, but you can't really see the transformation. It's just a fade-in and a fade-out of the prior version and then the new one. I think it would be really cool if we could morph them to look like the new versions. See how we evolved and different things appeared. Just prototype that and try that out in the video. I'll crit that and then let you know what I want changed after you're done.
+
+I think right now, with the video, we can work in blocks. We can change different blocks and find ways to connect them after we're done with them. For now, we can keep them like that.
+
+What we cut: I really don't like the crossing-out feature. Instead, I think just losing opacity would be fine. The progress bars that we cut, I think, could be a little bit more colorful and a little bit more clear. Right now, they're pretty slim, and it's kind of hard to tell where the bar traditionally was. Having maybe an underlying shadow color, a gray color, would be helpful very subtly.
+
+Deep dive 2: Year 1, 4 is really good, more so about just the wording. I want to make it clear that our day 1 user, midweek user, and year 4 user are personas. They're not just audiences. They're actual personas we studied and designed for. That's one thing I want to change and one thing I want reflected on the screen.
+
+Again, with this showing of our data and our changes, it's very baseline. They just fade in, they zoom in slightly, they fade out, but there isn't anything dynamic. I want dynamics for this video. I want the text to move. I want pieces to grow and form. I want the camera movement to be fun, deliberate, and fast.
+
+Again, the spectrum wheel, whatever it turns into, doesn't look that clear or that smooth. Even just scrolling through the actual desktop itself with our minimized color view at the years in, it doesn't look smooth. We need to make it look as smooth as possible.
+
+Deep dive 3: For Deep Dive 3, "Where the Story Lives: Memory Drift, That Actually Looks Pretty Great." I think the indicator line could possibly be a little more... I don't know what I don't like about it. It's pretty skinny. Maybe that's the issue. Maybe we change it to a different color. Actually, I don't know. Let's kind of keep it that way for now. Looks pretty good.
+
+Before Click 2 of 9, it doesn't look like our visual language. It should look like our visual language, so let's really pay attention to that. It's also spaced kind of a funny way. Let's fix that. Again, a designer friend called it visually cluttered. That's important. I think that could be... Honestly, we could keep that as it is. Maybe check for different entries or different quotes from different people to see what we could add, but for now, it's looking good.
+
+Paper First: I honestly think we should just abandon this and go back to our redesign era, when we pivoted fully, and redesign from the ground up. Revisit some of the really rough lofi mockups we made, and then the research behind them, and the story workshop. Again, they just fade in, fade out. Groups of three: we can find more creative ways to build them in more fun.
+
+Same with Preview: the only color tab. This could definitely be a big moment where we have the actual app itself just be almost the entire screen, and we get to see all the color happening, minus the desktop view, just the app itself, which would be cool.
+
+Then the Hunt: again, I would really appreciate some motion graphics. Whenever you minimize or maximize, seeing how things morph and grow would be very good.
+
+On the horizon: On the horizon is an interesting one because I think the way the data is organized on a palette MCP looks kind of funny. Not really liking it with the line, especially. We can find a more dynamic way to introduce this information and this visualization. Maybe we even get a picture of someone's baseline Claude code, and then we show a way where we can attach the MCP with the icon somewhere. Could be really cool.
+
+Inside the tools we use, I honestly think we could slightly move the interface for that and just have it directly. Of course, thank you so much. We could just have the chip be the main element, like the palette chip is kind of floating around, and it kind of informs how we use it. Our rule with you: still find every color. Let's lose the line completely. We don't need it. Center the box and the statement. Very powerful, really good.
+
+Palit, once more: Refer to the initial splash notes. We could remove the caption, and centre
+
+Credits: Let's make sure to thank Nahil and SVSD for the integration of this project. Let's thank Kaia for introducing us to the project itself. We could just write Kaia Sasaki. I'll keep adding people soon, but for now, that's good.
+
+I think the credits, after they appear for about 2 seconds, we can fade them out just as quickly and then fade out the music. Screen goes to black`
+    },
+    {
+      date: "2026-10-19",
+      title: "Previews that move when you point at them",
+      text: `I'm liking the addition of the previews on the video page, but I'd actually appreciate it if they were animated just on site. As long as you hover over them, they just animate.`
+    },
+    {
+      date: "2026-10-19",
+      title: "Walking in, with big headers",
+      text: `Be like 5 to 7 seconds to just have the intro. I'm kind of envisioning that we film me and Daeun walking into the archive room together and getting seated. That'll take maybe 5 seconds, 7 seconds. Just big headers with Noah, Daeun, Cooper Union, color palette, maybe. I don't know, something like that. I'll come up with that as soon as we kind of get everything rolling.`
+    },
+    {
+      date: "2026-10-19",
+      title: "Keep building, and the charts in our design language",
+      text: `keep building, and will check in with you tomorrow morning
+
+I want to revisit some of the data viz to make it more within our design language`
+    },
+    {
+      date: "2026-10-19",
+      title: "Calmer, happy music for the deep dives",
+      text: `The deep dive music is also just, really sad. Can we choose something thats calmer, but also happy?`
+    },
+    {
+      date: "2026-10-19",
+      title: "Be wary of the script",
+      text: `And be wary of the script. I will be changing it, and I've noticed that when it gets longer or shorter in certain sections, or when I remove certain sections in general, the flow of the beat of the video gets off. The demo is playing one part while I'm still saying another part, which shouldn't be an issue.
+
+Just refer to my script and guess how long we'll be speaking for. We'll be speaking at a pretty normal pace, maybe just a little bit faster than normal, to talk. Consider that whilst you're still building the video`
+    },
+    {
+      date: "2026-10-19",
+      title: "The blocking and flow of the video",
+      text: `Okay, I just did the first couple sections of the script myself. I've played the video, followed along with the script, and just approximated how it would flow. So far, for a prototype, it's quite good. It already looks quite good. There aren't many visual changes I want to make, just tweaking the data visualization, but that could always be done in the future.
+
+What I'm a little bit more interested in is the blocking and the flow of this project. I think right now the introduction is taking too much time. Say the intro to the archive room could take a little less time. The brief itself could take much less time. The problem and what we believe is the first crux we get to. Again, all this introductory stuff should really just be 30% of the entire video. 70 to 65% of it should be us going in depth with all of the prototypes.
+
+Right now, we just go very surface level with what we changed and why we changed it. Of course, the data visualization and just the visualization in general for the interfaces we changed is pretty, but it's not real. It's just kind of a decorated version to symbolize it. I want to show our ugly screens. I want to show kind of the extremely low-fidelity mockups we worked with. I'm going to provide you with some sketches later that we can kind of fill in: paper sketches that I actually filled out to kind of mark what we might have done, very low-fidelity mockups, and the reasoning behind them.
+
+In that section, you really need to drill down on the decisions we made, what we lost in the process, the kind of chips and cards, what they looked like before, V1 versus V2 versus V3. If we can kind of put that in a concise way, that would be extremely helpful.
+
+Also, the section with how we worked is a little inaccurate. Although I did make the Figma file and whatnot on October 4, I really only did start on October 6, when we kind of first started the project. I would like that to be the case and that to kind of really be shown on this graph. October 15, maybe I did a little bit of work, but we need to be careful because I need to know when the brief was released and match up my working dates with the brief. October 16, to be safe and for the deep dives, I would like the overlays to display that they are deep dives, maybe with a caption on the top left of the text, not on the top left of the screen, just a little bit above the text: "Deep dive number one."
+
+I would like to show the ugliness of our screens and how we overcame that. This is a backtrack, but I also want our demo for the tool to be just a little bit quicker. I don't think we need that many words. I'm going to try to delete lines we don't need and keep the absolute necessities for the demo, just to show a really quick version of what happens inside the app.
+
+Deep dive two: from day one to year four. This is all backed by a lot of extensive research we did and a lot of extensive problem solving we did to come up with this. Users who like Palit are going to start from day one all the way to year four. How can we show our thinking through this?
+
+That first screen with the day one users' application is so strong. "Every color and palette is one you found" really ties back to our reasoning and emphasis, which is great, but this data visualization doesn't. It's not part of the app. I think we could actually have a little less pretty data visualization and more ugly, terrible ways we experimented with early Palit, and then how we changed it and evolved it from those decisions. Don't be afraid to be messy as long as it's on the surface, as long as we're being authentic to the Palit and the process we took to make Palit. I think it's going to be super successful.
+
+The implementation of the years in with the Spectrum tool is beautiful. Really well done implementing that there. Deep dive number three, where the story lives, is so good because this really shows our UXR. I feel like I got feedback from a fellow design friend of mine who said it was visually cluttered, and that really got us thinking: why are we adding so many different clicks? Why can't we see all the crucial information when it appears, or with the different scroll sections? We need to show our prototyping for that. That was such a good idea that we implemented, and a very needed one as well.
+
+Let's show our prototyping for that in the lowest fidelity possible, then work our way up. Maybe the screens are more for something. We'll fine-tune this as soon as it's all generated and done. On the horizon could also be: maybe a little shorter. It's just for fun, really. 30 seconds is already a bit much. 25, maybe, would be okay. I'm just talking about different applications we could use Palette for.
+
+The most important thing is whatever comes next: the one rule statement, "You go out and find every color." That line is just so good. The visualization you did for that was so good as well. Really, really impressive.
+
+Our outro is going to be way less: 12 seconds, 15 seconds. I like that it kind of finally ends on how Palette's mark becomes the last color you kept. In that same way, we can kind of leave the viewer with this final tidbit of information, and then the kind of hopeful, uplifting message of "We'll keep exploring how a palette travels to a team and into the tools you already use," and then the kind of final statement of "Going to find a color."
+
+I also think we could just play the splash one more time at the very end to really drill the message home. Credits do not need to be 12 seconds. It could be 2 seconds, really quickly, on one screen. People who are interested can pause just to see it. That's the feedback so far.`
+    },
+    {
+      date: "2026-10-19",
+      title: "On the script page: the brief and the splash",
+      text: `The brief: We can really sift through the on the screen text here - it doesn't need to be there as long as it is currently, just enough time to quickly move on from it after its been established.
+
+The splash: We can really sift through the on the screen text here - it doesn't need to be there as long as it is currently, just enough time to quickly move on from it after its been established. I'll say something like "Let's begin with the premise".`
+    },
+    {
+      date: "2026-10-19",
+      title: "A splash for Palit",
+      text: `There should be a splash screen for Palit when I say "Palit" to introduce it`
+    },
+    {
+      date: "2026-10-19",
+      title: "The player's bottom, and notes screen by screen",
+      text: `the player cuts off some information at the bottom - lets fix. I'm also not seeing the screen by screen breakdown with notes feature`
+    },
+    {
+      date: "2026-10-19",
+      title: "Download the originals",
+      text: `Yes, download all five originals (about 19 MB) and use them for the card's samples.`
+    },
+    {
+      date: "2026-10-19",
+      title: "The video workshop, the music in runs, Sip, and Palit on itself",
+      text: `Firstly, well done. I would like a workshop-style showing of all the different scenes and all the different sections, just so we can fine-tune each section as we need.
+
+Immediately, I'm noticing that some of the animations and the way the fade-ins occur with our video seem a little bit too fluid, almost. We'll get in depth with that as soon as possible. For now, I would actually like it if, instead of having every letter fade in on its own, each word could do that.
+
+I'm also finding different ways we can format it so that it looks a little bit more authentic, but in a human way and in a fun way. Let's make a workshop style for that. I'm also noticing that the songs just go between the exciting track and then the more reflective, deep-diving track afterwards. I don't know, it feels very redundant. It just goes back and forth and back and forth.
+
+I think we should just keep the exciting music. The beat kicks in, the intro goes on, and then after that, after the song kind of ends, we have a moment to settle ourselves with the product. That's when our deep dives kick in. We have some of the reflective music. I don't know. We should also kind of look into different tracks we could use on top of these, just in case. But yeah, overall, very good for a prototype. Let's begin the kind of workshop-style, moment-by-moment es on the workshop space in video. Let's also just have screens for the overlays we're going to be using, the text that goes there, and all the data visualization in one place.
+
+A big pain point or hurdle that we overcome in the first ideation process (I also want to notice or mention inside here somewhere) is the relativity and similarity to SIP we had before this project. I didn't actually know SIP existed, so I think it's extremely important to reference SIP and reference how we made it different, how we made it opinionated, and the decisions we made that had executive design differences in them that we pursued instead (so we could stand out from the crowd and so we could reach this point of our thinking).
+
+Just a quick thing to preface the actual deep dives or whatnot. Our pain points: I think just scattering those throughout the project will be a good idea, especially if we could just have even a pain point, a flaw, or a design process before we even mention a deep dive. That could be a great segue. How we solve it could be the deep dive itself. I think it just ties in pretty clearly into our first deep dive about the visual language: looking at competitors, comparing how they present color versus how we can. I think it's important to note that SIP has a very vibrant blue for its default icon and for its visual system, which is a little bit distracting. It also allows the system to decide if it's in light mode or dark mode, which definitely changes how the colors are presented. Just some things to keep in mind.
+
+Just a tidbit for later. I have this really fun concept where, when we're taking the videos of entering the archive room or intro, just in between when we're talking about things, I think it could be fun if we tie in how Palit has served us already.
+
+I'm thinking even for the color grading, I'll start taking color from films I like, from different concepts. I know I mentioned Hey Clicky. I could get a Hey Clicky video. I pull some colors from the user palette and then use those colors to color grade my film for the intro or the outro for interviews and whatnot. That could be mentioned inside the prompt or the project presentation.
+
+I'm thinking even at the very end, we can, on the horizon, say that we used the palette for the color grading for the film and the video in the footage. Although we haven't had much time for A/B testing or stress testing with large amounts of people using the product itself, there is definitely usage out there.
+
+Also refer to the incoming handoff for the color card tweaking. I did a little bit of tweaking on the color card just to make it look a little cleaner, but refer to that.
+
+And - could we use the highest resolution photos possible for the color card sampling pictures?`
+    },
+    {
+      date: "2026-10-19",
+      title: "Music, the credits, a calm track, the cut, and the horizon",
+      text: `This is a completely free beat I found online, an upbeat house track. Maybe we add this as subtle background to some of our exciting moments?
+
+we can use the initial house beat for profit free purposes, which is exactly our scenario - this is a proposal, and at the end we will credit the producer, as well as friends and supporters of our project
+
+Let's also have a calm track that supports our very intense and important visual representation, research, and reasoning. I'm assuming this will be more so for the deep dives and when we want to hone in on special moments. As we fade out, we can use the initial house track again, not just for the intro but for the outro, to have a fun, optimistic end to the video. We can have a quick overlay that says, "Thanks to supporters and the people involved in the planning and build of this project."
+
+I would really like to use the initial track, though. Let's start building the section in the video-video area of the dashboard that shows previews of our clips, what we can edit, and notes on them. I think just the clips themselves will have to be worked on, just as everything else. See what type of research we're bringing in, how we're organizing the video, the overlays that we're going to use to cut up the video into different sections, and just the script, the cards, all of it. Let's do it.
+
+Wait, something to just bear in mind as we're designing and blocking: I think an "On the Horizon" section is going to be extremely important.
+
+On the horizon, I want to create an MCP for Claude or for any of your chatbots. With Palit, a Palit MCP could be so strong: it directly looks into your archive and starts informing your design decisions. It doesn't generate the colors that you found. It takes the colors that you found, that you're informing, and applies them to your design systems. That might be a way we're transforming the AI game. I think that's extremely fun.
+
+I also think it could start becoming possibly a plugin for different Adobe software. It doesn't have to live outside of the software. It could actually just be part of it. That's on the horizon.
+
+I don't want it to be contradictory, though. I know that Palit is kind of anti-AI right now, and I don't want the idea of the MCP becoming a pro-AI type of thing. I also know Palit is all for the reduction of visual clutter, so I don't want Palit to add to that by becoming part of software that is unnecessary.
+
+On the horizon, definitely something to look at. If you have any more suggestions for "On the Horizon" stuff, please add that in too. That's really awesome.`
+    },
+    {
+      date: "2026-10-19",
+      title: "Statements, heyclicky, music, and the people in the video",
+      text: `Data viz, but also the overlay states with the statements. White screen with our header text, and one word highlighted in color - one of ours - that informs the sections. Allow me to write those, lets just prepare placeholders for now
+
+I've been really interested in how heyclicky - https://www.heyclicky.com/ - have been doing their content, really hip and upbeat
+
+i'd like to use some royalty free music for something like this too - you think ambient dnb turned very quietly is too much?
+
+definitely get a feel for heyclicky's content though, it is such a catch, and could really liven up our tool
+
+I feel like the presentation can be just as vibrant and as exciting as the product itself. We're not only introducing the products now and the features. We're introducing use cases. We're introducing personas. We're introducing people who might be excited to use this, people who might be against it, and the tension in there. Palette doesn't just give you a color palette. You have to earn it, and I think there's just so much beauty in that. Definitely, we can make this such a fun video.`
+    },
+    {
+      date: "2026-10-19",
+      title: "The deep dives, Pantone, the camera, eight minutes, and Wood",
+      text: `I need some help deciding on a deep dive or two - I want to make one very user-centric, and the other a little more holistic and general to the tool itself, and the prompt
+
+Amazing, and I think we can group in our statistics, such as naming something to make it non-unique. The selling point of our product, which is similar to Pantone selling consistency, is that we let you own colors in your own way, and we require you to make or find the colors before you use them. A lot of statistics, like statistical backing, would help a lot. I think just our reasoning and user research should come off as extremely clear.
+
+Also, for the video itself, I don't want it to feel redundant at any point. At some points, we should be following the cursor up close throughout the application. At some points, it should just be almost a screen-recorded style of a desktop and how the tool sits on your desktop. We should be following the chip around it sometimes, the palette on the side. We should be zooming in and zooming out. At some points, the whole screen could just be the software, perhaps like a gray screen in the background.
+
+A lot of the focus really just comes from finding different ways to visually stimulate and show our information: how we can use motion to show our evolution and growth, even simple data visualization through our design system. It doesn't even have to connect to the tool, really. As long as it's data visualization and it's helpful and it builds on something we're explaining, that could be very helpful.
+
+And you know what? I think we could start aiming towards almost even an 8-minute, 8-minute-30-second video. If we need more time to explain things, that is so doable, so, so doable.
+
+Also, just really quickly before we even start anything, I actually want the sound for the collection of the color to be the wood option instead of the kind of pinging option (if that's a change we can make for the video itself). Just the tool itself, later in the future, if we have time`
+    },
+    {
       date: "2026-10-18",
       title: "Why the square, and why a longer archive",
       text: `To answer your two quick questions:
@@ -430,6 +674,12 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
 
   // What's waiting on Noah right now, most useful first. Shown at the top of the Plan page.
   todo: [
+    { text: "Read the video script, and rewrite any line", link: "../video/index.html", note: "Click a line to change it and a speaker to switch who says it, then press “I'm done”. Copy Daeun's lines gives her the script to record; Download subtitles gives tonight's cut a first pass." },
+    { text: "Run the video workshop", link: "../workshop/video.html", note: "Seven calls beside the live player and charts, every section moment by moment with notes, and everything on screen in one place. Press “I'm done” and say so in chat." },
+    { text: "Look over the cut, clip by clip", link: "#video/clips", note: "Every clip with its stills, the statement that opens it, the lines, the cards on screen, the research, the music, and what's left to edit. A notes box under each clip hands off when you press “I'm done”." },
+    { text: "Name your friends and supporters for the credits", link: "../video/index.html#credits", note: "The credits roll after your thanks line; the names are a placeholder until you write them." },
+    { text: "Write the seven statements", link: "../video/index.html", note: "Each section opens on three seconds of white with one word in one of our colors. They're placeholders: write each line on the script page, click the word to color it, and pick its color." },
+    { text: "Play the video so far", link: "../video/player.html", note: "The statements, the data visualizations and the animated desktop, all on one clock, with subtle speaker chips and a subtitle bar. Edit tries Daeun's logo, the chips' colors and the subtitles' look." },
     { text: "Send Daeun her voiceover script", link: "#video/storyboards", note: "She records her sections separately and sends them as audio files (entry 165). Which shots are hers is still open in the storyboards, and every line there is a draft for you to rewrite." },
     { text: "Build the placeholder cut tonight, with subtitles", link: "../v3/index.html?clean&play", note: "P plays v3's demo for screen recording; ?clean hides the controls, and ?speed=10 checks it quickly. Swap in Daeun's voiceover when it arrives." },
     { text: "Pick a logo from Daeun's options, tomorrow morning", link: "#e163", note: "The brief: bold, filling its space, the last color you picked. Say why when you pick; the mark then replaces the square in v3's menu bar (A99)." },

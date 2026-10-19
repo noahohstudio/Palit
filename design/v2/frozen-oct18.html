@@ -288,7 +288,8 @@
 <script>
 (function () {
   "use strict";
-  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI, SCREENS = (window.PALIT_V2_SCREENS || {}).list || [];
+  // As it was on the afternoon of October 18: the two desks it had then (screens.js has more since, for v3, entry 180)
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI, SCREENS = ((window.PALIT_V2_SCREENS || {}).list || []).filter(function (sc) { return sc.id === "crocoite" || sc.id === "brownstone"; });
   var el = U.el, pad = U.pad, no = U.no;
   function $(id) { return document.getElementById(id); }
   var W = 1440, H = 900, TODAY = "October 18";

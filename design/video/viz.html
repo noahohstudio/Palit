@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit video visualizations</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The video's data visualizations (entry 182), in the design system's look: pure white, ink, unbolded SF Pro, and the
+     colors from Palit's own archive as the only color. Each scene is drawn as a function of time, so the player can
+     drive it frame by frame (PalitViz.render(t)) and an export can step through it. ?scene=problem (splash, brief, people,
+     decisions, look, longtime, story, horizon, credits) and ?play to watch one on its own. The motion pops with a little overshoot, after heyclicky. */
+  html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
+  body { font-family: var(--font); color: #1d1d1f; -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; }
+  #frame { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform: translate(-50%, -50%); transform-origin: 50% 50%; background: #fff; overflow: hidden; }
+  .a { position: absolute; will-change: transform, opacity; }
+  .t-xl { font-size: 104px; line-height: 1.02; letter-spacing: -0.045em; }
+  .t-l { font-size: 72px; line-height: 1.05; letter-spacing: -0.035em; }
+  .t-m { font-size: 44px; line-height: 1.15; letter-spacing: -0.02em; }
+  .t-s { font-size: 28px; line-height: 1.3; letter-spacing: -0.005em; }
+  .t-xs { font-size: 22px; line-height: 1.3; color: #6b6b70; }
+  .gray { color: #6b6b70; }
+  .src { font-size: 22px; color: #6b6b70; }
+  .chip { position: absolute; }
+  .card { position: absolute; background: #fff; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06); }
+  .win { position: absolute; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.08); }
+  .win .bar { height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 16px; }
+  .win .bar i { width: 13px; height: 13px; border-radius: 50%; background: #ff5f57; }
+  .win .bar i:nth-child(2) { background: #febc2e; } .win .bar i:nth-child(3) { background: #28c840; }
+  .win .bar b { margin-left: 12px; font-weight: 400; font-size: 20px; }
+  .rule { position: absolute; height: 1px; background: #e6e6e8; }
+  .dark { color: #fff; } .dark .t-xs, .dark .gray, .dark .src { color: #a1a1a6; }
+  .hl { background: linear-gradient(var(--hl), var(--hl)) 0 0 / 0% 100% no-repeat; padding: 0 0.1em; margin: 0 -0.04em; }
+  /* Nothing goes below y 880: the player's speaker chip and subtitle bar sit there */
+  /* The reels: our own screens, each on a thin ink rule, square, no shadow (entry 206) */
+  .rl-img { display: block; box-shadow: 0 0 0 1px rgba(29, 29, 31, 0.16); background: #fff; }
+  .rl-ph { display: grid; place-content: center; gap: 12px; text-align: center; box-shadow: inset 0 0 0 2px #d2d2d7; background: #fff; }
+  .rl-strike { position: absolute; left: 0; top: 50%; height: 2px; background: #1d1d1f; transform-origin: 0 50%; }
+</style>
+</head>
+<body>
+<div id="frame"></div>
+<script src="../history/data/decisions.js"></script>
+<script src="../history/data/research.js"></script>
+<script src="../system/sample.js"></script>
+<script src="../v3/archive.js"></script>
+<script src="data/longtime.js"></script>
+<script src="script.js"></script>
+<script src="reels.js"></script>
+<script src="../brand/brand.js"></script>
+<script>
+(function () {
+  "use strict";
+  var F = document.getElementById("frame"), q = new URLSearchParams(location.search);
+  var OURS = { hyacinth: "#d14808", oxblood: "#6c2e3a", pool: "#2e6b6f", mango: "#f0c23b", lichen: "#a9b9a0", plum: "#5b3a63", bottle: "#1f3b2d", blue: "#4f7cac", brick: "#b5462e", blush: "#f3d9cf", rose: "#d9a7a0", sage: "#8bae7c", graphite: "#3b3f46", paper: "#f2ede4", taxi: "#d98e04", steel: "#7a8b99", lilac: "#c9b8e8", clay: "#c25a35", teal: "#2f5d62", gallery: "#e8e1d3" };
+  var MIX = [OURS.hyacinth, OURS.pool, OURS.mango, OURS.plum, OURS.sage, OURS.oxblood, OURS.blue, OURS.blush, OURS.taxi, OURS.lilac, OURS.bottle, OURS.clay];
+
+  /* ---------- Time helpers: everything is a function of t, so scrubbing and exporting just work ---------- */
+  function k(t, t0, d) { return Math.max(0, Math.min(1, (t - t0) / (d || 0.4))); }
+  // How things come in (entry 198, the video workshop): ?motion=spring (as built), snap (short, no overshoot), cut (no fade),
+  // or step (in three steps, like stop motion)
+  // Noah, October 19: “The text and how things appear is too janky - lets go back to smooth fades. I just want them to be
+  // sequential” (entry 219, after the clunk of entry 215). fade is the default: opacity only, on v3's ease, one after another.
+  // ?motion=clunk, spring, snap, cut or step still switch it, for the workshop.
+  var MOTION = /^(spring|snap|cut|step|clunk|fade)$/.test(q.get("motion") || "") ? q.get("motion") : "fade";
+  function prog(t, t0, d) {
+    if (MOTION === "cut") return t >= t0 ? 1 : 0;
+    if (MOTION === "clunk") return t < t0 ? 0 : t < t0 + 0.07 ? 0.5 : 1;
+    var x = k(t, t0, MOTION === "snap" ? Math.min(d || 0.4, 0.22) : d);
+    return MOTION === "step" ? Math.floor(x * 3 + 1e-6) / 3 : x;
+  }
+  function outBack(x) { var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function outCubic(x) { return 1 - Math.pow(1 - x, 3); }
+  function inOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  // A springy pop in at t0 and, if given, a fade out at t1
+  function pop(n, t, t0, t1, from) {
+    var x = prog(t, t0, 0.45), f = from === undefined ? 0.6 : from, spring = MOTION === "spring";
+    if (MOTION === "fade") { var of = outCubic(x); if (t1 !== undefined) of *= 1 - outCubic(prog(t, t1, 0.35)); n.style.opacity = of; n.style.transform = n._base || ""; return; }
+    if (MOTION === "clunk") {   // two frames: there and a touch big, then in place
+      var o0 = x > 0 ? 1 : 0; if (t1 !== undefined && t >= t1) o0 = t < t1 + 0.07 ? 0.4 : 0;
+      n.style.opacity = o0; n.style.transform = (n._base || "") + " scale(" + (x === 0.5 ? 1.06 : 1) + ")"; return;
+    }
+    if (!spring) f = Math.max(f, 0.97);   // a small settle, no bounce
+    var o = spring ? Math.min(1, x * 2.2) : x, sc = f + (1 - f) * (spring ? outBack(x) : outCubic(x));
+    if (t1 !== undefined) o *= 1 - prog(t, t1, 0.35);
+    n.style.opacity = o; n.style.transform = (n._base || "") + " scale(" + sc + ")";
+  }
+  function fade(n, t, t0, t1, dy) {
+    if (MOTION === "fade") { var ff = outCubic(prog(t, t0, 0.5)); if (t1 !== undefined) ff *= 1 - outCubic(prog(t, t1, 0.35)); n.style.opacity = ff; n.style.transform = n._base || ""; return; }
+    if (MOTION === "clunk") {
+      var c0 = prog(t, t0, 0.5), oc = c0 > 0 ? 1 : 0; if (t1 !== undefined && t >= t1) oc = t < t1 + 0.07 ? 0.4 : 0;
+      n.style.opacity = oc; n.style.transform = (n._base || "") + " translateY(" + (c0 === 0.5 ? 8 : 0) + "px)"; return;
+    }
+    var x = outCubic(prog(t, t0, 0.5)), o = x, move = MOTION === "spring" ? (dy === undefined ? 16 : dy) : MOTION === "snap" ? 6 : 0;
+    if (t1 !== undefined) o *= 1 - prog(t, t1, 0.35);
+    n.style.opacity = o; n.style.transform = (n._base || "") + " translateY(" + ((1 - x) * move) + "px)";
+  }
+  function el(tag, cls, text, css, parent) {
+    var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text;
+    if (css) Object.keys(css).forEach(function (key) { n.style[key] = typeof css[key] === "number" ? css[key] + "px" : css[key]; });
+    (parent || F).appendChild(n); if (!css || css.opacity === undefined) n.style.opacity = 0; return n;
+  }
+  function mixHex(a, b, x) {
+    var pa = [1, 3, 5].map(function (i) { return parseInt(a.slice(i, i + 2), 16); }), pb = [1, 3, 5].map(function (i) { return parseInt(b.slice(i, i + 2), 16); });
+    return "#" + pa.map(function (v, i) { return ("0" + Math.round(v + (pb[i] - v) * x).toString(16)).slice(-2); }).join("");
+  }
+  function hue(h) {
+    var r = parseInt(h.slice(1, 3), 16) / 255, g = parseInt(h.slice(3, 5), 16) / 255, b = parseInt(h.slice(5, 7), 16) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    if (d < 0.06) return 400 + (1 - mx) * 100; // neutrals last, light to dark
+    var x = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return (x * 60 + 360) % 360;
+  }
+  function appear(n, t, t0, d) {
+    var x = prog(t, t0, d || 0.4);
+    if (MOTION === "clunk") { n.style.opacity = x > 0 ? 1 : 0; n.style.transform = "scale(" + (x === 0.5 ? 1.08 : 1) + ")"; return; }
+    n.style.opacity = outCubic(x); n.style.transform = "";
+  }
+  function inkOn(hex) {
+    var c = [1, 3, 5].map(function (i) { var v = parseInt(hex.slice(i, i + 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    var L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; return (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#1d1d1f" : "#ffffff";
+  }
+  function boxWord(word, hex) { return "<span class=\"hl\" style=\"--hl:" + hex + ";--hlink:" + inkOn(hex) + "\">" + word + "</span>"; }
+  // The box comes on in one frame (or grows across the word for a smoother motion)
+  function boxOn(sp, t, t0) { var on = MOTION === "clunk" || MOTION === "cut" ? (t >= t0 ? 1 : 0) : outCubic(k(t, t0, 0.35)); sp.style.backgroundSize = (100 * on) + "% 100%"; sp.style.color = on >= 1 ? "var(--hlink)" : ""; }
+  function count(n, t, t0, d, from, to, fmt) { var x = inOut(k(t, t0, d)); n.textContent = (fmt || String)(Math.round(from + (to - from) * x)); }
+
+  // v3's numbers: the shared sample and v3's older colors (design/v3/archive.js), numbered by when each was kept, the way v3
+  // numbers them (seedSample in design/v3/index.html), so a color has the same number in the charts as in the prototype
+  var V3NO = (function () {
+    var all = ((window.PALIT_SAMPLE || {}).captures || []).map(function (c) { return { at: c.capturedAt, orig: c.number }; })
+      .concat((((window.PALIT_V3_EARLIER || {}).captures) || []).map(function (c) { return { at: c.capturedAt, orig: null }; }));
+    all.sort(function (a, b) { return new Date(a.at) - new Date(b.at); });
+    var m = {}; all.forEach(function (x, i) { if (x.orig) m[x.orig] = i + 1; }); return m;
+  })();
+  function v3No(c) { return "No. " + ("00" + (V3NO[c.number] || c.number)).slice(-3); }
+
+  var SCENES = {};
+
+  /* ---------- The splash (4s, entry 203): right after “this is Palit.” The mark fills with one color after another and settles
+     on the demo's red, then the name, then one line. The mark is brand.js's: the square for now, Daeun's logo once it's in. ---------- */
+  SCENES.splash = { seconds: 4, build: function () {
+    var B = window.PALIT_BRAND || {}, SP = ((window.PALIT_SCRIPT || {}).sections || []).filter(function (x) { return x.id === "splash"; })[0] || {};
+    var line = (SP.text || [])[1] || "";
+    var row = el("div", "a", null, { left: 0, top: 370, width: 1920, height: 260, display: "flex", alignItems: "center", justifyContent: "center", gap: "56px", opacity: 1 });
+    var mark = el("div", null, null, { width: 172, height: 172, flex: "none", opacity: 1 }, row);   // bigger, and no caption under it (Noah, October 19)
+    if (B.markUrl && B.markMode === "image") { mark.style.background = "url(\"" + B.markUrl + "\") center / contain no-repeat"; }
+    else if (B.markUrl) { mark.style.webkitMask = mark.style.mask = "url(\"" + B.markUrl + "\") center / contain no-repeat"; }
+    var name = el("div", null, B.name || "Palit", { fontSize: "232px", lineHeight: "1", letterSpacing: "-0.05em", fontWeight: 400, color: "#1d1d1f", opacity: 1 }, row);
+    var CYCLE = [OURS.pool, OURS.mango, OURS.plum, OURS.sage, OURS.blue, OURS.clay, OURS.hyacinth];
+    return function (t) {
+      // The mark comes in, its color turning over a few times, then holding on the last color kept
+      pop(mark, t, 0.15, 3.6, 0.7);
+      var i = Math.min(CYCLE.length - 1, Math.max(0, Math.floor((t - 0.15) / 0.13)));
+      if (!(B.markUrl && B.markMode === "image")) mark.style.backgroundColor = CYCLE[i];
+      fade(name, t, 1.0, 3.6, 10);
+    };
+  } };
+
+  /* ---------- The brief (15s): its two lines, word for word from docs/06-svsd-brief.md, then our answer. Noah's note on the
+     script page (October 19): “it doesn't need to be there as long as it is currently, just enough time to quickly move on from
+     it after its been established.” So the lines come in fast, hold while they're said, and clear for the answer at 7.1s. ---------- */
+  SCENES.brief = { seconds: 15, build: function () {
+    // Word for word, with the brief's own quote marks only (docs/06 lines 13 and 14); "The SVSD brief" above says whose words they are
+    var L1 = "Pick a specific group of people and design a product they'll love, even if others might hate it.";
+    var L2a = "There's just one constraint: Your product must center around the theme of “", WORD = "storytelling", L2b = ".”";
+    // Centered (Noah, October 19: “I'd like them to be centered in the middle of the screen”)
+    var src = el("div", "a t-xs", "The SVSD brief", { left: 0, top: 250, width: 1920, textAlign: "center" });
+    var b1 = el("div", "a", null, { left: 180, top: 310, width: 1560, fontSize: "60px", lineHeight: "1.12", letterSpacing: "-0.03em", textAlign: "center", opacity: 1 });
+    var b2 = el("div", "a", null, { left: 180, top: 500, width: 1560, fontSize: "60px", lineHeight: "1.12", letterSpacing: "-0.03em", textAlign: "center", opacity: 1 });
+    // A word at a time, not a letter at a time (Noah, entry 198), and quickly
+    function words(text, into) { var out = []; text.split(" ").forEach(function (w, i, a) { if (!w) return; var sp = document.createElement("span"); sp.textContent = w; sp.style.opacity = 0; into.appendChild(sp); if (i < a.length - 1) into.appendChild(document.createTextNode(" ")); out.push(sp); }); return out; }
+    var c1 = words(L1, b1), u = document.createElement("span"), c2 = words(L2a.replace(/ “$/, ""), b2);
+    var grp = document.createElement("span"); grp.style.opacity = 0;
+    b2.appendChild(document.createTextNode(" ")); b2.appendChild(grp);
+    grp.appendChild(document.createTextNode("“")); grp.appendChild(u); u.textContent = WORD; grp.appendChild(document.createTextNode(L2b));
+    // storytelling in a box of a bright color from the archive, in place of the underline (Noah, October 19)
+    u.className = "hl"; u.style.setProperty("--hl", OURS.mango); u.style.setProperty("--hlink", inkOn(OURS.mango));
+    c2.push(grp);
+    // Our answer, in the words of Noah's line (brief-2), once the brief has cleared
+    var cards = [["Who it's for", "Visual designers in the ideation and exploratory phase"], ["The story", "Where you found each color, and the journey it took to get there"]].map(function (c, i) {
+      var n = el("div", "card", null, { left: 180 + i * 800, top: 330, width: 760, height: 250 });
+      el("div", "t-xs", c[0], { position: "absolute", left: 36, top: 28, opacity: 1 }, n);
+      el("div", "t-m", c[1], { position: "absolute", left: 36, top: 70, width: 690, opacity: 1 }, n);
+      return n;
+    });
+    return function (t) {
+      // ?reveal=word (as built), line (each line at once) or all (everything at once), for the video workshop
+      var RV = q.get("reveal") || "word", OUT = 6.5;
+      fade(src, t, 0.1, OUT);
+      // Each word lands in two frames, a beat apart: quick, sudden, a little clunky
+      function land(sp, t0) { var x = prog(t, t0, MOTION === "clunk" ? 0.16 : 0.4), out = prog(t, OUT, 0.35); sp.style.opacity = (MOTION === "clunk" ? (x > 0 ? 1 : 0) : outCubic(x)) * (1 - outCubic(out)); sp.style.display = "inline-block"; sp.style.transform = "scale(" + (MOTION === "clunk" && x === 0.5 ? 1.1 : 1) + ")"; }
+      c1.forEach(function (sp, i) { land(sp, RV === "word" ? 0.2 + i * 0.075 : 0.2); });
+      c2.forEach(function (sp, i) { land(sp, RV === "word" ? 1.6 + i * 0.075 : RV === "line" ? 1.6 : 0.2); });
+      boxOn(u, t, 2.9);
+      cards.forEach(function (c, i) { pop(c, t, 7.2 + i * 0.6, undefined, 0.9); });
+    };
+  } };
+
+  /* ---------- The problem (45s): 33 of 51, 2 of 8, more alike, Pantone and Palit ---------- */
+  SCENES.problem = { seconds: 45, build: function () {
+    var dots = [], i;
+    var h1 = el("div", "a t-l", "33 of 51 designers save inspiration", { left: 160, top: 150 });
+    var h1s = el("div", "a src", "And designers distrust sources that are poorly documented. Koch et al., DRS 2018", { left: 162, top: 240 });
+    // 51 squares of colors from the archive, faint until they fill in (Noah, October 19: “boxes of random colors that are low
+    // opacity and turn into high opacity as they fill in”), and a little bigger
+    var ARCH = (((window.PALIT_SAMPLE || {}).captures) || []).concat((((window.PALIT_V3_EARLIER || {}).captures) || [])).map(function (c) { return c.hex; });
+    for (i = 0; i < 51; i++) dots.push(el("div", "a", null, { left: 160 + (i % 17) * 94, top: 360 + Math.floor(i / 17) * 94, width: 84, height: 84, background: ARCH.length ? ARCH[(i * 37 + 11) % ARCH.length] : MIX[i % MIX.length] }));
+    // research.js: 2 point to a page about the work (The Dieline on Ravex, francofrontera.com for SOUND), 1 to a Pinterest
+    // repost, 3 to bare image files (Pinterest, Instagram, a portfolio host), and 2 to nothing. The swatches stand in for the images.
+    var refs = [], labels = [], SRC = ["An image file, Pinterest", "No source", "The Dieline, on Ravex", "A Pinterest repost", "An image file, Instagram", "francofrontera.com, on SOUND", "No source", "An image file, a portfolio host"], KEEP = [2, 5];
+    var RC = [OURS.blush, OURS.oxblood, OURS.hyacinth, OURS.pool, OURS.sage, OURS.plum, OURS.mango, OURS.gallery];
+    for (i = 0; i < 8; i++) {
+      var x = 160 + (i % 4) * 410, y = 110 + Math.floor(i / 4) * 310;
+      refs.push(el("div", "a", null, { left: x, top: y, width: 370, height: 230, background: RC[i] }));
+      labels.push(el("div", "a t-s", SRC[i], { left: x, top: y + 244, width: 370 }));
+    }
+    var h2 = el("div", "a t-m", "2 of 8 references on Noah's boards point to a page about the work", { left: 160, top: 760, width: 1500 });
+    var pals = [];
+    for (i = 0; i < 6; i++) { var row = []; for (var j = 0; j < 5; j++) row.push(el("div", "a", null, { left: 160 + j * 150, top: 150 + i * 110, width: 140, height: 96 })); pals.push(row); }
+    var same = [OURS.blush, OURS.rose, OURS.clay, OURS.oxblood, OURS.graphite];
+    var h3 = el("div", "a t-m", "With AI suggestions, stories got more creative, and more alike", { left: 1000, top: 360, width: 760 });
+    var h3s = el("div", "a src", "Doshi & Hauser, Science Advances, 2024", { left: 1002, top: 500 });
+    var p1 = el("div", "a t-l gray", "Pantone sells consistency.", { left: 160, top: 380 });
+    var p2 = el("div", "a t-xl", null, { left: 160, top: 480 });
+    p2.innerHTML = "Palit sells " + boxWord("ownership", OURS.hyacinth) + ".";   // a box, not an underline (Noah, October 19)
+    var p2u = p2.firstElementChild;
+    var p3 = el("div", "a t-s gray", "You find every color before you use it.", { left: 162, top: 660 });
+    return function (t) {
+      // 33 of 51
+      fade(h1, t, 0.3, 11.4); fade(h1s, t, 0.8, 11.4);
+      dots.forEach(function (d, i) {
+        pop(d, t, 0.6 + i * 0.03, 11.4);
+        var fill = i < 33 && t >= 4 + i * 0.09; if (Number(d.style.opacity) > 0) d.style.opacity = fill ? 1 : 0.16;
+      });
+      // 2 of 8
+      refs.forEach(function (r, i) {
+        pop(r, t, 12.2 + i * 0.18, 21.5);
+        var dim = KEEP.indexOf(i) < 0 ? k(t, 15.5 + i * 0.15, 0.5) : 0;
+        r.style.filter = "saturate(" + (1 - 0.85 * dim) + ") opacity(" + (1 - 0.55 * dim) + ")";
+      });
+      labels.forEach(function (l, i) {
+        fade(l, t, 12.6 + i * 0.18, 21.5, 8);
+        var linked = KEEP.indexOf(i) >= 0;
+        l.style.color = !linked && t > 15.5 + i * 0.15 ? "#c7c7cc" : "#1d1d1f";
+        l.style.textDecoration = linked && t > 15.8 ? "underline" : "none";
+        l.style.textUnderlineOffset = "6px";
+      });
+      fade(h2, t, 17, 21.5);
+      // More alike
+      pals.forEach(function (row, i) { row.forEach(function (c, j) {
+        pop(c, t, 22.2 + i * 0.12 + j * 0.04, 31.5);
+        var start = MIX[(i * 5 + j * 3) % MIX.length], x = inOut(k(t, 25.5 + i * 0.2, 3.2));
+        c.style.background = mixHex(start, same[j], x);
+      }); });
+      fade(h3, t, 23.5, 31.5); fade(h3s, t, 24.2, 31.5);
+      // Pantone and Palit
+      fade(p1, t, 32.4); fade(p2, t, 34.4);
+      boxOn(p2u, t, 35.4);
+      fade(p3, t, 37);
+    };
+  } };
+
+  /* ---------- Who loves it, and who won't (30s) ---------- */
+  SCENES.people = { seconds: 30, build: function () {
+    var L = el("div", "card", null, { left: 160, top: 170, width: 700, height: 520 }), R = el("div", "card", null, { left: 1060, top: 170, width: 700, height: 520 });
+    [[L, "A hypothesis", "The designer who keeps a folder of references for every project", "Loves it"], [R, "A hypothesis", "Someone who wants a quick hex, or a palette in one click", "Won't"]].forEach(function (c) {
+      var hyp = el("div", "t-xs", c[1], { position: "absolute", left: 44, top: 40, opacity: 1 }, c[0]);
+      var txt = el("div", "t-m", c[2], { position: "absolute", left: 44, top: 84, width: 600, opacity: 1 }, c[0]);
+      var tag = el("div", "t-s", c[3], { position: "absolute", left: 44, bottom: 40, opacity: 1, color: c[3] === "Loves it" ? "#1d1d1f" : "#6b6b70" }, c[0]);
+    });
+    // The found colors a little brighter, the generated ones a little uglier (Noah, October 19)
+    var chipsL = [OURS.hyacinth, OURS.mango, OURS.blue, OURS.taxi, OURS.rose].map(function (h, i) { return el("div", null, null, { position: "absolute", left: 44 + i * 70, top: 300, width: 60, height: 60, background: h, opacity: 1 }, L); });
+    var gen = el("div", "t-s", "Generate", { position: "absolute", left: 44, top: 226, padding: "8px 22px", borderRadius: 999, background: "#1d1d1f", color: "#fff" }, R);
+    var genP = ["#a8a23b", "#c97c8a", "#7f8f8a", "#5d6aa6", "#b9864a"].map(function (h, i) { return el("div", null, null, { position: "absolute", left: 44 + i * 70, top: 300, width: 60, height: 60, background: h }, R); });
+    var line = el("div", "a", null, { left: 860, top: 430, width: 200, height: 3, background: "#1d1d1f", transformOrigin: "0 50%" });
+    var big = el("div", "a t-xl", null, { left: 0, top: 480, width: 1920, textAlign: "center" });   // in the middle of the screen
+    big.innerHTML = "You have to " + boxWord("earn", OURS.hyacinth) + " it.";
+    var bigU = big.firstElementChild;
+    return function (t) {
+      pop(L, t, 0.5, undefined, 0.85); pop(R, t, 10, undefined, 0.85);
+      // Found: one at a time, over the line. Generated: all five at once, at the press of a button
+      chipsL.forEach(function (c, i) { c.style.transform = "translateY(" + (1 - outBack(k(t, 1.4 + i * 1.5, 0.45))) * 30 + "px)"; c.style.opacity = k(t, 1.4 + i * 1.5, 0.2); });
+      gen.style.opacity = k(t, 11, 0.3); gen.style.transform = "scale(" + (t > 13 && t < 13.25 ? 0.94 : 1) + ")";
+      // a few frames apart, a little off, not all at once
+      var GAP = [0, 0.07, 0.03, 0.12, 0.09];
+      genP.forEach(function (c, i) { var on = t >= 13.25 + GAP[i]; c.style.opacity = on ? 1 : 0; c.style.transform = "scale(" + (on && t < 13.32 + GAP[i] ? 1.12 : 1) + ")"; });
+      // Everything behind “earn it” fades back, the line too
+      var dim = 1 - 0.85 * k(t, 22, 0.4);
+      line.style.opacity = k(t, 20, 0.2) * dim; line.style.transform = "scaleX(" + outCubic(k(t, 20, 0.8)) + ")";
+      L.style.opacity *= dim; R.style.opacity *= dim;
+      pop(big, t, 22.4, undefined, 0.8); boxOn(bigU, t, 22.9);
+    };
+  } };
+
+  /* ---------- How we worked (15s): every decision, day by day, from decisions.js ---------- */
+  // Only what we did since the brief came out (Noah, October 19: “October 16, to be safe”): the entries from October 4 and 15
+  // stay in the dashboard's log, but not on this chart
+  var SINCE = "2026-10-16";
+  SCENES.decisions = { seconds: 15, build: function () {
+    var E = (((window.PALIT || {}).decisions || {}).entries || []).filter(function (e) { return e.date >= SINCE; });
+    var KIND = { decision: OURS.pool, pivot: OURS.hyacinth, exploration: OURS.mango, process: OURS.plum, feedback: OURS.clay, question: OURS.steel };
+    var days = []; E.forEach(function (e) { if (days.indexOf(e.date) < 0) days.push(e.date); }); days.sort();
+    var colW = Math.min(210, 1180 / Math.max(1, days.length)), stacks = {}, sq = [];
+    // Centered as one piece: the blocks, then the counts close beside them (Noah, October 19)
+    var blocksW = (days.length - 1) * colW + 8 * 22, X0 = Math.round((1920 - (blocksW + 120 + 300)) / 2), SX = X0 + blocksW + 120;
+    el("div", "a t-l", "Every decision since the brief, October 16", { left: 0, top: 170, width: 1920, textAlign: "center" }).className += " title";
+    E.forEach(function (e, i) {
+      var di = days.indexOf(e.date), n = stacks[e.date] = (stacks[e.date] || 0) + 1;
+      var x = X0 + di * colW + ((n - 1) % 8) * 22, y = 740 - Math.floor((n - 1) / 8) * 22;
+      sq.push({ node: el("div", "a", null, { left: x, top: y, width: 18, height: 18, background: KIND[e.kind] || "#1d1d1f" }), i: i });
+    });
+    var axis = days.map(function (d, di) { var dt = new Date(d + "T12:00"); return el("div", "a t-xs num", ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][dt.getMonth()] + " " + dt.getDate(), { left: X0 + di * colW, top: 776 }); });
+    var legend = Object.keys(KIND).map(function (kd, i) { var n = el("div", "a t-xs", null, { left: Math.round(960 - Object.keys(KIND).length * 100) + i * 200, top: 838 }); n.innerHTML = "<span style=\"display:inline-block;width:14px;height:14px;background:" + KIND[kd] + ";margin-right:8px;vertical-align:-1px\"></span>" + kd.charAt(0).toUpperCase() + kd.slice(1); return n; });
+    // Not every entry has a reason (19 since October 16 have none, and 13 only an agent's), so the label says what's true of all of them
+    var R = (window.PALIT || {}).research || {};
+    var stats = [["6", "workshops"], [String((R.competitors || []).length || 23), "competitors"], [String((R.evidence || []).length || 67), "research findings"], [String(E.length), "decisions, logged as we made them"]].map(function (s, i) {
+      var box = el("div", "a", null, { left: SX, top: 280 + i * 132 });
+      var nb = el("div", "t-l num", "0", { position: "relative", opacity: 1 }, box), lb = el("div", "t-xs", s[1], { position: "relative", opacity: 1 }, box);
+      return { box: box, nb: nb, to: Number(s[0]) };
+    });
+    var title = F.querySelector(".title");
+    return function (t) {
+      fade(title, t, 0.2);
+      sq.forEach(function (s) { pop(s.node, t, 0.8 + s.i * (8 / Math.max(1, E.length)), undefined, 0.2); });
+      axis.forEach(function (a, i) { fade(a, t, 0.6 + i * 0.1); });
+      legend.forEach(function (l, i) { fade(l, t, 1 + i * 0.1); });
+      stats.forEach(function (s, i) { fade(s.box, t, 1.5 + i * 0.6); count(s.nb, t, 1.5 + i * 0.6, 1.6, 0, s.to); });
+    };
+  } };
+
+  /* ---------- Deep dive 1 (90s): the look ---------- */
+  SCENES.look = { seconds: 90, build: function () {
+    // 0 to 17: the real Sip beside the real Palit (Noah, October 19: “Why don't we show the actual SIP UI? ... and then we put our
+    // actual UI beside it, not just a card”): Sip's menu bar app from its own page, asking for a format (CSS Hex), and v3's card
+    function shotIn(src, x, y, w, h) { var hd = el("div", "a", null, { left: x, top: y, width: w, height: h, overflow: "hidden" }); var im = document.createElement("img"); im.src = src; im.alt = ""; im.style.cssText = "display:block;width:100%;height:100%;object-fit:cover;transform-origin:50% 40%"; hd.appendChild(im); hd._img = im; return hd; }
+    var dark = shotIn("../v2/screens/sources/sip.jpg", 140, 170, 780, 503), white = shotIn("../history/shots/process/v3-card-window.jpg", 1000, 170, 780, 539);
+    white.style.boxShadow = "0 0 0 1px rgba(29,29,31,0.16)";
+    var qL = el("div", "a t-m gray", "Sip asks which format you need.", { left: 140, top: 740, width: 780 }), qR = el("div", "a t-m", "Palit asks where you found it.", { left: 1000, top: 740, width: 780 });
+    // 17 to 25: 1 of 11
+    var PICK = (((window.PALIT || {}).research || {}).competitors || []).filter(function (c) { return c.group === "picker"; });
+    var pickers = PICK.map(function (c, i) {
+      var on = c.name === "Pick", box = el("div", "a", null, { left: 160 + (i % 6) * 265, top: 150 + Math.floor(i / 6) * 220, width: 245, height: 190, background: on ? "#fff" : "#f5f5f7", boxShadow: on ? "inset 0 0 0 4px #1d1d1f" : "none" });
+      el("div", "t-s", c.name, { position: "absolute", left: 20, top: 16, width: 205, opacity: 1, color: on ? "#1d1d1f" : "#6b6b70" }, box);
+      if (on) el("div", "t-xs", "A screenshot, on Linux", { position: "absolute", left: 20, bottom: 18, width: 205, opacity: 1 }, box);
+      return box;
+    });
+    var p11 = el("div", "a t-l", "1 of " + PICK.length + " pickers keeps any trace of where a color came from", { left: 160, top: 640, width: 1600 });
+    // 25 to 33: neutral everywhere
+    var nwin = el("div", "win", null, { left: 460, top: 180, width: 1000, height: 560, background: "#fff" });
+    var nbar = el("div", "bar", null, { opacity: 1 }, nwin); nbar.innerHTML = "<i></i><i></i><i></i><b>Palit</b>";
+    var nacc = el("div", null, null, { position: "absolute", left: 40, top: 80, width: 240, height: 40, borderRadius: 8, opacity: 1 }, nwin);
+    var ncols = [OURS.pool, OURS.hyacinth, OURS.mango, OURS.plum, OURS.sage, OURS.blush].map(function (h, i) { return el("div", null, null, { position: "absolute", left: 40 + i * 155, top: 150, width: 145, height: 300, background: h, opacity: 1 }, nwin); });
+    var nl = el("div", "a t-m", "Neutral everywhere. The colors you keep are the only color.", { left: 160, top: 800, width: 1600 });
+    // 33 to 50: no surface is neutral. The same dark pair of grays on white, mid gray and black, as Xin, Lam & Luo measured
+    var grounds = ["#ffffff", "#777777", "#111111"].map(function (g, i) { var gn = el("div", "a", null, { left: 210 + i * 540, top: 150, width: 500, height: 420, background: g, boxShadow: i ? "none" : "inset 0 0 0 1px #e1e1e4" }); el("div", null, null, { position: "absolute", left: 100, top: 135, width: 150, height: 150, background: "#2e2e2e", opacity: 1 }, gn); el("div", null, null, { position: "absolute", left: 250, top: 135, width: 150, height: 150, background: "#3c3c3c", opacity: 1 }, gn); return gn; });
+    var barT = el("div", "a t-s", "How different the same two grays look, from the gray behind them alone", { left: 160, top: 640 });
+    var bar = el("div", "a", null, { left: 160, top: 700, width: 1600, height: 56, background: "#1d1d1f", transformOrigin: "0 50%" });
+    var barN = el("div", "a t-l num", "1×", { left: 1360, top: 610, width: 400, textAlign: "right" });
+    var barS = el("div", "a src", "Up to 8 times, for 38 gray pairs. Xin, Lam & Luo, Color Research & Application, 2004", { left: 160, top: 786 });
+    // 50 to 60: pure white, and each color on white, mid gray and black
+    var pw = el("div", "a t-xl", "Pure white", { left: 160, top: 160 });
+    var trios = [OURS.hyacinth, OURS.pool, OURS.mango, OURS.plum].map(function (h, i) { return ["#ffffff", "#777777", "#111111"].map(function (g, j) { var gn = el("div", "a", null, { left: 160 + i * 400 + j * 120, top: 420, width: 116, height: 116, background: g, boxShadow: j ? "none" : "inset 0 0 0 1px #e1e1e4" }); el("div", null, null, { position: "absolute", left: 33, top: 33, width: 50, height: 50, background: h, opacity: 1 }, gn); return gn; }); });
+    var pwl = el("div", "a t-m", "Every palette shows each color on white, mid gray and black.", { left: 160, top: 620, width: 1600 });
+    var study = shotIn("../history/shots/process/v3-study-window.jpg", 420, 104, 1080, 746);
+    // 60 to 70: Noah's reason
+    var why = el("div", "a t-l gray", "[Noah: why pure white beat the grays, in your words]", { left: 160, top: 460, width: 1600 });
+    // 70 to 90: then we cut
+    var cutT = el("div", "a t-l", "Then we cut", { left: 160, top: 130 });
+    var ROWS = [["Controls around the colors", [15, 29, 16]], ["Words outside the colors", [23, 61, 23]], ["Type sizes", [5, 8, 4]]];
+    var rows = ROWS.map(function (r, i) {
+      var lab = el("div", "a t-s", r[0], { left: 160, top: 260 + i * 180 });
+      var b = el("div", "a", null, { left: 160, top: 310 + i * 180, height: 56, width: 1200, background: OURS.pool, transformOrigin: "0 50%" });
+      var n = el("div", "a t-m num", "", { left: 1390, top: 306 + i * 180 });
+      return { lab: lab, b: b, n: n, v: r[1], max: Math.max.apply(null, r[1]) };
+    });
+    var cutL = el("div", "a t-s gray", "On Days, measured: v2 on the afternoon of October 18, v2 with everything in one window, then v3", { left: 160, top: 822 });
+    return function (t) {
+      pop(dark, t, 0.4, 16.5, 0.9); pop(white, t, 1.2, 16.5, 0.9); fade(qL, t, 8, 16.5); fade(qR, t, 9, 16.5);
+      dark._img.style.transform = "scale(" + (1 + 0.05 * inOut(k(t, 0.4, 16))) + ")"; white._img.style.transform = "scale(" + (1 + 0.05 * inOut(k(t, 1.2, 15))) + ")";
+      pickers.forEach(function (p, i) { pop(p, t, 17.2 + i * 0.12, 24.6); }); fade(p11, t, 19, 24.6);
+      pop(nwin, t, 25.2, 32.6, 0.9);
+      var dr = k(t, 27, 2.5); nacc.style.background = mixHex("#3b82f6", "#f3f3f5", dr); nbar.style.background = mixHex("#dbeafe", "#ffffff", dr);
+      fade(nl, t, 28.5, 32.6);
+      grounds.forEach(function (g, i) { pop(g, t, 33.3 + i * 0.3, 49.6, 0.9); });
+      fade(barT, t, 38, 49.6);
+      var bx = outCubic(k(t, 39, 6)); bar.style.opacity = k(t, 38.5, 0.3) * (1 - k(t, 49.6, 0.35)); bar.style.transform = "scaleX(" + (0.125 + 0.875 * bx) + ")";
+      fade(barN, t, 38.5, 49.6); barN.textContent = (1 + Math.round(7 * bx)) + "×";
+      fade(barS, t, 44, 49.6);
+      fade(pw, t, 50.3, 56);
+      var drop = inOut(k(t, 56, 0.7));
+      trios.forEach(function (tr, i) { tr.forEach(function (g, j) { pop(g, t, 51.2 + i * 0.25 + j * 0.08, 59.6); g.style.transform += " translateY(" + (drop * (260 + j * 30 + i * 20)) + "px)"; if (drop > 0) g.style.opacity = String(Number(g.style.opacity) * (1 - drop)); }); });
+      fade(pwl, t, 53, 56);
+      // a bold moment: the app's own palette study rises in on black
+      study.style.opacity = t >= 56.3 && t < 59.6 ? 1 : 0; study.style.transform = "translateY(" + (-30 * (1 - inOut(k(t, 56.3, 0.6)))) + "px)";
+      if (t >= 56 && t < 59.6) F.style.background = "#000"; else if (t < 90) F.style.background = "#fff";
+      fade(why, t, 60.4, 69.6);
+      fade(cutT, t, 70.3);
+      rows.forEach(function (r, i) {
+        fade(r.lab, t, 70.8 + i * 0.3);
+        var up = outCubic(k(t, 72 + i * 0.3, 1.5)), down = inOut(k(t, 78 + i * 0.4, 2.2));
+        var v = up < 1 ? r.v[0] + (r.v[1] - r.v[0]) * up : r.v[1] + (r.v[2] - r.v[1]) * down;
+        r.b.style.opacity = k(t, 70.8 + i * 0.3, 0.3); r.b.style.transform = "scaleX(" + (v / r.max) + ")";
+        r.b.style.background = down > 0.5 ? OURS.pool : up >= 1 ? OURS.hyacinth : OURS.steel;
+        fade(r.n, t, 70.8 + i * 0.3); r.n.textContent = String(Math.round(v));
+      });
+      fade(cutL, t, 74);
+    };
+  } };
+
+  /* ---------- Deep dive 2's insert (7s): a longtime archive, month by month ---------- */
+  SCENES.longtime = { seconds: 7, build: function () {
+    var L = window.PALIT_LONGTIME || { total: 0, months: [] }, cols = [], max = Math.max.apply(null, L.months.map(function (m) { return m.n; }).concat([1]));
+    var title = el("div", "a t-l num", L.total.toLocaleString("en-US") + " colors over four years, month by month", { left: 160, top: 110, width: 1600 });
+    var sub = el("div", "a t-xs", "A made-up longtime archive, from prototype v3", { left: 162, top: 200 });
+    var cw = Math.floor(1600 / Math.max(1, L.months.length)), ch = Math.floor(540 / max);
+    L.months.forEach(function (m, i) {
+      var col = el("div", "a", null, { left: 160 + i * cw, top: 800 - m.n * ch, width: cw - 6, height: m.n * ch, overflow: "hidden", display: "flex", flexDirection: "column-reverse" });
+      m.hexes.slice().sort(function (a, b) { return hue(a) - hue(b); }).forEach(function (h) { el("div", null, null, { height: ch, background: h, opacity: 1, flex: "none" }, col); });
+      cols.push(col);
+    });
+    var years = [], firstJan = L.months.findIndex(function (m) { return m.m.slice(5) === "01"; }); L.months.forEach(function (m, i) { if (m.m.slice(5) === "01" || (i === 0 && firstJan > 3)) years.push(el("div", "a t-xs num", m.m.slice(0, 4), { left: 160 + i * cw, top: 816 })); });
+    return function (t) {
+      fade(title, t, 0.1); fade(sub, t, 0.4);
+      cols.forEach(function (c, i) { var x = outBack(k(t, 0.5 + i * (4.2 / Math.max(1, cols.length)), 0.5)); c.style.opacity = Math.min(1, x * 2); c.style.transform = "scaleY(" + Math.max(0, x) + ")"; c.style.transformOrigin = "50% 100%"; });
+      years.forEach(function (y, i) { fade(y, t, 0.6 + i * 0.3); });
+    };
+  } };
+
+  /* ---------- Deep dive 3 (90s): where the story lives ---------- */
+  SCENES.story = { seconds: 90, build: function () {
+    // 0 to 16: memory drifts toward the category
+    var saw = el("div", "a", null, { left: 160, top: 200, width: 420, height: 420, background: "#a8c83c" });
+    var sawL = el("div", "a t-s", "What you saw", { left: 160, top: 640 });
+    var rem = el("div", "a", null, { left: 700, top: 200, width: 420, height: 420 });
+    var remL = el("div", "a t-s", "What you remember", { left: 700, top: 640 });
+    var hue = el("div", "a", null, { left: 160, top: 760, width: 1600, height: 40, background: "linear-gradient(90deg, #e3c62d, #a8c83c, #5bb04a, #2f9e6e)" });
+    var mk = el("div", "a", null, { left: 0, top: 740, width: 6, height: 80, background: "#1d1d1f" });
+    var memL = el("div", "a t-m", "Colors you remember drift toward the center of their category. A yellowish green comes back greener.", { left: 1240, top: 230, width: 520 });
+    var memS = el("div", "a src", "Bae et al., Journal of Experimental Psychology: General, 2015", { left: 1242, top: 600, width: 520 });
+    // 16 to 34: the audit
+    var PARTS = ["Your name", "Where you found it", "What it looked like there", "When you kept it", "Your note", "How it reads", "Kept before", "Its number", "Its palettes"], LIT = [0, 3], HALF = [1, 8];
+    // Laid out like v3's card: label rows on soft rules, centered as one table; a square for what shows, ink when it shows
+    var AX = 520, AW = 880, aT = el("div", "a t-l", "Before a click: 2 of 9", { left: 0, top: 96, width: 1920, textAlign: "center" });
+    var aRows = PARTS.map(function (p, i) {
+      var y = 250 + i * 62, rl = el("div", "a", null, { left: AX, top: y - 8, width: AW, height: 1, background: "#e6e6e8" });
+      var lab = el("div", "a t-s", p, { left: AX, top: y + 6 });
+      var a = el("div", "a", null, { left: AX + 560, top: y + 6, width: 34, height: 34, boxShadow: "inset 0 0 0 1.5px #1d1d1f" });
+      var b = el("div", "a", null, { left: AX + 760, top: y + 6, width: 34, height: 34, boxShadow: "inset 0 0 0 1.5px #1d1d1f" });
+      return { lab: lab, a: a, b: b, rl: rl, lit: LIT.indexOf(i) >= 0, half: HALF.indexOf(i) >= 0 };
+    });
+    var aNote = el("div", "a t-xs", "Half: shown in part, like a source cut to its first word. Measured on prototype v2, October 18", { left: 0, top: 832, width: 1920, textAlign: "center" });
+    var hA = el("div", "a t-xs", "Days", { left: AX + 560, top: 206 }), hB = el("div", "a t-xs", "The card", { left: AX + 760, top: 206 });
+    // 34 to 52: three ways
+    var OPTS = ["Places", "A ruled catalogue, after 1821", "Days, each with its places"];
+    var CATS = ["Bottle green", "Taxi", "Lichen"].map(function (nm) { return (((window.PALIT_SAMPLE || {}).captures) || []).filter(function (c) { return c.name === nm; })[0]; });
+    var opts = OPTS.map(function (o, i) {
+      var c = el("div", "card", null, { left: 160 + i * 560, top: 230, width: 520, height: 520 });
+      el("div", "t-m", o, { position: "absolute", left: 32, top: 360, width: 460, opacity: 1 }, c);
+      for (var r = 0; r < 3; r++) for (var j = 0; j < (i === 1 ? 1 : 4); j++) el("div", null, null, { position: "absolute", left: (i === 1 ? 80 : 32) + j * 110, top: 40 + r * 100, width: i === 1 ? 70 : 100, height: i === 1 ? 70 : 84, background: i === 1 && CATS[r] ? CATS[r].hex : MIX[(i * 7 + r * 4 + j) % MIX.length], opacity: 1 }, c);
+      if (i === 1) CATS.forEach(function (cc, r2) { if (!cc) return; el("div", "t-xs num", v3No(cc), { position: "absolute", left: 170, top: 60 + r2 * 100, opacity: 1 }, c); el("div", "t-xs", cc.name, { position: "absolute", left: 270, top: 60 + r2 * 100, color: "#1d1d1f", opacity: 1 }, c); });
+      return c;
+    });
+    var picked = el("div", "a", null, { left: 1280 - 6, top: 230 - 6, width: 532, height: 532, boxShadow: "inset 0 0 0 6px #1d1d1f" });
+    // 52 to 66: a diary of where your eye went, from the design system's sample archive (design/system/sample.js)
+    var CAP = ((window.PALIT_SAMPLE || {}).captures || []);
+    // A place, the way v3 says it (whereOf in design/v3/index.html)
+    function placeOf(c) {
+      var x = (c.source || "").split(" — "), place = x[0], src = x[1] || "";
+      if (c.sourceType === "Photos") return src || place;
+      if (c.sourceType === "Browser") return src ? src.charAt(0).toUpperCase() + src.slice(1) : place;
+      if (c.sourceType === "Preview") return place;
+      return place + (src ? ", " + src : "");
+    }
+    var byDay = {}; CAP.forEach(function (c) { var d = c.capturedAt.slice(0, 10); (byDay[d] = byDay[d] || []).push(c); });
+    var DAYS = Object.keys(byDay).sort().reverse();
+    function dayName(d) { var dt = new Date(d + "T12:00"); return ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][dt.getMonth()] + " " + dt.getDate(); }
+    function places(list) { var out = [], at = {}; list.forEach(function (c) { var p = placeOf(c); if (!(p in at)) { at[p] = out.length; out.push({ place: p, caps: [] }); } out[at[p]].caps.push(c); }); return out; }
+    function nameOf(c) { return c.name || c.placeholder; }
+    var dT = el("div", "a t-l", "A diary of where your eye went", { left: 160, top: 110 });
+    var diary = DAYS.slice(0, 3).map(function (d, i) {   // three days, so the last row ends above y 880
+      var row = el("div", "a", null, { left: 160, top: 250 + i * 180, width: 1600, height: 150 }), x = 400;
+      el("div", "t-m", dayName(d), { position: "absolute", left: 0, top: 30, opacity: 1 }, row);
+      places(byDay[d]).forEach(function (g) {
+        el("div", "t-xs", g.place, { position: "absolute", left: x, top: 0, opacity: 1 }, row);
+        g.caps.forEach(function (c, j) { el("div", null, null, { position: "absolute", left: x + j * 170, top: 36, width: 160, height: 100, background: c.hex, opacity: 1 }, row); });
+        x += g.caps.length * 170 + 60;
+      });
+      return row;
+    });
+    // 66 to 90: the zoom as a dial, then the trail
+    var STOPS = ["Only color", "Your names", "And where", "The hunt"];
+    var dial = el("div", "a", null, { left: 160, top: 260, width: 640, height: 340 });
+    dial.innerHTML = "<svg width=\"640\" height=\"340\" viewBox=\"0 0 640 340\"><path d=\"M40 320 A280 280 0 0 1 600 320\" fill=\"none\" stroke=\"#1d1d1f\" stroke-width=\"3\"/></svg>";
+    var ticks = STOPS.map(function (s, i) { var ang = Math.PI - (i + 0.5) * Math.PI / 4, x = 320 + Math.cos(ang) * 330, y = 320 - Math.sin(ang) * 330, left = i < 2; return el("div", "a t-s", s, { left: left ? 160 + x - 240 : 160 + x, top: 260 + y - 36, width: 240, textAlign: left ? "right" : "left", color: "#6b6b70" }); });
+    var needle = el("div", "a", null, { left: 160 + 320 - 3, top: 260 + 60, width: 6, height: 260, background: OURS.hyacinth, transformOrigin: "50% 100%" });
+    var prev = el("div", "card", null, { left: 960, top: 180, width: 800, height: 640 });
+    var SHOW = DAYS.slice(0, 3);
+    var stopViews = STOPS.map(function (s, i) {
+      var v = el("div", null, null, { position: "absolute", left: 32, top: 28, right: 32, bottom: 28, opacity: 0 }, prev);
+      SHOW.forEach(function (d, r) {
+        var y = r * 192, x = 0;
+        if (i >= 2) el("div", "t-xs", dayName(d), { position: "absolute", left: 0, top: y, color: "#1d1d1f", opacity: 1 }, v);
+        places(byDay[d]).forEach(function (g) {
+          if (i >= 2) el("div", "t-xs", g.place, { position: "absolute", left: x, top: y + 26, width: 300, fontSize: "17px", opacity: 1 }, v);
+          g.caps.forEach(function (c) {
+            var top = y + (i >= 2 ? 54 : 0);
+            if (i === 3) {
+              // The hunt: each color in the middle of the eight samples around it, where it was found
+              var nb = c.neighbors || [];
+              for (var q = 0; q < 9; q++) el("div", null, null, { position: "absolute", left: x + (q % 3) * 26, top: top + Math.floor(q / 3) * 26, width: 26, height: 26, background: q === 4 ? c.hex : nb[q < 4 ? q : q - 1] || c.hex, opacity: 1 }, v);
+            } else {
+              el("div", null, null, { position: "absolute", left: x, top: top, width: i === 0 ? 100 : 104, height: i === 0 ? 160 : i === 1 ? 92 : 64, background: c.hex, opacity: 1 }, v);
+              if (i >= 1) el("div", "t-xs", nameOf(c), { position: "absolute", left: x, top: top + (i === 1 ? 98 : 70), width: 104, fontSize: "17px", lineHeight: "20px", color: c.name ? "#1d1d1f" : "#8e8e93", opacity: 1 }, v);
+            }
+            x += i === 0 ? 106 : 112;
+          });
+          x += i === 0 ? 0 : 20;
+        });
+      });
+      return v;
+    });
+    var plum = CAP.filter(function (c) { return c.name === "Plum label"; })[0] || CAP[0] || { number: 0, capturedAt: "2026-10-04", source: "", name: "" };
+    var trail = el("div", "a t-m num", dayName(plum.capturedAt.slice(0, 10)) + "  ›  " + placeOf(plum) + "  ›  " + v3No(plum) + ", " + nameOf(plum), { left: 160, top: 796, width: 1600 });
+    return function (t) {
+      pop(saw, t, 0.4, 15.6, 0.9); fade(sawL, t, 0.8, 15.6);
+      var drift = inOut(k(t, 4, 5)); rem.style.background = mixHex("#a8c83c", "#5bb04a", drift); pop(rem, t, 2.4, 15.6, 0.9); fade(remL, t, 2.8, 15.6);
+      fade(hue, t, 3.5, 15.6); mk.style.opacity = k(t, 4, 0.3) * (1 - k(t, 15.6, 0.35)); mk.style.transform = "translateX(" + (160 + 1600 * (0.33 + 0.33 * drift)) + "px)";
+      fade(memL, t, 5, 15.6); fade(memS, t, 6, 15.6);
+      fade(aT, t, 16.3, 33.6); fade(hA, t, 16.8, 33.6); fade(hB, t, 25.5, 33.6); fade(aNote, t, 20, 33.6);
+      aRows.forEach(function (r, i) {
+        fade(r.lab, t, 16.6 + i * 0.12, 33.6); fade(r.rl, t, 16.5 + i * 0.12, 33.6);
+        pop(r.a, t, 17.4 + i * 0.12, 33.6); r.a.style.background = t > 19 + i * 0.1 ? (r.lit ? "#1d1d1f" : r.half ? "linear-gradient(transparent 50%, #1d1d1f 50%)" : "transparent") : "transparent";
+        pop(r.b, t, 25.5 + i * 0.1, 33.6); r.b.style.background = t > 26.5 + i * 0.15 ? "#1d1d1f" : "transparent";
+      });
+      opts.forEach(function (o, i) { pop(o, t, 34.5 + i * 1.6, 51.6, 0.9); if (t > 44 && i < 2) o.style.opacity *= 1 - 0.65 * k(t, 44, 0.6); });
+      pop(picked, t, 44.2, 51.6, 1.06);
+      fade(dT, t, 52.3, 65.6); diary.forEach(function (d, i) { fade(d, t, 53 + i * 0.7, 65.6, 30); });
+      fade(dial, t, 66.3); ticks.forEach(function (tk, i) { fade(tk, t, 66.6 + i * 0.15); });
+      var stop = t < 69 ? 0 : t < 73 ? 1 : t < 77 ? 2 : 3, ease = outBack(k(t, [66, 69, 73, 77][stop], 0.6)), prevAng = stop ? -90 + (stop - 0.5) * 45 : -90 + 0.5 * 45;
+      var ang = -90 + (stop + 0.5) * 45, from = stop ? -90 + (stop - 0.5) * 45 : -90 + 0.5 * 45;
+      needle.style.opacity = k(t, 66.6, 0.3); needle.style.transform = "rotate(" + (from + (ang - from) * Math.min(1.1, ease)) + "deg)";
+      pop(prev, t, 66.8, undefined, 0.92);
+      var at4 = [66.8, 69, 73, 77], xf = k(t, at4[stop], 0.4);
+      stopViews.forEach(function (v, i) { v.style.opacity = i === stop ? xf : i === stop - 1 ? 1 - xf : 0; });
+      fade(trail, t, 82);
+    };
+  } };
+
+  /* ---------- On the horizon (30s, entry 193): two ideas rise over a horizon line, then a found color rises like a sun ---------- */
+  SCENES.horizon = { seconds: 30, build: function () {
+    // Noah's notes (October 19): no line; a coding assistant with the Palit MCP attached, by its icon; the palette chip floating
+    // as the main element inside the tools you use; then the square and the rule, centered. All drafts for Noah.
+    var FOUND = [["Hyacinth red", OURS.hyacinth, "Crocoite photo, October 18"], ["Pool tile", OURS.pool, "McCarren pool, June 17"], ["Mango", OURS.mango, "Photos, June 9"], ["Plum label", OURS.plum, "Tea packaging, June 10"], ["Lichen", OURS.lichen, "Photos, June 3"]];
+    // 1. A terminal: someone's coding assistant, and the Palit MCP clicking on
+    var term = el("div", "a", null, { left: 300, top: 120, width: 1320, height: 640, background: "#161618", borderRadius: "14px", boxShadow: "0 30px 80px rgba(0,0,0,0.28)", overflow: "hidden" });
+    var tb = el("div", null, null, { position: "absolute", left: 0, top: 0, right: 0, height: 52, background: "#232326", opacity: 1 }, term);
+    tb.innerHTML = "<span style=\"position:absolute;left:20px;top:19px;width:14px;height:14px;border-radius:50%;background:#ff5f57\"></span><span style=\"position:absolute;left:44px;top:19px;width:14px;height:14px;border-radius:50%;background:#febc2e\"></span><span style=\"position:absolute;left:68px;top:19px;width:14px;height:14px;border-radius:50%;background:#28c840\"></span>";
+    el("div", null, "claude", { position: "absolute", left: 0, right: 0, top: 14, textAlign: "center", fontSize: "20px", color: "#8e8e93", opacity: 1 }, tb);
+    var badge = el("div", null, null, { position: "absolute", right: 22, top: 12, height: 28, display: "flex", alignItems: "center", gap: "10px", fontSize: "18px", color: "#e5e5ea", opacity: 0 }, tb);
+    var bm = el("span", null, null, { width: "22px", height: "22px", background: OURS.hyacinth, display: "inline-block", opacity: 1 }, badge); badge.appendChild(document.createTextNode("Palit MCP, connected"));
+    var mono = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "26px", lineHeight: "1.5", color: "#e5e5ea", opacity: 0, position: "absolute", left: 40, width: 1240, whiteSpace: "pre-wrap" };
+    function tl(text, top, color) { var o2 = {}; for (var kk in mono) o2[kk] = mono[kk]; o2.top = top; if (color) o2.color = color; return el("div", null, text, o2, term); }
+    var L1 = tl("> /mcp add palit", 86, "#ffffff"), L2 = tl("  Palit: reads your archive. It never makes a color.", 132, "#8e8e93");
+    var L3 = tl("> Use the colors I found on the crocoite page for the button tokens.", 210, "#ffffff");
+    var L4 = tl("  Reading your Palit archive…", 280, "#8e8e93");
+    var rowsT = FOUND.slice(0, 3).map(function (f, i) { var r = el("div", null, null, { position: "absolute", left: 60, top: 336 + i * 64, height: 50, display: "flex", alignItems: "center", gap: "18px", opacity: 0 }, term); el("span", null, null, { width: "44px", height: "44px", background: f[1], display: "inline-block", opacity: 1 }, r); var tx = document.createElement("span"); tx.textContent = f[0] + "   " + f[1] + "   found: " + f[2]; tx.style.cssText = "font:26px ui-monospace,SFMono-Regular,Menlo,monospace;color:#e5e5ea"; r.appendChild(tx); return r; });
+    var L5 = tl("  Only colors you found. Nothing generated.", 540, "#8e8e93");
+    var tap = el("div", "a", null, { left: 0, top: 0, width: 96, height: 96, background: OURS.hyacinth, zIndex: 4 });   // the mark, flying to the terminal
+    var cap1 = el("div", "a t-m", "A Palit MCP: your assistant reads the colors you found. It never makes one.", { left: 160, top: 800, width: 1600, textAlign: "center" });
+    // 2. The palette chip, floating, the main element; the tool you use, faint behind it
+    var app = el("div", "win", null, { left: 360, top: 150, width: 1200, height: 620, background: "#f5f5f7" });
+    var abar = el("div", "bar", null, { background: "#ececee", opacity: 1 }, app); abar.innerHTML = "<i></i><i></i><i></i>";
+    el("div", null, null, { position: "absolute", left: 90, top: 130, width: 420, height: 300, background: "#fff", boxShadow: "0 0 0 1px #e1e1e4", opacity: 1 }, app);
+    el("div", null, null, { position: "absolute", left: 580, top: 170, width: 300, height: 200, borderRadius: "50%", background: "#fff", boxShadow: "0 0 0 1px #e1e1e4", opacity: 1 }, app);
+    var chip = el("div", "a", null, { left: 0, top: 0, width: 84, height: 420, display: "flex", flexDirection: "column", gap: "6px", zIndex: 3, filter: "drop-shadow(0 18px 30px rgba(0,0,0,0.22))" });
+    FOUND.forEach(function (f) { el("div", null, null, { flex: "1", background: f[1], opacity: 1 }, chip); });
+    var cap2 = el("div", "a t-m", "Inside the tools you already use, like Figma and Adobe's apps. Not another window.", { left: 160, top: 800, width: 1600, textAlign: "center" });
+    // 3. The rule: the found square and the line, centered together, no horizon
+    var sun = el("div", "a", null, { left: 900, top: 300, width: 120, height: 120, background: OURS.hyacinth });
+    var rule = el("div", "a t-xl", "You still find every color.", { left: 0, top: 480, width: 1920, textAlign: "center" });
+    function show(n2, on) { n2.style.opacity = on ? 1 : 0; }
+    return function (t) {
+      // 1
+      var in1 = t >= 0.3 && t < 13.4; term.style.opacity = in1 ? 1 : 0; term.style.transform = "scale(" + (t < 0.37 ? 1.03 : 1) + ")";
+      show(L1, t >= 1.0 && in1); show(L2, t >= 2.6 && in1);
+      // the mark flies from the top right onto the terminal's bar, and the MCP is connected
+      var fly = inOut(k(t, 1.6, 0.9)); tap.style.opacity = t >= 1.6 && t < 2.55 && in1 ? 1 : 0;
+      tap.style.transform = "translate(" + lerpV(1700, 1530, fly) + "px," + lerpV(-120, 132, fly) + "px) scale(" + lerpV(1, 0.23, fly) + ")"; tap.style.transformOrigin = "0 0";
+      show(badge, t >= 2.5 && in1);
+      show(L3, t >= 4.2 && in1); show(L4, t >= 6 && in1);
+      rowsT.forEach(function (r, i) { show(r, t >= 6.8 + i * 0.5 && in1); });
+      show(L5, t >= 8.6 && in1); fade(cap1, t, 9, 13.4);
+      // 2: the chip drifts in, floats, and docks at the window's edge
+      var in2 = t >= 14 && t < 22.4; app.style.opacity = in2 ? 0.45 : 0;
+      var fx = inOut(k(t, 14, 2.2)), dock = inOut(k(t, 18.5, 1.2));
+      var cx2 = lerpV(1760, 1010, fx), cy2 = 220 + 22 * Math.sin((t - 14) * 1.6);
+      cx2 = lerpV(cx2, 360 + 1200 - 84, dock); cy2 = lerpV(cy2, 150 + 100, dock);
+      chip.style.opacity = in2 ? 1 : 0; chip.style.transform = "translate(" + cx2 + "px," + cy2 + "px) rotate(" + lerpV(-4 * Math.sin((t - 14) * 1.2), 0, dock) + "deg)";
+      fade(cap2, t, 15.5, 22.4);
+      // 3
+      pop(sun, t, 23, undefined, 0.6); fade(rule, t, 24, undefined, 12);
+    };
+    function lerpV(a2, b2, x) { return a2 + (b2 - a2) * x; }
+  } };
+
+  // Two seconds, on one screen (Noah, October 19: “It could be 2 seconds, really quickly, on one screen. People who are
+  // interested can pause just to see it.”): the thanks on top, then the credits in three columns, small enough to fit
+  SCENES.credits = { seconds: 4, build: function () {
+    var SC = window.PALIT_SCRIPT || {}, C = SC.credits || [];
+    var thanks = el("div", "a t-m", SC.thanks || "", { left: 160, top: 120, width: 1500 });
+    var cols = [{ x: 160, w: 440, k: ["Made by", "Music", "Thanks"] }, { x: 660, w: 560, k: ["Pictures"] }, { x: 1280, w: 480, k: ["Research"] }];
+    var boxes = cols.map(function (c) {
+      var box = el("div", "a", null, { left: c.x, top: 270, width: c.w }), y = 0;
+      c.k.forEach(function (key) {
+        var g = C.filter(function (x) { return x.k === key; })[0]; if (!g) return;
+        el("div", "t-xs", g.k, { position: "absolute", left: 0, top: y, width: c.w, opacity: 1 }, box);
+        y += 36;
+        g.v.forEach(function (line) {
+          var n = el("div", null, line, { position: "absolute", left: 0, top: y, width: c.w, fontSize: "20px", lineHeight: "1.3", opacity: 1, color: /^\[/.test(line) ? "#6b6b70" : "#1d1d1f" }, box);
+          y += n.offsetHeight + 6;   // a long credit wraps, so each line takes its own height
+        });
+        y += 30;
+      });
+      return box;
+    });
+    return function (t) {
+      // about two seconds, then out just as quickly, and the screen goes to black (Noah, October 19)
+      fade(thanks, t, 0, 2.0, 6);
+      boxes.forEach(function (b, i) { fade(b, t, 0.08 + i * 0.06, 2.0, 6); });
+      F.style.background = t >= 2.25 ? "#000" : "#fff";
+    };
+  } };
+
+  /* ---------- A reel of our own screens (entries 206 and 215). Noah, October 19: “one that appears on the majority of the page,
+     like it's huge, and then we flip to the next one ... which then is interactive, which scrolls, which clicks.” ?set= names
+     one in reels.js; the player lays it over its deep dive while the deep dive waits. Kinds:
+     strip: screens side by side on one long table; the camera holds one at a time, huge, slides to the next, and can pull back
+       to show them all; a drawn cursor points and clicks (path: [{ at, show: index or "all", cur: [x, y] as fractions, click }])
+     window: a screen on its desk, then the desk drops away to black and the camera moves into the window (win: [x0, y0, x1, y1])
+     versions: the same window, version after version, each wiping in over the last so you see what changed
+     bars: before and after, as colored bars on gray tracks
+     quote, list, sketch, shot and row as before. bg: a background for the moment (Noah: “changing the background color to black
+     or a different color during bold moments”). ---------- */
+  SCENES.reel = { seconds: 20, build: function () {
+    var R = (window.PALIT_REELS || {})[q.get("set") || ""] || { seconds: 6, items: [{ at: 0, kind: "quote", title: "No reel by that name", text: "Pick one with ?set= (reels.js)." }] };
+    SCENES.reel.seconds = R.seconds || 20;
+    var SX = 360, SY = 124, SW = 1200, SH = 750;   // a screen at full size: centered, as big as fits above y 880
+    function head(it) { return (it.entry ? "Entry " + it.entry + (it.date ? ", " + it.date : "") : it.date || ""); }
+    function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+    function lerp(a2, b2, x) { return a2 + (b2 - a2) * x; }
+    function caption(it, n, dark) {
+      if (dark) n.classList.add("dark");
+      var c = el("div", null, null, { position: "absolute", left: 160, top: 30, width: 1100, opacity: 1 }, n);
+      var hd = el("div", "t-xs num", head(it), { position: "relative", opacity: 1 }, c);
+      var ti = el("div", "t-s", it.title, { position: "relative", marginTop: "4px", opacity: 1 }, c);
+      ti._head = hd;
+      if (it.note) el("div", "t-xs", it.note, { position: "absolute", left: 1290, top: 30, width: 470, textAlign: "right", opacity: 1 }, n);
+      return ti;
+    }
+    function picture(src, w, h, parent, sketch) {
+      var box = el("div", null, null, { position: "absolute", left: 0, top: 0, width: w, height: h, opacity: 1 }, parent);
+      var img = document.createElement("img"); img.className = "rl-img"; img.alt = ""; img.style.width = w + "px"; img.style.height = h + "px"; img.style.objectFit = "contain"; img.style.objectPosition = "50% 50%";
+      img.onerror = function () {
+        img.remove();
+        var ph = el("div", "rl-ph", null, { position: "absolute", left: 0, top: 0, width: w, height: h, opacity: 1 }, box);
+        el("div", "t-m", sketch ? "Noah's paper sketch" : "Missing screen", { opacity: 1 }, ph);
+        el("div", "t-xs", sketch ? "Save it as design/video/sketches/" + sketch : src, { opacity: 1 }, ph);
+      };
+      img.src = sketch ? "sketches/" + sketch : src;
+      box.appendChild(img); return box;
+    }
+    // A drawn pointer and the ring a click leaves
+    function pointer(n) {
+      var p = el("div", null, null, { position: "absolute", left: 0, top: 0, width: 34, height: 34, opacity: 0, zIndex: 5 }, n);
+      p.innerHTML = "<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\"><path d=\"M4 2 L4 26 L10 20 L15 31 L19 29 L14 19 L22 19 Z\" fill=\"#1d1d1f\" stroke=\"#fff\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg>";
+      var ring = el("div", null, null, { position: "absolute", left: 0, top: 0, width: 56, height: 56, marginLeft: "-28px", marginTop: "-28px", borderRadius: "50%", boxShadow: "0 0 0 3px #1d1d1f", opacity: 0, zIndex: 4 }, n);
+      return { p: p, ring: ring };
+    }
+    var items = R.items.map(function (it, i) {
+      var end = i + 1 < R.items.length ? R.items[i + 1].at : SCENES.reel.seconds + 1;
+      var n = el("div", "a", null, { left: 0, top: 0, width: 1920, height: 1080 }), o = { n: n, at: it.at, end: end, it: it };
+      if (it.kind === "strip") {
+        // One long table of screens; the camera moves over it
+        var m = it.shots.length, GAP = 120, table = el("div", null, null, { position: "absolute", left: 0, top: 0, width: m * SW + (m - 1) * GAP, height: SH + 60, transformOrigin: "0 0", opacity: 1 }, n);
+        o.labels = [];
+        it.shots.forEach(function (sh, j) {
+          var cell = el("div", null, null, { position: "absolute", left: j * (SW + GAP), top: 0, width: SW, height: SH, opacity: 1 }, table);
+          picture(sh[0], SW, SH, cell);
+          o.labels.push(el("div", "t-m", sh[1], { position: "absolute", left: j * (SW + GAP), top: SH + 24, width: SW, opacity: 0 }, table));
+        });
+        o.table = table; o.w = m * SW + (m - 1) * GAP; o.cap = caption(it, n); o.ptr = pointer(n);
+      } else if (it.kind === "window" || it.kind === "versions") {
+        o.cap = caption(it, n, false); o.stage = el("div", null, null, { position: "absolute", left: SX, top: SY, width: SW, height: SH, opacity: 1, transformOrigin: "0 0" }, n);
+        var srcs = it.kind === "window" ? [[it.src, it.title]] : it.shots;
+        o.layers = srcs.map(function (sh, j) { var L2 = el("div", null, null, { position: "absolute", left: 0, top: 0, width: SW, height: SH, opacity: 1 }, o.stage); picture(sh[0], SW, SH, L2); return L2; });
+        o.edge = el("div", null, null, { position: "absolute", top: 0, width: 4, height: SH, background: "#fff", boxShadow: "0 0 24px rgba(0,0,0,0.35)", opacity: 0 }, o.stage);
+        o.ptr = it.path ? pointer(n) : null;
+      } else if (it.kind === "title") {
+        n.classList.add("dark");
+        var tb = el("div", null, null, { position: "absolute", left: 160, top: 300, width: 1600, textAlign: "center", opacity: 1 }, n);
+        o.big = el("div", "t-xl", it.title, { position: "relative", opacity: 1 }, tb);
+        if (it.sub) o.sub = el("div", "t-m gray", it.sub, { position: "relative", marginTop: "28px", opacity: 1 }, tb);
+      } else if (it.kind === "bars") {
+        caption(it, n);
+        o.bars = [];
+        it.rows.forEach(function (r, j) {
+          var y = 190 + j * 330;
+          el("div", "t-m", r.label, { position: "absolute", left: 160, top: y, opacity: 1 }, n);
+          r.values.forEach(function (v, vi) {
+            var yy = y + 80 + vi * 74, track = el("div", null, null, { position: "absolute", left: 520, top: yy, width: 1240, height: 50, background: "#ededef", opacity: 1 }, n);
+            var fill = el("div", null, null, { position: "absolute", left: 0, top: 0, height: 50, width: 0, background: v[2], opacity: 1 }, track);
+            el("div", "t-s", v[0], { position: "absolute", left: 160, top: yy + 8, width: 340, opacity: 1 }, n);
+            var num = el("div", "t-s num", "0", { position: "absolute", left: 0, top: 8, opacity: 1, color: inkOn(v[2]), paddingLeft: "14px" }, fill);
+            o.bars.push({ fill: fill, num: num, to: v[1], max: r.max, at: it.at + 0.4 + j * 1.6 + vi * 0.35 });
+          });
+        });
+      } else if (it.kind === "shot" || it.kind === "sketch") {
+        var holder = el("div", null, null, { position: "absolute", left: SX, top: SY, width: SW, height: SH, overflow: "hidden", opacity: 1 }, n);
+        o.push = picture(it.src, SW, SH, holder, it.kind === "sketch" ? it.file : null);
+        var fc = it.focus || [0.5, 0.5, 1.03]; o.push.style.transformOrigin = (fc[0] * 100) + "% " + (fc[1] * 100) + "%"; o.push._to = fc[2];
+        caption(it, n);
+      } else if (it.kind === "row") {
+        caption(it, n);
+        var mm = it.shots.length, w2 = Math.floor((1600 - 40 * (mm - 1)) / mm), h2 = Math.min(560, Math.round(w2 * 0.625));
+        o.cells = it.shots.map(function (sh, j) { var cell = el("div", null, null, { position: "absolute", left: 160 + j * (w2 + 40), top: 180, width: w2, height: h2 + 50, opacity: 1 }, n); picture(sh[0], w2, h2, cell); el("div", "t-xs", sh[1], { position: "absolute", left: 0, top: h2 + 14, width: w2, opacity: 1 }, cell); return cell; });
+      } else if (it.kind === "quote") {
+        if (it.bg) n.classList.add("dark");
+        var qb = el("div", null, null, { position: "absolute", left: 210, top: 200, width: 1500, textAlign: "center", opacity: 1 }, n);
+        if (head(it)) el("div", "t-xs num", head(it), { position: "relative", opacity: 1 }, qb);
+        el("div", "t-m", it.title, { position: "relative", marginTop: "6px", opacity: 1 }, qb);
+        o.words = []; var qt = el("div", "t-l", null, { position: "relative", marginTop: "48px", opacity: 1 }, qb);
+        ("“" + it.text + "”").split(" ").forEach(function (w3, wi, arr) { var sp = document.createElement("span"); sp.textContent = w3; sp.style.display = "inline-block"; sp.style.opacity = 0; qt.appendChild(sp); if (wi < arr.length - 1) qt.appendChild(document.createTextNode(" ")); o.words.push(sp); });
+        if (it.who) el("div", "t-xs", it.who, { position: "relative", marginTop: "28px", opacity: 1 }, qb);
+      } else if (it.kind === "list") {
+        el("div", "t-m", it.title, { position: "absolute", left: 160, top: 150, width: 1600, opacity: 1 }, n);
+        o.rows = it.rows.map(function (r, j) {
+          var row = el("div", null, null, { position: "absolute", left: 160, top: 260 + j * 100, width: 1600, height: 60, borderTop: "1px solid #e6e6e8", opacity: 1 }, n);
+          el("div", "t-m", r[0], { position: "absolute", left: 0, top: 16, opacity: 1 }, row);
+          el("div", "t-xs num", "Entry " + r[1], { position: "absolute", right: 0, top: 30, opacity: 1 }, row);
+          return row;
+        });
+      }
+      return o;
+    });
+    // Where the camera is on a strip: one screen at full size, or all of them, eased between
+    function stripCam(o, t) {
+      // only the steps that move the camera (a step can just move the pointer)
+      var path = (o.it.path || [{ at: 0, show: 0 }]).filter(function (p) { return p.show !== undefined; }), prev = path[0], cur = path[0];
+      for (var i = 1; i < path.length; i++) { if (o.at + path[i].at <= t) { prev = cur; cur = path[i]; } }
+      function camOf(show) {
+        if (show === "all") { var sc = Math.min(1600 / o.w, 1); return { s: sc, x: (1920 - o.w * sc) / 2, y: SY + (SH - SH * sc) / 2 - 20 }; }
+        return { s: 1, x: SX - show * (SW + 120), y: SY };
+      }
+      var a2 = camOf(prev.show), b2 = camOf(cur.show), x = ease(clamp(k(t, o.at + cur.at, 0.65)));
+      return { s: lerp(a2.s, b2.s, x), x: lerp(a2.x, b2.x, x), y: lerp(a2.y, b2.y, x), all: cur.show === "all" ? x : prev.show === "all" ? 1 - x : 0 };
+    }
+    function clamp(v) { return Math.max(0, Math.min(1, v)); }
+    // The pointer: from one point to the next, eased, a ring where it clicks
+    function drawPointer(o, t, toFrame) {
+      if (!o.ptr) return;
+      var pts = (o.it.path || []).filter(function (p) { return p.cur; });
+      if (!pts.length) { o.ptr.p.style.opacity = 0; return; }
+      var a2 = pts[0], b2 = pts[0];
+      for (var i = 0; i < pts.length; i++) if (o.at + pts[i].at <= t) { a2 = i ? pts[i - 1] : pts[i]; b2 = pts[i]; }
+      var A = toFrame(a2), B = toFrame(b2), x = ease(clamp(k(t, o.at + b2.at, 0.55)));
+      var px = lerp(A[0], B[0], x), py = lerp(A[1], B[1], x);
+      o.ptr.p.style.opacity = t >= o.at + pts[0].at ? 1 : 0; o.ptr.p.style.transform = "translate(" + px + "px," + py + "px)";
+      var clicks = (o.it.path || []).filter(function (p) { return p.click && t >= o.at + p.at && t < o.at + p.at + 0.45; });
+      if (clicks.length) { var cx = k(t, o.at + clicks[0].at, 0.45); o.ptr.ring.style.opacity = 1 - cx; o.ptr.ring.style.transform = "translate(" + px + "px," + py + "px) scale(" + (0.4 + cx) + ")"; } else o.ptr.ring.style.opacity = 0;
+    }
+    return function (t) {
+      var bgNow = "#fff";
+      items.forEach(function (o) {
+        var it = o.it, on = t >= o.at - 0.01 && t < o.end + 0.6, enter = clamp(k(t, o.at, 0.5)), leave = clamp(k(t, o.end - 0.25, 0.5));
+        // A screen-led item slides in from the right and out to the left; the rest come in quick
+        var slide = it.kind === "strip" || it.kind === "window" || it.kind === "versions" || it.kind === "shot";
+        o.n.style.opacity = on ? (slide ? 1 : (MOTION === "clunk" ? (t >= o.at ? 1 : 0) : enter) * (1 - leave)) : 0;
+        o.n.style.transform = slide ? "translateX(" + (1920 * (1 - ease(enter)) - 1920 * ease(leave)) + "px)" : "";
+        if (!on) return;
+        if (o.push) o.push.style.transform = "scale(" + (1 + (o.push._to - 1) * ease(clamp(k(t, o.at + 0.3, Math.max(1, o.end - o.at - 0.6))))) + ")";
+        if (o.cells) o.cells.forEach(function (c, j) { appear(c, t, o.at + 0.15 + j * 0.3, 0.45); });
+        if (o.big) { appear(o.big, t, o.at + 0.1, 0.45); if (o.sub) appear(o.sub, t, o.at + 0.5, 0.45); }
+        if (o.words) o.words.forEach(function (sp, j) { appear(sp, t, o.at + 0.2 + j * 0.07, 0.4); });
+        if (o.rows) o.rows.forEach(function (r, j) { var x = clamp(k(t, o.at + 1 + j * 0.9, 0.35)); r.style.opacity = String(1 - 0.72 * x); });   // cut: they lose opacity, one by one (Noah)
+        if (o.bars) o.bars.forEach(function (b2) { var x = ease(clamp(k(t, b2.at, 0.9))); b2.fill.style.width = (1240 * (b2.to / b2.max) * x) + "px"; b2.num.textContent = String(Math.round(b2.to * x)); });
+        if (o.table) {
+          var c = stripCam(o, t);
+          o.table.style.transform = "translate(" + c.x + "px," + c.y + "px) scale(" + c.s + ")";
+          o.labels.forEach(function (l) { l.style.opacity = c.all > 0.85 ? (c.all - 0.85) / 0.15 : 0; });   // only once pulled all the way back
+          drawPointer(o, t, function (p) { var j = p.cur[2] || 0; return [c.x + (j * (SW + 120) + p.cur[0] * SW) * c.s, c.y + p.cur[1] * SH * c.s]; });
+        }
+        if (o.stage) {
+          // The desk drops away to black and the camera moves into the window
+          var win = it.win, z = win && it.winAt !== undefined ? ease(clamp(k(t, o.at + it.winAt, 0.9))) : 0;
+          if (win) {
+            var wx = win[0] * SW, wy = win[1] * SH, ww = (win[2] - win[0]) * SW, wh = (win[3] - win[1]) * SH, fit = Math.min(1640 / ww, 736 / wh), s2 = lerp(1, fit, z);
+            var tx = lerp(SX, (1920 - ww * fit) / 2 - wx * fit, z), ty = lerp(SY, 132 + (736 - wh * fit) / 2 - wy * fit, z);   // under the caption, above y 880
+            o.stage.style.transform = "translate(" + (tx - SX) + "px," + (ty - SY) + "px) scale(" + s2 + ")";
+            o.stage.style.clipPath = "inset(" + (win[1] * 100 * z) + "% " + ((1 - win[2]) * 100 * z) + "% " + ((1 - win[3]) * 100 * z) + "% " + (win[0] * 100 * z) + "%)";
+            if (z > 0.02) bgNow = "#000";
+            o.n.classList.toggle("dark", z > 0.5);
+          }
+          if (it.kind === "versions") {
+            // Each version wipes in over the last, left to right; or, for the zoom's stops, grows out of it (Noah: “seeing how
+            // things morph and grow”)
+            var shown = 0, wipe = 1;
+            it.times.forEach(function (tt, j) { if (t >= o.at + tt) { shown = j; wipe = clamp(k(t, o.at + tt, it.morph === "grow" ? 0.6 : 0.9)); } });
+            o.layers.forEach(function (L2, j) {
+              var cur2 = j === shown, prev2 = j === shown - 1;
+              L2.style.display = cur2 || prev2 ? "block" : "none"; L2.style.zIndex = cur2 ? 2 : 1;
+              if (it.morph === "grow") { var e2 = ease(wipe); L2.style.clipPath = "none"; L2.style.transformOrigin = "50% 40%"; L2.style.opacity = cur2 ? (shown > 0 ? e2 : 1) : 1 - e2; L2.style.transform = cur2 && shown > 0 ? "scale(" + (0.93 + 0.07 * e2) + ")" : prev2 ? "scale(" + (1 + 0.05 * e2) + ")" : ""; }
+              else L2.style.clipPath = cur2 && shown > 0 ? "inset(0 " + (100 * (1 - ease(wipe))) + "% 0 0)" : "none";
+            });
+            o.edge.style.opacity = it.morph !== "grow" && shown > 0 && wipe < 1 ? 1 : 0; o.edge.style.left = (SW * ease(wipe) - 2) + "px"; o.edge.style.zIndex = 3;
+            var lab = it.shots[shown]; o.cap.textContent = lab[1]; if (o.cap._head) o.cap._head.textContent = lab[2] ? "Entry " + lab[2] + (lab[3] ? ", " + lab[3] : "") : (lab[3] || "");
+          }
+          if (o.ptr) drawPointer(o, t, function (p) { var r = o.stage.getBoundingClientRect(), fr = F.getBoundingClientRect(), sc = fr.width / 1920; return [(r.left - fr.left) / sc + p.cur[0] * r.width / sc, (r.top - fr.top) / sc + p.cur[1] * r.height / sc]; });
+        }
+        if (it.bg && t >= o.at && t < o.end) bgNow = it.bg;
+      });
+      F.style.background = bgNow;
+    };
+  } };
+
+  /* ---------- Running a scene ---------- */
+  var name = q.get("scene") || "problem", S = SCENES[name] || SCENES.problem, update = S.build();
+  function fit() { var k2 = Math.min(innerWidth / 1920, innerHeight / 1080); F.style.transform = "translate(-50%, -50%) scale(" + k2 + ")"; }
+  addEventListener("resize", fit); fit();
+  var T = Number(q.get("t")) || 0;
+  update(T);
+  window.PalitViz = { render: function (t) { T = t; update(t); }, seconds: S.seconds, scenes: Object.keys(SCENES) };
+  if (q.has("play")) { var t0 = performance.now() - T * 1000; (function loop(now) { update((now - t0) / 1000); if ((now - t0) / 1000 < S.seconds + 1) requestAnimationFrame(loop); })(performance.now()); }
+})();
+</script>
+</body>
+</html>

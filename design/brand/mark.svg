@@ -1,0 +1,5 @@
+<svg width="114" height="114" viewBox="0 0 114 114" xmlns="http://www.w3.org/2000/svg">
+<!-- Palit's mark (entry 220), from the logo in palit-logo.svg: two squares, the overlap cut out. Made for masking, so a page fills
+     it with the last color you kept (brand.js, markMode "fill"); the overlap stays open, the way the logo's white does. -->
+<path fill-rule="evenodd" d="M32 0H114V82H32Z M0 32H82V114H0Z" fill="black"/>
+</svg>

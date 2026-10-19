@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Desk</title>
+<!-- Draws one desk for compose.mjs: the Mac's wallpaper, the menu bar, and Safari and Preview windows, at 1440 by 900 points.
+     compose.mjs calls drawDesk(recipe, wallpaperUrl) and takes a 2x screenshot. Measured against desk-crocoite.jpg. -->
+<style>
+  html, body { margin: 0; width: 1440px; height: 900px; overflow: hidden; }
+  body { position: relative; background: #8d93b3; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; color: #1d1d1f; }
+  #wall, #bar { position: absolute; left: 0; top: 0; }
+  #wall { width: 1440px; height: 900px; }
+  #bar { width: 1440px; height: 24px; }
+  #bar-line { position: absolute; left: 0; top: 24px; width: 1440px; height: 0.5px; background: rgba(0, 0, 0, 0.12); }
+  .menus { position: absolute; left: 20px; top: 0; height: 24px; display: flex; align-items: center; gap: 19.2px; font-size: 13px; letter-spacing: -0.08px; color: rgba(0, 0, 0, 0.92); }
+  .menus b { font-weight: 700; }
+  .clock { position: absolute; right: 16px; top: 0; height: 24px; display: flex; align-items: center; gap: 13.5px; font-size: 13px; letter-spacing: -0.08px; color: rgba(0, 0, 0, 0.92); }
+  .win { position: absolute; border-radius: 12px; background: #fff; overflow: hidden;
+    box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.25), 0 22px 70px rgba(0, 0, 0, 0.26); }
+  .bar { position: relative; background: #f5f5f5; border-bottom: 0.5px solid #d8d8d8; box-sizing: border-box; }
+  .lights { position: absolute; left: 16px; top: 0; bottom: 0; display: flex; align-items: center; gap: 8px; }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; background: #dcdcde; border: 0.5px solid #c6c6c8; }
+  .front .lights i:nth-child(1) { background: #ff5d57; border-color: #e0443e; }
+  .front .lights i:nth-child(2) { background: #ffbb2f; border-color: #dea123; }
+  .front .lights i:nth-child(3) { background: #28c93b; border-color: #1aab29; }
+  .safari .bar { height: 52.5px; }
+  .nav { position: absolute; top: 18.75px; width: 8px; height: 15px; }
+  .nav svg { display: block; width: 8px; height: 15px; }
+  .url { position: absolute; top: 11px; height: 30px; left: 50%; width: 440px; margin-left: -220px; border-radius: 10px; background: #e8e8ea;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; color: #2f2f31; letter-spacing: -0.08px; }
+  .preview .bar { height: 38.5px; display: flex; align-items: center; justify-content: center; }
+  .title { font-size: 13px; font-weight: 590; color: #333335; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 180px); }
+  .content { position: relative; overflow: hidden; background: #fff; }
+  .content img { position: absolute; display: block; }
+  .preview .content { background: #e3e3e3; }
+</style>
+</head>
+<body>
+<canvas id="wall" width="2880" height="1800"></canvas>
+<canvas id="bar" width="2880" height="48"></canvas>
+<div id="bar-line"></div>
+<div class="menus" id="menus"></div>
+<div class="clock" id="clock"></div>
+<div id="wins"></div>
+<script>
+  // The menu bar's band, fitted to desk-crocoite.jpg: each channel is k × (the wallpaper blurred by 30 points) + c
+  var BAND = { blur: 60, k: [0.376, 0.362, 0.289], c: [153.5, 156.3, 175.6] };
+  var MENUS = {
+    Preview: ["File", "Edit", "View", "Go", "Tools", "Window", "Help"],
+    Safari: ["File", "Edit", "View", "History", "Bookmarks", "Window", "Help"]
+  };
+  var CHEV = '<svg viewBox="0 0 8 15"><path d="M7 1 1 7.5 7 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function load(src) { return new Promise(function (res, rej) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { rej(new Error("Can't load " + src)); }; i.src = src; }); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  async function drawWall(src) {
+    var img = await load(src), w = document.getElementById("wall").getContext("2d");
+    w.drawImage(img, 0, 0, 2880, 1800);
+    // The band: blur the top of the wallpaper with its edges carried outward, then map each channel
+    var pad = 200, t = document.createElement("canvas"); t.width = 2880 + 2 * pad; t.height = 48 + 2 * pad;
+    var tc = t.getContext("2d");
+    tc.drawImage(img, 0, 0, 2880, 48 + pad, pad, pad, 2880, 48 + pad);
+    tc.drawImage(img, 0, 0, 2880, 1, pad, 0, 2880, pad);                    // the top row, carried up
+    tc.drawImage(t, pad, 0, 1, t.height, 0, 0, pad, t.height);               // the left column, carried left
+    tc.drawImage(t, pad + 2879, 0, 1, t.height, pad + 2880, 0, pad, t.height); // the right column, carried right
+    var b = document.createElement("canvas"); b.width = t.width; b.height = t.height;
+    var bc = b.getContext("2d"); bc.filter = "blur(" + BAND.blur + "px)"; bc.drawImage(t, 0, 0);
+    var d = bc.getImageData(pad, pad, 2880, 48), p = d.data;
+    for (var i = 0; i < p.length; i += 4) for (var ch = 0; ch < 3; ch++) p[i + ch] = Math.max(0, Math.min(255, BAND.k[ch] * p[i + ch] + BAND.c[ch]));
+    document.getElementById("bar").getContext("2d").putImageData(d, 0, 0);
+  }
+
+  async function drawWindow(w, front) {
+    var box = el("div", "win " + w.kind + (front ? " front" : ""));
+    box.style.cssText = "left:" + w.x + "px;top:" + w.y + "px;width:" + w.w + "px;height:" + w.h + "px";
+    var bar = el("div", "bar"), lights = el("div", "lights", "<i></i><i></i><i></i>");
+    bar.appendChild(lights);
+    if (w.kind === "safari") {
+      var back = el("div", "nav", CHEV), fwd = el("div", "nav", CHEV);   // back and forward, measured on desk-crocoite.jpg
+      back.style.cssText = "left:92.75px;color:#898989"; fwd.style.cssText = "left:131.75px;color:#c0c0c0;transform:scaleX(-1)";
+      bar.appendChild(back); bar.appendChild(fwd);
+      bar.appendChild(el("div", "url", esc(w.address)));
+    } else {
+      bar.appendChild(el("div", "title", esc(w.title)));
+    }
+    box.appendChild(bar);
+    var barH = w.kind === "safari" ? 52.5 : 38.5;
+    var content = el("div", "content"); content.style.height = (w.h - barH) + "px";
+    if (w.background) content.style.background = w.background;
+    box.appendChild(content);
+    if (w.image) {
+      var img = await load(w.image.src);
+      // The image fills the content box at its width (cover), from crop [x, y, w, h] in its own pixels when given
+      var cw = w.w, ch = w.h - barH, cr = w.image.crop || [0, 0, img.naturalWidth, img.naturalHeight];
+      var k = Math.max(cw / cr[2], ch / cr[3]);
+      if (w.image.fit === "width") k = cw / cr[2];
+      img.style.width = (img.naturalWidth * k) + "px"; img.style.height = (img.naturalHeight * k) + "px";
+      var ox = w.image.align === "left" ? 0 : (cw - cr[2] * k) / 2, oy = w.image.align === "top" || w.image.fit === "width" ? 0 : (ch - cr[3] * k) / 2;
+      img.style.left = (ox - cr[0] * k) + "px"; img.style.top = (oy - cr[1] * k) + "px";
+      content.appendChild(img);
+    }
+    return box;
+  }
+
+  window.drawDesk = async function (r, wallSrc) {
+    await drawWall(wallSrc);
+    var app = r.windows[0].kind === "safari" ? "Safari" : "Preview";
+    document.getElementById("menus").innerHTML = "<b>" + app + "</b>" + MENUS[app].map(function (m) { return "<span>" + m + "</span>"; }).join("");
+    document.getElementById("clock").innerHTML = "<span>" + esc(r.clock[0]) + "</span><span>" + esc(r.clock[1]) + "</span>";
+    var wins = document.getElementById("wins"); wins.textContent = "";
+    // windows[0] is the frontmost; draw back to front
+    for (var i = r.windows.length - 1; i >= 0; i--) wins.appendChild(await drawWindow(r.windows[i], i === 0));
+    await document.fonts.ready;
+    return true;
+  };
+</script>
+</body>
+</html>

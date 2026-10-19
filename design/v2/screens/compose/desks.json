@@ -1,0 +1,137 @@
+[
+  {
+    "id": "wave", "label": "Great Wave",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "preview", "x": 640, "y": 372, "w": 640, "h": 438.5, "title": "Under the Wave off Kanagawa.jpg",
+        "image": { "src": "../sources/wave-print.jpg" },
+        "source": { "app": "Preview", "place": "Great Wave print", "title": "Under the Wave off Kanagawa.jpg", "url": "metmuseum.org" } },
+      { "kind": "safari", "x": 36, "y": 46, "w": 1000, "h": 752, "address": "metmuseum.org",
+        "image": { "src": "../sources/wave-met.jpg", "fit": "width" },
+        "capture": { "url": "https://www.metmuseum.org/art/collection/search/45434", "scroll": 0 },
+        "source": { "app": "Safari", "place": "metmuseum.org", "title": "Under the Wave off Kanagawa - The Met", "url": "metmuseum.org/art/collection/search/45434" } }
+    ],
+    "spots": [
+      { "x": 894, "y": 527, "what": "Prussian blue in the wave, in Preview" },
+      { "x": 660, "y": 603, "what": "the pale foam" },
+      { "x": 1188, "y": 504, "what": "the paper of the sky" },
+      { "x": 446, "y": 324, "what": "the print's paper on the Met's page" },
+      { "x": 960, "y": 122, "what": "the Met's red Tickets button" }
+    ],
+    "credit": "The Met, the collection page for Katsushika Hokusai’s “Under the Wave off Kanagawa (Kanagawa oki nami ura), also known as The Great Wave”, ca. 1830–32, captured October 19, 2026. The print in Preview is the Met’s image of it, H. O. Havemeyer Collection, Bequest of Mrs. H. O. Havemeyer, 1929 (JP1847), public domain (Met Open Access, CC0). Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "yellowstone", "label": "Yellowstone",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "preview", "x": 150, "y": 62, "w": 1110, "h": 778.5, "title": "Grand Prismatic Spring.jpg",
+        "image": { "src": "../sources/yellowstone.jpg" },
+        "source": { "app": "Preview", "place": "Yellowstone photo", "title": "Grand Prismatic Spring.jpg", "url": "commons.wikimedia.org" } }
+    ],
+    "spots": [
+      { "x": 360, "y": 432, "what": "turquoise water" },
+      { "x": 296, "y": 546, "what": "the deep blue middle" },
+      { "x": 512, "y": 712, "what": "the yellow ring" },
+      { "x": 634, "y": 648, "what": "the orange mat" },
+      { "x": 1008, "y": 288, "what": "the brown slope" }
+    ],
+    "credit": "Photo: “Grand Prismatic Spring” by Jim Peaco, National Park Service, June 22, 2006, public domain, via Wikimedia Commons. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "majorelle", "label": "Majorelle",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "preview", "x": 36, "y": 330, "w": 640, "h": 463.5, "title": "Jardin Majorelle.jpg",
+        "image": { "src": "../sources/majorelle.jpg" },
+        "source": { "app": "Preview", "place": "Marrakech photo", "title": "Jardin Majorelle.jpg", "url": "commons.wikimedia.org" } },
+      { "kind": "safari", "x": 290, "y": 46, "w": 1000, "h": 752, "address": "en.wikipedia.org",
+        "image": { "src": "../sources/majorelle-wikipedia.jpg", "fit": "width" },
+        "capture": { "url": "https://en.wikipedia.org/wiki/Majorelle_Blue", "scroll": 0 },
+        "source": { "app": "Safari", "place": "en.wikipedia.org", "title": "Majorelle Blue - Wikipedia", "url": "en.wikipedia.org/wiki/Majorelle_Blue" } }
+    ],
+    "spots": [
+      { "x": 330, "y": 589, "what": "Majorelle blue on the villa, in Preview" },
+      { "x": 130, "y": 647, "what": "a yellow pot" },
+      { "x": 594, "y": 568, "what": "an olive cactus" },
+      { "x": 968, "y": 626, "what": "the Majorelle Blue swatch on Wikipedia" },
+      { "x": 1190, "y": 488, "what": "the blue wall in Wikipedia's photo" }
+    ],
+    "credit": "Wikipedia, “Majorelle Blue” (CC BY-SA 4.0). Photo: “Le jardin des majorelle l5” by Viault, CC BY-SA 4.0, via Wikimedia Commons. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "works", "label": "WØRKS",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "safari", "x": 200, "y": 60, "w": 1000, "h": 752, "address": "works.studio",
+        "image": { "src": "../sources/works.jpg", "fit": "width" },
+        "capture": { "url": "https://works.studio/", "scroll": 860 },
+        "source": { "app": "Safari", "place": "works.studio", "title": "WØRKS", "url": "works.studio" } }
+    ],
+    "spots": [
+      { "x": 832, "y": 224, "what": "Erthos purple" },
+      { "x": 220, "y": 354, "what": "Skims brown" },
+      { "x": 1056, "y": 252, "what": "a green shirt, Converse" },
+      { "x": 962, "y": 516, "what": "a green sneaker, Converse" }
+    ],
+    "credit": "WØRKS, the studio’s home page (works.studio), captured October 19, 2026. Its project images belong to WØRKS and its clients. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "arena", "label": "Are.na",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "safari", "x": 40, "y": 46, "w": 1160, "h": 800, "address": "are.na",
+        "image": { "src": "../sources/arena.jpg", "fit": "width" },
+        "capture": { "url": "https://www.are.na/wetransfer/towards-a-color-palette", "scroll": 420, "settle": 7000 },
+        "source": { "app": "Safari", "place": "are.na", "title": "📦 Towards a color palette | Are.na", "url": "are.na/wetransfer/towards-a-color-palette" } }
+    ],
+    "spots": [
+      { "x": 922, "y": 194, "what": "the orange circle" },
+      { "x": 907, "y": 310, "what": "the blue shape" },
+      { "x": 1022, "y": 302, "what": "the pink circle" },
+      { "x": 218, "y": 252, "what": "a yellow business card" },
+      { "x": 968, "y": 584, "what": "Small Victories yellow" },
+      { "x": 936, "y": 720, "what": "Small Victories green" }
+    ],
+    "credit": "Are.na, the public channel “📦 Towards a color palette” by Ex-WeTransfer (+1), started by Thomas Schrijer, captured October 19, 2026. Each block belongs to whoever made it. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "sip", "label": "Sip",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "safari", "x": 110, "y": 50, "w": 1160, "h": 800, "address": "sipapp.io",
+        "image": { "src": "../sources/sip.jpg", "fit": "width" },
+        "capture": { "url": "https://sipapp.io/", "scroll": 640 },
+        "source": { "app": "Safari", "place": "sipapp.io", "title": "Home", "url": "sipapp.io" } }
+    ],
+    "spots": [
+      { "x": 324, "y": 684, "what": "Sip's red" },
+      { "x": 648, "y": 432, "what": "Sip's magenta" },
+      { "x": 504, "y": 216, "what": "Sip's dark plum" },
+      { "x": 900, "y": 418, "what": "coral, in Sip's first palette" },
+      { "x": 1044, "y": 418, "what": "lime, in Sip's first palette" },
+      { "x": 1123, "y": 418, "what": "purple, in Sip's first palette" },
+      { "x": 1210, "y": 780, "what": "Sip's teal" }
+    ],
+    "credit": "Sip, its home page (sipapp.io), captured October 19, 2026, showing Sip’s menu bar window and palettes. © Sip. Shown as Palit’s closest competitor. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "pinterest", "label": "Pinterest",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "safari", "x": 36, "y": 46, "w": 1240, "h": 800, "address": "pinterest.com",
+        "image": { "src": "../incoming/pinterest.*", "align": "top" },
+        "source": { "app": "Safari", "place": "pinterest.com", "title": "Pinterest", "url": "pinterest.com" } }
+    ],
+    "credit": "Pinterest, a screenshot Noah took while signed in. Each pin belongs to whoever made it. Wallpaper: macOS iMac Silver."
+  },
+  {
+    "id": "cosmos", "label": "Cosmos",
+    "clock": ["Sun Oct 18", "2:22 PM"],
+    "windows": [
+      { "kind": "safari", "x": 60, "y": 46, "w": 1220, "h": 800, "address": "cosmos.so",
+        "image": { "src": "../incoming/cosmos.*", "align": "top" },
+        "source": { "app": "Safari", "place": "cosmos.so", "title": "Cosmos", "url": "cosmos.so" } }
+    ],
+    "credit": "Cosmos, a screenshot Noah took while signed in. Each element belongs to whoever made it. Wallpaper: macOS iMac Silver."
+  }
+]

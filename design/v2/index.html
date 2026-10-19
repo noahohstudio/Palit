@@ -491,15 +491,20 @@
   function sound() { var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
 
   /* ---------- The real screens ---------- */
-  var stage = $("stage"), desk = $("desk"), canvases = {};
+  var stage = $("stage"), desk = $("desk"), canvases = {}, loading = {};
+  // A desk is decoded the first time it's needed (seeded desks at startup, the rest when shown), once, however many ask
   function canvasFor(sc, done) {
     if (canvases[sc.id]) { done(canvases[sc.id]); return; }
+    if (loading[sc.id]) { loading[sc.id].push(done); return; }
+    loading[sc.id] = [done];
     var img = new Image();
     img.onload = function () {
       // Colors are read from a 1440 x 900 canvas; crops come from the full image, so they stay sharp.
       var c = document.createElement("canvas"); c.width = W; c.height = H;
       var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, W, H);
-      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W }; done(canvases[sc.id]);
+      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W };
+      var waiting = loading[sc.id]; delete loading[sc.id];
+      waiting.forEach(function (f) { f(canvases[sc.id]); });
     };
     img.src = sc.data || "screens/" + sc.file;
   }
@@ -555,9 +560,9 @@
   function clampX(x) { return Math.max(1, Math.min(W - 2, x)); }
   function clampY(y) { return Math.max(1, Math.min(H - 2, y)); }
   function seedToday(done) {
-    var left = SCREENS.length;
+    var seeded = SCREENS.filter(function (sc) { return sc.seeds && sc.seeds.length; }), left = seeded.length;
     if (!left) { done(); return; }
-    SCREENS.forEach(function (sc) {
+    seeded.forEach(function (sc) {
       canvasFor(sc, function (cv) {
         var runs = {};
         sc.seeds.forEach(function (sd) {
@@ -1460,6 +1465,7 @@
   function showScreen(i) {
     st.screen = i; var sc = screen();
     desk.src = sc.data || "screens/" + sc.file;
+    canvasFor(sc, function () {});
     var m = $("mbi"); m.style.left = sc.icon[0] + "px"; m.style.top = sc.icon[1] + "px";
     $("c-credit").textContent = sc.credit || ""; $("c-credit").title = sc.credit || "";
     Array.prototype.forEach.call($("c-screen").children, function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
@@ -1516,7 +1522,8 @@
      where, hunt, zoom-out, zoom-in, all (or spectrum), palettes (or pins, shared, collections), study, table, search, menu,
      card (&n=), share; add &band=R (or O Y G B I V) to filter by a letter, and &menu=1 with card to open its Add to palette. */
   function scene(name) {
-    var sd = screen().seeds[0];
+    var sc0 = screen(), sd = sc0.seeds[0] || (sc0.spots || [])[0] || { x: W / 2, y: H / 2 };
+    if (/^(naming|picking|landed)$/.test(name) && !canvases[sc0.id]) { canvasFor(sc0, function () { scene(name); }); return; }
     if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
     if (name === "naming") { var c0 = pick(sd.x, sd.y, {}); nameBeside(c0, sd.x, sd.y, true); namer.querySelector("input").value = "Crocoite"; return; }
     if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }

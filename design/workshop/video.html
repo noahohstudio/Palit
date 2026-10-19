@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit video workshop</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The video workshop, October 19 (entry 198). Same frame as the other workshops: pick, write notes, press “I'm done”,
+     and Claude reads it from the page (handoff "video-workshop"). The demos are the real player and charts, live. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 96px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, h4, figure, dl, dd, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+
+  .intro { padding: 48px 0 8px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: end; }
+  .intro h1 { font-size: clamp(44px, 6vw, 72px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 62ch; }
+  blockquote { margin: 0 0 12px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 16px; line-height: 1.4; }
+  blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+  .jump { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 13px; }
+
+  .part { margin-top: 64px; scroll-margin-top: 12px; }
+  .part-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  .part-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 400; }
+  .part-head p { color: var(--ink-2); max-width: 58ch; }
+
+  /* A call: the question and its options on the left, the live demo on the right */
+  .q { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px; padding: 26px 0 28px; border-bottom: 1px solid var(--rule-soft); scroll-margin-top: 12px; }
+  .q h3 { font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 400; }
+  .q .n { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
+  .q .from { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+  .q .from q { quotes: "“" "”"; color: var(--ink); }
+  .opts { display: grid; gap: 4px; margin-top: 14px; }
+  .opt { position: relative; display: block; padding: 8px 11px 9px; background: var(--paper); border: 1px solid var(--rule-soft); cursor: pointer; }
+  .opt:hover { border-color: var(--ink); }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt .l { font-size: 15px; line-height: 1.3; }
+  .opt .d { display: block; font-size: 12px; color: var(--ink-2); margin-top: 3px; }
+  .opt .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .opt .tags span { font-size: 11px; color: var(--ink-2); border: 1px solid var(--rule-soft); padding: 0 5px; }
+  .opt .tags span.rec { color: var(--ink); border-color: var(--rule); }
+  .opt.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .opt.on .d { color: #D6D6D9; }
+  .opt.on .tags span { color: #D6D6D9; border-color: rgba(255, 255, 255, 0.3); }
+  .opt.on .tags span.rec { color: var(--paper); border-color: var(--paper); }
+  .opt:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .why { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .why b { font-weight: 400; color: var(--ink); }
+  .qnote { margin-top: 12px; }
+  .qnote textarea, .mnote textarea, .note textarea { width: 100%; min-height: 58px; resize: vertical; padding: 8px 10px; border: 1px solid var(--rule-soft); background: var(--paper); font: 14px/1.45 var(--font); box-sizing: border-box; }
+  .qnote textarea:focus, .mnote textarea:focus, .note textarea:focus { border-color: var(--ink); outline: none; }
+
+  .demo { display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .demo > *, .q > * { min-width: 0; }
+  .stage { position: relative; aspect-ratio: 16 / 9; background: #fff; border: 1px solid var(--rule); overflow: hidden; }
+  .stage iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .demo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); }
+  .chipbtn { border: 1px solid var(--rule-soft); background: var(--paper); padding: 2px 10px; font: 13px var(--font); color: var(--ink); cursor: pointer; }
+  .chipbtn:hover { border-color: var(--ink); }
+
+  /* The human look: one mockup per option, drawn over a real frame */
+  .looks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .look { background: var(--paper); border: 1px solid var(--rule-soft); }
+  .look .pic { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #1c1c1e; }
+  .look .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .look .pic svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .look .pic .ph { position: absolute; inset: 0; display: grid; place-items: center; padding: 10%; text-align: center; color: #a1a1a6; font-size: 13px; }
+  .look .cap { padding: 7px 10px 9px; font-size: 12px; }
+  .look .cap b { display: block; font-weight: 400; font-size: 14px; }
+  .look .cap span { color: var(--ink-2); }
+  .sticker { position: absolute; padding: 0.6% 1.4%; background: #fff; color: #1d1d1f; font-size: clamp(9px, 1.4vw, 15px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); transform: rotate(-6deg); white-space: nowrap; }
+  .sticker::before { content: ""; position: absolute; left: 30%; top: -7px; width: 40%; height: 12px; background: rgba(240, 194, 59, 0.55); transform: rotate(3deg); }
+
+  /* The music: the runs on a small timeline */
+  .tl { position: relative; }
+  .tl-secs { display: flex; height: 26px; gap: 1px; background: var(--rule); border: 1px solid var(--rule); overflow: hidden; }
+  .tl-secs span { flex-basis: 0; min-width: 0; overflow: hidden; white-space: nowrap; font-size: 10px; padding: 0 4px; line-height: 26px; color: var(--paper); background: #3a3a3e; }
+  .tl-secs span.filmed { background: #6b6b70; } .tl-secs span.desktop { background: var(--ink); }
+  .tl-line { position: relative; height: 6px; margin-top: 4px; }
+  .tl-line i { position: absolute; top: 0; bottom: 0; background: var(--ink); }
+  .tl-line.calm i { background: #8e8e93; }
+  .tl-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font-size: 12px; color: var(--ink-2); }
+  .tl-legend i { display: inline-block; width: 12px; height: 4px; margin-right: 5px; vertical-align: 2px; background: var(--ink); }
+  .tracks li { font-size: 13px; padding: 5px 0; border-top: 1px solid var(--rule-soft); }
+  .tracks li:first-child { border-top: 0; }
+  .tracks .k { display: inline-block; min-width: 70px; font-size: 11px; color: var(--ink-2); }
+  .tracks .s { display: block; font-size: 12px; color: var(--ink-2); margin-left: 74px; }
+
+  .beats li { padding: 9px 0; border-top: 1px solid var(--rule-soft); font-size: 14px; }
+  .beats li:first-child { border-top: 0; }
+  .beats .k { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 2px; }
+
+  /* Moment by moment */
+  .sec { margin-top: 22px; background: var(--paper); border: 1px solid var(--rule); scroll-margin-top: 12px; }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 14px 10px; border-bottom: 1px solid var(--rule-soft); }
+  .sec-head .t { font-size: 12px; color: var(--ink-2); }
+  .sec-head h3 { font-size: 20px; font-weight: 400; letter-spacing: -0.015em; }
+  .sec-head .grow { flex: 1; }
+  .chip { font-size: 11px; border: 1px solid var(--rule-soft); padding: 0 6px; color: var(--ink-2); text-decoration: none; }
+  a.chip:hover { border-color: var(--ink); color: var(--ink); }
+  /* Screen by screen (entry 202): every screen with its own note */
+  .stills { display: grid; grid-auto-flow: column; grid-auto-columns: 300px; justify-content: start; gap: 1px; background: var(--rule-soft); border-bottom: 1px solid var(--rule-soft); overflow-x: auto; }
+  .shot { background: var(--paper); display: flex; flex-direction: column; }
+  .shot a { display: block; text-decoration: none; color: inherit; }
+  .shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .shot .lab { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; padding: 6px 9px 4px; }
+  .shot .lab span { color: var(--ink-2); }
+  .shot .lab b { font-weight: 400; }
+  .shot textarea { margin: 0 9px 9px; width: auto; min-height: 52px; resize: vertical; padding: 6px 8px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.4 var(--font); }
+  .shot textarea:focus { border-color: var(--ink); outline: none; }
+  .shot.has textarea { border-color: var(--ink); }
+  .stills .tofilm { aspect-ratio: 16 / 9; display: grid; place-items: center; background: #1d1d1f; color: #a1a1a6; font-size: 13px; }
+  .sec-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .sec-body > div { padding: 12px 14px 14px; min-width: 0; display: grid; gap: 10px; align-content: start; }
+  .sec-body > div + div { border-left: 1px solid var(--rule-soft); }
+  .k { display: block; font-size: 11px; color: var(--ink-2); margin: 0 0 3px; }
+  .said li { display: grid; grid-template-columns: 58px 34px minmax(0, 1fr); gap: 8px; align-items: baseline; font-size: 13px; padding: 4px 0; border-top: 1px solid var(--rule-soft); }
+  .said li:first-child { border-top: 0; }
+  .said .who { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+  .said .who i { width: 8px; height: 8px; flex: none; }
+  .said .at { font-size: 11px; color: var(--ink-2); }
+  .said .ask { color: var(--ink-2); }
+
+  /* A statement, small */
+  .stmt { position: relative; aspect-ratio: 16 / 9; background: #fff; border: 1px solid var(--rule-soft); overflow: hidden; container-type: inline-size; }
+  .stmt p { position: absolute; left: 8%; right: 8%; top: 50%; transform: translateY(-50%); font-size: 6.4cqw; line-height: 1.05; letter-spacing: -0.04em; }
+  .stmt .ph { position: absolute; right: 3cqw; top: 3cqw; font-size: 2.6cqw; color: var(--ink-2); }
+
+  /* Everything on screen */
+  .grid4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 16px; }
+  .tile { background: var(--paper); border: 1px solid var(--rule-soft); }
+  .tile .cap { padding: 7px 10px 9px; font-size: 12px; color: var(--ink-2); }
+  .tile .cap b { display: block; font-weight: 400; color: var(--ink); font-size: 13px; }
+  .tile img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .frame { position: relative; aspect-ratio: 16 / 9; background: #f2f2f4; overflow: hidden; container-type: inline-size; }
+  .frame .chip2 { position: absolute; left: 7cqw; display: flex; align-items: center; gap: 2.4cqw; font-size: 6.5cqw; }
+  .frame .chip2 i { width: 3.6cqw; height: 3.6cqw; }
+  .frame .subs { position: absolute; left: 0; right: 0; bottom: 0; padding: 3cqw 6cqw; font-size: 5cqw; line-height: 1.3; text-align: center; background: rgba(255, 255, 255, 0.96); border-top: 1px solid rgba(0, 0, 0, 0.08); }
+  .frame .roll { position: absolute; left: 8%; right: 8%; top: 8%; font-size: 3.2cqw; line-height: 1.35; }
+  .frame .roll b { display: block; font-weight: 400; color: var(--ink-2); margin-top: 1.6cqw; font-size: 2.6cqw; }
+  .words { margin-top: 16px; background: var(--paper); border: 1px solid var(--rule); }
+  .words > div { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; padding: 10px 14px; border-top: 1px solid var(--rule-soft); }
+  .words > div:first-child { border-top: 0; }
+  .words h4 { font-size: 14px; font-weight: 400; }
+  .words li { font-size: 13px; padding: 2px 0; }
+  .sub { font-size: 13px; color: var(--ink-2); margin-top: 22px; }
+  .sub + .grid4, .sub + .words { margin-top: 8px; }
+
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
+  .note label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
+  .mnote { padding: 0 14px 14px; }
+
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 400; background: var(--paper); border-top: 1px solid var(--rule); }
+  .bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding-top: 12px; padding-bottom: 12px; }
+  .bar .count, .bar .status { font-size: 13px; }
+  .bar .status { color: var(--ink-2); }
+  .bar .btn.primary { background: var(--ink); color: var(--paper); }
+  .bar .grow { flex: 1; }
+
+  @media (max-width: 900px) {
+    .intro, .part-head, .q, .sec-body, .notes { grid-template-columns: 1fr; gap: 16px; }
+    .sec-body > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); }
+    .looks { grid-template-columns: 1fr; }
+    .words > div { grid-template-columns: 1fr; gap: 4px; }
+  }
+  @media (max-width: 640px) { .wrap { padding-left: 16px; padding-right: 16px; } .top .links { margin-left: 0; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html#video">Palit</a>
+    <span class="where">Video workshop, October 19, 2026</span>
+    <span class="links"><a href="../video/index.html">The script</a><a href="../video/player.html">The player</a><a href="../history/index.html#video/clips">The cut, clip by clip</a></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Video workshop</h1>
+    <div>
+      <blockquote>I would like a workshop-style showing of all the different scenes and all the different sections, just so we can fine-tune each section as we need.<cite>Noah, October 19</cite></blockquote>
+      <p>Every screen of the video first, each with a box for notes. Then the calls, each with the real player or chart running beside it. Then everything on screen in one place: the overlays, their words, and every chart. Pick, write, and press “I'm done” at the bottom; Claude reads it from this page. Every option is a draft, and the recommendations are Claude's.</p>
+      <p class="jump"><a href="#moments">Screen by screen</a><a href="#calls">The calls</a><a href="#onscreen">Everything on screen</a></p>
+    </div>
+  </section>
+
+  <section class="part" id="moments">
+    <div class="part-head"><h2>Screen by screen</h2><p>Every screen of the video in order, each with its own box for notes. Click a screen to open it live. Under each section, what's said, its statement, and a box for the section as a whole.</p></div>
+    <div id="mm"></div>
+  </section>
+
+  <section class="part" id="calls">
+    <div class="part-head"><h2>The calls</h2><p>Seven decisions that shape the whole video. The demos are the real player and charts; pick an option and the demo plays it.</p></div>
+    <div id="qs"></div>
+  </section>
+
+  <section class="part" id="onscreen">
+    <div class="part-head"><h2>Everything on screen, in one place</h2><p>The overlays that cut the video into sections and sit on top of it, the words on screen in every section, and every chart.</p></div>
+    <div id="all"></div>
+  </section>
+
+  <section class="part">
+    <div class="notes">
+      <div class="note"><label for="note-else">Anything else about the video</label><textarea id="note-else" placeholder="A shot idea, a change, a question"></textarea></div>
+      <div class="note"><label for="note-look">Anything about the human look</label><textarea id="note-look" placeholder="What would make it feel more like you"></textarea></div>
+    </div>
+  </section>
+</main>
+
+<div class="bar" role="region" aria-label="Your picks">
+  <div class="wrap">
+    <span class="count num" id="count"></span>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="copy">Copy my picks</button>
+    <button type="button" class="btn primary" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script src="../brand/brand.js"></script>
+<script src="../video/script.js"></script>
+<script src="../history/data/clips.js"></script>
+<script>
+(function () {
+  "use strict";
+  var el = window.PalitUI.el, S = window.PALIT_SCRIPT, SHOTS = ((window.PALIT || {}).clips || {}).shots || {};
+  var B = window.PALIT_BRAND || { speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
+  function $(id) { return document.getElementById(id); }
+  function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+  function secById(id) { return S.sections.filter(function (x) { return x.id === id; })[0]; }
+  var ed = { text: {}, who: {}, statements: {} };
+  try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) ["text", "who", "statements"].forEach(function (k) { if (se[k]) ed[k] = se[k]; }); } catch (e) {}
+  function textOf(l) { return ed.text[l.id] !== undefined ? ed.text[l.id] : l.text; }
+  function whoOf(l) { return ed.who[l.id] || l.who; }
+  function stmtOf(x) { var b = x.statement, e = ed.statements[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds } : null; }
+  function stmtNode(x) {
+    var st = stmtOf(x), p = el("p"), hit = false, want = (st.word || "").toLowerCase().replace(/[^a-z0-9'’-]/g, "");
+    st.text.split(/(\s+)/).forEach(function (w) {
+      var on = !hit && want && w.toLowerCase().replace(/[^a-z0-9'’-]/g, "") === want;
+      if (on) { hit = true; p.appendChild(el("span", { style: "color:" + st.color, text: w })); } else p.appendChild(document.createTextNode(w));
+    });
+    return el("div", { class: "stmt", role: "img", "aria-label": "Statement: " + st.text }, [p, /^Your line about/.test(st.text) ? el("span", { class: "ph", text: "A placeholder" }) : null]);
+  }
+  function still(id, n) { var s = (SHOTS[id] || [])[n]; return s ? "../history/" + s.file : null; }
+
+  /* ---------- A live demo: the real player or a chart, scaled into a 16:9 frame ---------- */
+  function stage(src) {
+    var box = el("div", { class: "stage" }), f = el("iframe", { title: "Demo", tabindex: "-1", loading: "lazy" });
+    box.appendChild(f);
+    function fit() { var w = box.clientWidth; if (w) f.style.transform = "scale(" + (w / 1920) + ")"; }
+    new ResizeObserver(fit).observe(box);
+    var api = { box: box, load: function (url) { f.src = url; fit(); } };
+    if (src) api.load(src);
+    return api;
+  }
+
+  /* ---------- The calls ---------- */
+  var QS = [
+    { k: "motion", n: "Motion", title: "How should things come in?",
+      from: ["Noah: ", "some of the animations and the way the fade-ins occur with our video seem a little bit too fluid, almost"],
+      opts: [
+        { v: "spring", l: "Springy", d: "As built: words and charts pop in with a little overshoot.", tags: ["now"] },
+        { v: "snap", l: "Snappy", d: "Short and direct, with no overshoot: in a fifth of a second, and done.", tags: ["rec"] },
+        { v: "cut", l: "Cut", d: "No fade at all: each thing simply appears, like a quick cut.", tags: [] },
+        { v: "step", l: "Stop motion", d: "In three steps, like frames of a hand-made animation.", tags: [] }
+      ],
+      why: "It keeps the energy without the float: things land rather than drift, which reads as decided, like the product.",
+      demo: function (get) { var sg = stage(), bar = el("div", { class: "demo-bar" }); var b = el("button", { type: "button", class: "chipbtn", text: "Play again" });
+        function go() { sg.load("../video/player.html?clean&music=0&play&t=19.4&motion=" + get("motion")); }
+        b.addEventListener("click", go); bar.appendChild(b); bar.appendChild(document.createTextNode("The brief's statement, then the brief, in the real player with the music off"));
+        go(); return { node: el("div", { class: "demo" }, [sg.box, bar]), refresh: go }; } },
+    { k: "reveal", n: "Words", title: "How do the words come in?",
+      from: ["Noah: ", "instead of having every letter fade in on its own, each word could do that"],
+      opts: [
+        { v: "word", l: "A word at a time", d: "As you asked, and as built now.", tags: ["now", "rec"] },
+        { v: "line", l: "A line at a time", d: "Each line arrives whole, as it's read out.", tags: [] },
+        { v: "all", l: "All at once", d: "The words are there; the voice carries the pace.", tags: [] }
+      ],
+      why: "Word by word follows the voice, and it's what you asked for.",
+      demo: function (get) { var sg = stage(), bar = el("div", { class: "demo-bar" }); var b = el("button", { type: "button", class: "chipbtn", text: "Play again" });
+        function go() { sg.load("../video/viz.html?scene=brief&play&reveal=" + get("reveal") + "&motion=" + get("motion")); }
+        b.addEventListener("click", go); bar.appendChild(b); bar.appendChild(document.createTextNode("The brief's chart, with the motion you picked above"));
+        go(); return { node: el("div", { class: "demo" }, [sg.box, bar]), refresh: go }; } },
+    { k: "human", n: "The human look", multi: true, title: "What makes it feel human, and fun?",
+      from: ["Noah: ", "different ways we can format it so that it looks a little bit more authentic, but in a human way and in a fun way"],
+      opts: [
+        { v: "marks", l: "Hand-drawn marks", d: "Circles, underlines and arrows drawn on over the charts, a little wobbly, in ink.", tags: ["rec"] },
+        { v: "stickers", l: "Sticker labels", d: "Tilted labels with a strip of tape, for the moments worth a smile.", tags: ["rec"] },
+        { v: "cursor", l: "Cursor doodles", d: "On the desktop, the cursor loops around what it's about to pick.", tags: ["rec"] },
+        { v: "hand", l: "Your handwriting, scanned", d: "Notes in the margin in your own hand, photographed or scanned, never a font.", tags: [] },
+        { v: "hands", l: "Real hands, filmed", d: "Short inserts of a hand pointing at printed cards or paper swatches.", tags: [] }
+      ],
+      why: "Marks, stickers and doodles are drawn by us, so they stay honest, and they sit on top of Palit's look without changing it. Handwriting and hands need you and a camera, so they're ticked off by default.",
+      demo: function () { return { node: looksDemo() }; } },
+    { k: "music", n: "Music", title: "How does the music move?", id: "music",
+      from: ["Noah: ", "The beat kicks in, the intro goes on, and then after that, after the song kind of ends, we have a moment to settle ourselves with the product. That's when our deep dives kick in."],
+      opts: [
+        { v: "runs", l: "House to its end, quiet for the product, reflective for the deep dives, house again for the outro", d: "As built now: 0:00 to 2:12, then 3:32 to 8:44, then 8:44 to the end.", tags: ["now", "rec"] },
+        { v: "noOutro", l: "The same, but the reflective track carries on to the end", d: "No return of the beat; the outro stays calm.", tags: [] },
+        { v: "startOnly", l: "House at the start only", d: "Nothing under the deep dives or the outro.", tags: [] }
+      ],
+      why: "One long run each, no back and forth. The beat coming back for the outro is the fun, optimistic end you asked for earlier.",
+      demo: function (get) { var box = el("div", { class: "demo" }); function draw() { box.textContent = ""; box.appendChild(runsDemo(get("music"))); box.appendChild(tracksDemo()); } draw(); return { node: box, refresh: draw }; } },
+    { k: "pains", n: "Pain points", title: "Open each deep dive on its pain point?",
+      from: ["Noah: ", "even a pain point, a flaw, or a design process before we even mention a deep dive. That could be a great segue. How we solve it could be the deep dive itself."],
+      opts: [
+        { v: "each", l: "Before each deep dive, its pain point", d: "A short beat before each deep dive's statement, drafted below.", tags: ["rec"] },
+        { v: "first", l: "Only before deep dive 1, with Sip", d: "The hurdle that shaped the look, and nowhere else.", tags: [] },
+        { v: "none", l: "As it is", d: "The deep dives open on their statements.", tags: ["now"] }
+      ],
+      why: "Each deep dive then answers a problem we actually hit, which is what the judges are asking: were the decisions intentional?",
+      demo: function () { return { node: painsDemo() }; } },
+    { k: "sip", n: "Sip", title: "How does Sip show up?",
+      from: ["Noah: ", "I didn't actually know SIP existed, so I think it's extremely important to reference SIP and reference how we made it different"],
+      opts: [
+        { v: "named", l: "Sip by name, with its own page", d: "Its home page on the desk (the Sip desk), beside Palit, with how we went the other way.", tags: ["rec"] },
+        { v: "generic", l: "A picker built for handoff, unnamed", d: "As built in deep dive 1's chart: no names, only the difference.", tags: ["now"] },
+        { v: "both", l: "Unnamed first, then Sip by name", d: "The idea first, then the real thing it came from.", tags: [] }
+      ],
+      why: "You found Sip after starting, and naming it is honest. The difference is the point: Sip's vivid blue system and following the Mac's light or dark mode change how colors look, while Palit stays neutral on pure white.",
+      demo: function () { return { node: sipDemo() }; } },
+    { k: "dogfood", n: "Palit on itself", title: "Grade the film with colors kept in Palit?",
+      from: ["Noah: ", "I pull some colors from the user palette and then use those colors to color grade my film for the intro or the outro"],
+      opts: [
+        { v: "yes", l: "Yes, and say so on the horizon", d: "Keep colors from films we love in Palit, grade the filmed intro and outro with them, and mention it.", tags: ["rec"] },
+        { v: "no", l: "Not this time", d: "The film is graded the usual way.", tags: [] }
+      ],
+      why: "It's a true story of the tool at work. Said as what it is: we used it ourselves. It isn't user testing, which is still to come.",
+      demo: function () { return { node: el("div", { class: "demo" }, [el("ul", { class: "beats" }, [
+        el("li", null, [el("span", { class: "k", text: "A draft line for the horizon, only if we do it" }), "“We used Palit on this video: the colors grading the film were kept in it, from films we love.”"]),
+        el("li", null, [el("span", { class: "k", text: "And honestly" }), "“We haven't tested it with many people yet. That's next.”"])
+      ])]) }; } }
+  ];
+
+  /* ---------- Demos ---------- */
+  // The human look: each option drawn over a real frame from the video
+  function looksDemo() {
+    var W = "http://www.w3.org/2000/svg";
+    function svg(paths) { var s = document.createElementNS(W, "svg"); s.setAttribute("viewBox", "0 0 960 540"); s.setAttribute("preserveAspectRatio", "none"); paths.forEach(function (d) { var p = document.createElementNS(W, "path"); p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "#1d1d1f"); p.setAttribute("stroke-width", "3"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("stroke-linejoin", "round"); s.appendChild(p); }); return s; }
+    function look(v, img, over, title, sub) { return el("div", { class: "look", "data-v": v }, [el("div", { class: "pic" }, [img ? el("img", { src: img, alt: "" }) : null].concat(over || [])), el("div", { class: "cap" }, [el("b", { text: title }), el("span", { text: sub })])]); }
+    var stick = function (txt, left, top) { return el("span", { class: "sticker", style: "left:" + left + "%;top:" + top + "%", text: txt }); };
+    return el("div", { class: "looks" }, [
+      look("marks", still("problem", 1), [svg(["M470 168 C 520 150, 640 152, 690 170 C 720 184, 676 202, 600 204 C 520 206, 462 196, 466 178", "M720 250 C 700 232, 690 214, 694 198", "M686 210 L 694 196 L 706 208"])], "Hand-drawn marks", "Circled, over the real chart"),
+      look("stickers", still("dive1", 1), [stick("Only one!", 33, 15)], "Sticker labels", "Taped on, a little crooked"),
+      look("cursor", still("demo", 1), [svg(["M880 150 C 860 140, 860 120, 880 116 C 906 112, 916 140, 902 160 C 890 176, 868 170, 874 150 C 880 132, 906 136, 908 152"])], "Cursor doodles", "A loop before the pick"),
+      look("hand", null, [el("span", { class: "ph", text: "A margin note in your own hand, scanned. Write a few on paper and Claude places them." })], "Your handwriting", "Needs you and a scanner"),
+      look("hands", null, [el("span", { class: "ph", text: "A hand pointing at a printed card or paper swatches, filmed in the archive room." })], "Real hands", "Needs a camera")
+    ]);
+  }
+  // The music: the sections, and where each track plays for the option picked
+  function runsDemo(v) {
+    var total = S.total, house = window.palitMusicWindows(S, {}, "music"), calm = window.palitMusicWindows(S, {}, "calm");
+    if (v === "noOutro") { var o = secById("outro"); house = house.filter(function (w) { return w[0] < o.start - 1; }); calm = calm.map(function (w) { return [w[0], total, w[2]]; }); }
+    if (v === "startOnly") { house = house.slice(0, 1); calm = []; }
+    var secs = el("div", { class: "tl-secs", "aria-hidden": "true" });
+    S.sections.forEach(function (x) { var a = x.statement ? x.statementAt : x.start; var sp = el("span", { class: x.part, title: x.title, text: x.title.replace(/^Deep dive (\d): .*/, "Dive $1").replace(/, in the archive room$/, "") }); sp.style.flexGrow = String(x.start + x.seconds - a); secs.appendChild(sp); });
+    function line(ws, cls) { var d = el("div", { class: "tl-line" + (cls ? " " + cls : "") }); ws.forEach(function (w) { d.appendChild(el("i", { style: "left:" + (100 * w[0] / total) + "%;width:" + (100 * (w[1] - w[0]) / total) + "%" })); }); return d; }
+    var fmt = function (ws) { return ws.length ? ws.map(function (w) { return ms(w[0]) + " to " + ms(w[1]); }).join(", then ") : "nowhere"; };
+    return el("div", { class: "tl" }, [secs, line(house), line(calm, "calm"), el("p", { class: "tl-legend" }, [el("span", null, [el("i"), "House, “" + S.music.title + "” by " + S.music.by + ": " + fmt(house)]), el("span", null, [el("i", { style: "background:#8e8e93" }), "Calm, “" + S.calm.title + "”: " + fmt(calm)])])]);
+  }
+  // Tracks to try on top of these, just in case: all checked page by page, nothing downloaded
+  function tracksDemo() {
+    var T = [
+      ["House", "“Clone” by 1000 Handz, 3:52", "Free Music Archive, CC BY 4.0, credit “1000Handz.com”", "https://freemusicarchive.org/music/1000-handz/cc-by-free-to-use-dancehouse-instrumentals/clone/"],
+      ["House", "“Birds Of Feathers” by 1000 Handz, 3:00", "Free Music Archive, CC BY 4.0, credit “1000Handz.com”", "https://freemusicarchive.org/music/1000-handz/cc-by-free-to-use-dancehouse-instrumentals/birds-of-feathers/"],
+      ["Upbeat", "“Modern Drum And Bass” by BerryDeep, 3:10", "Pixabay Content License, no credit needed; chill, floating, medium pace", "https://pixabay.com/music/drum-n-bass-modern-drum-and-bass-592435/"],
+      ["Reflective", "“Study and Relax” by kmacleod, 3:43", "Pixabay Content License; mellow piano and saxophone with a soft beat", "https://pixabay.com/music/modern-jazz-study-and-relax-127671/"],
+      ["Reflective", "“Long Distance” by 1000 Handz, 3:58", "Free Music Archive, CC BY 4.0; ambient electronic, instrumental", "https://freemusicarchive.org/music/1000-handz/cc-by-free-to-use-drum-bass-instrumentals/long-distance-1/"]
+    ];
+    return el("div", null, [el("span", { class: "k", style: "margin-top:10px", text: "Tracks to try instead, just in case (from docs/09-music-shortlist.md; nothing downloaded)" }), el("ul", { class: "tracks" }, T.map(function (t) { return el("li", null, [el("span", { class: "k", text: t[0] }), el("a", { href: t[3], target: "_blank", rel: "noopener", text: t[1] }), el("span", { class: "s", text: t[2] })]); }))]);
+  }
+  // The pain points, drafted from Noah's notes, one before each deep dive
+  function painsDemo() {
+    return el("div", { class: "demo" }, [el("ul", { class: "beats" }, [
+      el("li", null, [el("span", { class: "k", text: "Before deep dive 1, a palette for a tool that collects color (Claude's draft from your notes)" }), "“We didn't know Sip existed until we'd started. A polished picker, built for handoff, with a vivid blue look, light or dark as the Mac decides. Its color competes with yours. So how do you design a tool for color that adds no color of its own?”"]),
+      el("li", null, [el("span", { class: "k", text: "Before deep dive 2, from day one to year four (from the audit)" }), "“A new user met “Nothing under this letter yet,” and our prototype only ever held a few weeks of colors, never years.”"]),
+      el("li", null, [el("span", { class: "k", text: "Before deep dive 3, where the story lives (from the audit)" }), "“The brief asked for a story, and our archive hid it one click deep: before a click, two of the nine things we keep about a color.”"])
+    ]), el("p", { class: "why", text: "Each about 6 to 8 seconds, on the problem's own frame. The video grows by about 20 seconds, to about 9:40, still under the 10-minute limit." })]);
+  }
+  function sipDemo() {
+    return el("div", { class: "looks" }, [
+      el("div", { class: "look" }, [el("div", { class: "pic" }, [el("img", { src: "../v2/screens/desk-sip.jpg", alt: "Sip's home page on the desk" })]), el("div", { class: "cap" }, [el("b", { text: "Sip by name" }), el("span", { text: "Its home page, on the Sip desk in v3 (?screen=sip)" })])]),
+      el("div", { class: "look" }, [el("div", { class: "pic" }, [el("img", { src: still("dive1", 0) || "", alt: "Deep dive 1's chart: a picker built for handoff beside Palit" })]), el("div", { class: "cap" }, [el("b", { text: "Unnamed" }), el("span", { text: "As built: a picker built for handoff, beside Palit" })])])
+    ]);
+  }
+
+  /* ---------- State: in this browser until you're done ---------- */
+  var KEY = "palit-video-workshop", HANDOFF = "video-workshop";
+  var st = { picks: {}, multi: {}, qnotes: {}, notes: {}, shots: {}, else: "", look: "" };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) Object.keys(st).forEach(function (k) { if (saved[k] !== undefined) st[k] = saved[k]; }); } catch (e) {}
+  QS.forEach(function (q) {
+    if (q.multi) { if (!st.multi[q.k]) { st.multi[q.k] = {}; q.opts.forEach(function (o) { st.multi[q.k][o.v] = o.tags.indexOf("rec") >= 0; }); } }
+    else if (!q.opts.filter(function (o) { return o.v === st.picks[q.k]; })[0]) st.picks[q.k] = (q.opts.filter(function (o) { return o.tags.indexOf("now") >= 0; })[0] || q.opts[0]).v;
+  });
+  function get(k) { return st.picks[k]; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put(HANDOFF, { title: "Video workshop", text: picksText() }); doneState(); count(); }
+  function doneState() { var r = window.PalitHandoff ? PalitHandoff.get(HANDOFF) : null, b = $("done"); b.textContent = r && r.done ? "Done" : "I'm done"; b.setAttribute("aria-pressed", String(!!(r && r.done))); }
+
+  /* ---------- Build the calls ---------- */
+  var demos = {};
+  QS.forEach(function (q, qi) {
+    var opts = el("div", { class: "opts", role: q.multi ? "group" : "radiogroup", "aria-label": q.title }), labs = [];
+    q.opts.forEach(function (o) {
+      var input = el("input", { type: q.multi ? "checkbox" : "radio", name: "q-" + q.k, value: o.v });
+      var lab = el("label", { class: "opt" }, [input, el("span", { class: "l", text: o.l }), o.d ? el("span", { class: "d", text: o.d }) : null,
+        o.tags.length ? el("span", { class: "tags" }, o.tags.map(function (t) { return el("span", { class: t === "rec" ? "rec" : null, text: t === "rec" ? "Recommended" : "Now" }); })) : null]);
+      input.addEventListener("change", function () {
+        if (q.multi) st.multi[q.k][o.v] = input.checked; else st.picks[q.k] = o.v;
+        save(); paint();
+        if (demos[q.k] && demos[q.k].refresh) demos[q.k].refresh();
+        if (q.k === "motion" && demos.reveal && demos.reveal.refresh) demos.reveal.refresh();
+      });
+      opts.appendChild(lab); labs.push({ o: o, lab: lab, input: input });
+    });
+    function paint() { labs.forEach(function (x) { var on = q.multi ? !!st.multi[q.k][x.o.v] : st.picks[q.k] === x.o.v; x.input.checked = on; x.lab.classList.toggle("on", on); }); }
+    var ta = el("textarea", { placeholder: "A note on this call", "aria-label": "A note on " + q.title });
+    ta.value = st.qnotes[q.k] || "";
+    ta.addEventListener("input", function () { st.qnotes[q.k] = ta.value; save(); });
+    demos[q.k] = q.demo ? q.demo(get) : null;
+    $("qs").appendChild(el("div", { class: "q", id: q.id || "q-" + q.k }, [
+      el("div", null, [el("span", { class: "n", text: (qi + 1) + ". " + q.n }), el("h3", { text: q.title }), el("p", { class: "from" }, [q.from[0], el("q", { text: q.from[1] })]), opts, el("p", { class: "why" }, [el("b", { text: "Why the recommendation. " }), q.why]), el("div", { class: "qnote" }, [ta])]),
+      demos[q.k] ? demos[q.k].node : el("div")
+    ]));
+    paint();
+  });
+
+  /* ---------- Moment by moment ---------- */
+  var PART = { filmed: "Filmed", desktop: "Animated desktop", motion: "Motion graphic" };
+  S.sections.forEach(function (x, i) {
+    var shots = SHOTS[x.id] || [];
+    function shotNote(key, label) {
+      var t = el("textarea", { placeholder: "A note on this screen", "aria-label": "A note on " + label + ", in " + x.title });
+      t.value = st.shots[key] || "";
+      t.addEventListener("input", function () { if (t.value.trim()) st.shots[key] = t.value; else delete st.shots[key]; t.parentNode.classList.toggle("has", !!t.value.trim()); save(); });
+      return t;
+    }
+    var stills = el("div", { class: "stills" }, shots.length ? shots.map(function (s2, si) {
+      var live = s2.href.indexOf("video/") === 0 ? "../" + s2.href.replace(/&t=[0-9.]+/, "&play") : "../" + s2.href;
+      var at = (s2.href.match(/[?&]t=([0-9.]+)/) || [])[1];
+      var key = x.id + "/" + si, box = el("div", { class: "shot" + ((st.shots[key] || "").trim() ? " has" : "") }, [
+        el("a", { href: live, target: "_blank", rel: "noopener", title: "Open it live: " + s2.label }, [el("img", { src: "../history/" + s2.file, alt: s2.label, loading: "lazy", width: "960", height: "540" })]),
+        el("p", { class: "lab" }, [el("b", { text: (si + 1) + ". " + s2.label }), at ? el("span", { class: "num", text: ms(x.start + Number(at)) }) : null]),
+        shotNote(key, s2.label)
+      ]);
+      return box;
+    }) : [el("div", { class: "shot" + ((st.shots[x.id + "/0"] || "").trim() ? " has" : "") }, [el("div", { class: "tofilm", text: x.part === "filmed" ? "To film, October 19" : "No stills yet" }), el("p", { class: "lab" }, [el("b", { text: x.scene && x.scene.label ? x.scene.label : x.title })]), shotNote(x.id + "/0", x.title)])]);
+    var said = (x.lines || []).length ? el("ol", { class: "said" }, x.lines.map(function (l) {
+      var w = whoOf(l), t = textOf(l);
+      return el("li", null, [el("span", { class: "who" }, [el("i", { style: "background:" + ((B.speakers || {})[w] || "#1d1d1f") }), w]), el("span", { class: "at num", text: typeof l.at === "number" ? ms(l.at) : "" }), el("span", { class: /^\[/.test(t.trim()) ? "ask" : null, text: t })]);
+    })) : el("p", { class: "s", text: "No voiceover." });
+    var ta = el("textarea", { placeholder: "A note on the section as a whole", "aria-label": "Notes on " + x.title });
+    ta.value = st.notes[x.id] || "";
+    ta.addEventListener("input", function () { if (ta.value.trim()) st.notes[x.id] = ta.value; else delete st.notes[x.id]; save(); });
+    $("mm").appendChild(el("section", { class: "sec", id: "m-" + x.id }, [
+      el("div", { class: "sec-head" }, [el("span", { class: "t num", text: ("0" + (i + 1)).slice(-2) + "  " + ms(x.start) + " to " + ms(x.start + x.seconds) + ", " + x.seconds + " seconds" }), el("h3", { text: x.title }), el("span", { class: "chip", text: PART[x.part] || x.part }), el("span", { class: "grow" }), el("a", { class: "chip", href: "../video/player.html#" + x.id, target: "_blank", rel: "noopener", text: "Play it" }), el("a", { class: "chip", href: "../video/index.html#" + x.id, target: "_blank", rel: "noopener", text: "Edit its lines" })]),
+      stills,
+      el("div", { class: "sec-body" }, [
+        el("div", null, [x.statement ? el("div", null, [el("span", { class: "k", text: "Opens on" }), stmtNode(x)]) : null, el("div", null, [el("span", { class: "k", text: "On screen" }), el("p", { style: "font-size:13px", text: x.screen })])]),
+        el("div", null, [el("span", { class: "k", text: "Said" }), said])
+      ]),
+      el("div", { class: "mnote" }, [ta])
+    ]));
+  });
+
+  /* ---------- Everything on screen ---------- */
+  var all = $("all");
+  all.appendChild(el("p", { class: "sub", text: "The statements, one before each section, in their colors (placeholders until you write them)" }));
+  all.appendChild(el("div", { class: "grid4" }, S.sections.filter(function (x) { return x.statement; }).map(function (x) { return el("div", { class: "tile" }, [stmtNode(x), el("div", { class: "cap" }, [el("b", { text: "Before " + x.title.replace(/^Deep dive (\d): /, "deep dive $1: ").replace(/^Demo: /, "the demo: ") }), stmtOf(x).color + ", " + stmtOf(x).seconds + " seconds"])]); })));
+  all.appendChild(el("p", { class: "sub", text: "The overlays on top of the video" }));
+  var firstLine = (secById("demo") || S.sections[0]).lines[0];
+  var chipFrame = el("div", { class: "frame" }, [el("div", { class: "chip2", style: "bottom:30cqw" }, [el("i", { style: "background:" + B.speakers.Daeun }), "Daeun"]), el("div", { class: "chip2", style: "bottom:14cqw" }, [el("i", { style: "background:" + B.speakers.Noah }), "Noah"])]);
+  var credits = el("div", { class: "frame", style: "background:#fff" }, [el("div", { class: "roll" }, (S.credits || []).slice(0, 3).map(function (g) { return el("div", null, [el("b", { text: g.k }), g.v.join(", ")]); }))]);
+  all.appendChild(el("div", { class: "grid4" }, [
+    el("div", { class: "tile" }, [chipFrame, el("div", { class: "cap" }, [el("b", { text: "Speaker chips" }), "Only the square and the name, bottom left, while someone speaks"])]),
+    el("div", { class: "tile" }, [el("div", { class: "frame" }, [el("div", { class: "subs", text: firstLine ? textOf(firstLine) : "" })]), el("div", { class: "cap" }, [el("b", { text: "The subtitle bar" }), "Until the voiceover is in"])]),
+    el("div", { class: "tile" }, [el("div", { class: "stmt" }, [el("p", { style: "font-size:5.6cqw", text: S.thanks || "" })]), el("div", { class: "cap" }, [el("b", { text: "Your thanks" }), "On white, word for word, before the credits"])]),
+    el("div", { class: "tile" }, [credits, el("div", { class: "cap" }, [el("b", { text: "The credits" }), "Rolling slowly; friends and supporters are yours to name"])])
+  ]));
+  all.appendChild(el("p", { class: "sub", text: "The words on screen, section by section" }));
+  all.appendChild(el("div", { class: "words" }, S.sections.filter(function (x) { return (x.text || []).length; }).map(function (x) { return el("div", null, [el("h4", { text: x.title }), el("ul", null, x.text.map(function (t) { return el("li", { text: t }); }))]); })));
+  all.appendChild(el("p", { class: "sub", text: "Every chart, in order (click one to open it live)" }));
+  var charts = [];
+  S.sections.forEach(function (x) { (SHOTS[x.id] || []).forEach(function (s2) { if (s2.kind === "viz") charts.push({ x: x, s: s2 }); }); });
+  all.appendChild(el("div", { class: "grid4" }, charts.map(function (c) { return el("a", { class: "tile", href: "../" + c.s.href.replace(/&t=[0-9.]+/, "&play"), target: "_blank", rel: "noopener", style: "text-decoration:none;color:inherit" }, [el("img", { src: "../history/" + c.s.file, alt: c.s.label, loading: "lazy", width: "960", height: "540" }), el("div", { class: "cap" }, [el("b", { text: c.s.label }), c.x.title])]); })));
+
+  /* ---------- Notes, picks, and the handoff ---------- */
+  [["note-else", "else"], ["note-look", "look"]].forEach(function (n) { var t = $(n[0]); t.value = st[n[1]] || ""; t.addEventListener("input", function () { st[n[1]] = t.value; save(); }); });
+  function picksText() {
+    var out = ["Video workshop, October 19. My picks:"];
+    QS.forEach(function (q, i) {
+      if (q.multi) { var on = q.opts.filter(function (o) { return st.multi[q.k][o.v]; }).map(function (o) { return o.l; }); out.push((i + 1) + ". " + q.title + " " + (on.length ? on.join("; ") : "None") + "."); }
+      else { var o = q.opts.filter(function (o2) { return o2.v === st.picks[q.k]; })[0]; out.push((i + 1) + ". " + q.title + " " + o.l + (o.tags.indexOf("rec") >= 0 ? " (the recommendation)" : "") + ". [" + q.k + ":" + o.v + "]"); }
+      if ((st.qnotes[q.k] || "").trim()) out.push("   Note: " + st.qnotes[q.k].trim());
+    });
+    var screens = [];
+    S.sections.forEach(function (x) {
+      var shots = SHOTS[x.id] || [], n = Math.max(1, shots.length);
+      for (var i = 0; i < n; i++) { var t = (st.shots[x.id + "/" + i] || "").trim(); if (t) screens.push("- " + x.title + ", " + (shots[i] ? (i + 1) + ". " + shots[i].label : "the screen") + ": " + t); }
+      var sn = (st.notes[x.id] || "").trim(); if (sn) screens.push("- " + x.title + ", the section as a whole: " + sn);
+    });
+    if (screens.length) { out.push("Screen by screen:"); out = out.concat(screens); }
+    if ((st.look || "").trim()) out.push("On the human look: " + st.look.trim());
+    if ((st.else || "").trim()) out.push("Anything else: " + st.else.trim());
+    return out.join("\n");
+  }
+  function count() { var n = Object.keys(st.shots).filter(function (k) { return (st.shots[k] || "").trim(); }).length + S.sections.filter(function (x) { return (st.notes[x.id] || "").trim(); }).length; $("count").textContent = n ? n + (n === 1 ? " note" : " notes") + " on the screens, " + QS.length + " calls" : "No notes yet, " + QS.length + " calls"; }
+  $("copy").addEventListener("click", function () {
+    var text = picksText(), status = $("status");
+    function fallback() { var t = el("textarea", { readonly: "" }); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} t.remove(); status.textContent = ok ? "Copied. Paste it into chat." : "Couldn't copy. Press “I'm done” instead, and Claude reads it from this page."; }
+    try { navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied. Paste it into chat."; }, fallback); } catch (e) { fallback(); }
+  });
+  $("done").addEventListener("click", function () { save(); PalitHandoff.done(HANDOFF); doneState(); $("status").textContent = "Marked done. Tell Claude in chat, and Claude reads your picks from this page."; });
+  count(); doneState();
+  window.PalitVideoWorkshop = { picksText: picksText, state: st };
+})();
+</script>
+</body>
+</html>

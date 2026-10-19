@@ -262,6 +262,60 @@
   .vbar a:hover { opacity: 0.85; }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
   .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--rule); }
+  /* The cut, clip by clip (entry 192): the video as it is, from design/video/script.js */
+  .cl-bar { display: flex; height: 34px; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .cl-bar a, .cl-bar i { flex-basis: 0; min-width: 2px; }
+  .cl-bar a { display: flex; align-items: flex-end; padding: 0 6px 4px; font-size: 11px; color: var(--paper); text-decoration: none; overflow: hidden; white-space: nowrap; }
+  .cl-bar a.filmed { background: #6b6b70; } .cl-bar a.desktop { background: var(--ink); } .cl-bar a.motion { background: #3a3a3e; }
+  .cl-bar a:hover { opacity: 0.85; }
+  .cl-line { position: relative; height: 3px; margin-top: 3px; }
+  .cl-line i { position: absolute; top: 0; bottom: 0; background: var(--ink); }
+  .cl-line.calm i { background: #8e8e93; }
+  .cl-ov { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); margin-top: 16px; }
+  .cl-ov > div { background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 10px 12px 12px; display: grid; gap: 8px; align-content: start; font-size: 12px; }
+  .cl-ov h4 { font-size: 14px; font-weight: 400; }
+  .cl-frame { position: relative; aspect-ratio: 16 / 9; background: #fff; border: 1px solid var(--rule-soft); overflow: hidden; container-type: inline-size; }
+  .cl-stmt { position: absolute; left: 8%; right: 8%; top: 50%; transform: translateY(-50%); font-size: 6.4cqw; line-height: 1.05; letter-spacing: -0.04em; }
+  .cl-chip { position: absolute; left: 7cqw; bottom: 30cqw; display: flex; align-items: center; gap: 2.4cqw; font-size: 6.5cqw; }
+  .cl-chip i { width: 3.6cqw; height: 3.6cqw; }
+  .cl-subs { position: absolute; left: 0; right: 0; bottom: 0; padding: 3cqw 6cqw; font-size: 5.2cqw; line-height: 1.3; text-align: center; background: rgba(255, 255, 255, 0.96); border-top: 1px solid rgba(0, 0, 0, 0.08); }
+  .clips { list-style: none; margin-top: 18px; }
+  .clip { background: var(--paper); border: 1px solid var(--rule); scroll-margin-top: 16px; }
+  .clip + .clip { margin-top: 18px; }
+  .clip-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 14px 10px; border-bottom: 1px solid var(--rule-soft); }
+  .clip-head .n { font-size: 11px; color: var(--ink-2); }
+  .clip-head h3 { font-size: 20px; font-weight: 400; letter-spacing: -0.015em; }
+  .clip-head .grow { flex: 1; }
+  .clip-head .st { font-size: 11px; padding: 0 6px; border: 1px solid var(--rule-soft); color: var(--ink-2); }
+  .clip-head .st.ready { border-color: var(--ink); color: var(--ink); }
+  .clip-stills { display: grid; grid-auto-flow: column; grid-auto-columns: 248px; justify-content: start; gap: 1px; background: var(--rule-soft); border-bottom: 1px solid var(--rule-soft); overflow-x: auto; }
+  .clip-stills a { display: block; background: var(--paper); text-decoration: none; color: inherit; }
+  .clip-stills a:hover span { color: var(--ink); }
+  .clip-stills img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .cl-media { position: relative; }
+  .cl-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); }
+  .cl-media.moving video { opacity: 1; }
+  .clip ul, .clip ol { list-style: none; margin: 0; padding: 0; }
+  .clip-stills span { display: block; font-size: 11px; color: var(--ink-2); padding: 5px 8px 7px; }
+  .clip-stills .tofilm { aspect-ratio: 16 / 9; display: grid; place-items: center; background: #1d1d1f; color: #a1a1a6; font-size: 13px; }
+  .clip-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .clip-body > div { padding: 12px 14px 14px; min-width: 0; display: grid; gap: 12px; align-content: start; }
+  .clip-body > div + div { border-left: 1px solid var(--rule-soft); }
+  .clip .k { display: block; font-size: 11px; color: var(--ink-2); margin: 0 0 3px; }
+  .clip p.t { font-size: 13px; }
+  .clip-cards li, .clip-res li, .clip-edit li { font-size: 13px; padding: 3px 0; border-top: 1px solid var(--rule-soft); }
+  .clip-cards li:first-child, .clip-res li:first-child, .clip-edit li:first-child { border-top: 0; }
+  .clip-said li { display: grid; grid-template-columns: 62px 34px minmax(0, 1fr); gap: 8px; align-items: baseline; font-size: 13px; padding: 4px 0; border-top: 1px solid var(--rule-soft); }
+  .clip-said li:first-child { border-top: 0; }
+  .clip-said .who { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+  .clip-said .who i { width: 8px; height: 8px; flex: none; }
+  .clip-said .at { font-size: 11px; color: var(--ink-2); }
+  .clip-said .ask { color: var(--ink-2); }
+  .clip-res .kind { display: inline-block; min-width: 72px; font-size: 11px; color: var(--ink-2); }
+  .clip-stmt { max-width: 340px; }
+  .clip-notes { padding: 0 14px 14px; }
+  @media (max-width: 860px) { .clip-body { grid-template-columns: 1fr; } .clip-body > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); } }
+
   /* Storyboards: frames in reading order, square and ruled like the archive */
   .sb-block + .sb-block { margin-top: 32px; }
   .sb-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
@@ -353,6 +407,9 @@
 <script src="data/sessions.js"></script>
 <script src="data/inspiration.js"></script>
 <script src="data/decisions.js"></script>
+<script src="../brand/brand.js"></script>
+<script src="../video/script.js"></script>
+<script src="data/clips.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1246,14 +1303,173 @@
   }
 
   /* Video: the plan, the story, and the speaker chips */
+  /* ---------- The cut, clip by clip (entry 192): the video as it is now, from design/video/script.js ---------- */
+  // Each clip: stills, the statement that opens it, what's said, the cards on screen, the research it brings in, the music
+  // under it, and what's still to edit, with a notes box that hands off like the others ("video-clips").
+  function renderClips(view) {
+    var S = window.PALIT_SCRIPT, SHOTS = ((window.PALIT || {}).clips || {}).shots || {};
+    if (!S) return;
+    var B = window.PALIT_BRAND || { speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
+    var ed = { text: {}, who: {}, statements: {}, music: {}, calm: {} };
+    try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) Object.keys(ed).concat(["musicStatements"]).forEach(function (k) { if (se[k] !== undefined) ed[k] = se[k]; }); } catch (e) {}
+    function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+    function textOf(l) { return ed.text[l.id] !== undefined ? ed.text[l.id] : l.text; }
+    function whoOf(l) { return ed.who[l.id] || l.who; }
+    function stmtOf(x) { var b = x.statement, e = (ed.statements || {})[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds } : null; }
+    function stmtNode(x) {
+      var st = stmtOf(x), p = el("div", { class: "cl-stmt" }), hit = false, want = (st.word || "").toLowerCase().replace(/[^a-z0-9'’-]/g, "");
+      st.text.split(/(\s+)/).forEach(function (w) {
+        var on = !hit && want && w.toLowerCase().replace(/[^a-z0-9'’-]/g, "") === want;
+        if (on) { hit = true; p.appendChild(el("span", { style: "color:" + st.color, text: w })); } else p.appendChild(document.createTextNode(w));
+      });
+      return el("div", { class: "cl-frame clip-stmt", role: "img", "aria-label": "Statement: " + st.text }, [p]);
+    }
+    // The music under a clip: where its track's runs overlap the clip, timed from the clip's start (entry 197)
+    function musicText(x, layer) {
+      var a0 = x.statement ? x.statementAt : x.start, b0 = x.start + x.seconds, parts = [];
+      (window.palitMusicWindows ? window.palitMusicWindows(S, {}, layer) : []).forEach(function (w) {
+        var a = Math.max(a0, w[0]), b = Math.min(b0, w[1]);
+        if (b - a > 0.5) parts.push(a <= a0 + 0.5 && b >= b0 - 0.5 ? "the whole clip" : ms(Math.max(0, a - x.start)) + " to " + ms(b - x.start) + " in");
+      });
+      return parts.length ? parts.join(", ") : null;
+    }
+    var KIND = { study: "Study", ours: "Ours", tools: "Tools", precedent: "Precedent", brief: "The brief" };
+    var PART = { filmed: "Filmed", desktop: "Animated desktop", motion: "Motion graphic" };
+
+    // How the video is organized: every clip in order, the statements between them in their colors, and the music under it
+    var total = S.total || 0, bar = el("div", { class: "cl-bar", role: "list", "aria-label": "The video, clip by clip" });
+    S.sections.forEach(function (x, i) {
+      if (x.statement) bar.appendChild(el("i", { role: "listitem", "aria-label": "Statement before " + x.title, title: "Statement: " + stmtOf(x).text, style: "flex-grow:" + x.statement.seconds + ";background:" + stmtOf(x).color }));
+      var a = el("a", { class: x.part, role: "listitem", href: "#clip-" + x.id, title: x.title + ", " + ms(x.start) + " to " + ms(x.start + x.seconds), text: String(i + 1) });
+      a.style.flexGrow = String(x.seconds);
+      a.addEventListener("click", function (e) { e.preventDefault(); var t = document.getElementById("clip-" + x.id); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); });
+      bar.appendChild(a);
+    });
+    function line(layer, cls) {
+      var d = el("div", { class: "cl-line" + (cls ? " " + cls : ""), "aria-hidden": "true" });
+      (window.palitMusicWindows ? window.palitMusicWindows(S, ed, layer) : []).forEach(function (w) { d.appendChild(el("i", { style: "left:" + (100 * w[0] / total) + "%;width:" + (100 * (w[1] - w[0]) / total) + "%" })); });
+      return d;
+    }
+    var legend = el("div", { class: "legend" }, [
+      el("span", null, [el("i", { style: "background:#6b6b70" }), "Filmed"]), el("span", null, [el("i", { style: "background:var(--ink)" }), "Animated desktop"]), el("span", null, [el("i", { style: "background:#3a3a3e" }), "Motion graphic"]),
+      el("span", null, [el("i", { style: "background:#d14808" }), "A statement, in its color"]),
+      S.music ? el("span", null, [el("i", { style: "background:var(--ink);height:3px" }), "House: “" + S.music.title + "” by " + S.music.by]) : null,
+      S.calm ? el("span", null, [el("i", { style: "background:#8e8e93;height:3px" }), "Calm: " + (S.calm.src ? "“" + S.calm.title + "” by " + S.calm.by : "not picked yet")]) : null
+    ]);
+
+    // The overlays that cut the video into sections, and sit on top of it
+    var firstStmt = S.sections.filter(function (x) { return x.statement; })[0], firstLine = (S.sections.filter(function (x) { return x.id === "demo"; })[0] || S.sections[0]).lines[0];
+    var spk = function (w) { return el("div", { class: "cl-chip" }, [el("i", { style: "background:" + ((B.speakers || {})[w] || "#1d1d1f") }), w]); };
+    var overlays = el("div", { class: "cl-ov" }, [
+      el("div", null, [el("h4", { text: "Statements" }), firstStmt ? stmtNode(firstStmt) : null, el("p", { class: "s", text: "Three seconds of white before each section, one word in one of our colors. Placeholders for Noah to write." })]),
+      el("div", null, [el("h4", { text: "Speaker chips" }), el("div", { class: "cl-frame", style: "background:#f2f2f4" }, [spk("Daeun"), el("div", { class: "cl-chip", style: "bottom:14cqw" }, [el("i", { style: "background:" + ((B.speakers || {}).Noah || "#d23c2a") }), "Noah"])]), el("p", { class: "s", text: "Only the square and the name, bottom left, while someone speaks. The colors are drafts." })]),
+      el("div", null, [el("h4", { text: "The subtitle bar" }), el("div", { class: "cl-frame", style: "background:#f2f2f4" }, [el("div", { class: "cl-subs", text: firstLine ? textOf(firstLine) : "" })]), el("p", { class: "s", text: "Until the voiceover is in; Download subtitles on the script page gives a first .srt." })]),
+      el("div", null, [el("h4", { text: "Thanks and credits" }), el("div", { class: "cl-frame" }, [el("div", { class: "cl-stmt", style: "font-size:6cqw", text: S.thanks || "" })]), el("p", { class: "s", text: "Noah's thanks on white, then the credits roll: JVD, the pictures, the research, friends and supporters." })])
+    ]);
+
+    // Notes on each clip, kept in this browser and handed to Claude like the other notes
+    var NK = "palit-video-clip-notes", notes = {};
+    try { notes = JSON.parse(localStorage.getItem(NK) || "{}") || {}; } catch (e) {}
+    function notesText() { var out = []; S.sections.forEach(function (x, i) { var t = (notes[x.id] || "").trim(); if (t) out.push((i + 1) + ". " + x.title + ": " + t); }); return out.length ? "Notes on the video's clips:\n" + out.join("\n") : ""; }
+    var countEl = el("span", { class: "s num" }), status = el("span", { class: "s", "aria-live": "polite" });
+    function count() { var n = Object.keys(notes).filter(function (k) { return (notes[k] || "").trim(); }).length; countEl.textContent = n ? n + (n === 1 ? " clip has notes" : " clips have notes") : "No notes yet"; }
+    function persist() { try { localStorage.setItem(NK, JSON.stringify(notes)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put("video-clips", { title: "Notes on the video's clips", text: notesText() }); count(); }
+    var copyB = el("button", { type: "button", class: "btn", text: "Copy all notes" });
+    copyB.addEventListener("click", function () { var t = notesText(); if (!t) { status.textContent = "No notes to copy yet."; return; } copyText(t, function (ok) { status.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select the notes and copy them yourself."; }); });
+    var doneB = el("button", { type: "button", class: "btn primary", text: "I'm done" });
+    doneB.addEventListener("click", function () { if (!notesText()) { status.textContent = "No notes yet."; return; } persist(); PalitHandoff.done("video-clips"); status.textContent = "Marked done. Tell Claude in chat, and Claude reads them from this page."; });
+    count();
+    var notesBar = el("div", { class: "fbbar", style: "margin-top:16px" }, [el("span", { class: "k", style: "margin:0", text: "Notes on the clips" }), countEl, el("span", { class: "grow" }), status, copyB, doneB]);
+
+    // Every clip
+    var list = el("ol", { class: "clips" });
+    S.sections.forEach(function (x, i) {
+      var lines = x.lines || [], asks = lines.filter(function (l) { return /^\[/.test(textOf(l).trim()); });
+      var stmt = x.statement ? stmtOf(x) : null, stmtOpen = stmt && /^Your line about/.test(stmt.text);
+      var state = x.part === "filmed" ? ["To film", false] : (asks.length || stmtOpen) ? ["Lines to write", false] : ["Ready to record", true];
+      var stills = SHOTS[x.id] || [];
+      var stillRow = el("div", { class: "clip-stills" }, stills.length ? stills.map(function (s2) {
+        var img = el("img", { src: s2.file, alt: s2.label, loading: "lazy", width: "960", height: "540" }), media = el("div", { class: "cl-media" }, [img]);
+        var a = el("a", { href: s2.href.indexOf("video/") === 0 ? "../" + s2.href.replace(/&t=[0-9.]+/, "&play") : "../" + s2.href, target: "_blank", rel: "noopener", title: "Open: " + s2.label }, [media, el("span", { text: s2.label })]);
+        // A moving preview plays while you point at the still, or while it has the keyboard's focus (entry 214)
+        if (s2.preview) {
+          var vid = null;
+          var playIt = function () {
+            if (!vid) { vid = document.createElement("video"); vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("aria-hidden", "true"); vid.src = s2.preview; media.appendChild(vid); }
+            try { vid.currentTime = 0; } catch (e) {}
+            var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {});
+            media.classList.add("moving");
+          };
+          var stopIt = function () { if (vid) vid.pause(); media.classList.remove("moving"); };
+          a.addEventListener("mouseenter", playIt); a.addEventListener("focus", playIt);
+          a.addEventListener("mouseleave", stopIt); a.addEventListener("blur", stopIt);
+        }
+        return a;
+      }) : [el("div", null, [el("div", { class: "tofilm", text: x.part === "filmed" ? "To film, October 19" : "No stills yet" }), el("span", { text: x.scene && x.scene.label ? x.scene.label : x.title })])]);
+      var said = lines.length ? el("ol", { class: "clip-said" }, lines.map(function (l) {
+        var w = whoOf(l), t = textOf(l);
+        return el("li", null, [el("span", { class: "who" }, [el("i", { style: "background:" + ((B.speakers || {})[w] || "#1d1d1f") }), w]), el("span", { class: "at num", text: typeof l.start === "number" ? ms(l.start) : typeof l.at === "number" ? ms(l.at) : "" }), el("span", { class: /^\[/.test(t.trim()) ? "ask" : null, text: t })]);
+      })) : el("p", { class: "s", text: "No voiceover: the picture and the music carry it." });
+      var house = S.music ? musicText(x, "music") : null, calm = S.calm ? musicText(x, "calm") : null;
+      var edits = [];
+      if (x.statement) edits.push(el("li", null, [link(stmtOpen ? "Write the statement and color its word" : "The statement and its word", "../video/index.html#" + x.id)]));
+      if (lines.length) edits.push(el("li", null, [link("The lines, and who says each", "../video/index.html#" + x.id)]));
+      asks.forEach(function (l) { edits.push(el("li", null, ["Waiting for you: " + textOf(l)])); });
+      if (S.music) edits.push(el("li", null, [openLink("The music's runs (the video workshop)", "../workshop/video.html#music")]));
+      if (x.viz) edits.push(el("li", null, [openLink("The chart's words and timing (viz.html; Claude edits)", "../video/viz.html?scene=" + x.viz + "&play")]));
+      if (x.part === "desktop" && x.scene && x.scene.href) edits.push(el("li", null, [openLink("What v3 does, step by step (Claude edits)", "../video/" + x.scene.href)]));
+      if (x.part === "filmed") edits.push(el("li", null, ["Film it in the archive room (you and Daeun)"]));
+      if (x.id === "credits") edits.push(el("li", null, ["Name your friends and supporters (tell Claude, or edit credits in script.js)"]));
+      var nta = el("textarea", { class: "fbta", placeholder: "What should change in this clip?", "aria-label": "Notes on " + x.title });
+      nta.value = notes[x.id] || "";
+      var has = !!nta.value.trim(), nsum = el("summary", { text: has ? "Notes, written" : "Notes" });
+      var nd = el("details", { class: "more fb" + (has ? " has" : ""), open: has ? "" : null }, [nsum, nta]);
+      nta.addEventListener("input", function () { if (nta.value.trim()) notes[x.id] = nta.value; else delete notes[x.id]; persist(); var h = !!nta.value.trim(); nsum.textContent = h ? "Notes, written" : "Notes"; nd.classList.toggle("has", h); });
+      list.appendChild(el("li", { class: "clip", id: "clip-" + x.id }, [
+        el("div", { class: "clip-head" }, [
+          el("span", { class: "n num", text: ("0" + (i + 1)).slice(-2) + "  " + ms(x.start) + " to " + ms(x.start + x.seconds) + ", " + x.seconds + " seconds" }),
+          el("h3", { text: x.title }),
+          el("span", { class: "chip", text: PART[x.part] || x.part }),
+          el("span", { class: "grow" }),
+          el("span", { class: "st" + (state[1] ? " ready" : ""), text: state[0] }),
+          openLink("Play it", "../video/player.html#" + x.id, "chip")
+        ]),
+        stillRow,
+        el("div", { class: "clip-body" }, [
+          el("div", null, [
+            stmt ? el("div", null, [el("span", { class: "k", text: "Opens on, for " + stmt.seconds + " seconds" + (stmtOpen ? " (a placeholder)" : "") }), stmtNode(x)]) : null,
+            el("div", null, [el("span", { class: "k", text: "On screen" }), el("p", { class: "t", text: x.screen })]),
+            (x.text || []).length ? el("div", null, [el("span", { class: "k", text: "Cards and words on screen" }), el("ul", { class: "clip-cards" }, x.text.map(function (t) { return el("li", { text: t }); }))]) : null,
+            (x.suggestions || []).length ? el("div", null, [el("span", { class: "k", text: "Claude's suggestions, for you to pick" }), el("ul", { class: "clip-cards" }, x.suggestions.map(function (g) { return el("li", null, [g.title + ". ", el("span", { class: "s", text: g.how })]); }))]) : null,
+            x.note ? el("p", { class: "s", text: x.note }) : null
+          ]),
+          el("div", null, [
+            el("div", null, [el("span", { class: "k", text: "Said" }), said]),
+            (x.research || []).length ? el("div", null, [el("span", { class: "k", text: "Research it brings in" }), el("ul", { class: "clip-res" }, x.research.map(function (r) { return el("li", null, [el("span", { class: "kind", text: KIND[r.kind] || r.kind }), r.label]); }))]) : null,
+            el("div", null, [el("span", { class: "k", text: "Music" }), el("p", { class: "t", text: [house ? "House: " + house : null, calm ? "Calm: " + calm : null].filter(Boolean).join(". ") || "None" })]),
+            el("div", null, [el("span", { class: "k", text: "To edit" }), el("ul", { class: "clip-edit" }, edits)]),
+            (x.refs || []).length ? entryChips(x.refs) : null
+          ])
+        ]),
+        el("div", { class: "clip-notes" }, [nd])
+      ]));
+    });
+    view.appendChild(sec("video-clips", "The cut, clip by clip", "The video as it stands, " + ms(total) + " in " + S.sections.length + " clips: what each shows, the statement that opens it, what's said, the cards on screen, the research it brings in, the music under it, and what's left to edit. Click a still to open it; point at one to see it move. Play it starts the player there. Lines and statements are edited on the script page.", [
+      el("div", { class: "well pad" }, [bar, line("music"), line("calm", "calm"), legend]),
+      overlays, notesBar, list
+    ], [openLink("Notes, screen by screen", "../workshop/video.html#moments", "btn"), openLink("The script", "../video/index.html", "btn"), openLink("The player", "../video/player.html", "btn")]));
+  }
+
   function renderVideo(view) {
     var blocks = V.blocks || [];
     var total = blocks.reduce(function (s, b) { return s + b.seconds; }, 0);
     var product = blocks.filter(function (b) { return b.part === "product"; }).reduce(function (s, b) { return s + b.seconds; }, 0);
     var pct = function (x) { return total ? Math.round(x / total * 100) : 0; };
     view.appendChild(head("Video", mmss(total) + " planned against a " + mmss(V.target || 420) + " target: " + pct(product) + "% problem, product and demo, " + pct(total - product) + "% process.", [
-      ["The story", "#video/story"], ["Storyboards", "#video/storyboards"], ["Deep dives", "#video/dives"], ["Speaker chips", "#video/speakers"], ["Blocks", "#video/blocks"], ["From Naheel", "#video/naheel"], ["From the brief", "#video/rules"]
+      ["The cut", "#video/clips"], ["The story", "#video/story"], ["Storyboards", "#video/storyboards"], ["Deep dives", "#video/dives"], ["Speaker chips", "#video/speakers"], ["Blocks", "#video/blocks"], ["From Naheel", "#video/naheel"], ["From the brief", "#video/rules"]
     ]));
+
+    renderClips(view);
 
     var bar = el("div", { class: "vbar", role: "list", "aria-label": "Video timeline" });
     var t = 0;
@@ -1379,6 +1595,7 @@
           facts([
             ["Ideas", (b.ideas || []).length ? bullets(b.ideas) : null],
             ["Needs", bullets(b.needs)],
+            ["Real screens", b.reels || null],
             ["Open", (b.links || []).length ? el("span", { class: "links" }, b.links.map(function (l) { return link(l.label, l.href); })) : null],
             ["Could use", tagged.length ? entryLinks(tagged) : null]
           ])

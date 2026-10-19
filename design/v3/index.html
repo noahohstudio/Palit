@@ -317,7 +317,6 @@
   .sp-chip { position: absolute; left: 50%; top: 48%; width: 46%; transform: translate(-50%, -50%); background: var(--paper); padding: 8px 8px 0; box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26); }
   .sp-chip .sw { width: auto; height: auto; aspect-ratio: 1 / 1.05; box-shadow: none; }
   .sp-chip .lb { display: flex; justify-content: space-between; font-size: 11px; padding: 7px 2px 8px; }
-  .sp-cap { position: absolute; left: 16px; right: 16px; bottom: 14px; font-size: 11px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); }
   .sp-form { display: flex; flex-direction: column; min-width: 0; padding: 24px 28px 20px; }
   .sp-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--ink-2); }
   .sp-x { border: 0; background: none; font-size: 18px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 2px; }
@@ -380,6 +379,7 @@
   .c-seg button, .c-btn { border: 0; background: none; color: #e5e5ea; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
   .c-seg button[aria-pressed="true"] { background: #48484a; }
   .c-btn { background: #2c2c2e; }
+  .c-sel { border: 0; background: #2c2c2e; color: #e5e5ea; padding: 4px 8px; border-radius: 6px; font: inherit; font-size: 12px; cursor: pointer; }
   .c-btn:hover, .c-seg button:hover { background: #3a3a3c; }
   .c-hint { color: #8e8e93; }
   .c-hint b { color: #e5e5ea; font-weight: 400; }
@@ -443,6 +443,8 @@
   .pw.polished .t { transition: flex-grow var(--move) var(--ease); animation: fadeIn var(--move) var(--ease) both; }
   .pw.polished .strip .t { animation: none; }
   .pw.polished .fan-card { transition: transform var(--move) var(--ease), opacity var(--move) var(--ease); }
+  /* The fan turns a frame at a time (Noah, October 19), so its cards take no transitions of their own */
+  .fan .fan-card, .pw.polished .fan .fan-card { transition: none; will-change: transform; }
   .pw.polished .sheet { animation: fadeIn var(--move) var(--ease) both; }
   .pw.polished .sheet.out { animation: fadeOut var(--move) var(--ease) both; }
   .pw.polished .toast, .pw.polished .selpill { animation: fadeIn var(--move) var(--ease) both; }
@@ -475,7 +477,20 @@
   .pw.polished .sp-top, .pw.polished .trail, .pw.polished .trail button { font-size: 11px; }
   .pw.polished .sp-x { font-size: 17px; color: var(--ink-2); }
   .pw.polished .sp-nm { font-size: 50px; }
-  .pw.polished .sp-rows { font-size: 13px; grid-template-columns: 96px minmax(0, 1fr); }
+  .pw.polished .sp-rows { font-size: 13px; grid-template-columns: 96px minmax(0, 1fr); --gut: 12px; }
+  /* A strip beside a label (Noah, October 19): as tall as the label's capitals and sitting on its baseline, it runs to the
+     card's edge, or to the middle of the value column when it holds one color. A palette's strip takes the right half,
+     and Similar's squares are cap height on their line's baseline too. */
+  .pw.polished .sp-rows .here { display: inline-flex; vertical-align: baseline; width: 100%; max-width: none; height: 1cap; }
+  .pw.polished .sp-rows .here.one { width: calc((100% - var(--gut)) / 2); }
+  .pw.polished .sp-rows .here button:hover { position: relative; z-index: 1; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #1d1d1f; }
+  .pw.polished .sp-pal { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--gut); align-items: first baseline; }
+  .pw.polished .sp-pal .sp-strip { height: 1cap; }
+  .pw.polished .sim button { grid-template-columns: 1cap minmax(0, 1fr); align-items: first baseline; }
+  .pw.polished .sim i { width: 1cap; height: 1cap; }
+  /* The scratch pad says things about a color, so it takes 11, on rules 18px apart */
+  .pw.polished .pad textarea { height: 54px; font-size: 11px; line-height: 18px; background: repeating-linear-gradient(transparent 0 17px, var(--rule-soft) 17px 18px); }
+  .pw.polished .pad textarea::placeholder { color: var(--ink-2); }
   .pw.polished .sc-names div { font-size: 13px; }
   .pw.polished .sc-foot .tt { font-size: 26px; }
 
@@ -518,6 +533,40 @@
   .fan-cap .nm:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
   .fan-cap .nm:hover { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.06); }
   .fan-cap .nm:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+
+  /* Pointing at a color (entry 170): it widens a little and shows its number, top left, and nothing else. The old hover
+     never reached the rows, since .row .t set flex-grow after it; these rules are specific enough to win. */
+  .t .tno { position: absolute; left: 10px; top: 8px; font-size: 11px; line-height: 1; opacity: 0; pointer-events: none; }
+  .pw.polished .t .tno { transition: opacity var(--move) var(--ease); }
+  .pw.polished .t:hover .tno, .pw.polished .t:focus-visible .tno, .pw.polished .t.phover .tno { opacity: 0.72; }
+  /* The width comes from hoverGrow(): 6% over the color's own width in every row. Here, the old hover's grow stays off. */
+  .pw.polished .t { transition: flex-grow var(--move) var(--ease), max-width var(--move) var(--ease); }
+  .pw.polished .row .t:hover, .pw.polished .row .t:focus-visible, .pw.polished .t.phover { flex-grow: 1; }
+
+  /* The desktop palette, detachable (entry 171): drag it off the edge and it floats where you leave it, above the window,
+     every color showing; drop it near either edge and it docks there. The grip shows when you point at the palette. */
+  .strips { touch-action: none; }
+  .strips .grip { align-self: center; width: 14px; height: 3px; margin: 0 0 4px; border-radius: 2px; background: rgba(0, 0, 0, 0.24); cursor: grab; opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); }
+  .strips:hover .grip, .strips.float .grip, .strips.dragging .grip, .strips.open .grip { opacity: 1; }
+  .strips.left { right: auto; left: 0; border-radius: 0 10px 10px 0; }
+  .strips.float { right: auto; transform: none; z-index: 30; border-radius: 10px; }
+  .strips.float button { width: 26px; }
+  .strips.dragging { cursor: grabbing; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); }
+  .strips.dragging button, .strips.dragging .grip { cursor: grabbing; }
+
+  /* The new logo, when it's in (entry 173): as a shape filled with the last color you kept, or as it is */
+  .mbi .mark.shaped { width: 16px; height: 16px; box-shadow: none; -webkit-mask: var(--mark-url) center / contain no-repeat; mask: var(--mark-url) center / contain no-repeat; }
+  .mbi .mark.image { width: 16px; height: 16px; box-shadow: none; background: var(--mark-url) center / contain no-repeat; }
+
+  .pw.polished .pg .cs > div { transition: flex-grow var(--move) var(--ease), max-width var(--move) var(--ease); }
+
+  .pw.polished .t, .pw.polished .pg .cs > div { transition: flex-grow var(--move) var(--ease), max-width var(--move) var(--ease), width var(--move) var(--ease); }
+
+  /* The demo's labels (the script's on-screen text): one quiet line at the top of the desk, under the menu bar */
+  /* The playback's label (the personas, entry 216) sits top left, clear of v3's own centered pills */
+  .plabel { position: absolute; left: 28px; top: 40px; z-index: 96; padding: 8px 18px; background: rgba(255, 255, 255, 0.96); border-radius: 9px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); font-size: 22px; letter-spacing: -0.01em; color: #1d1d1f; opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); pointer-events: none; }
+  .plabel.on { opacity: 1; }
+  .mbi.phover { background: rgba(0, 0, 0, 0.1); }
 </style>
 </head>
 <body>
@@ -546,7 +595,7 @@
 
 <div id="controls">
   <div class="c-row">
-    <span class="c-lb">Screen</span><span class="c-seg" id="c-screen"></span>
+    <label class="c-lb" for="c-screen">Screen</label><select class="c-sel" id="c-screen"></select>
     <span class="c-lb">Sound</span><span class="c-seg" id="c-sound"></span>
     <button type="button" class="c-btn" id="c-play">Play<kbd>P</kbd></button>
     <button type="button" class="c-btn" id="c-keys" aria-pressed="true">Keystrokes<kbd>K</kbd></button>
@@ -558,6 +607,7 @@
 
 <script src="../system/sample.js"></script>
 <script src="archive.js"></script>
+<script src="../brand/brand.js"></script>
 <script src="../system/color.js"></script>
 <script src="../system/components.js"></script>
 <script src="../v2/screens/screens.js"></script>
@@ -626,15 +676,20 @@
   function sound() { var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
 
   /* ---------- The real screens ---------- */
-  var stage = $("stage"), desk = $("desk"), canvases = {};
+  var stage = $("stage"), desk = $("desk"), canvases = {}, loading = {};
+  // A desk is decoded the first time it's needed (seeded desks at startup, the rest when shown), once, however many ask
   function canvasFor(sc, done) {
     if (canvases[sc.id]) { done(canvases[sc.id]); return; }
+    if (loading[sc.id]) { loading[sc.id].push(done); return; }
+    loading[sc.id] = [done];
     var img = new Image();
     img.onload = function () {
       // Colors are read from a 1440 x 900 canvas; crops come from the full image, so they stay sharp.
       var c = document.createElement("canvas"); c.width = W; c.height = H;
       var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, W, H);
-      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W }; done(canvases[sc.id]);
+      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W };
+      var waiting = loading[sc.id]; delete loading[sc.id];
+      waiting.forEach(function (f) { f(canvases[sc.id]); });
     };
     img.src = sc.data || "../v2/screens/" + sc.file;
   }
@@ -643,6 +698,39 @@
     var r = 90, c = document.createElement("canvas"); c.width = 360; c.height = 360;
     c.getContext("2d").drawImage(cv.img, (x - r) * cv.k, (y - r) * cv.k, 2 * r * cv.k, 2 * r * cv.k, 0, 0, 360, 360);
     try { return c.toDataURL("image/jpeg", 0.86); } catch (e) { return null; }
+  }
+  /* The card's sample from the original photo, when there is one (entry 201): the same framing as the desk's crop, cut from
+     the full-resolution photo instead of the 2x desk. Each original's full rect on its desk, in desk points, was measured
+     against the desk's own pixels; clip is the part you can see and pick. The originals are in ../v2/screens/sources/. */
+  var PHOTOS = {
+    crocoite: { src: "../v2/screens/sources/crocoite-original.jpg", x: 604, y: 234.5, w: 664, h: 449.24, clip: [604, 234.5, 664, 449] },
+    brownstone: { src: "../v2/screens/sources/brownstone-original.jpg", x: 604, y: 234.5, w: 664, h: 548.12, clip: [604, 234.5, 664, 548] },
+    wave: { src: "../v2/screens/sources/wave-original.jpg", x: 480.52, y: 315.44, w: 1119.2, h: 752.32, clip: [640, 410.5, 640, 400] },
+    yellowstone: { src: "../v2/screens/sources/yellowstone-original.jpg", x: 150, y: 100.5, w: 1110, h: 740, clip: [150, 100.5, 1110, 740] },
+    majorelle: { src: "../v2/screens/sources/majorelle-original.jpg", x: 36, y: 368.4, w: 640.2, h: 425.2, clip: [36, 368.5, 640, 425] }
+  }, photoImgs = {};
+  function photoFor(c) {
+    var p = PHOTOS[c.screen]; if (!p || typeof c.x !== "number") return null;
+    var k = p.clip; return c.x >= k[0] && c.y >= k[1] && c.x < k[0] + k[2] && c.y < k[1] + k[3] ? p : null;
+  }
+  // Calls done with a JPEG of the sample at the original's resolution (up to 1600px square), or never if there's no original
+  function hiCrop(c, done) {
+    var p = photoFor(c); if (!p) return;
+    function cut(img) {
+      var s = img.naturalWidth / p.w, r = Math.min(90 * s, img.naturalWidth / 2, img.naturalHeight / 2);
+      var cx = Math.max(r, Math.min(img.naturalWidth - r, (c.x - p.x) * s)), cy = Math.max(r, Math.min(img.naturalHeight - r, (c.y - p.y) * s));
+      var size = Math.min(1600, Math.round(2 * r)), out = document.createElement("canvas"); out.width = size; out.height = size;
+      out.getContext("2d").drawImage(img, cx - r, cy - r, 2 * r, 2 * r, 0, 0, size, size);
+      try { done(out.toDataURL("image/jpeg", 0.9)); } catch (e) {}
+    }
+    var rec = photoImgs[p.src];
+    if (rec && rec.img) { cut(rec.img); return; }
+    if (rec) { if (!rec.failed) rec.wait.push(cut); return; }
+    rec = photoImgs[p.src] = { img: null, wait: [cut], failed: false };
+    var img = new Image();
+    img.onload = function () { rec.img = img; rec.wait.forEach(function (f) { f(img); }); rec.wait = []; };
+    img.onerror = function () { rec.failed = true; rec.wait = []; };   // off the public site: the desk's crop stays
+    img.src = p.src;
   }
   function sourceOf(sc, x, y) {
     var r = sc.regions.filter(function (g) { return x >= g.x && y >= g.y && x < g.x + g.w && y < g.y + g.h; })[0];
@@ -653,7 +741,7 @@
   // selected: the colors gathered with ⇧-click, by number (entry 116).
   // view: days, palettes or table. all: Days shows every color by hue (the fan). zoom: one of four stops. open: days opened out.
   // q: search. study: the palette opened as a study. week: the week the weekday column shows. fresh: the first open, before any color.
-  var st = { screen: 0, sound: "felt", view: "days", band: null, all: false, zoom: 1, open: {}, q: "", study: null, week: null, fresh: false, selected: [], picking: false, run: null, deskPal: null };
+  var st = { screen: 0, sound: "wood", view: "days", band: null, all: false, zoom: 1, open: {}, q: "", study: null, week: null, fresh: false, selected: [], picking: false, run: null, deskPal: null };
   /* v3's switches (entry 156). The first value of each is v2 as merged on October 18; v3's own settings are Noah's picks
      from the v3 workshop (entry 157), with the polish on (A97). ?cfg=shell:native,letters:bar (and so on) or
      PalitV3.set() still switches any piece, so the workshop and the process story can show what came before. */
@@ -685,6 +773,52 @@
   var EARLIER = (window.PALIT_V3_EARLIER || {}).captures || [], SAMPLE_NO = {};
   function sn(orig) { return SAMPLE_NO[orig] || orig; }
   function tn(i) { return colors.filter(function (c) { return !c.screen; }).length + i; }
+  /* A longtime archive (D25): about 2,400 colors over four years, made up on purpose and the same every time.
+     Each hunt keeps a few related colors from one place, the way a real day of looking would. */
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function oklchHex(L, C, h) {
+    for (var c = C; c >= 0; c -= 0.005) {
+      var a = c * Math.cos(h * Math.PI / 180), b = c * Math.sin(h * Math.PI / 180);
+      var l_ = L + 0.3963377774 * a + 0.2158037573 * b, m_ = L - 0.1055613458 * a - 0.0638541728 * b, s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+      var l = l_ * l_ * l_, m = m_ * m_ * m_, ss = s_ * s_ * s_;
+      var rgb = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * ss, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * ss, -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * ss];
+      if (rgb.every(function (v) { return v >= -0.0005 && v <= 1.0005; })) return "#" + rgb.map(function (v) { v = Math.max(0, Math.min(1, v)); v = v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055; return ("0" + Math.round(v * 255).toString(16)).slice(-2); }).join("");
+    }
+    return "#808080";
+  }
+  function longArchive() {
+    var r = rng(1814), out = [], day = new Date(2022, 10, 7), end = new Date(2026, 9, 18), img = 300;
+    var PLACES = ["Flea market", "Botanical garden", "Beach at dusk", "Museum, gallery 4", "Subway platform", "Bodega awning", "Ceramics studio", "Tile shop", "Rooftop at sunset", "Bookshop", "Laundromat", "Fruit stand", "Paint store", "Textile market", "Park in the fall", "Snowy street", "Harbor", "Diner booth", "Record store", "Garden center", "Night market", "Bike shop", "Hardware store", "Train window"];
+    var TOPICS = ["Swiss posters", "Bauhaus", "Risograph inks", "Interiors", "Film stills", "Packaging", "Ceramics", "Book covers", "Signage", "Textiles", "Album art", "Gardens"];
+    var SITES = ["are.na", "pinterest.com", "instagram.com", "cosmos.so", "vimeo.com"];
+    var WORDS = ["Harbor", "Clay", "Signal", "Moss", "Dusk", "Ink", "Pollen", "Brick", "Fern", "Ochre", "Slate", "Coral", "Mint", "Plum", "Sand", "Rust", "Tide", "Wheat", "Ember", "Lichen"], MODS = ["Late", "Wet", "Old", "Pale", "Deep", "Winter", "Faded", "Bright"];
+    while (day < end) {
+      day = new Date(day.getTime() + (1 + Math.floor(r() * r() * 9)) * 86400000);
+      if (day >= end) break;
+      var k = r() < 0.12 ? 7 + Math.floor(r() * 9) : 1 + Math.floor(r() * 4), kind = r(), src, type;
+      if (kind < 0.5) { type = "Photos"; img += 1 + Math.floor(r() * 30); src = "IMG_" + img + " — " + PLACES[Math.floor(r() * PLACES.length)]; }
+      else if (kind < 0.82) { type = "Browser"; src = SITES[Math.floor(r() * SITES.length)] + " — " + TOPICS[Math.floor(r() * TOPICS.length)]; }
+      else if (kind < 0.92) { type = "PDF"; src = "references_" + (1 + Math.floor(r() * 12)) + ".pdf — p. " + (1 + Math.floor(r() * 80)); }
+      else { type = "Figma"; src = ["Brand refresh", "Editorial", "Packaging", "Portfolio"][Math.floor(r() * 4)] + " — " + ["Cover", "Spread", "Poster", "Grid"][Math.floor(r() * 4)]; }
+      var hue = r() * 360, lb = 0.35 + r() * 0.45, cb = 0.03 + r() * 0.15;
+      for (var i = 0; i < k; i++) {
+        var h = (hue + (r() - 0.5) * 60 + 360) % 360, L = Math.max(0.2, Math.min(0.95, lb + (r() - 0.5) * 0.4)), C = r() < 0.15 ? r() * 0.03 : Math.max(0, cb + (r() - 0.5) * 0.08);
+        var hex = oklchHex(L, C, h), at = new Date(day.getTime() + (9 * 60 + Math.floor(r() * 600) + i) * 60000);
+        out.push({ hex: hex, name: r() < 0.25 ? MODS[Math.floor(r() * MODS.length)] + " " + WORDS[Math.floor(r() * WORDS.length)].toLowerCase() : null, sourceType: type, source: src, capturedAt: at.toISOString(), neighbors: [oklchHex(Math.max(0.1, L - 0.15), C, h), oklchHex(Math.min(0.97, L + 0.12), C * 0.7, h), oklchHex(0.92, 0.01, h), oklchHex(L, C * 0.6, (h + 30) % 360), oklchHex(Math.min(0.97, L + 0.12), C * 0.7, h), oklchHex(0.92, 0.01, h), oklchHex(Math.max(0.1, L - 0.15), C, h), oklchHex(L, C * 0.6, (h + 30) % 360)] });
+      }
+    }
+    return out;
+  }
+  // Swap in the longtime archive: every color numbered by when it was kept, a few palettes of its own
+  function useLongArchive() {
+    var all = longArchive();
+    colors = all.map(function (s, i) {
+      var from = s.sourceType === "Photos" || s.sourceType === "Figma" ? s.sourceType : U.place(s);
+      return make({ number: i + 1, hex: s.hex, name: s.name, placeholder: PC.placeholder(s.hex, from), app: s.sourceType, place: U.place(s), src: U.sourceTitle(s), day: U.day(s.capturedAt), at: s.capturedAt, neighbors: s.neighbors });
+    });
+    next = colors.length + 1; palettes = []; placed = []; st.deskPal = null; st.fresh = false;
+    drawStrips();
+  }
   function seedSample() {
     var all = S.captures.map(function (s) { return { s: s, orig: s.number }; }).concat(EARLIER.map(function (s) { return { s: s, orig: null }; }));
     all.sort(function (a, b) { return new Date(a.s.capturedAt) - new Date(b.s.capturedAt); });
@@ -716,9 +850,9 @@
   function clampX(x) { return Math.max(1, Math.min(W - 2, x)); }
   function clampY(y) { return Math.max(1, Math.min(H - 2, y)); }
   function seedToday(done) {
-    var left = SCREENS.length;
+    var seeded = SCREENS.filter(function (sc) { return sc.seeds && sc.seeds.length; }), left = seeded.length;
     if (!left) { done(); return; }
-    SCREENS.forEach(function (sc) {
+    seeded.forEach(function (sc) {
       canvasFor(sc, function (cv) {
         var runs = {};
         sc.seeds.forEach(function (sd) {
@@ -755,13 +889,19 @@
   // The menu bar's square shows the last color you kept (entry 160)
   function drawMark() {
     var c = colors.reduce(function (a, b) { return !a || b.number > a.number ? b : a; }, null), m = $("mbi");
-    $("mark").style.setProperty("--mk", c ? c.hex : "transparent");
+    // Daeun's logo, once it's in design/brand/brand.js (entry 173): a shape filled with the last color, or the logo as it is
+    var B = window.PALIT_BRAND || {}, mk = $("mark");
+    mk.classList.toggle("shaped", !!B.markUrl && B.markMode !== "image");
+    mk.classList.toggle("image", !!B.markUrl && B.markMode === "image");
+    if (B.markUrl) mk.style.setProperty("--mark-url", "url(\"" + B.markUrl + "\")");
+    $("mark").style.setProperty("--mk", c ? c.hex : B.markUrl && B.markMode !== "image" ? "#c7c7cc" : "transparent");
     m.setAttribute("aria-label", c ? "Palit. Last kept: " + label(c) : "Palit. Nothing kept yet");
     m.title = c ? "Palit: " + title(c) : "Palit";
   }
   function drawStrips(landed) {
     drawMark();
     strips.textContent = "";
+    strips.appendChild(el("div", { class: "grip", title: "Drag to move the palette; drop it at an edge to dock it", "aria-hidden": "true" }));
     if (st.deskPal) strips.appendChild(el("div", { class: "pinmark", title: "Pinned: " + palName(palById(st.deskPal)) }));
     deskColors().forEach(function (c) {
       var b = el("button", { type: "button", style: vars(c), "aria-label": "Copy " + label(c) + (st.deskPal ? ", from the pinned palette" : "") });
@@ -770,11 +910,48 @@
       strips.appendChild(b);
     });
   }
+  /* Detach (entry 171): drag the palette off the edge and it floats; drop it within 60px of an edge and it docks there.
+     A drag only starts after 6px, so a click on a strip still copies its color. Double-click the grip to dock it right. */
+  var deskAt = { side: "right" }, drag = null, swallowClick = false;
+  function placeStrips() {
+    strips.classList.toggle("left", deskAt.side === "left");
+    strips.classList.toggle("float", !deskAt.side);
+    strips.style.left = deskAt.side ? "" : deskAt.x + "px";
+    strips.style.top = deskAt.side ? "" : deskAt.y + "px";
+  }
+  strips.addEventListener("pointerdown", function (e) {
+    if (e.button !== 0 || st.picking || play.on) return;
+    var p = toStage(e), r = rectIn(strips);
+    drag = { x0: p.x, y0: p.y, dx: p.x - r.x, dy: p.y - r.y, moved: false, id: e.pointerId };
+  });
+  document.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    var p = toStage(e);
+    if (!drag.moved && Math.hypot(p.x - drag.x0, p.y - drag.y0) < 6) return;
+    if (!drag.moved) { drag.moved = true; strips.classList.add("dragging"); try { strips.setPointerCapture(drag.id); } catch (err) {} }
+    var w = strips.offsetWidth, h = strips.offsetHeight;
+    deskAt = { x: clamp(p.x - drag.dx, 0, W - w), y: clamp(p.y - drag.dy, 26, H - h) };
+    placeStrips();
+  });
+  document.addEventListener("pointerup", function (e) {
+    if (!drag) return;
+    var d = drag; drag = null;
+    if (!d.moved) return;
+    strips.classList.remove("dragging");
+    swallowClick = true; setTimeout(function () { swallowClick = false; }, 0);
+    var p = toStage(e);
+    if (p.x < 60) deskAt = { side: "left" }; else if (p.x > W - 60) deskAt = { side: "right" };
+    placeStrips();
+  });
+  strips.addEventListener("click", function (e) { if (swallowClick) { e.stopPropagation(); e.preventDefault(); } }, true);
+  strips.addEventListener("dblclick", function (e) { if (e.target.classList.contains("grip")) { deskAt = { side: "right" }; placeStrips(); } });
   function copyColor(c, e, from) {
     var rgb = PC.displayRgb(c.hex), text = e && e.altKey ? "rgb(" + rgb.split(" ").join(", ") + ")" : e && (e.metaKey || e.ctrlKey) ? "oklch(" + PC.displayOklch(c.hex) + ")" : c.hex;
     copy(text);
     var r = from.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
-    note("Copied " + text, (r.left - s.left) / k - 12, (r.top - s.top) / k + 2, true);
+    // The note sits on the open side: to the right of the palette when it's docked at the left edge
+    if (deskAt.side === "left" || (!deskAt.side && (r.left - s.left) / k < 200)) note("Copied " + text, (r.right - s.left) / k + 12, (r.top - s.top) / k + 2, false);
+    else note("Copied " + text, (r.left - s.left) / k - 12, (r.top - s.top) / k + 2, true);
   }
   var noteEl = null, noteT = null;
   function note(text, x, y, rightAlign) {
@@ -951,7 +1128,7 @@
   // One type scale (A97): 11, 13, 17 and 26, so a view's own sizes map onto it
   function ts(n) { return CFG.polish !== "on" ? n : n >= 14 ? 17 : 13; }
   function setZoom(z) {
-    z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return; st.zoom = z; render(true);
+    z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return; st.zoom = z; morph(function () { render(true); });
     if (CFG.zoom === "plain" && rowOn()) { rowSay([el("span", { text: Z[z].label })], 1300); return; }
     if (CFG.zoom === "plain") {
       if (znameEl) znameEl.remove();
@@ -960,6 +1137,86 @@
       $("pw").appendChild(znameEl);
       var mine = znameEl; setTimeout(function () { if (mine.parentNode) mine.remove(); }, 1400);
     }
+  }
+  /* The zoom morphs (Noah, October 19): each color slides and grows from where it was to where it lands, the dates ease to
+     their new size, and what a stop adds (places, numbers, the photos you found them in) fades in as the colors settle.
+     It's FLIP: measure everything, draw the new stop, then play each piece back from its old box to its new one, on v3's
+     one ease. Opening a day out morphs the same way. Your place stays put: the first day in sight stays where it was. */
+  var MORPH_EASE = "cubic-bezier(.2, .8, .2, 1)";
+  function morph(change) {
+    var body = $("body"), playing = !!(play && play.on);
+    if (CFG.polish !== "on" || $("pw").hidden || !body.firstElementChild || calm() || (playing && SPEED > 1) || typeof body.animate !== "function") { change(); return; }
+    var ms = 460 * (playing ? LOCAL : 1), k = scaleK(), vr = body.getBoundingClientRect(), slack = 160 * k;
+    function seen(r) { return r.width > 0 && r.bottom > vr.top - slack && r.top < vr.bottom + slack; }
+    // What each piece is, so the same color, date or place can be found again after the redraw
+    function pieces(root) {
+      var out = {}, seenW = {};
+      root.querySelectorAll(".t[data-n]").forEach(function (t) { out["t" + t.getAttribute("data-n")] = { el: t, kind: "tile" }; });
+      root.querySelectorAll(".day").forEach(function (d) {
+        var day = d.getAttribute("data-day"), h = d.querySelector(".dh");
+        if (!h) return;
+        if (h.children[0]) out["b" + day] = { el: h.children[0], kind: "text" };
+        if (h.querySelector("span")) out["s" + day] = { el: h.querySelector("span"), kind: "move" };
+        d.querySelectorAll(".pg > .w, .hunt > .st, .hunt > .src").forEach(function (w) {
+          var src = w.classList.contains("src"), key = (src ? "p" : "w") + day + "|" + (src ? w.parentNode.querySelector(".st .w") : w.querySelector("b, .w") || w).textContent;
+          seenW[key] = (seenW[key] || 0) + 1;
+          out[key + "|" + seenW[key]] = { el: w, kind: src ? "photo" : "move" };
+        });
+      });
+      return out;
+    }
+    var before = pieces(body), was = {};
+    Object.keys(before).forEach(function (key) { var r = before[key].el.getBoundingClientRect(); if (seen(r)) was[key] = r; });
+    // The first day in sight, and how far down the window it sits
+    var anchor = null;
+    Array.prototype.some.call(body.querySelectorAll(".day"), function (d) { var r = d.getBoundingClientRect(); if (r.bottom > vr.top + 2) { anchor = { day: d.getAttribute("data-day"), y: r.top - vr.top }; return true; } return false; });
+    // The photos that won't be there after: a copy stays where each was and fades away
+    var ghosts = [];
+    Object.keys(before).forEach(function (key) { if (before[key].kind === "photo" && was[key]) ghosts.push({ key: key, node: before[key].el.cloneNode(true), r: was[key] }); });
+    change();
+    if (anchor && body.scrollTop > 0) {
+      var nd = body.querySelector('.day[data-day="' + anchor.day + '"]');
+      if (nd) body.scrollTop += nd.getBoundingClientRect().top - vr.top - anchor.y;
+    }
+    var after = pieces(body), root = body.firstElementChild;
+    root.style.animation = "none";   // no fade for the whole view: the colors carry it
+    function late(node, at) {   // waits, then fades in as the colors land
+      var op = getComputedStyle(node).opacity;
+      node.animate([{ opacity: 0 }, { opacity: 0, offset: at }, { opacity: op }], { duration: ms, easing: "linear" });
+    }
+    Object.keys(after).forEach(function (key) {
+      var p = after[key], o = was[key], node = p.el, r = node.getBoundingClientRect();
+      if (!o && !seen(r)) return;
+      if (p.kind === "tile") node.style.animation = "none";
+      if (!o) {   // new at this stop
+        if (p.kind === "photo") node.animate([{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "none" }], { duration: ms, easing: MORPH_EASE, delay: ms * 0.25, fill: "backwards" });
+        else late(node, 0.45);
+        return;
+      }
+      var dx, dy, sx = 1, sy = 1, origin = "0 0";
+      if (p.kind === "tile") {
+        dx = (o.left + o.width / 2 - r.left - r.width / 2) / k; dy = (o.top + o.height / 2 - r.top - r.height / 2) / k;
+        sx = r.width ? o.width / r.width : 1; sy = r.height ? o.height / r.height : 1; origin = "50% 50%";
+      } else {
+        dx = (o.left - r.left) / k; dy = (o.top - r.top) / k;
+        if (p.kind === "text" && r.height) sx = sy = o.height / r.height;
+      }
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && Math.abs(sx - 1) < 0.005 && Math.abs(sy - 1) < 0.005) return;
+      node.animate([{ transform: "translate(" + dx.toFixed(2) + "px," + dy.toFixed(2) + "px) scale(" + sx.toFixed(4) + "," + sy.toFixed(4) + ")", transformOrigin: origin }, { transform: "none", transformOrigin: origin }], { duration: ms, easing: MORPH_EASE });
+      // A color's name and pin would stretch with it, so they wait and fade in as it lands
+      if (p.kind === "tile" && (Math.abs(sx - 1) > 0.02 || Math.abs(sy - 1) > 0.02)) node.querySelectorAll(".nm, .pin").forEach(function (x) { late(x, 0.6); });
+    });
+    // What else a stop adds: the numbers under the colors, the chevrons, what's said about a hunt
+    body.querySelectorAll(".pls .lbl, .dh i, .hunt .st .v, .empty").forEach(function (x) { if (seen(x.getBoundingClientRect())) late(x, 0.5); });
+    var br = body.getBoundingClientRect();
+    ghosts.forEach(function (g) {
+      if (after[g.key]) return;
+      var n = g.node;
+      n.style.cssText += ";position:absolute;margin:0;pointer-events:none;z-index:3;animation:none;left:" + ((g.r.left - br.left) / k) + "px;top:" + ((g.r.top - br.top) / k + body.scrollTop) + "px;width:" + (g.r.width / k) + "px;height:" + (g.r.height / k) + "px";
+      body.appendChild(n);
+      var a = n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms * 0.5, easing: MORPH_EASE, fill: "forwards" });
+      a.onfinish = function () { n.remove(); };
+    });
   }
   function zoomKey(d) {
     if (!d) { setZoom(ZOOM_HOME); return; }
@@ -1027,7 +1284,7 @@
     var n = "", list = shown();
     if (st.fresh) n = "0 colors";
     else if (st.q.trim()) n = "";
-    else if (st.view === "days") n = (st.band ? list.length + " of " : "") + colors.length + (colors.length === 1 ? " color" : " colors") + (CFG.count === "plain" ? "" : st.all ? ", by hue" : ", " + Z[st.zoom].label.toLowerCase());
+    else if (st.view === "days") n = (st.band ? list.length.toLocaleString("en-US") + " of " : "") + colors.length.toLocaleString("en-US") + (colors.length === 1 ? " color" : " colors") + (CFG.count === "plain" ? "" : st.all ? ", by hue" : ", " + Z[st.zoom].label.toLowerCase());
     else if (st.view === "palettes") n = st.study ? "" : palettes.length + (palettes.length === 1 ? " palette" : " palettes");
     if (CFG.count === "off") n = "";
     $("count").textContent = n; $("count").hidden = !n;
@@ -1115,10 +1372,76 @@
   }
   function tile(c, o) {
     o = o || {};
-    var b = el("button", { type: "button", class: "t" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + (o.style ? ";" + o.style : ""), "aria-label": label(c) + (c.pinned ? ", pinned" : "") + ", " + whereOf(c) }, [o.noName ? null : nameSpan(c, o.short), c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null]);
+    var b = el("button", { type: "button", class: "t" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + (o.style ? ";" + o.style : ""), "aria-label": label(c) + (c.pinned ? ", pinned" : "") + ", " + whereOf(c) }, [o.noName ? null : nameSpan(c, o.short), o.noName ? null : el("span", { class: "tno num", "aria-hidden": "true", text: no(c.number) }), c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null]);
     b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c, o.trail || defaultTrail(c)); });
+    b.addEventListener("mouseenter", function () { hoverGrow(b, true); });
+    b.addEventListener("mouseleave", function () { hoverGrow(b, false); });
+    b.addEventListener("focus", function () { if (b.matches(":focus-visible")) hoverGrow(b, true); });
+    b.addEventListener("blur", function () { hoverGrow(b, false); });
     b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
     return b;
+  }
+  /* Pointing at a color widens it about 6% (entry 170), and its neighbors give a little. While you're in a line of colors,
+     every color in it takes an explicit width, measured while nothing was hovered, so moving straight from one color to
+     the next eases them all to their new widths with nothing jumping (Noah, October 19). Leaving eases them back, then
+     lets go. At the "And where" stop each color sits in a wrapper with its number under it, so the wrapper is what grows. */
+  var hoverLine = null, lastLine = null, hoverOut = null;
+  function growBox(b) {
+    var p = b.parentElement;
+    if (p && p.parentElement && p.parentElement.classList.contains("cs") && p.parentElement.parentElement && p.parentElement.parentElement.classList.contains("pg")) return p;
+    return b;
+  }
+  function lineOf(g) {
+    var par = g.parentElement, top = g.offsetTop;
+    var tiles = Array.prototype.filter.call(par.children, function (k) { return k.offsetTop === top && (k.classList.contains("t") || k.querySelector(".t")); });
+    var gap = parseFloat(getComputedStyle(par).columnGap) || 0;
+    // Layout widths, unscaled and to the fraction, so letting go lands exactly where it started
+    return { par: par, tiles: tiles, base: tiles.map(function (k) { return parseFloat(getComputedStyle(k).width); }), avail: parseFloat(getComputedStyle(par).width) - gap * (tiles.length - 1) };
+  }
+  function scaleK() { var r = stage.getBoundingClientRect(); return r.width / W || 1; }
+  function growLine(line, h) {
+    // Into line mode without moving anything (a width set by the layout can't be eased from), then ease to the new widths
+    if (!line.on) {
+      line.tiles.forEach(function (t, i) { t.style.transition = "none"; t.style.flex = "0 0 auto"; t.style.maxWidth = "none"; t.style.width = line.base[i] + "px"; });
+      void line.par.offsetWidth;
+      line.tiles.forEach(function (t) { t.style.transition = "width var(--move) var(--ease)"; });
+      line.on = true;
+    }
+    var sum = line.base.reduce(function (a, w) { return a + w; }, 0), extra = line.base[h] * 0.06;
+    var give = Math.max(0, sum + extra - line.avail), others = sum - line.base[h];
+    var ws = line.base.map(function (w, i) { return i === h ? w : Math.floor((w - (others ? give * w / others : 0)) * 10) / 10; });
+    ws[h] = Math.min(line.base[h] + extra, line.avail - ws.reduce(function (a, w, i) { return i === h ? a : a + w; }, 0) - 0.5);
+    line.tiles.forEach(function (t, i) { t.style.flex = "0 0 auto"; t.style.maxWidth = "none"; t.style.width = ws[i] + "px"; });
+  }
+  function releaseLine(line) {
+    line.tiles.forEach(function (t, i) { t.style.width = line.base[i] + "px"; });
+    lastLine = line;
+    clearTimeout(line.t);
+    line.t = setTimeout(function () {
+      if (hoverLine === line) return;
+      line.tiles.forEach(function (t) { t.style.transition = "none"; t.style.flex = ""; t.style.maxWidth = ""; t.style.width = ""; });
+      void line.par.offsetWidth;
+      line.tiles.forEach(function (t) { t.style.transition = ""; });
+      line.on = false;
+      if (lastLine === line) lastLine = null;
+    }, 260);
+  }
+  function hoverGrow(b, on) {
+    if (CFG.polish !== "on") return;
+    var g = growBox(b);
+    if (!on) {
+      clearTimeout(hoverOut);
+      hoverOut = setTimeout(function () { if (hoverLine) { var l = hoverLine; hoverLine = null; releaseLine(l); } }, 60);
+      return;
+    }
+    clearTimeout(hoverOut);
+    if (getComputedStyle(g.parentElement).display.indexOf("flex") < 0) return;   // in a grid (search results), only the number shows
+    if (!hoverLine || hoverLine.tiles.indexOf(g) < 0) {
+      if (hoverLine) releaseLine(hoverLine);
+      hoverLine = lastLine && lastLine.tiles.indexOf(g) >= 0 && document.contains(g) ? lastLine : lineOf(g);
+      clearTimeout(hoverLine.t);
+    }
+    growLine(hoverLine, hoverLine.tiles.indexOf(g));
   }
   function source(c, size) {
     var s = size ? "width:" + size + "px;height:" + size + "px" : null;
@@ -1172,7 +1495,7 @@
         compact ? null : el("span", { class: "num", text: g.list.length + (g.list.length === 1 ? " color" : " colors") + " from " + places.length + (places.length === 1 ? " place" : " places") }),
         el("i", { "aria-hidden": "true" })
       ]);
-      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; render(true); });
+      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; morph(function () { render(true); }); });
       var content, today = g.day === TODAY;
       if (open) {
         content = el("div", { style: "--hh:" + (today && z.mode === "hunt" ? 124 : (z.hh || 96)) + "px" }, places.map(function (p) {
@@ -1202,7 +1525,14 @@
   }
 
   /* ---------- All colors, by hue: the fan, folded into Days behind the ring (A74, A81, A91) ---------- */
-  var fanPos = null;
+  /* It turns the way a hand turns it (Noah, October 19): where it's drawn is a fraction of a card, eased a frame at a time
+     toward where the trackpad, the wheel, the arrow keys or a click sent it, and it comes to rest on a card. While it turns
+     fast it lies flat; as it slows, the card it stops on rises its 124px. The playback turns it the same way (fanTurn). */
+  var fanPos = null, fanCtl = null;
+  var reduceMQ = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  // Reduced motion, for a real user: no morphs, and the fan follows your hand without easing. The playback is recorded, so it always moves.
+  function calm() { return !!(reduceMQ && reduceMQ.matches) && !(play && play.on); }
+  function smooth01(x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); }
   function fanView() {
     var list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
     var f = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "All your colors, by hue. Scroll or use the arrow keys to turn it." });
@@ -1224,29 +1554,92 @@
     // neutrals, red comes round again. Fewer than that, and it keeps its ends. A card crossing the seam is out of sight.
     var STEP = 12, n = list.length, loop = n * STEP >= 360;
     if (loop) f.setAttribute("aria-label", "All your colors, by hue, all the way around. Scroll or use the arrow keys to turn it.");
-    function rel(i) { var d = i - pos; if (loop) { d = ((d % n) + n) % n; if (d > n / 2) d -= n; } return d; }
-    function turn(dir) { pos = loop ? (pos + dir + n) % n : clamp(pos + dir, 0, n - 1); place(); }
+    function wrap(i) { return loop ? ((i % n) + n) % n : i; }
+    function bound(v) { return loop ? v : clamp(v, 0, n - 1); }
+    function rel(i, from) { var d = i - from; if (loop) { d = ((d % n) + n) % n; if (d > n / 2) d -= n; } return d; }
+    // Where it's drawn (a fraction, unwrapped when it loops), where it's heading, how fast it turns (cards a second, smoothed),
+    // how much of the lift shows (0 to 1), and whether the playback has it in hand
+    var at = pos, aim = pos, speed = 0, lift = 1, held = false, lastT = 0, lit = [], raf = 0;
     var cards = list.map(function (c, i) {
-      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c), role: "img", "aria-label": label(c) }, [el("span", { class: "fno num", "aria-hidden": "true", text: pad(c.number) })]);
-      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (i === pos) openCard(c, defaultTrail(c)); else { pos = i; place(); } });
-      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (i !== pos) { pos = i; place(); } colorMenu(c, toStage(e)); });
+      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + ";display:none", role: "img", "aria-label": label(c) }, [el("span", { class: "fno num", "aria-hidden": "true", text: pad(c.number) })]);
+      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (i === pos) openCard(c, defaultTrail(c)); else turnTo(i); });
+      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (i !== pos) turnTo(i); colorMenu(c, toStage(e)); });
       f.appendChild(d); return d;
     });
-    function place() {
+    function caption() {
       fanPos = pos;
-      cards.forEach(function (d, i) { var r = rel(i), a = r * STEP; d.style.transform = "rotate(" + a + "deg)" + (i === pos ? " translateY(-124px)" : ""); d.style.opacity = Math.abs(a) > 80 ? "0" : "1"; d.style.zIndex = String(200 - Math.abs(r)); });
       var c = list[pos];
       if (document.activeElement === nm) nm.blur();
       nm.textContent = c.name || ""; nm.setAttribute("data-placeholder", c.placeholder); nm.className = "nm" + (c.name ? "" : " ph");
       mt.textContent = whereOf(c) + ", " + dayLabel(c);
     }
-    var acc = 0;
-    f.addEventListener("wheel", function (e) { e.preventDefault(); acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (Math.abs(acc) < 34) return; var dir = acc > 0 ? 1 : -1; acc = 0; turn(dir); }, { passive: false });
+    // Only the cards in sight are drawn (seven either side); the rest wait out of the way, so even 1,802 turn smoothly
+    function draw() {
+      var c0 = Math.round(at), now = [];
+      for (var k = -7; k <= 7; k++) { var i = wrap(c0 + k); if (i >= 0 && i < n && now.indexOf(i) < 0) now.push(i); }
+      lit.forEach(function (i) { if (now.indexOf(i) < 0) cards[i].style.display = "none"; });
+      now.forEach(function (i) {
+        var d = rel(i, at), a = d * STEP, up = 124 * lift * smooth01(1 - Math.abs(d)), s = cards[i].style;
+        s.display = "";
+        s.transform = "rotate(" + a.toFixed(3) + "deg) translateY(" + (-up).toFixed(2) + "px)";
+        s.opacity = String(clamp((86 - Math.abs(a)) / 10, 0, 1));
+        s.zIndex = String(290 - Math.round(Math.abs(d) * 20));
+      });
+      lit = now;
+      var p = bound(wrap(c0));
+      if (p !== pos) { pos = p; caption(); }
+    }
+    // One frame: ease toward where it's heading (or go where the playback puts it), then let the lift follow the speed
+    function advance(now, x) {
+      var dt = lastT ? clamp(now - lastT, 1, 64) : 16, prev = at; lastT = now;
+      if (x !== undefined) at = aim = x;
+      else if (calm()) at = aim;
+      else { at += (aim - at) * (1 - Math.exp(-dt / 90)); if (Math.abs(aim - at) < 0.001) at = aim; }
+      speed += (Math.abs(at - prev) * 1000 / dt - speed) * (1 - Math.exp(-dt / 70));
+      var want = calm() ? 1 : 1 - smooth01((speed - 1.5) / 2.5);   // lifted below 1.5 cards a second, flat above 4
+      lift += (want - lift) * (1 - Math.exp(-dt / 110)); if (Math.abs(want - lift) < 0.002) lift = want;
+      draw();
+    }
+    function kick() { if (!raf && !held) raf = requestAnimationFrame(frame); }
+    function frame(now) {
+      raf = 0;
+      if (held || !f.isConnected) { lastT = 0; return; }
+      advance(now);
+      if (at !== aim || lift !== 1 || speed > 0.01) raf = requestAnimationFrame(frame); else { lastT = 0; speed = 0; }
+    }
+    function turnTo(i) { if (held) return; aim = bound(aim + rel(i, aim)); kick(); }   // the short way round
+    // The wheel and the trackpad: every bit of scrolling moves it, and when you stop it comes to rest on a card, the nearest,
+    // leaning the way it was going, and at least one card on from where you started
+    var rest = 0, dir = 0, from0 = null;
+    f.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      if (held) return;
+      var dl = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (e.deltaMode === 1) dl *= 16; else if (e.deltaMode === 2) dl *= 320;
+      if (!dl) return;
+      if (from0 === null) from0 = Math.round(aim);
+      dir = dl > 0 ? 1 : -1;
+      aim = bound(aim + clamp(dl / 48, -1, 1));   // a wheel's click is a card at most
+      kick();
+      clearTimeout(rest);
+      rest = setTimeout(function () {
+        var s = Math.round(aim + dir * 0.2);
+        if (s === from0 && Math.abs(aim - from0) > 0.05) s = from0 + dir;
+        aim = bound(s); from0 = null; kick();
+      }, 140);
+    }, { passive: false });
     f.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); turn(e.key === "ArrowRight" ? 1 : -1); }
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); if (held) return; aim = bound(Math.round(aim) + (e.key === "ArrowRight" ? 1 : -1)); kick(); }
       if (e.key === "Enter") openCard(list[pos], defaultTrail(list[pos]));
     });
-    place();
+    // For the playback: which card it rests on (unwrapped), take it in hand or let go, and put it somewhere this frame
+    fanCtl = {
+      el: f,
+      at: function () { return Math.round(aim); },
+      hold: function (on) { held = !!on; if (held) { cancelAnimationFrame(raf); raf = 0; } else { aim = bound(Math.round(at)); kick(); } },
+      set: function (x, now, jump) { x = bound(x); if (jump) { at = aim = x; speed = 0; lift = 1; lastT = 0; draw(); return; } advance(now || performance.now(), x); }
+    };
+    caption(); draw();
     // The arrow keys turn it right away, but only when Palit is its own page: in the dashboard's frames, taking focus scrolls the page around it
     if (window.self === window.top) setTimeout(function () { f.focus({ preventScroll: true }); }, 0);
     return f;
@@ -1627,7 +2020,8 @@
     closeSheet();
     trail = trail || defaultTrail(c);
     var nextTrail = trail.concat([{ label: title(c), go: function () { openCard(c, trail); } }]);
-    var src = c.crop ? el("img", { class: "crop", src: c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
+    // Where you found it: the crop, or the eight samples around the color. Neither has a caption (Noah, entry 188)
+    var src = c.crop ? el("img", { class: "crop", src: c.cropHi || c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
     var name = el("p", { class: "sp-nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", "data-placeholder": c.placeholder, spellcheck: "false" });
     name.textContent = c.name || "";
     name.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); name.blur(); } });
@@ -1656,7 +2050,7 @@
     sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: (CFG.similar === "short" ? "" : title(o) + ", ") + whereOf(o) + ", " + dayLabel(o) })]); b.addEventListener("click", function () { openCard(o, nextTrail); }); simBox.appendChild(b); });
     row("Similar", simBox);
     var sameHere = colors.filter(function (o) { return o !== c && keyOf(o) === keyOf(c); });
-    if (sameHere.length && CFG.also !== "off") row("Also from here", el("span", { class: "here" }, sameHere.map(function (o) { var b = el("button", { type: "button", style: "--c:" + o.hex, title: title(o), "aria-label": label(o) }); b.addEventListener("click", function () { openCard(o, nextTrail); }); return b; })));
+    if (sameHere.length && CFG.also !== "off") row("Also from here", el("span", { class: sameHere.length === 1 ? "here one" : "here" }, sameHere.map(function (o) { var b = el("button", { type: "button", style: "--c:" + o.hex, title: title(o), "aria-label": label(o) }); b.addEventListener("click", function () { openCard(o, nextTrail); }); return b; })));
     // Every palette it's in, each with its colors (entry 116); the row hides until there's one.
     var palDt = el("dt"), palDd = el("dd");
     dl.appendChild(palDt); dl.appendChild(palDd);
@@ -1681,12 +2075,12 @@
     padArea.value = c.note || "";
     padArea.addEventListener("input", function () { c.note = padArea.value; });
     padArea.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    if (c.crop && !c.cropHi) hiCrop(c, function (url) { c.cropHi = url; if (src.isConnected || src.tagName === "IMG") src.src = url; });
     var x = el("button", { type: "button", class: "sp-x", "aria-label": "Close", text: "×" });
     x.addEventListener("click", function () { closeSheet(true); });
     var card = el("div", { class: "spec", role: "dialog", "aria-label": title(c) }, [
       el("div", { class: "sp-src" }, [src,
-        el("div", { class: "sp-chip" }, [el("div", { class: "sw", style: "background:" + c.hex }), el("p", { class: "lb num" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })])]),
-        el("p", { class: "sp-cap", text: c.crop ? "Where you found it" : "The eight samples around it" })]),
+        el("div", { class: "sp-chip" }, [el("div", { class: "sw", style: "background:" + c.hex }), el("p", { class: "lb num" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })])])]),
       el("div", { class: "sp-form" }, [
         el("div", { class: "sp-top" }, [trailRow(trail, c), x]),
         name,
@@ -1741,15 +2135,14 @@
   function showScreen(i) {
     st.screen = i; var sc = screen();
     desk.src = sc.data || "../v2/screens/" + sc.file;
+    canvasFor(sc, function () {});
     var m = $("mbi"); m.style.left = (sc.icon[0] + 7) + "px"; m.style.top = sc.icon[1] + "px";
     $("c-credit").textContent = sc.credit || ""; $("c-credit").title = sc.credit || "";
-    Array.prototype.forEach.call($("c-screen").children, function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
+    $("c-screen").value = String(i);
   }
-  SCREENS.forEach(function (sc, i) {
-    var b = el("button", { type: "button", "aria-pressed": "false", text: sc.label });
-    b.addEventListener("click", function () { showScreen(i); });
-    $("c-screen").appendChild(b);
-  });
+  // Ten desks don't fit as buttons, so the screen is a menu
+  SCREENS.forEach(function (sc, i) { $("c-screen").appendChild(el("option", { value: String(i), text: sc.label })); });
+  $("c-screen").addEventListener("change", function () { showScreen(Number($("c-screen").value)); });
   Object.keys(SOUNDS).forEach(function (k) {
     var b = el("button", { type: "button", "aria-pressed": String(k === st.sound), text: SOUNDS[k].label });
     b.addEventListener("click", function () { st.sound = k; Array.prototype.forEach.call($("c-sound").children, function (x) { x.setAttribute("aria-pressed", String(x === b)); }); sound(); });
@@ -1787,7 +2180,7 @@
 
   function start(done) {
     closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
-    strips.classList.remove("open");
+    strips.classList.remove("open"); deskAt = { side: "right" }; placeStrips();
     st.view = "days"; st.band = null; st.all = false; st.zoom = ZOOM_HOME; st.open = {}; st.q = ""; st.study = null; st.week = null; st.fresh = false; st.deskPal = null; st.selected = []; fanPos = null; curDay = null;
     placed = []; tableNames = false; $("q").value = ""; hideHuntPill();
     if (toastEl) { toastEl.remove(); toastEl = null; }
@@ -1798,13 +2191,15 @@
      where, hunt, zoom-out, zoom-in, all (or spectrum), palettes (or pins, shared, collections), study, table, search, menu,
      card (&n=), share; add &band=R (or O Y G B I V) to filter by a letter, and &menu=1 with card to open its Add to palette. */
   function scene(name) {
-    var sd = screen().seeds[0];
+    var sc0 = screen(), sd = sc0.seeds[0] || (sc0.spots || [])[0] || { x: W / 2, y: H / 2 };
+    if (/^(naming|picking|landed)$/.test(name) && !canvases[sc0.id]) { canvasFor(sc0, function () { scene(name); }); return; }
     if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
     if (name === "naming") { var c0 = pick(sd.x, sd.y, {}); nameBeside(c0, sd.x, sd.y, true); namer.querySelector("input").value = "Crocoite"; return; }
     if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
     if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
     if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }
     if (name === "first") { goFresh(); return; }
+    if (name === "longtime") { useLongArchive(); st.view = "days"; st.all = true; fanPos = null; openWindow(); return; }
     var stops = { "days": ZOOM_HOME, "compact": 0, "zoom-out": 0, "where": 2, "hunt": 3, "zoom-in": 3 };
     if (name in stops) { st.view = "days"; st.zoom = stops[name]; openWindow(); return; }
     if (name === "all" || name === "spectrum") { st.view = "days"; st.all = true; openWindow(); return; }
@@ -1843,18 +2238,39 @@
   var pcur = el("div", { class: "pcursor", "aria-hidden": "true", hidden: "" });
   pcur.innerHTML = '<svg width="22" height="30" viewBox="0 0 22 30"><path d="M3 3 L3 24 L8.4 18.6 L12.2 27.2 L15.9 25.6 L12.2 17.2 L19.4 17.2 Z" fill="#111" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
   var pkeys = el("div", { class: "pkeys", "aria-hidden": "true" });
-  stage.appendChild(pcur); stage.appendChild(pkeys);
+  var plabel = el("div", { class: "plabel", "aria-hidden": "true" });
+  stage.appendChild(pcur); stage.appendChild(pkeys); stage.appendChild(plabel);
+  function showLabel(t) { if (t) plabel.textContent = t; plabel.classList.toggle("on", !!t); }
   if (q.get("keys") === "0") toggleKeys();
   function closeShare() { closeSheet(); }
   function stopped(tok) { return tok !== play.token; }
   // ?speed=10 plays it ten times faster, with glides as jumps: for checking the whole run quickly, not for recording
   var SPEED = Math.max(1, Number(q.get("speed")) || 1);
-  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms / SPEED)); }); }
-  function until(sec, tok) { return sleep((play.t0 + sec * 1000 / SPEED - performance.now()) * SPEED, tok); }
+  // ?beats=6:5.81,13:11.26,... (authored:new, in seconds): the video's player times each beat to its spoken line (entry 205).
+  // until() waits for a beat's new time, and the steps inside a beat run at that beat's pace (LOCAL), so the picture keeps up
+  // with the voice however the script's lines grow or shrink.
+  var BEATS = (q.get("beats") || "").split(",").map(function (p) { var x = p.split(":").map(Number); return x.length === 2 && isFinite(x[0]) && isFinite(x[1]) ? x : null; }).filter(Boolean).sort(function (a, b) { return a[0] - b[0]; });
+  if (BEATS.length && BEATS[0][0] > 0) BEATS.unshift([0, 0]);
+  function beatAt(sec) {
+    if (!BEATS.length) return sec;
+    for (var i = 0; i < BEATS.length - 1; i++) if (sec <= BEATS[i + 1][0]) { var d = BEATS[i + 1][0] - BEATS[i][0]; return d > 0 ? BEATS[i][1] + (sec - BEATS[i][0]) * (BEATS[i + 1][1] - BEATS[i][1]) / d : BEATS[i + 1][1]; }
+    var l = BEATS[BEATS.length - 1]; return l[1] + (sec - l[0]);
+  }
+  var LOCAL = 1;
+  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms * LOCAL / SPEED)); }); }
+  function until(sec, tok) {
+    if (BEATS.length) {
+      var next = BEATS.filter(function (b) { return b[0] > sec + 0.01; })[0];
+      // as slow as half speed for a long line, as fast as about three times for a moment whose line was deleted
+      LOCAL = next ? Math.max(0.3, Math.min(2, (beatAt(next[0]) - beatAt(sec)) / (next[0] - sec))) : 1;
+    }
+    var wait = play.t0 + beatAt(sec) * 1000 / SPEED - performance.now();
+    return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, wait)); });
+  }
   function setCur(x, y) { play.pos = { x: x, y: y }; pcur.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; if (st.picking) moveLoupe(x, y); }
   function glide(x, y, ms, tok) {
     if (SPEED > 1) return sleep(ms, tok).then(function () { setCur(x, y); });
-    var from = play.pos, t0 = performance.now();
+    var from = play.pos, t0 = performance.now(); ms = Math.max(1, ms * LOCAL);   // a glide keeps its beat's pace too
     return new Promise(function (res, rej) {
       function step(now) {
         if (stopped(tok)) { rej("stopped"); return; }
@@ -1863,6 +2279,54 @@
         if (k < 1) requestAnimationFrame(step); else res();
       }
       requestAnimationFrame(step);
+    });
+  }
+  // How far along a hand's movement is at u (0 to 1) of its time: it speeds up over the first a, keeps its pace, and slows
+  // to a stop over the last b, with no jolt at either end. Used for the fan's turns and the window's scrolls (Noah, October 19).
+  function cruise(u, a, b) {
+    if (a + b > 1) { var t = a + b; a /= t; b /= t; }
+    if (u <= 0) return 0; if (u >= 1) return 1;
+    var s;
+    if (u < a) { var x = u / a; s = a * (x * x * x - x * x * x * x / 2); }
+    else if (u <= 1 - b) s = a / 2 + (u - a);
+    else { var y = (u - (1 - b)) / b; s = a / 2 + (1 - a - b) + b * (y - (y * y * y - y * y * y * y / 2)); }
+    return s / (1 - (a + b) / 2);
+  }
+  // Turns the fan `by` cards over `ms` real milliseconds, the way a hand on a trackpad would, and rests it on a card.
+  // At ?speed=10 it jumps there when the time's up, the way glides do.
+  function fanTurn(by, ms, tok, a, b) {
+    return new Promise(function (res, rej) {
+      var F0 = fanCtl, t0 = performance.now(), from = F0 ? F0.at() : 0;
+      if (!F0 || !F0.el.isConnected || !by || SPEED > 1) {
+        setTimeout(function () { if (stopped(tok)) { rej("stopped"); return; } var F = fanCtl; if (F0 && by && F && F.el.isConnected) F.set(from + by, 0, true); res(); }, Math.max(0, ms));
+        return;
+      }
+      F0.hold(true);
+      function frame(now) {
+        var F = fanCtl;
+        if (F !== F0) { if (F) F.hold(true); F0 = F; }   // drawn again mid-turn: keep turning the new one
+        if (stopped(tok)) { if (F) F.hold(false); rej("stopped"); return; }
+        var k = clamp((now - t0) / ms, 0, 1);
+        if (F && F.el.isConnected) F.set(from + by * cruise(k, a, b), now);
+        if (k < 1) requestAnimationFrame(frame); else { if (F) F.hold(false); res(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  // Scrolls the window by `by` pixels over `ms` at the beat's pace, like a trackpad: it gets going, glides, and slows to a stop
+  function scrollBody(by, ms, tok) {
+    var b = $("body"), from = b.scrollTop;
+    if (SPEED > 1) return sleep(ms, tok).then(function () { b.scrollTop = from + by; });
+    ms = Math.max(1, ms * LOCAL);
+    var t0 = performance.now();
+    return new Promise(function (res, rej) {
+      function frame(now) {
+        if (stopped(tok)) { rej("stopped"); return; }
+        var k = clamp((now - t0) / ms, 0, 1);
+        b.scrollTop = from + by * cruise(k, 0.25, 0.5);
+        if (k < 1) requestAnimationFrame(frame); else res();
+      }
+      requestAnimationFrame(frame);
     });
   }
   function centerOf(node) { var r = node.getBoundingClientRect(), sr = stage.getBoundingClientRect(), k = sr.width / W; return { x: (r.left - sr.left + r.width / 2) / k, y: (r.top - sr.top + r.height / 2) / k }; }
@@ -1879,14 +2343,28 @@
     node.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: s.left + play.pos.x * k, clientY: s.top + play.pos.y * k }));
   }
   async function menuPick(node, ms, tok) { await goTo(node, ms, tok); if (node) node.classList.add("phover"); await sleep(200, tok); press(); if (node) node.click(); }
+  // Drags the desktop palette off the edge with the drawn cursor, as a pointer would (A105)
+  async function dragStrips(x, y, ms, tok) {
+    var r0 = rectIn(strips), from = { x: play.pos.x, y: play.pos.y }, dx = from.x - r0.x, dy = from.y - r0.y, t0 = performance.now();
+    press(); strips.classList.add("dragging");
+    while (true) {
+      var k = Math.min(1, (performance.now() - t0) / (ms * LOCAL / SPEED)), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      var px = from.x + (x - from.x) * e, py = from.y + (y - from.y) * e;
+      setCur(px, py);
+      deskAt = { x: Math.round(px - dx), y: Math.round(py - dy) }; placeStrips();
+      if (k >= 1) break;
+      await sleep(16, tok);
+    }
+    strips.classList.remove("dragging");
+  }
   function byText(sel, text) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return n.textContent === text; })[0]; }
   function q1(sel) { return stage.querySelector(sel); }
   function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
   function stopPlay() {
     if (!play.on) return;
     play.token++; play.on = false;
-    document.body.classList.remove("playing"); showKeys([]); pcur.hidden = true;
-    stage.querySelectorAll(".t.phover").forEach(function (t) { t.classList.remove("phover"); });
+    document.body.classList.remove("playing"); showKeys([]); showLabel(null); $("mbi").classList.remove("phover"); pcur.hidden = true;
+    stage.querySelectorAll(".t.phover").forEach(function (t) { t.classList.remove("phover"); hoverGrow(t, false); });
     $("c-play").firstChild.textContent = "Play";
   }
   async function runPlay() {
@@ -1900,127 +2378,212 @@
       setCur(1190, 720); pcur.hidden = false;
       play.t0 = performance.now();
       var croc = byNo(tn(1));   // Hyacinth red, the first color kept from the crocoite photo today
+      var mb = $("mbi");
+      // The demo follows the video script's 90 seconds (design/video/script.js, entry 173): each beat starts on its line's time
 
-      // 1. A real desktop (0:00 to 0:06)
-      await sleep(1300, tok); await glide(1000, 560, 2800, tok);
+      // 1. Palit lives in the menu bar, as a square of the last color you kept (0:00)
+      await sleep(600, tok); await goTo(mb, 2000, tok); mb.classList.add("phover");
+      await sleep(1800, tok); mb.classList.remove("phover"); await glide(1000, 560, 1300, tok);
 
-      // 2. One keystroke, real pixels (0:06 to 0:13)
+      // 2. One shortcut, and the loupe reads the color under it (0:06)
       await until(6, tok);
       showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
-      await sleep(900, tok); showKeys([]);
-      await glide(900, 380, 1700, tok); await glide(840, 470, 1500, tok); await glide(819, 452, 1100, tok);
+      await sleep(800, tok); showKeys([]);
+      await glide(900, 380, 1600, tok); await glide(840, 470, 1400, tok); await glide(819, 452, 1000, tok);
 
-      // 3. It lands (0:13 to 0:20)
+      // 3. Click to keep it: it lands at the edge, and the menu bar's square takes its color (0:13)
       await until(13, tok);
       showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
-      await sleep(900, tok); showKeys([]);
-      await glide(1424, 450, 1500, tok); strips.classList.add("open");
-      await sleep(2300, tok); strips.classList.remove("open"); await glide(1120, 560, 1700, tok);
+      await sleep(600, tok); showKeys([]);
+      await goTo(mb, 900, tok); mb.classList.add("phover"); await sleep(900, tok); mb.classList.remove("phover");
+      await glide(1424, 450, 1000, tok); strips.classList.add("open");
+      await sleep(1500, tok); strips.classList.remove("open"); await glide(1120, 560, 900, tok);
 
-      // 4. Name it, or keep a palette (0:20 to 0:28)
-      await until(20, tok);
+      // 4. Right-click to name it as you keep it, or hold Shift to keep a whole palette (0:19)
+      await until(19, tok);
       showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
-      await glide(1040, 548, 800, tok);
+      await glide(1040, 548, 700, tok);
       showKeys(["Right-click"]);
       var named = pick(1040, 548, {}); stopPicking(); nameBeside(named, 1040, 548, true);
       var input = namer.querySelector("input");
-      await sleep(350, tok); showKeys([]);
+      await sleep(300, tok); showKeys([]);
       await typeInto(function (v) { input.value = v; }, "Crocoite", tok);
-      await sleep(250, tok); showKeys(["Return"]);
+      await sleep(200, tok); showKeys(["Return"]);
       input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-      await sleep(600, tok);
+      await sleep(500, tok);
       showKeys(["⌥", "⇧", "C"]); startPicking();
-      await glide(880, 360, 600, tok); showKeys(["⇧", "Click"]); pick(880, 360, { more: true });
-      await glide(980, 610, 600, tok); pick(980, 610, { more: true });
-      await glide(700, 300, 600, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
-      await sleep(500, tok); showKeys([]); pcur.hidden = false;
+      await glide(880, 360, 500, tok); showKeys(["⇧", "Click"]); pick(880, 360, { more: true });
+      await glide(980, 610, 500, tok); pick(980, 610, { more: true });
+      await glide(700, 300, 500, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
+      await sleep(400, tok); showKeys([]); pcur.hidden = false;
 
       if (SPEED > 1) console.log("palit-play: shot 5");
-      // 5. Days, each with its places (0:28 to 0:38): the window opens on today, and opening the day out shows where you were (A72)
-      await until(28, tok);
-      await clickOn($("mbi"), 1100, tok);
-      await sleep(1400, tok);
+      // 5. Open Palit: Days starts with today, every place you looked and what you kept there (0:26)
+      await until(26, tok);
+      await clickOn(mb, 1000, tok);
+      await sleep(1300, tok);
       var tile = byLabel("#body .t", no(named.number));
-      await goTo(tile, 1000, tok); if (tile) tile.classList.add("phover");
-      await sleep(1700, tok); if (tile) tile.classList.remove("phover");
-      await clickOn(q1("#body .dh"), 900, tok);   // Today opens out: each place, what it looked like, the colors kept there
+      await goTo(tile, 900, tok); if (tile) { tile.classList.add("phover"); hoverGrow(tile, true); }
+      await sleep(1400, tok); if (tile) { tile.classList.remove("phover"); hoverGrow(tile, false); }
+      await clickOn(q1("#body .dh"), 800, tok);   // Today opens out: each place, what it looked like, the colors kept there
       await sleep(1500, tok);
 
-      // 6. The zoom, four stops (0:38 to 0:46): ⌘− to only color, then ⌘+ through your names and where to the whole hunt (A87)
-      await until(38, tok);
+      // 6. Zoom out for only color; zoom in, and the story comes back (0:35)
+      await until(35, tok);
       st.open = {};
-      await glide(1150, 170, 700, tok);
-      showKeys(["⌘", "−"]); zoomKey(-1); await sleep(1700, tok);
-      showKeys(["⌘", "+"]); zoomKey(1); await sleep(1200, tok);
-      zoomKey(1); await sleep(1300, tok);
-      zoomKey(1); await sleep(1300, tok); showKeys([]);
+      await glide(1150, 170, 600, tok);
+      showKeys(["⌘", "−"]); zoomKey(-1); await sleep(1500, tok);
+      showKeys(["⌘", "+"]); zoomKey(1); await sleep(1100, tok);
+      zoomKey(1); await sleep(1200, tok);
+      zoomKey(1); await sleep(1200, tok); showKeys([]);
 
-      // 7. Seven letters, underlined in ink (0:46 to 0:52)
-      await until(46, tok);
-      await clickOn(byLabel(".letters button", "Orange"), 900, tok);
-      await sleep(3000, tok);
-      await clickOn(byLabel(".letters button", "Orange"), 400, tok);
-
-      // 8. All colors, by hue (0:52 to 1:01): Spectrum, its own tab again (A93); the ring when it's switched back on
-      await until(52, tok);
+      // 7. Spectrum fans out everything you've found, by hue; click a name to change it (0:42)
+      await until(42, tok);
       var byHue = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
-      fanPos = Math.max(0, byHue.indexOf(croc) - 8);
-      await clickOn(CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel"), 900, tok);
-      await sleep(900, tok);
-      var fanEl = q1(".fan"), list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
-      var target = list.indexOf(croc), steps = target - (fanPos || 0);
-      await glide(720, 620, 700, tok); showKeys(["Scroll"]);
-      for (var i = 0; i < Math.abs(steps); i++) { fanEl.dispatchEvent(new WheelEvent("wheel", { deltaY: steps > 0 ? 40 : -40, bubbles: true, cancelable: true })); await sleep(Math.max(140, 2600 / Math.max(1, Math.abs(steps))), tok); }
-      await sleep(500, tok); showKeys([]);
-
-      // 9. The specimen card, and the trail that led to it (1:01 to 1:16)
-      await until(61, tok);
-      await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 1000, tok);
-      await sleep(2400, tok);
-      var padEl = q1(".pad textarea");
-      await goTo(padEl, 1000, tok); await sleep(300, tok);
-      await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
-      await sleep(800, tok);
-      await goTo(q1(".sim button") || padEl, 1100, tok);
-
-      // 10. Take to table, and keep what works (1:16 to 1:24): right-click two colors, Take to table, then Keep as a palette (A84, A85)
-      await until(76, tok);
-      await clickOn(q1(".sp-x"), 600, tok);
-      await sleep(300, tok);
-      if (CFG.table === "palette") {   // v3 (A93): gather two with ⇧-click, then Take 2 to table, and the table opens
-        showKeys(["⇧", "Click"]);
-        await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
-        await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos + 1], 450, tok);
-        showKeys(["Right-click"]);
-        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
-        await menuPick(q1(".menu .mi"), 500, tok);   // Take 2 to table
-        showKeys([]);
-        await sleep(700, tok);
-      } else {
-        showKeys(["Right-click"]);
-        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
-        await menuPick(q1(".menu .mi"), 400, tok);   // Take to table
-        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos + 1], 450, tok);
-        await menuPick(q1(".menu .mi"), 400, tok);
-        showKeys([]);
-        await clickOn(byText(".tabs button", "Table"), 700, tok);
-        await sleep(500, tok);
-      }
-      await clickOn(byText(".table .acts .tbtn", "Show names"), 600, tok);
-      await sleep(500, tok);
-      await clickOn(byText(".table .acts .tbtn", "Keep as a palette"), 600, tok);
-
-      if (SPEED > 1) console.log("palit-play: shot 11, " + palettes.length + " palettes, " + placed.length + " on the table");
-      // 11. The palette as a study, and a share card (1:24 to 1:35)
-      await until(84, tok);
-      await clickOn(byText(".tabs button", "Palettes"), 800, tok);
+      var renameMe = byNo(tn(2)) || croc;   // Red from the crocoite photo, still unnamed
+      fanPos = Math.max(0, byHue.indexOf(renameMe) - 4);
+      await clickOn(CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel"), 800, tok);
       await sleep(700, tok);
-      await clickOn(q1(".pal.open-able"), 800, tok);
-      await sleep(1800, tok);
-      await clickOn(byText(".study-h .acts .tbtn", "Share"), 900, tok);
-      await sleep(2200, tok);
-      await clickOn(q1(".share .acts .tbtn.ink"), 900, tok);
-      if (SPEED > 1) console.log("palit-play: done, share card for " + ((q1(".share .sc-foot .tt") || {}).textContent || "nothing"));
+      var fanEl = q1(".fan"), list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      var steps = list.indexOf(renameMe) - (fanPos || 0);
+      await glide(720, 620, 500, tok); showKeys(["Scroll"]);
+      await fanTurn(steps, 1300 * LOCAL / SPEED, tok, 0.3, 0.5);   // one smooth turn, the way a hand scrolls (Noah, October 19)
+      showKeys([]);
+      var cap = q1(".fan-cap .nm");
+      await clickOn(cap, 700, tok); cap.focus();
+      await typeInto(function (v) { cap.textContent = v; cap.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", tok);
+      showKeys(["Return"]); cap.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await sleep(400, tok); showKeys([]);
+
+      // 8. Open one: a specimen, where it came from, your name for it, and a scratch pad (0:49)
+      await until(49, tok);
+      await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 900, tok);
+      await sleep(2000, tok);
+      var padEl = q1(".pad textarea");
+      await goTo(padEl, 900, tok); await sleep(200, tok);
+      await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
+      await sleep(500, tok);
+      await goTo(q1(".sim button") || padEl, 900, tok);
+
+      // 9. Bring colors to the table, try them together, keep what works as a palette (0:58)
+      await until(58, tok);
+      await clickOn(q1(".sp-x"), 500, tok);
+      await sleep(300, tok);
+      showKeys(["⇧", "Click"]);
+      await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos], 400, tok);
+      await shiftClickOn(stage.querySelectorAll(".fan-card")[(fanPos + 1) % stage.querySelectorAll(".fan-card").length], 400, tok);
+      showKeys(["Right-click"]);
+      await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 400, tok);
+      await menuPick(q1(".menu .mi"), 400, tok);   // Take 2 to table
+      showKeys([]);
+      await sleep(600, tok);
+      await clickOn(byText(".table .acts .tbtn", "Show names"), 500, tok);
+      await sleep(400, tok);
+      await clickOn(byText(".table .acts .tbtn", "Keep as a palette"), 500, tok);
+
+      if (SPEED > 1) console.log("palit-play: shot 10, " + palettes.length + " palettes, " + placed.length + " on the table");
+      // 10. Share it with its codes, or float your palette right beside your work (1:05)
+      await until(65, tok);
+      await clickOn(byText(".tabs button", "Palettes"), 600, tok);
+      await sleep(400, tok);
+      await clickOn(q1(".pal.open-able"), 600, tok);
+      await sleep(900, tok);
+      await clickOn(byText(".study-h .acts .tbtn", "Share"), 700, tok);
+      await sleep(1600, tok);
+      await clickOn(byText(".share .acts .tbtn", "Close") || q1(".share .acts .tbtn"), 500, tok);
+      await clickOn(mb, 600, tok);   // the window closes, back to the desk
+      await sleep(300, tok);
+      var sr = rectIn(strips);
+      await glide(sr.x + sr.w / 2, sr.y + 30, 700, tok);
+      await dragStrips(1180, 330, 1200, tok);
+      await sleep(300, tok);
+
+      if (SPEED > 1) console.log("palit-play: done, the palette beside the work");
+      await until(75, tok);
+    } catch (err) {
+      if (err !== "stopped") throw err;
+      return;
+    }
+    stopPlay();
+  }
+  /* Deep dive 2, “From day one to year four” (entry 176): ?play=users plays it hands-free, timed to its lines in the video
+     script (0, 14, 34 and 62 seconds into its 95). */
+  async function runUsers() {
+    if (play.on) return;
+    var tok = ++play.token;
+    play.on = true; document.body.classList.add("playing"); $("c-play").firstChild.textContent = "Stop";
+    try {
+      if (st.screen !== 0) showScreen(0);
+      await new Promise(function (res) { start(res); });
+      if (stopped(tok)) return;
+      var mb = $("mbi");
+      setCur(1190, 720);
+      play.t0 = performance.now();
+
+      // Three people (0:00): the first of them, opening Palit for the first time
+      goFresh(); showLabel("Persona: day one"); pcur.hidden = true;
+      await sleep(2500, tok);
+
+      // Day one (0:14): one keystroke starts the first hunt, and the first color becomes No. 001
+      await until(14, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking();
+      await sleep(900, tok); showKeys([]);
+      await glide(900, 380, 1800, tok); await glide(840, 470, 1500, tok); await glide(819, 452, 1100, tok);
+      await sleep(600, tok);
+      showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
+      await sleep(900, tok); showKeys([]);
+      await goTo(mb, 1100, tok); mb.classList.add("phover");
+      await sleep(1600, tok); mb.classList.remove("phover");
+      await glide(900, 520, 1000, tok);
+
+      if (SPEED > 1) console.log("palit-users: a few weeks in");
+      // A few weeks in (0:34): a color gets your name, and a palette is pinned to the desktop
+      await until(34, tok);
+      await new Promise(function (res) { start(res); });
+      showLabel("Persona: a few weeks in"); pcur.hidden = false;
+      st.view = "days"; openWindow();
+      await sleep(900, tok);
+      var t2 = byLabel("#body .t", no(tn(2)));   // Red from the crocoite photo, still unnamed
+      await clickOn(t2, 1000, tok);
+      await sleep(1200, tok);
+      var nm = q1(".sp-nm");
+      await clickOn(nm, 700, tok); nm.focus();
+      await typeInto(function (v) { nm.textContent = v; nm.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", tok);
+      showKeys(["Return"]); nm.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await sleep(700, tok); showKeys([]);
+      await clickOn(q1(".sp-x"), 700, tok);
+      await sleep(300, tok);
+      await clickOn(byText(".tabs button", "Palettes"), 700, tok);
+      await sleep(500, tok);
+      await clickOn(q1(".pal.open-able"), 700, tok);
+      await sleep(900, tok);
+      await clickOn(byText(".study-h .acts .tbtn", "Pin to the desktop"), 800, tok);
+      await sleep(600, tok);
+      await clickOn(mb, 800, tok);   // the window closes: the desktop palette now holds the pinned palette
+      await sleep(300, tok);
+      await glide(1424, 450, 1000, tok); strips.classList.add("open");
+      await sleep(2200, tok); strips.classList.remove("open");
+      await glide(1100, 560, 900, tok);
+
+      if (SPEED > 1) console.log("palit-users: years in");
+      // Years in (1:02): 1,802 colors over four years, found again by search, and a spectrum that never ends
+      await until(62, tok);
+      useLongArchive(); showLabel("Persona: years in");
+      st.view = "days"; st.zoom = 0; st.all = false; openWindow();
+      // In the video a chart of the four years plays over the start of this beat (script.js, dive2's inserts); ?hold=7 waits under it
+      var HOLD = Number(q.get("hold")) || 0; if (HOLD) await until(62 + HOLD, tok);
+      await sleep(1500, tok);
+      await scrollBody(840, 1540, tok);   // down the compact days, the way a hand scrolls (Noah, October 19)
+      showKeys(["⌘", "F"]); openSearch(); await sleep(500, tok); showKeys([]);
+      await typeInto(function (v) { $("q").value = v; st.q = v; render(); }, "harbor", tok);
+      await sleep(2600, tok);
+      await clickOn(byText(".tabs button", "Spectrum"), 900, tok);
+      await sleep(600, tok);
+      await glide(720, 640, 700, tok); showKeys(["Scroll"]);
+      // One long, steady turn, about seven cards a second, that gets going over a second and comes to rest on a card as the
+      // line ends (93.5): it loops (A103), so it never runs out
+      var left = play.t0 + beatAt(93.5) * 1000 / SPEED - performance.now(), real = left * SPEED;
+      if (left > 0) await fanTurn(Math.max(1, Math.round(7 * Math.max(real - 1300, real * 0.4) / 1000)), left, tok, Math.min(0.33, 1000 / real), Math.min(0.5, 1600 / real));
+      showKeys([]); showLabel(null);
+      if (SPEED > 1) console.log("palit-users: done, " + colors.length + " colors");
       await until(95, tok);
     } catch (err) {
       if (err !== "stopped") throw err;
@@ -2030,8 +2593,11 @@
   }
   showScreen(Math.max(0, SCREENS.map(function (s) { return s.id; }).indexOf(q.get("screen") || "crocoite")));
   fit();
-  if (q.has("play")) setTimeout(runPlay, 900); else start();
-  window.PalitV3 = { set: function (o) { setCfg(o); if (!$("pw").hidden) render(true); else applyCfg(); return CFG; }, get: function () { return JSON.parse(JSON.stringify(CFG)); }, keys: CFG_KEYS, scene: function (n) { closeSheet(); hideHuntPill(); if (st.fresh || !colors.length) { start(function () { scene(n); }); return; } st.all = false; st.study = null; st.q = ""; $("q").value = ""; st.open = {}; st.selected = []; $("q").parentNode.classList.remove("open"); scene(n); } };
+  // ?wait loads the desk without starting the playback, so the video's player can start it on its own clock (PalitV3.play)
+  if (q.has("play") && !q.has("wait")) setTimeout(q.get("play") === "users" ? runUsers : runPlay, 900); else start();
+  // clock(): when the playback's clock started, in milliseconds since 1970, or null before it starts. The dashboard's moving
+  // previews (design/history/shots/video/previews.mjs, entry 214) line their frames up with it.
+  window.PalitV3 = { play: function () { if (!play.on) (q.get("play") === "users" ? runUsers : runPlay)(); }, clock: function () { return play.on && play.t0 ? performance.timeOrigin + play.t0 : null; }, set: function (o) { setCfg(o); if (!$("pw").hidden) render(true); else applyCfg(); return CFG; }, get: function () { return JSON.parse(JSON.stringify(CFG)); }, keys: CFG_KEYS, scene: function (n) { closeSheet(); hideHuntPill(); if (st.fresh || !colors.length) { start(function () { scene(n); }); return; } st.all = false; st.study = null; st.q = ""; $("q").value = ""; st.open = {}; st.selected = []; $("q").parentNode.classList.remove("open"); scene(n); } };
   window.PalitV2 = { play: runPlay, stop: stopPlay, playing: function () { return play.on; }, colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
 })();
 </script>

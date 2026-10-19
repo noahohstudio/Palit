@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit video player</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The video, played from the script (entry 173): a 1920 by 1080 frame with the scene, a subtle speaker chip and a
+     subtitle bar on top. Each section opens on its statement, a white screen with one word in color (entry 181), and a
+     section with a viz plays viz.html's scene on the player's clock. ?clean hides the controls for recording; #demo
+     (any section's id) or ?t=95 starts there; ?play starts playing. Everything on top is editable in the Edit panel. */
+  html, body { margin: 0; height: 100%; background: #111113; color: var(--ink); font: 14px/1.4 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  button, input, select { font: inherit; }
+  .num { font-variant-numeric: tabular-nums; }
+  #view { position: fixed; inset: 0 0 var(--ctl, 92px) 0; overflow: hidden; }
+  body.clean #view { bottom: 0; }
+  #frame { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 50% 50%; transform: translate(-50%, -50%); background: var(--bg, #ffffff); overflow: hidden; }
+
+  /* The scene */
+  #scene { position: absolute; inset: 0; }
+  .desk { position: absolute; left: 96px; top: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; transform: scale(1.2); background: #1c1c1e; }
+  .stand { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 180px 120px; }
+  .stand .kind { position: absolute; right: 64px; top: 48px; font-size: 20px; color: #9c9ca1; }
+  .stand h2 { font-size: 96px; line-height: 1; letter-spacing: -0.04em; font-weight: 400; max-width: 1400px; }
+  .stand p.on { margin: 28px 0 0; font-size: 26px; line-height: 1.4; color: #6b6b70; max-width: 1300px; }
+  .stand ul { list-style: none; margin: 44px 0 0; padding: 0; }
+  .stand li { font-size: 40px; line-height: 1.25; letter-spacing: -0.015em; padding: 12px 0; border-top: 1px solid #e6e6e8; opacity: 0; transform: translateY(8px); transition: opacity 240ms cubic-bezier(.2, .8, .2, 1), transform 240ms cubic-bezier(.2, .8, .2, 1); max-width: 1500px; }
+  .stand li.in { opacity: 1; transform: none; }
+  .stand.filmed { background: #1d1d1f; color: #fff; }
+  .stand.filmed p.on { color: #a1a1a6; }
+  .stand p.on.hint { position: absolute; left: 160px; top: 96px; margin: 0; font-size: 22px; }
+  .stand.filmed li { border-top-color: #3a3a3e; }
+
+  /* A visualization (viz.html), full frame, driven by the player's clock */
+  .vizf { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; background: #fff; }
+  .vizf.insert { z-index: 5; opacity: 0; }
+
+  /* The keys being pressed on the animated desktop, at the bottom of the picture (Noah, October 19, entry 215) */
+  #keys { position: absolute; left: 50%; bottom: 128px; z-index: 23; display: flex; gap: 10px; transform: translateX(-50%); pointer-events: none; }
+  #keys kbd { min-width: 30px; padding: 10px 20px; border-radius: 12px; background: rgba(29, 29, 31, 0.9); color: #fff; font: 400 28px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+
+  /* Headers over a filmed shot, one after another, white on the film, in the statement's type (the walk-in, entry 213) */
+  #heads { position: absolute; inset: 0; z-index: 25; pointer-events: none; }
+  #heads p { position: absolute; left: 160px; right: 160px; top: 50%; margin: 0; transform: translateY(-50%); font-size: 128px; line-height: 1.04; letter-spacing: -0.045em; font-weight: 400; color: #fff; opacity: 0; }
+
+  /* The statement: a white screen, our header type, one word in one of our colors (Noah, October 19) */
+  #stmt { position: absolute; inset: 0; z-index: 30; background: #fff; display: none; }
+  #stmt.in { display: block; }
+  #stmt p { position: absolute; left: 160px; right: 160px; top: 50%; margin: 0; transform: translateY(-50%); font-size: 128px; line-height: 1.04; letter-spacing: -0.045em; font-weight: 400; color: #1d1d1f; text-align: center; }
+  /* The word in color is a box of its color now, not colored type (Noah, October 19, entry 215) */
+  #stmt span.hit { padding: 0 0.12em; margin: 0 -0.02em; }
+  #stmt span { display: inline-block; white-space: pre; will-change: transform, opacity; }
+  /* A deep dive's caption, just above the statement's text, on its left edge (Noah, October 19: “Deep dive number one”) */
+  #stmt small { position: absolute; left: 0; right: 0; bottom: 100%; margin-bottom: 26px; font-size: 35px; line-height: 1.2; letter-spacing: -0.01em; color: #6b6b70; white-space: nowrap; text-align: center; will-change: transform, opacity; }
+
+  /* The mark: the square for now, or the new logo, filled with a color (brand.js, entry 173) */
+  .mk { display: inline-block; flex: none; background: var(--mc, #d14808); }
+  .mk.shaped { -webkit-mask: var(--mark-url) center / contain no-repeat; mask: var(--mark-url) center / contain no-repeat; }
+  .mk.image { background: var(--mark-url) center / contain no-repeat; }
+
+  /* The section card: a placeholder for Noah's overlays */
+  #card { position: absolute; left: 136px; top: 64px; z-index: 20; display: flex; align-items: center; gap: 18px; padding: 16px 26px 16px 18px; background: rgba(255, 255, 255, 0.94); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06); opacity: 0; transform: translateY(-6px); transition: opacity 300ms cubic-bezier(.2, .8, .2, 1), transform 300ms cubic-bezier(.2, .8, .2, 1); pointer-events: none; }
+  #card.in { opacity: 1; transform: none; }
+  #card .mk { width: 34px; height: 34px; }
+  #card .over { font-size: 18px; color: #6b6b70; }
+  #card .ttl { font-size: 34px; line-height: 1.1; letter-spacing: -0.02em; }
+
+  /* The speaker chip: subtle, only the square and the name */
+  #chip { position: absolute; left: 136px; bottom: 132px; z-index: 21; display: flex; align-items: center; gap: 12px; font-size: 24px; color: #1d1d1f; text-shadow: 0 0 14px rgba(255, 255, 255, 0.95), 0 0 3px rgba(255, 255, 255, 0.9); opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); pointer-events: none; }
+  #chip.in { opacity: 1; }
+  #chip i { width: 14px; height: 14px; background: var(--sc); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7); }
+  #chip.dark { color: #fff; text-shadow: 0 0 10px rgba(0, 0, 0, 0.6); }
+
+  /* The subtitle bar, at the very bottom, until the voiceover is in */
+  #subs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 22; min-height: 104px; display: grid; place-items: center; padding: 18px 200px 22px; box-sizing: border-box; background: rgba(255, 255, 255, 0.95); border-top: 1px solid rgba(0, 0, 0, 0.08); font-size: 34px; line-height: 1.3; letter-spacing: -0.01em; text-align: center; color: #1d1d1f; transition: opacity 200ms; }
+  #subs.dark { background: rgba(17, 17, 19, 0.88); border-top: 0; color: #fff; }
+  #subs.off, #subs.quiet { opacity: 0; }
+  #subs .who { color: var(--sc); }
+
+  /* The controls under the frame */
+  #controls { position: fixed; left: 0; right: 0; bottom: 0; min-height: 92px; box-sizing: border-box; padding: 10px 18px; background: #1c1c1e; color: #e5e5ea; display: flex; flex-direction: column; justify-content: center; gap: 8px; font-size: 13px; }
+  body.clean #controls { display: none; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .cbtn { border: 0; background: #2c2c2e; color: #e5e5ea; padding: 4px 11px; border-radius: 6px; cursor: pointer; }
+  .cbtn:hover { background: #3a3a3c; }
+  .cbtn[aria-pressed="true"] { background: #e5e5ea; color: #1c1c1e; }
+  #scrub { flex: 1; min-width: 200px; accent-color: #e5e5ea; }
+  #time { min-width: 92px; color: #a1a1a6; }
+  #secs { display: flex; flex-wrap: wrap; gap: 4px; }
+  #secs button { border: 0; background: none; color: #8e8e93; padding: 2px 6px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+  #secs button:hover { color: #e5e5ea; }
+  #secs button.on { background: #3a3a3c; color: #fff; }
+  .grow { flex: 1; }
+  .hint { color: #8e8e93; }
+
+  /* The edit panel */
+  #edit { position: fixed; top: 0; right: 0; bottom: var(--ctl, 92px); width: 340px; z-index: 50; overflow-y: auto; background: #f5f5f7; color: #1d1d1f; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3); padding: 18px 20px 24px; box-sizing: border-box; font-size: 13px; }
+  #edit[hidden] { display: none; }
+  #edit h2 { font-size: 20px; font-weight: 400; letter-spacing: -0.01em; margin: 0 0 4px; }
+  #edit h3 { font-size: 12px; font-weight: 400; color: #6b6b70; margin: 18px 0 6px; }
+  #edit label { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  #edit input[type="text"] { flex: 1; min-width: 0; padding: 4px 8px; border: 1px solid #d1d1d6; background: #fff; }
+  #edit input[type="color"] { width: 34px; height: 24px; padding: 0; border: 1px solid #d1d1d6; background: #fff; }
+  #edit .pbtn { border: 1px solid #d1d1d6; background: #fff; padding: 4px 10px; cursor: pointer; }
+  #edit .pbtn:hover { border-color: #1d1d1f; }
+  #edit p { margin: 6px 0; color: #6b6b70; }
+  #edit .prev { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  #edit .prev .mk { width: 40px; height: 40px; }
+</style>
+</head>
+<body>
+<div id="view"><div id="frame" aria-label="The video frame">
+  <div id="scene"></div>
+  <div id="heads" aria-live="polite"></div>
+  <div id="keys" aria-hidden="true"></div>
+  <div id="stmt" aria-live="polite"><p></p></div>
+  <div id="card" aria-hidden="true"><span class="mk" id="card-mk"></span><div><div class="over" id="card-over"></div><div class="ttl" id="card-ttl"></div></div></div>
+  <div id="chip" aria-hidden="true"><i></i><span></span></div>
+  <div id="subs" aria-live="polite"></div>
+</div></div>
+
+<div id="controls" aria-label="Player">
+  <div class="row">
+    <button type="button" class="cbtn" id="play">Play</button>
+    <span id="time" class="num">0:00 / 7:00</span>
+    <input type="range" id="scrub" min="0" max="420" step="0.1" value="0" aria-label="Time">
+    <button type="button" class="cbtn" id="t-subs" aria-pressed="true" title="S">Subtitles</button>
+    <button type="button" class="cbtn" id="t-chips" aria-pressed="true" title="C">Speakers</button>
+    <button type="button" class="cbtn" id="t-cards" aria-pressed="true" title="T">Section cards</button>
+    <button type="button" class="cbtn" id="t-music" aria-pressed="true" title="M">Music</button>
+    <button type="button" class="cbtn" id="t-edit" aria-pressed="false" title="E">Edit</button>
+  </div>
+  <div class="row"><div id="secs"></div><span class="grow"></span><span class="hint">Space plays, ← and → move 5 seconds, M mutes the music, ?clean hides this bar for recording</span></div>
+</div>
+
+<aside id="edit" hidden aria-label="Edit the overlays">
+  <h2>Edit the overlays</h2>
+  <p>Kept in this browser. Claude copies what you settle on into design/brand/brand.js, so v3 and the video share it.</p>
+  <h3>The logo</h3>
+  <div class="prev"><span class="mk" id="ed-mk"></span><span id="ed-mk-label"></span></div>
+  <label><input type="file" id="ed-logo" accept=".svg,image/svg+xml,image/png"></label>
+  <label><input type="radio" name="mode" value="fill" id="ed-fill"> A shape, filled with the last color</label>
+  <label><input type="radio" name="mode" value="image" id="ed-image"> As it is, in its own colors</label>
+  <button type="button" class="pbtn" id="ed-square">Use the square again</button>
+  <h3>Speakers</h3>
+  <label><input type="color" id="ed-c-Noah"><input type="text" id="ed-n-Noah" aria-label="Noah's name on the chip"></label>
+  <label><input type="color" id="ed-c-Daeun"><input type="text" id="ed-n-Daeun" aria-label="Daeun's name on the chip"></label>
+  <label><input type="checkbox" id="ed-chipdark"> Light text, for dark scenes</label>
+  <h3>Subtitles</h3>
+  <label><input type="radio" name="subs" value="paper" id="ed-paper"> On paper</label>
+  <label><input type="radio" name="subs" value="dark" id="ed-dark"> On dark</label>
+  <h3>Music</h3>
+  <p id="ed-music-what"></p>
+  <label><input type="checkbox" id="ed-music"> Under the exciting moments</label>
+  <label>Level <input type="range" id="ed-music-level" min="0" max="100" step="1" aria-label="Music level"></label>
+  <label>Under a voice <input type="range" id="ed-music-duck" min="0" max="100" step="1" aria-label="How much of the music stays under a voice"></label>
+  <h3>Calm track</h3>
+  <p id="ed-calm-what"></p>
+  <label>Level <input type="range" id="ed-calm-level" min="0" max="100" step="1" aria-label="Calm track level"></label>
+  <label>Under a voice <input type="range" id="ed-calm-duck" min="0" max="100" step="1" aria-label="How much of the calm track stays under a voice"></label>
+  <h3>The frame</h3>
+  <label><input type="color" id="ed-bg"> Around the desktop</label>
+  <p><button type="button" class="pbtn" id="ed-reset">Reset all of this</button></p>
+</aside>
+
+<audio id="music" preload="auto"></audio>
+<audio id="calm" preload="auto"></audio>
+<script src="../brand/brand.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+  var S = window.PALIT_SCRIPT, B = window.PALIT_BRAND || { name: "Palit", speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
+  var q = new URLSearchParams(location.search);
+  if (q.has("clean")) document.body.classList.add("clean");
+  // How things come in (entry 198): ?motion=spring (as built), snap, cut or step; the charts get the same
+  // Noah, October 19: “The text and how things appear is too janky - lets go back to smooth fades. I just want them to be
+  // sequential” (entry 219, after the clunk of entry 215): fade is the default, each word fading in after the last on v3's
+  // ease. ?motion=clunk, spring, snap, cut or step switch it, as in the workshop
+  var MOTION = /^(spring|snap|cut|step|clunk|fade)$/.test(q.get("motion") || "") ? q.get("motion") : "fade";
+  var W = 1920, H = 1080, TOTAL = S.total || S.sections.reduce(function (a, x) { return Math.max(a, x.start + x.seconds); }, 0);
+  var COLORS = ["#d14808", "#2e6b6f", "#f0c23b", "#5e4b8b", "#a9b9a0", "#c25a35", "#1e4d8c", "#e5989b"];
+  function mmss(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+  function words(t) { return t.trim() ? t.trim().split(/\s+/).length : 0; }
+
+  /* ---------- The overlays' settings: brand.js, then this browser's edits ---------- */
+  var KIT = "palit-video-kit";
+  var kit = { logo: null, mode: B.markMode || "fill", names: {}, colors: {}, chipDark: false, subs: "paper", bg: "#ffffff", showSubs: true, showChips: true, showCards: false, musicOn: true, musicLevel: null, musicDuck: null, calmLevel: null, calmDuck: null };
+  try { var saved = JSON.parse(localStorage.getItem(KIT) || "null"); if (saved) Object.keys(saved).forEach(function (k) { kit[k] = saved[k]; }); } catch (e) {}
+  function saveKit() { try { localStorage.setItem(KIT, JSON.stringify(kit)); } catch (e) {} }
+  // ?music=0 plays without music, for the workshop's demos, without changing your saved setting
+  if (q.get("music") === "0") kit.musicOn = false;
+  function speakerColor(w) { return kit.colors[w] || (B.speakers || {})[w] || "#1d1d1f"; }
+  function speakerName(w) { return kit.names[w] || w; }
+  function markUrl() { return kit.logo || B.markUrl || null; }
+  function paintMark(node, color) {
+    var u = markUrl();
+    node.classList.toggle("shaped", !!u && kit.mode !== "image");
+    node.classList.toggle("image", !!u && kit.mode === "image");
+    if (u) node.style.setProperty("--mark-url", "url(\"" + u + "\")"); else node.style.removeProperty("--mark-url");
+    node.style.setProperty("--mc", color);
+  }
+
+  /* ---------- The script's lines, with Noah's edits from the script page, timed by their words ---------- */
+  var edits = { text: {}, who: {}, statements: {}, music: {}, calm: {}, musicStatements: undefined };
+  try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) edits = { text: se.text || {}, who: se.who || {}, statements: se.statements || {}, music: se.music || {}, calm: se.calm || {}, musicStatements: se.musicStatements, headers: se.headers || {} }; } catch (e) {}
+  function statementOf(x) { var b = x.statement, e = edits.statements[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds, caption: e.caption !== undefined ? e.caption : b.caption } : null; }
+  // Each line is up while it's said: script.js times every line from its words (entry 205), so the picture waits for the voice
+  var cues = [];
+  S.sections.forEach(function (x) {
+    (x.lines || []).forEach(function (l) {
+      var text = (edits.text[l.id] !== undefined ? edits.text[l.id] : l.text).trim();
+      if (!text || /^\[/.test(text) || typeof l.start !== "number") return;
+      cues.push({ start: x.start + l.start, end: x.start + l.end, who: edits.who[l.id] || l.who, text: text, sec: x.id });
+    });
+  });
+
+  /* ---------- The music (entries 189 and 191): the house track under the exciting moments, the calm one under the research ---------- */
+  // Each track plays in time with the video, comes up in its stretches, and dips under every line
+  function clamp(v) { return Math.max(0, Math.min(1, v)); }
+  function makeLayer(key, cfg, el, attack, release) {
+    var L = { key: key, cfg: cfg || null, el: el, attack: attack, release: release, windows: cfg && window.palitMusicWindows ? window.palitMusicWindows(S, edits, key) : [] };
+    // Loaded whole, so it can jump to any moment, even from a local server that can't send part of a file
+    if (cfg && cfg.src) fetch(cfg.src).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.blob(); }).then(function (b) { el.src = URL.createObjectURL(b); }).catch(function () { el.src = cfg.src; });
+    return L;
+  }
+  var HOUSE = makeLayer("music", S.music, $("music"), 0.4, 1.5), CALM = makeLayer("calm", S.calm, $("calm"), 1.5, 2);
+  var MU = S.music || null, music = HOUSE.el, WINDOWS = HOUSE.windows;
+  function levelOf(L) { var k = L.key === "music" ? kit.musicLevel : kit.calmLevel; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.level : 0.3); }
+  function duckOf(L) { var k = L.key === "music" ? kit.musicDuck : kit.calmDuck; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.duck : 0.3); }
+  function musicLevel() { return levelOf(HOUSE); }
+  function musicDuck() { return duckOf(HOUSE); }
+  // A run comes up over its attack and fades over its release once it ends (entry 197)
+  function gate(L, t) { var g = 0; L.windows.forEach(function (w) { if (t >= w[0] && t <= w[1]) g = Math.max(g, Math.min(clamp((t - w[0]) / L.attack), w[3] ? clamp((w[1] - t) / w[3]) : 1)); else if (t > w[1]) g = Math.max(g, clamp(1 - (t - w[1]) / L.release)); }); return g; }
+  // Where in the track we are: the run playing now (or just fading), from where it starts in the track
+  function runAt(L, t) { for (var i = 0; i < L.windows.length; i++) { var w = L.windows[i]; if (t >= w[0] && t <= w[1] + L.release) return w; } return null; }
+  // Under a line it dips a quarter second early and comes back over 0.6 seconds after
+  function under(t) { var d = 0; cues.forEach(function (k) { if (t >= k.start - 0.25 && t <= k.end) d = Math.max(d, clamp((t - (k.start - 0.25)) / 0.25)); else if (t > k.end && t < k.end + 0.6) d = Math.max(d, clamp(1 - (t - k.end) / 0.6)); }); return d; }
+  // Where a looping track is, and a short fade each time it comes round again (entry 212)
+  function loopPos(L, want, dur) {
+    var c = L.cfg; if (!c.loop) return want;
+    var lf = c.loopFrom || 0, lt = Math.min(dur, c.loopTo || dur);
+    return want < lt ? want : lf + (want - lt) % Math.max(1, lt - lf);
+  }
+  function loopFade(L, t) {
+    var c = L.cfg, w = runAt(L, t); if (!c || !c.loop || !w) return 1;
+    var dur = L.el.duration || c.length || 0, lf = c.loopFrom || 0, lt = Math.min(dur || 1e9, c.loopTo || dur), want = (w[2] || 0) + (t - w[0]);
+    return want < lt ? 1 : clamp(((want - lt) % Math.max(1, lt - lf)) / 1.2);
+  }
+  function layerVolume(L, t) { return L.cfg && L.cfg.src && kit.musicOn ? clamp(levelOf(L) * gate(L, t) * loopFade(L, t) * (1 - (1 - duckOf(L)) * under(t))) : 0; }
+  function musicVolume(t) { return layerVolume(HOUSE, t); }
+  function syncLayer(L, t) {
+    if (!L.cfg || !L.cfg.src) return;
+    var a = L.el;
+    a.volume = layerVolume(L, t);
+    if (!playing) { if (!a.paused) a.pause(); return; }
+    var dur = a.duration || L.cfg.length || 0, w = runAt(L, t); if (!dur) return;
+    var want = w ? (w[2] || 0) + (t - w[0]) : 0;
+    // No run now, or the track has ended; a track marked loop goes round again, from loopFrom to loopTo, when its run is longer
+    if (!w || (want >= dur && !L.cfg.loop)) { if (!a.paused) a.pause(); return; }
+    want = loopPos(L, want, dur);
+    if (Math.abs(a.currentTime - want) > 0.3) { try { a.currentTime = want; } catch (e) {} }
+    if (a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () {}); }
+  }
+  function syncMusic(t) { syncLayer(HOUSE, t); syncLayer(CALM, t); }
+
+  /* ---------- The scenes ---------- */
+  var cur = null, deskLoaded = false;
+  function sectionAt(t) { return S.sections.filter(function (x) { return t >= (x.statement ? x.statementAt : x.start) && t < x.start + x.seconds; })[0] || S.sections[S.sections.length - 1]; }
+  function openAt(x) { return x.statement ? x.statementAt : x.start; }
+  function standIn(x) {
+    var el = document.createElement("div");
+    el.className = "stand" + (x.part === "filmed" ? " filmed" : "");
+    el.innerHTML = "";
+    var kind = document.createElement("span"); kind.className = "kind"; kind.textContent = x.part === "filmed" ? "Filmed in the archive room" : "Stand-in: the motion graphic is still to build";
+    el.appendChild(kind);
+    // With headers over it, the shot stays empty but for one small line on what gets filmed, so the headers read as they will
+    if (x.headers) { var hint = document.createElement("p"); hint.className = "on hint"; hint.textContent = x.title + ": " + (x.scene && x.scene.label || ""); el.appendChild(hint); return el; }
+    var h = document.createElement("h2"); h.textContent = x.title;
+    var on = document.createElement("p"); on.className = "on"; on.textContent = x.screen;
+    var ul = document.createElement("ul");
+    (x.text || []).forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+    el.appendChild(h); el.appendChild(on); el.appendChild(ul);
+    return el;
+  }
+  function vizFrame(name, cls, set) {
+    var f = document.createElement("iframe");
+    f.className = "vizf" + cls; f.title = "Visualization: " + name + (set ? ", " + set : ""); f.setAttribute("tabindex", "-1");
+    f.src = "viz.html?scene=" + encodeURIComponent(name) + (set ? "&set=" + encodeURIComponent(set) : "") + (MOTION !== "spring" ? "&motion=" + MOTION : "");
+    f.addEventListener("load", function () { render(T); });   // so a paused frame shows the right moment too
+    return f;
+  }
+  function drive(f, u) { try { var V = f.contentWindow && f.contentWindow.PalitViz; if (V) V.render(u); } catch (e) {} }
+
+  /* ---------- The statement: words pop in one by one, the colored word last and a little bigger ---------- */
+  function outBack(x) { var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  var stmtKey = "";
+  // Ink or white on a color, whichever reads better
+  function inkOn(hex) {
+    var c = [1, 3, 5].map(function (i) { var v = parseInt(hex.slice(i, i + 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    var L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    return (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#1d1d1f" : "#ffffff";
+  }
+  function renderStatement(x, u) {
+    var st = statementOf(x), box = $("stmt"), p = box.querySelector("p");
+    box.classList.add("in");
+    var key = x.id + "|" + st.text + "|" + st.word + "|" + st.color + "|" + (st.caption || "");
+    if (key !== stmtKey) {
+      stmtKey = key; p.textContent = "";
+      if (st.caption) { var cap = document.createElement("small"); cap.textContent = st.caption; p.appendChild(cap); }
+      var parts = st.text.split(/(\s+)/), hit = -1, want = (st.word || "").trim().toLowerCase();
+      parts.forEach(function (w, i) { if (hit < 0 && want && w.toLowerCase().replace(/[^a-z0-9'’-]/g, "") === want.replace(/[^a-z0-9'’-]/g, "")) hit = i; });
+      parts.forEach(function (w, i) {
+        var sp = document.createElement("span"); sp.textContent = w;
+        if (i === hit) { sp.style.background = st.color; sp.style.color = inkOn(st.color); sp.className = "hit"; }
+        p.appendChild(sp);
+      });
+    }
+    var spans = p.querySelectorAll("span"), n = 0, out = clamp01((u - (st.seconds - 0.35)) / 0.35);
+    if (MOTION === "cut" || MOTION === "clunk") out = u >= st.seconds - (MOTION === "clunk" ? 0.1 : 0.05) ? 1 : 0;
+    var capEl = p.querySelector("small");
+    if (capEl) { var kc = MOTION === "cut" || MOTION === "clunk" ? (u >= 0.05 ? 1 : 0) : clamp01((u - 0.05) / 0.4); capEl.style.opacity = String(kc * (1 - out)); capEl.style.transform = "translateY(" + ((1 - kc) * (MOTION === "spring" ? 12 : 0)) + "px)"; }
+    spans.forEach(function (sp) {
+      if (!sp.textContent.trim()) return;
+      var hitW = sp.classList.contains("hit"), t0 = 0.12 + n * (MOTION === "clunk" ? 0.11 : MOTION === "fade" ? 0.1 : 0.07) + (hitW ? 0.12 : 0), k = clamp01((u - t0) / (MOTION === "snap" ? 0.2 : 0.5));
+      if (MOTION === "fade") {   // a smooth fade, one word after another
+        var kf = clamp01((u - t0) / 0.42), ef = 1 - Math.pow(1 - kf, 3);
+        sp.style.opacity = String(ef * (1 - out)); sp.style.transform = "none";
+        n++; return;
+      }
+      if (MOTION === "clunk") {   // two frames: a little big and there, then in place
+        var on2 = u < t0 ? 0 : u < t0 + 0.07 ? 1 : 2;
+        sp.style.opacity = String(on2 ? 1 - out : 0);
+        sp.style.transform = "scale(" + (on2 === 1 ? 1.12 : 1) + ")";
+        n++; return;
+      }
+      if (MOTION === "cut") k = u >= t0 ? 1 : 0;
+      if (MOTION === "step") k = Math.floor(k * 3 + 1e-6) / 3;
+      var spring = MOTION === "spring", e = spring ? outBack(k) : 1 - Math.pow(1 - k, 3), rise = spring ? 46 : MOTION === "snap" ? 8 : 0;
+      sp.style.opacity = String((spring ? Math.min(1, k * 3) : k) * (1 - out));
+      sp.style.transform = "translateY(" + ((1 - e) * rise - out * (spring ? 28 : 0)) + "px) scale(" + (hitW && spring ? 0.86 + 0.14 * e : 1) + ")";
+      n++;
+    });
+    box.style.opacity = MOTION === "clunk" ? (u >= st.seconds - 0.1 ? "0" : "1") : String(1 - clamp01((u - (st.seconds - 0.2)) / 0.2));
+  }
+  function enter(x, t) {
+    var sc = $("scene"); sc.textContent = ""; deskLoaded = false;
+    if (x.part === "desktop" && x.scene && x.scene.href) {
+      var f = document.createElement("iframe");
+      f.className = "desk"; f.title = x.title; f.setAttribute("tabindex", "-1");
+      // It loads during the statement and waits; the player starts it when the section starts. Its beats are in its own time:
+      // under an insert it waits just short of the moment the insert came in, and carries on once the insert is over (entry 206)
+      var beats = (x.warp || []).map(function (w) {
+        var sa = w[1], m = window.palitMainTime ? window.palitMainTime(x, sa) : sa;
+        (x.inserts || []).forEach(function (n) { if (sa >= n.start - 1e-6 && sa < n.end - 1e-6) m = n.holdAt - 0.001; });
+        return [Math.round(m * 1000) / 1000, Math.round(w[0] * 100) / 100];
+      }).filter(function (b) { return b[0] > 0; }).map(function (b) { return b[0] + ":" + b[1]; }).join(",");
+      f.src = x.scene.href + (x.scene.href.indexOf("?") >= 0 ? "&" : "?") + "keys=0&wait" + (beats ? "&beats=" + beats : "");
+      f.addEventListener("load", function () { render(T); });
+      sc.appendChild(f); deskLoaded = true;
+    } else if (x.viz) sc.appendChild(vizFrame(x.viz, ""));
+    else sc.appendChild(standIn(x));
+    (x.inserts || []).forEach(function (n, i) { var f2 = n.reel ? vizFrame("reel", " insert", n.reel) : vizFrame(n.viz, " insert"); f2.setAttribute("data-i", String(i)); sc.appendChild(f2); });
+    $("chip").classList.toggle("dark", !!kit.chipDark || x.part === "filmed");
+  }
+  // A section's headers (the walk-in): Noah's from the script page, or the drafts; each gets an equal share of the section,
+  // and comes in and goes out on v3's 240ms fade
+  function headersOf(x) { var e = (edits.headers || {})[x.id]; return (e !== undefined ? e : x.headers || []).filter(function (h) { return h && h.trim(); }); }
+  var headKey = "";
+  function renderHeaders(x, into) {
+    var box = $("heads"), hs = headersOf(x), key = x.id + "|" + hs.join("|");
+    if (key !== headKey) { headKey = key; box.textContent = ""; hs.forEach(function (h) { var p = document.createElement("p"); p.textContent = h; box.appendChild(p); }); }
+    var ps = box.querySelectorAll("p"), n = ps.length, d = n ? x.seconds / n : 0, f = 0.24;
+    ps.forEach(function (p, i) {
+      var a = i * d, b = (i + 1) * d, last = i === n - 1;
+      var o = into >= a && into < b ? Math.min(clamp01((into - a) / f), last ? clamp01((x.seconds - into) / 0.4) : clamp01((b - into) / f)) : 0;
+      p.style.opacity = String(o);
+    });
+  }
+  /* ---------- The camera on the animated desktop (entry 215): close on the cursor, wide for the desk, moving fast and on
+     purpose. Each desktop section's camera is a list of [moment, zoom] in v3's own time; between moments the zoom eases over
+     0.9 seconds, and the picture follows v3's drawn cursor, kept inside the desk so nothing black shows. ?camera=0 turns it off. */
+  var CAM = q.get("camera") !== "0", cam = { z: 1, x: 720, y: 450, t: null };
+  function easeIO(k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+  function zoomAt(x, m) {
+    var c = x.camera || [], z = 1;
+    for (var i = 0; i < c.length; i++) { if (m < c[i][0]) break; var prev = i ? c[i - 1][1] : 1; z = prev + (c[i][1] - prev) * easeIO(clamp01((m - c[i][0]) / 0.9)); }
+    return z;
+  }
+  function cursorOf(f) {
+    try { var pc = f.contentDocument.querySelector(".pcursor"), m = /translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(pc ? pc.style.transform : ""); if (m) return { x: Number(m[1]), y: Number(m[2]) }; } catch (e) {}
+    return null;
+  }
+  function camera(x, f, m, t) {
+    if (!CAM || !x.camera) { f.style.transform = "scale(1.2)"; return; }
+    var z = zoomAt(x, m), c = cursorOf(f) || { x: 720, y: 450 }, dt = cam.t === null ? 1 : Math.abs(t - cam.t);
+    var a = dt > 0.5 ? 1 : 1 - Math.exp(-dt * 4.5);   // follow quickly, but never jitter; a seek snaps straight there
+    cam.x += (c.x - cam.x) * a; cam.y += (c.y - cam.y) * a; cam.t = t;
+    var s2 = 1.2 * z, w = 1440 * s2, h = 900 * s2, tx, ty;
+    if (w <= 1920) tx = (1920 - w) / 2 - 96; else tx = Math.min(-96, Math.max(1824 - w, 960 - 96 - cam.x * s2));
+    ty = h <= 1080 ? (1080 - h) / 2 : Math.min(0, Math.max(1080 - h, 540 - cam.y * s2));
+    f.style.transform = "translate(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px) scale(" + s2.toFixed(4) + ")";
+  }
+  // The keys v3 is pressing, read from its own keystroke chips (which the player keeps hidden inside it)
+  var keysKey = "";
+  function keysFrom(f) {
+    var list = [];
+    try { var pk = f && f.contentDocument.querySelector(".pkeys"); if (pk && pk.classList.contains("on")) list = Array.prototype.map.call(pk.querySelectorAll("kbd"), function (k) { return k.textContent; }); } catch (e) {}
+    var key = list.join("|");
+    if (key === keysKey) return;
+    keysKey = key; var box = $("keys"); box.textContent = "";
+    list.forEach(function (k) { var kb = document.createElement("kbd"); kb.textContent = k; box.appendChild(kb); });
+  }
+  function render(t) {
+    var x = sectionAt(t);
+    if (!cur || cur.id !== x.id) { cur = x; enter(x, t); }
+    var into = t - x.start;
+    if (x.statement && into < 0) renderStatement(x, t - x.statementAt); else { $("stmt").classList.remove("in"); $("stmt").style.opacity = ""; }
+    if (x.headers) renderHeaders(x, into); else if ($("heads").firstChild) { $("heads").textContent = ""; headKey = ""; }
+    var sc = $("scene");
+    sc.querySelectorAll(".desk").forEach(function (f) { if (into >= 0 && !f._started) { try { var V3 = f.contentWindow && f.contentWindow.PalitV3; if (V3 && V3.play) { V3.play(); f._started = true; } } catch (e) {} } });
+    // Section time, from the warp; the main chart holds under an insert, and the insert runs on its own time (entry 206)
+    var scene = window.palitSceneTime ? window.palitSceneTime(x, Math.max(0, into)) : Math.max(0, into);
+    var main = window.palitMainTime ? window.palitMainTime(x, scene) : scene;
+    sc.querySelectorAll(".desk").forEach(function (f) { camera(x, f, main, t); keysFrom(f); });
+    if (!sc.querySelector(".desk")) keysFrom(null);
+    sc.querySelectorAll(".vizf:not(.insert)").forEach(function (f) { drive(f, main); });
+    sc.querySelectorAll(".vizf.insert").forEach(function (f) {
+      var n = (x.inserts || [])[Number(f.getAttribute("data-i"))], u = scene - (n.start !== undefined ? n.start : n.at), on = into >= 0 && u >= 0 && u < n.seconds;
+      f.style.opacity = on ? String(Math.min(1, u / 0.3, (n.seconds - u) / 0.3)) : "0";
+      if (on) drive(f, u);
+    });
+    // The stand-in's on-screen text comes in one item at a time across the section
+    var lis = $("scene").querySelectorAll(".stand li");
+    lis.forEach(function (li, i) { li.classList.toggle("in", into >= (x.seconds * 0.12) + i * (x.seconds * 0.7 / Math.max(1, lis.length))); });
+    // The section card, for its first three seconds
+    var showCard = kit.showCards && into < 3.2 && x.part !== "filmed";
+    var m = /^(Deep dive \d|Demo): (.*)$/.exec(x.title);
+    $("card-over").textContent = m ? m[1] : "Palit";
+    $("card-ttl").textContent = m ? m[2] : x.title;
+    paintMark($("card-mk"), COLORS[S.sections.indexOf(x) % COLORS.length]);
+    $("card").classList.toggle("in", showCard);
+    // The line being said, and who's saying it
+    var c = cues.filter(function (k) { return t >= k.start && t < k.end; })[0];
+    var chip = $("chip");
+    if (c && kit.showChips) {
+      chip.querySelector("i").style.setProperty("--sc", speakerColor(c.who));
+      chip.querySelector("span").textContent = speakerName(c.who);
+      chip.classList.add("in");
+    } else chip.classList.remove("in");
+    var subs = $("subs");
+    subs.classList.toggle("off", !kit.showSubs);
+    subs.classList.toggle("dark", kit.subs === "dark");
+    subs.classList.toggle("quiet", !c);
+    if (c && subs.textContent !== c.text) subs.textContent = c.text;
+    $("frame").style.setProperty("--bg", kit.bg);
+    syncMusic(t);
+    // The controls
+    $("time").textContent = mmss(t) + " / " + mmss(TOTAL);
+    if (document.activeElement !== $("scrub")) $("scrub").value = String(t);
+    $("secs").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-id") === x.id); });
+  }
+
+  /* ---------- The clock ---------- */
+  var T = 0, playing = false, last = 0;
+  function seek(t) { T = Math.max(0, Math.min(TOTAL - 0.01, t)); var x = sectionAt(T); if (cur && cur.id === x.id && x.part === "desktop") { cur = null; } render(T); }
+  function tick(now) {
+    if (playing) { T += (now - last) / 1000; if (T >= TOTAL) { T = TOTAL - 0.01; setPlaying(false); } render(T); }
+    last = now; requestAnimationFrame(tick);
+  }
+  function setPlaying(on) { playing = on; $("play").textContent = on ? "Pause" : "Play"; last = performance.now(); syncMusic(T); }
+  ["pointerdown", "keydown"].forEach(function (ev) { addEventListener(ev, function () { if (playing) syncMusic(T); }); });
+  requestAnimationFrame(function (now) { last = now; tick(now); });
+
+  /* ---------- Controls ---------- */
+  $("scrub").max = String(TOTAL);
+  S.sections.forEach(function (x) {
+    if (x.cut) return;   // every line deleted: the section is out of the cut (entry 205)
+    var b = document.createElement("button"); b.type = "button"; b.setAttribute("data-id", x.id);
+    b.textContent = x.title.replace(/:.*$/, "").replace(/^Intro, in the archive room$/, "Intro");
+    b.addEventListener("click", function () { cur = null; seek(openAt(x)); history.replaceState(null, "", "#" + x.id); });
+    $("secs").appendChild(b);
+  });
+  $("play").addEventListener("click", function () { setPlaying(!playing); });
+  $("scrub").addEventListener("input", function () { seek(Number($("scrub").value)); });
+  function toggle(id, key) { kit[key] = !kit[key]; saveKit(); $(id).setAttribute("aria-pressed", String(kit[key])); render(T); }
+  $("t-subs").addEventListener("click", function () { toggle("t-subs", "showSubs"); });
+  $("t-chips").addEventListener("click", function () { toggle("t-chips", "showChips"); });
+  $("t-cards").addEventListener("click", function () { toggle("t-cards", "showCards"); });
+  $("t-music").addEventListener("click", function () { toggle("t-music", "musicOn"); paintEdit(); });
+  $("t-edit").addEventListener("click", function () { var e = $("edit"); e.hidden = !e.hidden; $("t-edit").setAttribute("aria-pressed", String(!e.hidden)); });
+  ["t-subs", "t-chips", "t-cards", "t-music"].forEach(function (id) { var k = { "t-subs": "showSubs", "t-chips": "showChips", "t-cards": "showCards", "t-music": "musicOn" }[id]; $(id).setAttribute("aria-pressed", String(kit[k])); });
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea, select")) return;
+    if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
+    else if (e.key === "ArrowRight") seek(T + 5);
+    else if (e.key === "ArrowLeft") { cur = null; seek(T - 5); }
+    else if (e.key === "s" || e.key === "S") $("t-subs").click();
+    else if (e.key === "c" || e.key === "C") $("t-chips").click();
+    else if (e.key === "t" || e.key === "T") $("t-cards").click();
+    else if (e.key === "m" || e.key === "M") $("t-music").click();
+    else if (e.key === "e" || e.key === "E") $("t-edit").click();
+  });
+
+  /* ---------- The edit panel ---------- */
+  function paintEdit() {
+    paintMark($("ed-mk"), "#d14808");
+    $("ed-mk-label").textContent = kit.logo ? "Your logo, from this browser" : B.markUrl ? "The logo in brand.js" : "The square, until the new logo is in";
+    $("ed-fill").checked = kit.mode !== "image"; $("ed-image").checked = kit.mode === "image";
+    ["Noah", "Daeun"].forEach(function (w) { $("ed-c-" + w).value = speakerColor(w); $("ed-n-" + w).value = speakerName(w); });
+    $("ed-chipdark").checked = !!kit.chipDark;
+    $("ed-paper").checked = kit.subs !== "dark"; $("ed-dark").checked = kit.subs === "dark";
+    $("ed-bg").value = kit.bg;
+    $("ed-music").checked = !!kit.musicOn;
+    $("ed-music-level").value = String(Math.round(musicLevel() * 100));
+    $("ed-music-duck").value = String(Math.round(musicDuck() * 100));
+    $("ed-music-what").textContent = MU ? "“" + MU.title + "” by " + MU.by + ". " + MU.license + ". The moments are switched on the script page." : "No music in the script.";
+    var C = S.calm;
+    $("ed-calm-what").textContent = !C ? "No calm track in the script." : C.src ? "“" + C.title + "” by " + C.by + ". " + C.license + "." : "Not picked yet. Claude's draft pick: " + C.pick + ". Save it as design/video/audio/calm.mp3 and Claude wires it in.";
+    $("ed-calm-level").value = String(Math.round(levelOf(CALM) * 100));
+    $("ed-calm-duck").value = String(Math.round(duckOf(CALM) * 100));
+  }
+  $("ed-logo").addEventListener("change", function () {
+    var f = $("ed-logo").files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () { kit.logo = r.result; saveKit(); paintEdit(); render(T); };
+    r.readAsDataURL(f);
+  });
+  $("ed-fill").addEventListener("change", function () { kit.mode = "fill"; saveKit(); paintEdit(); render(T); });
+  $("ed-image").addEventListener("change", function () { kit.mode = "image"; saveKit(); paintEdit(); render(T); });
+  $("ed-square").addEventListener("click", function () { kit.logo = null; saveKit(); paintEdit(); render(T); });
+  ["Noah", "Daeun"].forEach(function (w) {
+    $("ed-c-" + w).addEventListener("input", function () { kit.colors[w] = $("ed-c-" + w).value; saveKit(); render(T); });
+    $("ed-n-" + w).addEventListener("input", function () { kit.names[w] = $("ed-n-" + w).value; saveKit(); render(T); });
+  });
+  $("ed-chipdark").addEventListener("change", function () { kit.chipDark = $("ed-chipdark").checked; saveKit(); cur = null; render(T); });
+  $("ed-paper").addEventListener("change", function () { kit.subs = "paper"; saveKit(); render(T); });
+  $("ed-dark").addEventListener("change", function () { kit.subs = "dark"; saveKit(); render(T); });
+  $("ed-bg").addEventListener("input", function () { kit.bg = $("ed-bg").value; saveKit(); render(T); });
+  $("ed-music").addEventListener("change", function () { kit.musicOn = $("ed-music").checked; saveKit(); $("t-music").setAttribute("aria-pressed", String(kit.musicOn)); render(T); });
+  $("ed-music-level").addEventListener("input", function () { kit.musicLevel = Number($("ed-music-level").value) / 100; saveKit(); render(T); });
+  $("ed-music-duck").addEventListener("input", function () { kit.musicDuck = Number($("ed-music-duck").value) / 100; saveKit(); render(T); });
+  $("ed-calm-level").addEventListener("input", function () { kit.calmLevel = Number($("ed-calm-level").value) / 100; saveKit(); render(T); });
+  $("ed-calm-duck").addEventListener("input", function () { kit.calmDuck = Number($("ed-calm-duck").value) / 100; saveKit(); render(T); });
+  $("ed-reset").addEventListener("click", function () { localStorage.removeItem(KIT); location.reload(); });
+
+  /* ---------- Fit the frame, and start ---------- */
+  // The controls take as many rows as they need, so the picture sits above however tall they are (entry 202)
+  function fit() {
+    var c = $("controls"), h = document.body.classList.contains("clean") ? 0 : Math.ceil(c.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--ctl", h + "px");
+    var v = $("view").getBoundingClientRect(), k = Math.min(v.width / W, v.height / H);
+    $("frame").style.transform = "translate(-50%, -50%) scale(" + k + ")";
+  }
+  addEventListener("resize", fit); fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe($("controls"));
+  paintEdit();
+  var startAt = Number(q.get("t")) || 0, hash = location.hash.slice(1);
+  if (hash) { var hx = S.sections.filter(function (x) { return x.id === hash; })[0]; if (hx) startAt = openAt(hx); }
+  seek(startAt);
+  if (q.has("play")) setPlaying(true);
+  window.PalitPlayer = { seek: seek, play: function () { setPlaying(true); }, pause: function () { setPlaying(false); }, time: function () { return T; }, cues: cues, kit: kit, music: { windows: WINDOWS, volume: musicVolume, el: music, calm: { windows: CALM.windows, volume: function (t) { return layerVolume(CALM, t); }, el: CALM.el } } };
+})();
+</script>
+</body>
+</html>
