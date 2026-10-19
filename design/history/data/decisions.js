@@ -3508,6 +3508,23 @@ window.PALIT.decisions = {
       refs: [168, 180, 189, 201],
       links: [{ label: "The Video page, public", href: "https://noahohstudio.github.io/Palit/design/history/index.html#video" }, { label: "The player, public", href: "https://noahohstudio.github.io/Palit/design/video/player.html" }],
       by: "Noah"
+    },
+    {
+      date: "2026-10-19",
+      kind: "process",
+      area: "brand",
+      title: "The logo is Noah and Daeun's, workshopped together",
+      video: ["open", "next"],
+      revises: 220,
+      from: "Entry 220 asked whether the logo was Daeun's design, as planned (A100).",
+      to: "Noah and Daeun made the logo together, in a workshop. Still open from entry 220: whether it goes anywhere beyond the menu bar and the splash, like the dashboard's header, the favicon or the Figma pages.",
+      why: "Logo was done by both of us, workshopped",
+      whyStatus: "noah",
+      whySource: "Noah, in chat",
+      status: "logged",
+      refs: [163, 220],
+      ask: "Should the logo go anywhere beyond the menu bar and the splash: the dashboard's header, the favicon, the Figma pages?",
+      by: "Noah"
     }
   ]
 };

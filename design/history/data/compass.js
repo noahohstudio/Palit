@@ -64,6 +64,11 @@ window.PALIT.compass = {
   notes: [
     {
       date: "2026-10-19",
+      title: "Who made the logo",
+      text: `Logo was done by both of us, workshopped`
+    },
+    {
+      date: "2026-10-19",
       title: "The logo",
       text: `we have the logo!`
     },
