@@ -364,61 +364,61 @@ window.PALIT.screens = {
       ]
     },
     {"id": "look-workshop", "why": 93, "date": "2026-10-18", "title": "Look and flow workshop", "by": "Claude; picks by Noah", "tried": "Eight questions after Noah found v1 stagnant: what makes it stagnant, three directions for the archive (the fan, the drawer, the wall), what it opens on, how a color opens, type, motion, the moment you keep a color, and the desktop palette. All 21 options were live, built from the same colors.", "kept": "Noah picked the wall, today first, the specimen card, his name as the hero, motion that answers you, the ring with a duller sound, and slim strips (entries 94 to 102).", "entries": [93, 94, 95, 96, 97, 98, 99, 100, 101, 102], "screens": [{"title": "The archive's direction, A: The fan", "img": "shots/look-archive-a.jpg", "href": "../workshop/look.html"}, {"title": "The archive's direction, B: The drawer", "img": "shots/look-archive-b.jpg", "href": "../workshop/look.html"}, {"title": "The archive's direction, C: The wall", "img": "shots/look-archive-c.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "What it opens on, A: Everything, newest first", "img": "shots/look-home-a.jpg", "href": "../workshop/look.html"}, {"title": "What it opens on, B: Today first", "img": "shots/look-home-b.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "What it opens on, C: The last color, open", "img": "shots/look-home-c.jpg", "href": "../workshop/look.html"}, {"title": "How a color opens, A: Flip the card", "img": "shots/look-open-a.jpg", "href": "../workshop/look.html"}, {"title": "How a color opens, B: A specimen card", "img": "shots/look-open-b.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "How a color opens, C: The color takes the window", "img": "shots/look-open-c.jpg", "href": "../workshop/look.html"}, {"title": "Type, A: Quiet, as now", "img": "shots/look-type-a.jpg", "href": "../workshop/look.html"}, {"title": "Type, B: Your name is the big thing", "img": "shots/look-type-b.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "Type, C: The number is the big thing", "img": "shots/look-type-c.jpg", "href": "../workshop/look.html"}, {"title": "Motion, A: Still, as now", "img": "shots/look-motion-a.jpg", "href": "../workshop/look.html"}, {"title": "Motion, B: Motion that answers you", "img": "shots/look-motion-b.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "Motion, C: Always a little alive", "img": "shots/look-motion-c.jpg", "href": "../workshop/look.html"}, {"title": "Keeping a color, A: Ring and chime, as now", "img": "shots/look-capture-a.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "Keeping a color, B: A numbered ticket", "img": "shots/look-capture-b.jpg", "href": "../workshop/look.html"}, {"title": "Keeping a color, C: A bloom", "img": "shots/look-capture-c.jpg", "href": "../workshop/look.html"}, {"title": "The desktop palette, A: Slim strips, as now", "img": "shots/look-palette-a.jpg", "href": "../workshop/look.html", "note": "Noah's pick"}, {"title": "The desktop palette, B: Little chips", "img": "shots/look-palette-b.jpg", "href": "../workshop/look.html"}, {"title": "The desktop palette, C: A fan at the edge", "img": "shots/look-palette-c.jpg", "href": "../workshop/look.html"}]},
-    {"id": "prototype-v2", "why": 105, "date": "2026-10-18", "title": "Prototype v2, on real pages", "by": "Claude, from Noah's picks", "tried": "The new look on real Wikipedia pages and Commons photos over the Mac's iMac Silver wallpaper: Days, Collections and Spectrum, the ROYGBIV letters, the specimen card over a real crop, pins grouped into palettes, share cards, and three duller sounds to try.", "entries": [95, 96, 98, 99, 100, 101, 102, 103, 105, 107, 108, 109], "screens": [{"title": "Days, today first", "href": "../v2/index.html?clean&scene=days"}, {"title": "The specimen card", "href": "../v2/index.html?clean&scene=card"}, {"title": "Spectrum", "href": "../v2/index.html?clean&scene=spectrum"}, {"title": "Palettes", "href": "../v2/index.html?clean&scene=palettes"}]}
+    {"id": "prototype-v2", "why": 105, "date": "2026-10-18", "title": "Prototype v2, on real pages", "by": "Claude, from Noah's picks", "tried": "The new look on real Wikipedia pages and Commons photos over the Mac's iMac Silver wallpaper: Days, Collections and Spectrum, the ROYGBIV letters, the specimen card over a real crop, pins grouped into palettes, share cards, and three duller sounds to try.", "entries": [95, 96, 98, 99, 100, 101, 102, 103, 105, 107, 108, 109], "screens": [{"title": "Days, today first", "href": "../v2/frozen-oct18.html?clean&scene=days"}, {"title": "The specimen card", "href": "../v2/frozen-oct18.html?clean&scene=card"}, {"title": "Spectrum", "href": "../v2/frozen-oct18.html?clean&scene=spectrum"}, {"title": "Palettes", "href": "../v2/frozen-oct18.html?clean&scene=palettes"}]},
+    {"id": "v2-story", "why": 120, "date": "2026-10-18", "title": "v2, after the story workshop", "by": "Claude, from Noah's picks and notes", "tried": "The story at the center: Days, each with its places, at four stops; the days of the week down the left; Palettes, Table and All by hue behind a ring; one line on the first open, then the first hunt; search; the specimen card with the trail that led to it. Built first as a local preview (design/next), tuned through Noah's notes, then merged into v2.", "entries": [120, 124, 125, 126, 127, 128, 129, 131, 132, 136, 142, 143, 145, 149, 154], "screens": [{"title": "Days, each with its places", "href": "../v2/index.html?clean&scene=days"}, {"title": "The hunt", "href": "../v2/index.html?clean&scene=hunt"}, {"title": "All colors, by hue", "href": "../v2/index.html?clean&scene=all"}, {"title": "The table", "href": "../v2/index.html?clean&scene=table"}, {"title": "The first open", "href": "../v2/index.html?clean&scene=first"}]},
+    {"id": "v3", "why": 156, "date": "2026-10-18", "title": "v3, after the v3 workshop", "by": "Claude, from Noah's picks", "tried": "Take away, then polish. Every piece added since the afternoon got a switch, and Noah picked with the prototype live beside them: Claude's recommendations, with a bar of Palit's own. Then one type scale, one gray, one left edge, nothing on the colors, one motion, nothing cut off, and a name you can change right in Spectrum.", "entries": [156, 157, 158, 159], "screens": [{"title": "Days", "href": "../v3/index.html?clean&scene=days"}, {"title": "And where", "href": "../v3/index.html?clean&scene=where"}, {"title": "Spectrum", "href": "../v3/index.html?clean&scene=spectrum"}, {"title": "A palette, and its table", "href": "../v3/index.html?clean&scene=study"}, {"title": "The first open", "href": "../v3/index.html?clean&scene=first"}]}
   ],
 
   // Prototype v2 (entries 94 to 109): its steps, as live frames on the Work page
-  v2: {
-    "title": "Prototype v2",
-    "href": "../v2/index.html",
-    "entry": 105,
+  v3: {
+    "title": "Prototype v3",
+    "href": "../v3/index.html",
+    "entry": 159,
     "before": [
-      "Not loving it right now - feels very stagnant and boring",
-      "Noah, on v1"
+      "I'm not sure. Now we're slightly losing the authenticity and charm of the original app. Can we potentially revisit with another workshop? Then establish our final, v3? Too much is going on",
+      "Noah, on v2 merged"
     ],
     "after": [
-      "Feeling so good about this tool - it is really oozing the professional specimen and collection vibe i wanted to achieve, and it feels so elevated",
-      "Noah, on v2"
+      "I completely agree with Claude's picks, except for the fact that I want the bars to look like Palette's own. I don't know why, but I really want to push back against the kind of Mac OS bar at the very top.",
+      "Noah, picking v3 in the v3 workshop"
     ],
     "changes": [
       [
-        "Three ways in: Days, Collections and Spectrum.",
+        "Taken away, then polished: on Days, 16 controls around the colors instead of 29, 23 words outside them instead of 61, and four type sizes instead of eight.",
         [
-          96
+          156,
+          159
         ]
       ],
       [
-        "Nothing on first view but color: names on the colors, no numbers, details on hover, and seven ROYGBIV letters to filter.",
+        "Three views again, Days, Palettes and Spectrum, in a bar of Palit's own; the table lives inside Palettes.",
         [
-          95
+          157
         ]
       ],
       [
-        "A color opens as a specimen card over where you found it, your name as the hero, with a scratch pad.",
+        "ROYGBIV in its own row, with the count at its end; search behind a magnifier; − and + with the stop's name for a moment.",
         [
-          98,
-          99
+          157
         ]
       ],
       [
-        "Clean, functional and considered, not Are.na-brutalist.",
+        "No weekday column; each day by its date; unnamed colors on two lines, so nothing is cut off.",
         [
-          103
+          157,
+          159
         ]
       ],
       [
-        "Real pages and a real Mac wallpaper instead of the drawn desk; no logo yet, the menu bar says Palit.",
+        "One type scale, one gray, one left edge, nothing on the colors, one motion.",
         [
-          105,
-          107
+          159
         ]
       ],
       [
-        "Right-click any color to add it to a palette, ⇧-click to gather several, the letters on Pinned too, and a zoom of − and + with seven stops.",
+        "In Spectrum, click the chosen color's name to rename it.",
         [
-          116,
-          117,
-          118
+          158
         ]
       ]
     ],
@@ -486,6 +486,32 @@ window.PALIT.screens = {
         "research": []
       },
       {
+        "group": "First open",
+        "scene": "first",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "One line, then the first hunt",
+        "does": "An empty window that says why, in the largest type Palit has: every color in Palit is one you found. ⌥⇧C starts the first hunt, and the first color becomes No. 001.",
+        "entries": [
+          125,
+          129,
+          159
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "New users skip the manual"
+          },
+          {
+            "from": "evidence",
+            "find": "An empty state should show"
+          }
+        ]
+      },
+      {
         "group": "Days",
         "scene": "days",
         "focus": [
@@ -493,17 +519,18 @@ window.PALIT.screens = {
           62,
           1120
         ],
-        "title": "Days, today first",
-        "does": "A wall with nothing on it but color: today's colors large, earlier days below, names set on the colors, no numbers. A palette's colors sit together with no gap.",
+        "title": "Days, each with its places",
+        "does": "Today first, and each day labeled by its date; click a date to open the day out. The seven letters sit in their own row under the bar, with the count at its end, and nothing sits on the colors but their names. Unnamed colors show on two lines: the color, then where it's from.",
         "entries": [
-          95,
-          97,
-          94
+          157,
+          126,
+          159,
+          140
         ],
         "research": [
           {
-            "from": "precedent",
-            "find": "The spectrum"
+            "from": "evidence",
+            "find": "by where they came from"
           }
         ]
       },
@@ -515,11 +542,29 @@ window.PALIT.screens = {
           62,
           1120
         ],
-        "title": "Zoomed out: only color",
-        "does": "Seven stops, with − and + at the top, or ⌘− and ⌘+. At the two smallest there's no text at all; point at a color for the rest.",
+        "title": "Only color",
+        "does": "The first of four stops: each day one slim strip, nothing but color. The stop's name shows for a moment at the end of the row.",
         "entries": [
-          100,
-          117
+          127,
+          145,
+          157
+        ],
+        "research": []
+      },
+      {
+        "group": "Days",
+        "scene": "where",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "And where",
+        "does": "Each place over the colors you kept there, on one line, and where it lives on the next, with each color's number under it.",
+        "entries": [
+          127,
+          145,
+          159
         ],
         "research": []
       },
@@ -531,17 +576,33 @@ window.PALIT.screens = {
           62,
           1120
         ],
-        "title": "Zoomed in: full names",
-        "does": "At the largest size each color carries its full name, and nothing else. ⌘0 goes back to the middle.",
+        "title": "The hunt",
+        "does": "The last stop: every day opened out, each place with a crop of what it looked like.",
         "entries": [
-          100,
-          99,
-          117
+          127,
+          145,
+          126
+        ],
+        "research": []
+      },
+      {
+        "group": "Days",
+        "scene": "search",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Find it again",
+        "does": "Search waits behind a magnifier: click it or press ⌘F, then find a color by your name for it, the place, its code or your note.",
+        "entries": [
+          131,
+          157
         ],
         "research": [
           {
             "from": "evidence",
-            "find": "Putting a visual memory into words"
+            "find": "Elaborate folders didn't help"
           }
         ]
       },
@@ -553,11 +614,13 @@ window.PALIT.screens = {
           62,
           1120
         ],
-        "title": "Spectrum: every color, fanned",
-        "does": "Every color you've ever found, fanned by hue in one long scroll, with the top card's name large. The seven ROYGBIV letters narrow it; a small count sits at the bottom right.",
+        "title": "Spectrum",
+        "does": "Its own tab again: every color you've found, by hue. Scroll to turn it; the chosen card lifts, and its name sits large at the top left, where a click renames it.",
         "entries": [
-          96,
-          104
+          157,
+          158,
+          149,
+          154
         ],
         "research": [
           {
@@ -567,71 +630,86 @@ window.PALIT.screens = {
         ]
       },
       {
-        "group": "Collections",
+        "group": "Palettes",
         "scene": "pins",
         "focus": [
           150,
           62,
           1120
         ],
-        "title": "Pinned",
-        "does": "What matters most is what you pin, narrowed by the same seven letters.",
+        "title": "Pinned, your palettes, shared with you",
+        "does": "What you pinned, your palettes and what's shared with you, with the seven letters on top.",
         "entries": [
+          128,
+          118,
           96,
-          118
+          108
         ],
         "research": []
       },
       {
-        "group": "Collections",
+        "group": "Palettes",
+        "scene": "study",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "A palette, opened as a study",
+        "does": "Each color large, then on white, mid gray and black, with where it came from and its codes. Keep this version, and everyone you share it with gets the same codes; Try on the table takes it to the table.",
+        "entries": [
+          128,
+          125,
+          157
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Mood boards frame the task"
+          }
+        ]
+      },
+      {
+        "group": "Palettes",
         "scene": "menu",
         "focus": [
           150,
           62,
           1120
         ],
-        "title": "Add to palette",
-        "does": "⇧-click gathers colors anywhere in the window, and a bar says how many. Right-click for Add to palette, like Spotify's Add to playlist, as a Mac menu: New palette, then each palette with its colors, a check where it's already in, and Pin in the same menu. The card has Add to palette too.",
+        "title": "Right-click: Take to table",
+        "does": "⇧-click gathers colors, and the row under the bar says how many, with Clear, Take to table and Add to palette. Right-click puts Take to table first, then Add to palette, Pin, Copy hex and Share.",
         "entries": [
-          116
+          143,
+          116,
+          159
         ],
         "research": []
       },
       {
-        "group": "Collections",
-        "scene": "palettes",
+        "group": "Palettes",
+        "scene": "table",
         "focus": [
           150,
           62,
           1120
         ],
-        "title": "Palettes",
-        "does": "Palettes kept with ⇧ while picking, or made with Add to palette, each with Share and Pin to the desktop. Click a palette's name to give it yours.",
+        "title": "The table",
+        "does": "The table lives inside Palettes: try colors together, drag them, set them on white, gray or black, bring one in by its name, and show names only when you want them. Keep what works as a palette.",
         "entries": [
-          96,
-          109,
-          116
+          157,
+          142,
+          143
         ],
-        "research": []
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Making several designs in parallel"
+          }
+        ]
       },
       {
-        "group": "Collections",
-        "scene": "shared",
-        "focus": [
-          150,
-          62,
-          1120
-        ],
-        "title": "Shared with you",
-        "does": "Palettes other people send you, kept as a copy if you want them. Sample senders; real sharing needs Noah's sign-off on the network (Q23).",
-        "entries": [
-          108,
-          110
-        ],
-        "research": []
-      },
-      {
-        "group": "Collections",
+        "group": "Palettes",
         "scene": "share",
         "focus": [
           150,
@@ -654,13 +732,412 @@ window.PALIT.screens = {
           62,
           1120
         ],
-        "title": "The specimen card",
-        "does": "The color as a chip over a real crop of where you found it, your name as the hero, where it came from with a way back, Similar with places and days, every palette it's in, Pin, Add to palette and Share, and the scratch pad.",
+        "title": "The specimen card, and its trail",
+        "does": "The color over where you found it, your name as the hero, the trail you followed to get here, Similar (where and when) and Also from here to keep going, every palette it's in, Pin, Add to palette and Share, and the scratch pad.",
+        "entries": [
+          98,
+          99,
+          124,
+          157
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Putting a visual memory into words"
+          },
+          {
+            "from": "evidence",
+            "find": "pushes a color's hue away"
+          },
+          {
+            "from": "sip",
+            "find": "Names. Sip names colors"
+          }
+        ]
+      }
+    ]
+  },
+  v2: {
+    "title": "Prototype v2",
+    "href": "../v2/index.html",
+    "entry": 105,
+    "before": [
+      "Not loving it right now - feels very stagnant and boring",
+      "Noah, on v1"
+    ],
+    "after": [
+      "Feeling so good about this tool - it is really oozing the professional specimen and collection vibe i wanted to achieve, and it feels so elevated",
+      "Noah, on v2"
+    ],
+    "changes": [
+      [
+        "Three ways in: Days, Collections and Spectrum.",
+        [
+          96
+        ]
+      ],
+      [
+        "Nothing on first view but color: names on the colors, no numbers, details on hover, and seven ROYGBIV letters to filter.",
+        [
+          95
+        ]
+      ],
+      [
+        "A color opens as a specimen card over where you found it, your name as the hero, with a scratch pad.",
+        [
+          98,
+          99
+        ]
+      ],
+      [
+        "Clean, functional and considered, not Are.na-brutalist.",
+        [
+          103
+        ]
+      ],
+      [
+        "Real pages and a real Mac wallpaper instead of the drawn desk; no logo yet, the menu bar says Palit.",
+        [
+          105,
+          107
+        ]
+      ],
+      [
+        "Right-click any color to add it to a palette, ⇧-click to gather several, the letters on Pinned too, and a zoom of − and + with seven stops (later four).",
+        [
+          116,
+          117,
+          118
+        ]
+      ],
+      [
+        "After the story workshop: Days, each with its places, at four stops; the days of the week down the left; Palettes, Table and All by hue; one line on the first open; search; the card's trail.",
+        [
+          120,
+          124,
+          126,
+          127,
+          128,
+          129,
+          145
+        ]
+      ]
+    ],
+    "steps": [
+      {
+        "group": "Keeping a color",
+        "scene": "picking",
+        "focus": [
+          560,
+          196,
+          760
+        ],
+        "title": "The loupe on a real photo",
+        "does": "⌥⇧C, and the loupe reads the real pixels of whatever is under it: here, a crocoite crystal open in Preview.",
+        "entries": [
+          101,
+          105
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "freely chose what to photograph"
+          },
+          {
+            "from": "evidence",
+            "find": "Photographing whole objects"
+          }
+        ]
+      },
+      {
+        "group": "Keeping a color",
+        "scene": "landed",
+        "focus": [
+          760,
+          196,
+          680
+        ],
+        "title": "A ring, and it lands",
+        "does": "A click keeps it: a small ring, one of three duller sounds, and the color lands at the top of the slim strips on the right edge.",
+        "entries": [
+          101,
+          102
+        ],
+        "research": [
+          {
+            "from": "sip",
+            "find": "Ideation, not handoff"
+          }
+        ]
+      },
+      {
+        "group": "Keeping a color",
+        "scene": "desk",
+        "focus": [
+          760,
+          196,
+          680
+        ],
+        "title": "A palette on the desktop",
+        "does": "Pin a palette to the desktop and the strips hold it, with a thin mark on top so you know it's pinned.",
+        "entries": [
+          102,
+          96
+        ],
+        "research": []
+      },
+      {
+        "group": "First open",
+        "scene": "first",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "One line, then the first hunt",
+        "does": "An empty window that says why: every color in Palit is one you found. ⌥⇧C starts the first hunt, and the first color becomes No. 001.",
+        "entries": [
+          125,
+          129
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "New users skip the manual"
+          },
+          {
+            "from": "evidence",
+            "find": "An empty state should show"
+          }
+        ]
+      },
+      {
+        "group": "Days",
+        "scene": "days",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Days, each with its places",
+        "does": "Today first, and each day a hunt: where you were, what it looked like, and the colors you kept there. Click a day to open it out. The days of the week run down the left; the seven letters across the top, underlined in ink.",
+        "entries": [
+          126,
+          136,
+          144,
+          140,
+          97
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "by where they came from"
+          }
+        ]
+      },
+      {
+        "group": "Days",
+        "scene": "zoom-out",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Only color",
+        "does": "The first of four stops: each day one slim strip, nothing but color.",
+        "entries": [
+          127,
+          145
+        ],
+        "research": []
+      },
+      {
+        "group": "Days",
+        "scene": "where",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "And where",
+        "does": "Each place labeled over the colors you kept there, with their numbers.",
+        "entries": [
+          127,
+          145
+        ],
+        "research": []
+      },
+      {
+        "group": "Days",
+        "scene": "zoom-in",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "The hunt",
+        "does": "The last stop: every day opened out, each place with a crop of what it looked like.",
+        "entries": [
+          127,
+          145,
+          126
+        ],
+        "research": []
+      },
+      {
+        "group": "All, by hue",
+        "scene": "spectrum",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "All colors, by hue",
+        "does": "The ring turns Days into the fan: every color you've found, by hue. Bigger cards, spread apart, the chosen one lifted, a quiet number on each.",
+        "entries": [
+          128,
+          149,
+          154,
+          151,
+          137,
+          141
+        ],
+        "research": [
+          {
+            "from": "precedent",
+            "find": "The spectrum"
+          }
+        ]
+      },
+      {
+        "group": "Palettes",
+        "scene": "pins",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Pinned, your palettes, shared with you",
+        "does": "What you pinned, your palettes and what's shared with you, with the seven letters on top.",
+        "entries": [
+          128,
+          118,
+          96,
+          108
+        ],
+        "research": []
+      },
+      {
+        "group": "Palettes",
+        "scene": "study",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "A palette, opened as a study",
+        "does": "Each color large, then on white, mid gray and black, with where it came from and its codes. Keep this version, and everyone you share it with gets the same codes.",
+        "entries": [
+          128,
+          125
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Mood boards frame the task"
+          }
+        ]
+      },
+      {
+        "group": "Palettes",
+        "scene": "share",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "A share card",
+        "does": "The colors large, each name and hex under it, and a button that copies the codes, for teams that keep separate color codes.",
+        "entries": [
+          109,
+          110
+        ],
+        "research": []
+      },
+      {
+        "group": "Table",
+        "scene": "table",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "The table",
+        "does": "Try colors together: drag them, set them on white, gray or black, bring one in by its name, and show names only when you want them. Keep what works as a palette.",
+        "entries": [
+          128,
+          142,
+          143
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Making several designs in parallel"
+          }
+        ]
+      },
+      {
+        "group": "Table",
+        "scene": "menu",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Right-click: Take to table",
+        "does": "⇧-click gathers colors, with a bar that says how many. Right-click puts Take to table first, then Add to palette, Pin, Copy hex and Share.",
+        "entries": [
+          143,
+          116
+        ],
+        "research": []
+      },
+      {
+        "group": "Table",
+        "scene": "search",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "Find it again",
+        "does": "Search by your name for a color, the place, its code or your note.",
+        "entries": [
+          131
+        ],
+        "research": [
+          {
+            "from": "evidence",
+            "find": "Elaborate folders didn't help"
+          }
+        ]
+      },
+      {
+        "group": "A color, opened",
+        "scene": "card",
+        "focus": [
+          150,
+          62,
+          1120
+        ],
+        "title": "The specimen card, and its trail",
+        "does": "The color over where you found it, your name as the hero, the trail you followed to get here, Similar and Also from here to keep going, every palette it's in, Pin, Add to palette and Share, and the scratch pad.",
         "entries": [
           98,
           99,
           103,
-          116
+          124,
+          150
         ],
         "research": [
           {

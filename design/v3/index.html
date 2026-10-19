@@ -1,0 +1,2039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit prototype v3</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* Prototype v2 (entries 94–106): real pages on a real Mac wallpaper, in the look Noah picked in the
+     look and flow workshop. Clean, functional and considered (A65); nothing on screen competes with the color. */
+  html, body { margin: 0; height: 100%; background: #1c1c1e; color: var(--ink); font: 13px/1.4 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  button { font: inherit; color: inherit; }
+  p { margin: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  #viewport { position: fixed; inset: 0 0 var(--ctl, 76px) 0; overflow: hidden; }
+  body.clean #viewport { bottom: 0; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1440px; height: 900px; transform-origin: 50% 50%; transform: translate(-50%, -50%); overflow: hidden; background: #d6d6db; user-select: none; -webkit-user-select: none; }
+  #desk { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #stage.picking, #stage.picking * { cursor: none !important; }
+
+  /* Palit in the menu bar */
+  /* No logo yet, not even a placeholder: the menu bar shows the word (entry 107). Daeun designs the mark. */
+  .mbi { position: absolute; z-index: 25; height: 22px; transform: translate(-50%, -50%); border: 0; padding: 0 7px; background: none; border-radius: 5px; font: 13px var(--font); letter-spacing: -0.003em; color: #1d1d1f; cursor: default; }
+  .mbi:hover, .mbi[aria-expanded="true"], .mbi.picking { background: rgba(0, 0, 0, 0.1); }
+  /* v3 (entry 160): a temporary square in place of the word, filled with the last color you kept, until Daeun designs the mark.
+     Empty, it's an outline: nothing kept yet. The hairline keeps a light color visible on the light menu bar. */
+  .mbi { display: grid; place-items: center; padding: 0 6px; }
+  .mbi .mark { display: block; width: 14px; height: 14px; background: var(--mk, transparent); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3); transition: background-color 240ms cubic-bezier(.2, .8, .2, 1); }
+
+  /* The desktop palette: slim strips at the edge (A64) */
+  .strips { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 15; display: flex; flex-direction: column; gap: 3px; padding: 7px 6px; background: rgba(246, 246, 248, 0.72); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-radius: 10px 0 0 10px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.2); }
+  .strips button { width: 6px; height: 26px; border: 0; padding: 0; background: var(--c); cursor: pointer; transition: width 240ms cubic-bezier(.2, .8, .2, 1); }
+  .strips:hover button, .strips:focus-within button, .strips.open button { width: 26px; }
+  .strips button.landed { animation: land 900ms ease-out; }
+  @keyframes land { 0% { box-shadow: 0 0 0 2px #fff, 0 0 0 3px #1d1d1f; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .strips .pinmark { height: 2px; background: #1d1d1f; margin: -1px 0 3px; }
+  .note { position: absolute; z-index: 16; padding: 4px 9px; background: rgba(255, 255, 255, 0.94); border-radius: 6px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.16); font-size: 12px; white-space: nowrap; pointer-events: none; animation: fadeIn 180ms ease-out both; }
+
+  /* Keeping a color: the loupe, the ring, the name beside the cursor */
+  /* v2-loupe, not loupe: the shared stylesheet's .loupe (v1's) starts hidden */
+  .v2-loupe { position: absolute; z-index: 60; width: 54px; height: 54px; border-radius: 50%; background: var(--c, #ccc); transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 0 2px #fff, 0 0 0 2.5px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.28); }
+  .v2-loupe::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba(0, 0, 0, 0.45); }
+  .v2-loupe .hx { position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%); padding: 2px 7px; border-radius: 5px; background: rgba(29, 29, 31, 0.82); color: #fff; font-size: 11px; white-space: nowrap; }
+  .ring { position: absolute; z-index: 59; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); pointer-events: none; animation: ring 560ms ease-out forwards; }
+  @keyframes ring { from { opacity: 1; transform: translate(-50%, -50%) scale(0.7); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.7); } }
+  .namer { position: absolute; z-index: 61; display: grid; grid-template-columns: 22px 220px; gap: 8px; align-items: center; padding: 8px 10px; background: rgba(255, 255, 255, 0.97); border-radius: 8px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); animation: fadeIn 160ms ease-out both; }
+  .namer i { width: 22px; height: 22px; background: var(--c); }
+  .namer input { border: 0; outline: none; font: 14px var(--font); background: none; }
+  .namer p { grid-column: 2; font-size: 11px; color: var(--ink-2); }
+
+  /* Palit's window, after the story workshop (entries 124 to 154): a white top bar of Palit's own, not a Mac toolbar (A77) */
+  .pw { position: absolute; left: 150px; top: 62px; width: 1120px; height: 776px; z-index: 20; display: flex; flex-direction: column; background: var(--paper); border-radius: 12px; overflow: hidden; box-shadow: 0 32px 90px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.26); animation: fadeIn 240ms ease-out both; }
+  .pw[hidden] { display: none; }
+  .bar { flex: none; height: 56px; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 0 16px; border-bottom: 1px solid #ededef; }
+  .lights { display: flex; gap: 8px; }
+  .lights button { width: 12px; height: 12px; border-radius: 50%; border: 0; padding: 0; background: #ff5f57; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.14); cursor: pointer; }
+  .lights button:nth-child(2) { background: #febc2e; } .lights button:nth-child(3) { background: #28c840; }
+  .hue { display: flex; align-items: center; }
+  .letters { display: flex; }
+  .letters button { position: relative; width: 28px; height: 30px; border: 0; background: none; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .letters button:hover { color: var(--ink); }
+  .letters button[aria-pressed="true"] { color: var(--ink); }
+  .letters button[aria-pressed="true"]::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 3px; height: 2px; background: #1d1d1f; }   /* ink, not the letter's hue (A83) */
+  .letters button:disabled { color: #d8d8db; cursor: default; }
+  /* All colors, by hue: a plain ink ring, with a dot when it's on (A80) */
+  .wheel { width: 26px; height: 26px; margin-left: 8px; border: 0; padding: 0; border-radius: 6px; background: none; cursor: pointer; display: grid; place-items: center; color: var(--ink-2); }
+  .wheel svg { width: 18px; height: 18px; }
+  .wheel:hover { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
+  .wheel[aria-pressed="true"] { color: var(--ink); background: rgba(0, 0, 0, 0.07); }
+  .wheel[aria-pressed="true"] .hub { fill: currentColor; }
+  .wheel:disabled { color: #d8d8db; background: none; cursor: default; }
+  .tabs { justify-self: center; display: flex; gap: 26px; }
+  .tabs button { position: relative; border: 0; background: none; padding: 8px 0; cursor: pointer; font-size: 14px; color: var(--ink-2); }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-pressed="true"] { color: var(--ink); }
+  .tabs button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: #1d1d1f; }
+  .search { width: 180px; height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 10px; border-radius: 8px; background: #f3f3f5; box-sizing: border-box; }
+  .search::before { content: ""; flex: none; width: 9px; height: 9px; border: 1.5px solid var(--ink-2); border-radius: 50%; }
+  .search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 13px; }
+  /* The zoom: four stops, each its own idea (A87), − and + with a dot for each */
+  .zoom { display: flex; align-items: center; gap: 2px; }
+  .zoom > button { width: 26px; height: 26px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 16px; color: var(--ink-2); }
+  .zoom > button:hover { background: rgba(0, 0, 0, 0.05); color: var(--ink); }
+  .zoom > button:disabled { color: #c7c7cc; background: none; cursor: default; }
+  .zoom > button.flash { background: rgba(0, 0, 0, 0.08); color: var(--ink); }
+  .zdots { display: flex; align-items: center; gap: 2px; }
+  .zdots button { width: 12px; height: 26px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+  .zdots button::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #d1d1d6; }
+  .zdots button:hover::before { background: var(--ink-2); }
+  .zdots button[aria-pressed="true"]::before { background: #1d1d1f; }
+  .main { flex: 1; min-height: 0; display: grid; grid-template-columns: 58px minmax(0, 1fr); }
+  .main.norail { grid-template-columns: minmax(0, 1fr); }
+  .main.norail .rail { display: none; }
+  /* The days of the week down the left, the way ROYGBIV runs across the top (A79, A86); the arrow sifts by week and month */
+  .rail { position: relative; border-right: 1px solid #f1f1f3; padding: 14px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .rail .wk { font-size: 10px; line-height: 1.25; color: var(--ink-2); text-align: center; margin-bottom: 8px; white-space: pre-line; }
+  .rail .wd { position: relative; width: 32px; height: 30px; border: 0; background: none; padding: 0; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .rail .wd:hover, .rail .wd.on { color: var(--ink); }
+  .rail .wd.on::after { content: ""; position: absolute; left: 9px; right: 9px; bottom: 3px; height: 2px; background: #1d1d1f; }
+  .rail .wd:disabled { color: #d8d8db; cursor: default; }
+  .rail .wd.today::before { content: ""; position: absolute; right: 3px; top: 9px; width: 4px; height: 4px; border-radius: 50%; background: #1d1d1f; }
+  .rail .wd.today:disabled::before { background: #d8d8db; }
+  .rail .wmore { width: 32px; height: 26px; margin-top: 8px; border: 0; background: none; border-radius: 6px; cursor: pointer; display: grid; place-items: center; color: var(--ink-2); }
+  .rail .wmore:hover, .rail .wmore[aria-expanded="true"] { background: rgba(0, 0, 0, 0.05); color: var(--ink); }
+  .rail .wmore svg { width: 10px; height: 6px; }
+  .wmenu { position: absolute; z-index: 60; min-width: 190px; padding: 5px; background: rgba(250, 250, 251, 0.97); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.24); font-size: 13px; animation: fadeIn 110ms ease-out both; }
+  .wmenu .mh2 { padding: 4px 9px 3px; font-size: 11px; color: var(--ink-2); }
+  .wmenu button { display: flex; align-items: center; gap: 8px; width: 100%; height: 24px; padding: 0 9px; border: 0; background: none; border-radius: 4px; text-align: left; cursor: default; font-size: 13px; }
+  .wmenu button:hover { background: rgba(0, 0, 0, 0.08); }
+  .wmenu button .ck { width: 12px; flex: none; }
+  .wmenu button .rt { margin-left: auto; padding-left: 14px; color: var(--ink-2); font-size: 12px; }
+  .wmenu hr { border: 0; height: 1px; margin: 5px 9px; background: rgba(0, 0, 0, 0.1); }
+  .pw-body { position: relative; overflow-y: auto; overflow-x: hidden; min-width: 0; }
+  .pw-body > * { animation: fadeIn 240ms ease-out both; }
+  .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.9); padding: 1px 6px; border-radius: 4px; }
+  .tbtn { border: 0; background: rgba(0, 0, 0, 0.05); padding: 4px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .tbtn:hover { background: rgba(0, 0, 0, 0.09); }
+  .tbtn.ink { background: #1d1d1f; color: #fff; }
+  .tbtn:disabled { opacity: 0.4; cursor: default; }
+  .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  .empty { padding: 60px 22px; border: 0; color: var(--ink-2); font-size: 13px; }   /* no dashed box: that was v1's */
+
+  /* Tiles: one typeface, unbolded SF Pro (A30, A78); names you haven't given yet dimmed */
+  .t { position: relative; border: 0; padding: 0; background: var(--c); color: var(--on); overflow: hidden; cursor: pointer; text-align: left; transition: flex-grow 320ms cubic-bezier(.2, .8, .2, 1); animation: fadeIn 300ms ease-out both; }
+  .t:hover, .t:focus-visible { flex-grow: 1.6; z-index: 2; outline: none; }
+  .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts, 12px); line-height: 1.12; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t .nm.ph { opacity: 0.6; }
+  .t .pin { position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--on); }
+  /* Selected with ⇧-click: an ink edge, then a white line inside it, so it shows on light colors and dark ones alike */
+  .t.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff; }
+  .fan-card.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff, 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.07); }
+  .lbl { margin-top: 5px; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Days, each with its places (A72): compact as the letters when zoomed out; open a day to see its hunt */
+  .days { padding: 6px 22px 54px 20px; }
+  .day + .day { margin-top: 18px; }
+  .dh { display: flex; align-items: baseline; gap: 10px; border: 0; background: none; padding: 0 0 8px; cursor: pointer; text-align: left; }
+  .dh b { font-weight: 400; font-size: var(--dhs, 22px); letter-spacing: -0.02em; line-height: 1; }
+  .dh span { font-size: 12px; color: var(--ink-2); }
+  .dh i { width: 6px; height: 6px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(-45deg); margin-left: 2px; align-self: center; transition: transform 200ms; }
+  .dh[aria-expanded="true"] i { transform: rotate(45deg); }
+  .dh:hover b { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .day.compact { display: grid; grid-template-columns: 168px minmax(0, 1fr); align-items: center; }
+  .day.compact + .day.compact { margin-top: 6px; }
+  .day.compact .dh { padding: 0; }
+  .day.compact .dh b { font-size: 13px; letter-spacing: 0; }
+  .strip { display: flex; gap: 2px; height: var(--sh, 26px); }
+  .strip .t { flex: 1; animation: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 3px; }
+  .row .t { flex: 1 0 var(--tw, 104px); max-width: calc(var(--tw, 104px) * 2.4); height: var(--th, 92px); }
+  .pls { display: flex; flex-wrap: wrap; gap: 14px 18px; }
+  .pg { flex: 1 1 260px; min-width: 0; }
+  .pg .w { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg .w b { font-weight: 400; color: var(--ink); }
+  .pg .cs { display: flex; gap: 3px; }
+  .pg .cs > div { flex: 1; min-width: 0; }
+  .pg .cs .t { width: 100%; height: var(--th, 104px); }
+  .hunt { display: grid; grid-template-columns: 200px var(--hh, 96px) minmax(0, 1fr); gap: 3px; margin-bottom: 3px; }
+  .hunt .st { padding: 2px 14px 0 0; min-width: 0; }
+  .hunt .st .w { font-size: 15px; line-height: 1.15; letter-spacing: -0.012em; }
+  .hunt .st .v { font-size: 11.5px; color: var(--ink-2); margin-top: 3px; line-height: 1.3; }
+  .hunt .src { width: var(--hh, 96px); height: var(--hh, 96px); }
+  .hunt .cs { display: flex; gap: 3px; min-width: 0; height: var(--hh, 96px); }
+  .hunt .cs .t { flex: 1 1 0; max-width: 230px; }
+  .src { position: relative; overflow: hidden; background: #e9e9eb; }
+  .src img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .src.mos { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .src.mos i { display: block; }
+
+  /* All colors, by hue: the fan, in Days behind the ring (A74, A81, A91). 168 by 274, 12° apart, the chosen card lifted 124px */
+  .fan { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
+  .fan:focus-visible { outline: none; }
+  .fan-cap { position: absolute; left: 28px; top: 18px; z-index: 300; max-width: 52%; pointer-events: none; }
+  .fan-cap .nm { font-size: 50px; line-height: 1; letter-spacing: -0.045em; }
+  .fan-cap .nm.ph { color: var(--ink-2); }
+  .fan-cap .mt { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .fan-card { position: absolute; left: calc(50% - 84px); bottom: 54px; width: 168px; height: 274px; background: var(--c); color: var(--on); transform-origin: 50% 632px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.07); cursor: pointer; transition: transform 320ms cubic-bezier(.2, .8, .2, 1), opacity 320ms; }
+  .fan-card .fno { position: absolute; left: 10px; bottom: 8px; font-size: 10px; letter-spacing: 0.01em; opacity: 0.5; }
+
+  /* Palettes: what you pinned, your palettes, and what's shared with you; a palette opens as a study (A74) */
+  .pals { padding: 4px 22px 44px 20px; }
+  .sub-h { padding: 18px 0 8px; font-size: 12px; color: var(--ink-2); }
+  .sub-h:first-child { padding-top: 12px; }
+  .pins { display: flex; flex-wrap: wrap; gap: 3px; }
+  .pins .t { flex: 0 0 150px; height: 120px; max-width: none; }
+  .pins .t .nm { font-size: 14px; }
+  .pal { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule-soft); }
+  .pal.open-able { cursor: pointer; }
+  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; }
+  .pal .pn.ph { color: var(--ink-2); }
+  .pal .pm { margin-top: 4px; font-size: 11px; color: var(--ink-2); }
+  .pal .pstrip { display: flex; height: 60px; }
+  .pal .pstrip i { flex: 1; }
+  .pal .pstrip .none { flex: 1; align-self: center; font-size: 12px; color: var(--ink-2); font-style: normal; }
+  .pal .acts { display: flex; gap: 6px; }
+  .pal.open-able:hover .pn { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .study { padding: 16px 22px 40px 20px; }
+  .back { border: 0; background: none; padding: 0; color: var(--ink-2); cursor: pointer; font-size: 12px; }
+  .back:hover { color: var(--ink); }
+  .study-h { display: flex; align-items: baseline; gap: 14px; margin-top: 10px; }
+  .study-h .sn2 { font-size: 34px; letter-spacing: -0.03em; line-height: 1; outline: none; border-radius: 3px; min-width: 40px; }
+  .study-h .sn2:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .study-h .sn2:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+  .study-h span.meta { font-size: 12px; color: var(--ink-2); }
+  .study-h .acts { margin-left: auto; display: flex; gap: 6px; }
+  .cols { display: grid; gap: 3px; margin-top: 16px; }
+  .col .big { position: relative; height: 250px; cursor: pointer; }
+  .col .big .nm { position: absolute; left: 12px; bottom: 10px; font-size: 15px; letter-spacing: -0.01em; }
+  .col .big .nm.ph { opacity: 0.6; }
+  .grounds { display: grid; grid-template-columns: repeat(3, 1fr); height: 72px; margin-top: 3px; }
+  .grounds div { display: grid; place-items: center; }
+  .grounds i { display: block; width: 28px; height: 28px; }
+  .col .meta { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; margin-top: 10px; font-size: 11.5px; }
+  .col .meta .src { width: 30px; height: 30px; }
+  .col .meta .v { color: var(--ink-2); }
+  .col .codes { margin-top: 6px; font-size: 11.5px; color: var(--ink-2); }
+  .col .codes b { font-weight: 400; color: var(--ink); }
+  .ver { margin-top: 14px; font-size: 12px; color: var(--ink-2); }
+
+  /* Table: try colors together (A74, A84, A85). Grounds to set them on, a search at the bottom, names when you ask. */
+  .table { position: absolute; inset: 0; background: #efeff0; overflow: hidden; }
+  .table .hint { position: absolute; left: 22px; top: 16px; font-size: 13px; color: var(--ink-2); pointer-events: none; }
+  .table .acts { position: absolute; right: 20px; top: 12px; display: flex; gap: 6px; z-index: 50; }
+  .ground { position: absolute; width: 150px; height: 150px; }
+  .ground p { position: absolute; left: 0; top: calc(100% + 6px); font-size: 11px; color: var(--ink-2); }
+  .chip { position: absolute; width: 96px; height: 96px; cursor: grab; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14), 0 6px 14px rgba(0, 0, 0, 0.1); touch-action: none; }
+  .chip:active { cursor: grabbing; }
+  .chip .nm { position: absolute; left: 8px; right: 8px; bottom: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--on); display: none; }
+  .table.named .chip .nm { display: block; }
+  .tsearch { position: absolute; left: 50%; bottom: 20px; z-index: 45; width: 340px; transform: translateX(-50%); }
+  .tfield { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .tfield::before { content: ""; flex: none; width: 10px; height: 10px; border: 1.5px solid var(--ink-2); border-radius: 50%; }
+  .tfield input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 14px; }
+  .tres { list-style: none; margin: 0 0 6px; padding: 5px; background: rgba(250, 250, 251, 0.98); border-radius: 10px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .tres:empty { display: none; }
+  .tres li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
+  .tres li:hover, .tres li.hi { background: rgba(0, 0, 0, 0.07); }
+  .tres i { width: 22px; height: 22px; }
+  .tres b { display: block; font-weight: 400; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tres b.ph { opacity: 0.6; }
+  .tres span { display: block; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tres .none { display: block; padding: 6px 8px; font-size: 12px; color: var(--ink-2); cursor: default; }
+  .tres .none:hover { background: none; }
+
+  /* Search: find it again (A76) */
+  .res { padding: 4px 22px 40px 20px; }
+  .res .q { font-size: 12px; color: var(--ink-2); margin: 8px 0; }
+  .res ul { margin: 0; padding: 0; }
+  .res li { list-style: none; display: grid; grid-template-columns: 150px 72px minmax(0, 1fr); gap: 14px; align-items: center; padding: 8px 0; border-top: 1px solid var(--rule-soft); cursor: pointer; }
+  .res .t { height: 72px; }
+  .res .src { width: 72px; height: 72px; }
+  .res .w { font-size: 17px; letter-spacing: -0.015em; }
+  .res .w.ph { color: var(--ink-2); }
+  .res .v { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .res mark { background: none; color: inherit; box-shadow: inset 0 -2px 0 rgba(29, 29, 31, 0.45); }
+
+  /* First open: the opinion as the empty window (A71, A75), then the first hunt */
+  .first { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+  .first .big { font-size: 36px; letter-spacing: -0.03em; line-height: 1.1; }
+  .first .small { margin-top: 14px; font-size: 14px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; justify-content: center; }
+  .first .tiny { margin-top: 22px; font-size: 12px; color: var(--ink-3); }
+  .kc { font: 13px/1 var(--font); min-width: 24px; height: 24px; padding: 0 6px; display: inline-grid; place-items: center; background: linear-gradient(#fff, #f1f1f3); color: var(--ink); border: 0.5px solid rgba(0, 0, 0, 0.18); border-radius: 6px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); }
+  .keys { border: 0; background: none; padding: 0; display: inline-flex; gap: 6px; cursor: pointer; }
+  .huntpill { position: absolute; left: 50%; top: 52px; z-index: 70; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(255, 255, 255, 0.96); border-radius: 12px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); font-size: 17px; white-space: nowrap; pointer-events: none; animation: fadeIn 200ms ease-out both; }
+  .huntpill span { color: var(--ink-2); }
+
+  /* What you've gathered with ⇧-click (A67): a quiet bar at the bottom of the window */
+  .selpill { position: absolute; left: 50%; bottom: 18px; z-index: 44; display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 10px; transform: translateX(-50%); background: rgba(255, 255, 255, 0.97); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); animation: fadeIn 160ms ease-out both; }
+  .selpill .ss { display: flex; height: 18px; }
+  .selpill .ss i { width: 16px; }
+  .selpill .sn { font-size: 12px; color: var(--ink-2); margin: 0 4px 0 2px; white-space: nowrap; }
+
+  /* Playback (entry 112): a drawn cursor and keystroke chips, so the demo records hands-free */
+  .pcursor { position: absolute; left: 0; top: 0; z-index: 100; width: 22px; height: 30px; pointer-events: none; }
+  .pcursor[hidden] { display: none; }
+  .pcursor svg { display: block; transform-origin: 3px 3px; transition: transform 110ms ease-out; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35)); }
+  .pcursor.down svg { transform: scale(0.84); }
+  .pkeys { position: absolute; left: 50%; bottom: 34px; z-index: 95; display: flex; gap: 6px; transform: translateX(-50%); opacity: 0; transition: opacity 180ms ease-out; pointer-events: none; }
+  .pkeys.on { opacity: 1; }
+  .pkeys kbd { min-width: 18px; padding: 7px 13px; border-radius: 9px; background: rgba(29, 29, 31, 0.84); color: #fff; font: 16px var(--font); text-align: center; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
+  body.nokeys .pkeys { display: none; }
+  body.playing #stage { pointer-events: none; }
+  body.playing #stage, body.playing #stage * { cursor: none !important; }
+  .t.phover { flex-grow: 2.4; z-index: 2; }
+
+  /* The menu (entry 116): right-click a color, or Add to palette. A Mac menu, kept neutral so only the colors have color. */
+  .menu { position: absolute; z-index: 80; min-width: 216px; max-width: 300px; padding: 5px; box-sizing: border-box; background: rgba(248, 248, 250, 0.95); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.26); font-size: 13px; animation: fadeIn 110ms ease-out both; }
+  .menu .mi { display: flex; align-items: center; gap: 8px; width: 100%; height: 24px; padding: 0 9px 0 7px; border: 0; background: none; border-radius: 4px; text-align: left; cursor: default; white-space: nowrap; }
+  .menu .mi:hover, .menu .mi:focus-visible, .menu .mi.open, .menu .mi.phover { background: rgba(0, 0, 0, 0.08); outline: none; }
+  .menu .mi:disabled { color: #b0b0b5; background: none; }
+  .menu .ck { flex: none; width: 12px; text-align: center; color: var(--ink); }
+  .menu .lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .menu .lb.ph { color: var(--ink-2); }
+  .menu .rt { flex: none; margin-left: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .menu .chev { flex: none; width: 6px; height: 10px; margin-left: 12px; }
+  .menu .ms { flex: none; display: flex; width: 30px; height: 12px; }
+  .menu .ms i { flex: 1; }
+  .menu .ms.blank { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18); }
+  .menu .mh { display: flex; align-items: center; gap: 8px; padding: 3px 9px 6px 7px; font-size: 11px; color: var(--ink-2); }
+  .menu .mh .ms { width: auto; }
+  .menu .mh .ms i { width: 12px; }
+  .menu hr { border: 0; height: 1px; margin: 5px 9px; background: rgba(0, 0, 0, 0.1); }
+  /* A quiet line at the bottom of the window when something is added (entry 116) */
+  .toast { position: absolute; left: 50%; bottom: 16px; z-index: 45; display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; transform: translateX(-50%); background: rgba(255, 255, 255, 0.96); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); font-size: 12px; white-space: nowrap; pointer-events: none; animation: fadeIn 160ms ease-out both; }
+  .toast .ms { display: flex; height: 18px; }
+  .toast .ms i { width: 14px; }
+  .toast.out { opacity: 0; transition: opacity 260ms; }
+
+  /* The specimen card (A60, A61): the color over where you found it, your name as the hero, the scratch pad */
+  .sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(246, 246, 247, 0.74); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); animation: fadeIn 220ms ease-out both; }
+  .spec { position: relative; width: 880px; height: 580px; display: grid; grid-template-columns: 45% 55%; background: var(--paper); box-shadow: 0 26px 64px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .sp-src { position: relative; overflow: hidden; background: #e9e9eb; }
+  .sp-src .crop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .sp-src .nb { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .sp-chip { position: absolute; left: 50%; top: 48%; width: 46%; transform: translate(-50%, -50%); background: var(--paper); padding: 8px 8px 0; box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26); }
+  .sp-chip .sw { width: auto; height: auto; aspect-ratio: 1 / 1.05; box-shadow: none; }
+  .sp-chip .lb { display: flex; justify-content: space-between; font-size: 11px; padding: 7px 2px 8px; }
+  .sp-cap { position: absolute; left: 16px; right: 16px; bottom: 14px; font-size: 11px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); }
+  .sp-form { display: flex; flex-direction: column; min-width: 0; padding: 24px 28px 20px; }
+  .sp-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--ink-2); }
+  .sp-x { border: 0; background: none; font-size: 18px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 2px; }
+  .sp-x:hover { color: var(--ink); }
+  .sp-nm { margin-top: 8px; font-size: 54px; line-height: 0.98; letter-spacing: -0.045em; outline: none; overflow-wrap: anywhere; border-radius: 3px; }
+  .sp-nm:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .sp-nm:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+  .sp-hint { margin-top: 6px; font-size: 11px; color: var(--ink-2); }
+  .sp-rows { display: grid; grid-template-columns: 76px minmax(0, 1fr); margin: 16px 0 0; font-size: 12px; }
+  .sp-rows dt { color: var(--ink-2); padding: 6px 0; border-top: 1px solid var(--rule-soft); }
+  .sp-rows dd { margin: 0; padding: 6px 0; border-top: 1px solid var(--rule-soft); min-width: 0; }
+  .sp-rows dd button { border: 0; background: none; padding: 0; cursor: pointer; text-align: left; }
+  .sp-rows dd button:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .vals { display: flex; gap: 14px; flex-wrap: wrap; }
+  .sim { display: flex; flex-direction: column; gap: 3px; }
+  .sim button { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: center; }
+  .sim i { width: 14px; height: 14px; }
+  .sp-strip { display: flex; height: 14px; margin-top: 2px; }
+  .sp-strip i { flex: 1; }
+  .sp-pals { display: flex; flex-direction: column; gap: 5px; }
+  .sp-pal { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 12px; align-items: center; }
+  .sp-pal .pl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sp-pal .sp-strip { margin-top: 0; }
+  .sp-acts { display: flex; gap: 6px; margin-top: 12px; }
+  .sp-acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  /* The trail you followed to get here (D19, entry 124), and the other colors from the same place, as one strip */
+  .trail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 12px; color: var(--ink-2); min-width: 0; }
+  .trail button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink-2); font-size: 12px; }
+  .trail button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .trail .here-now { color: var(--ink); }
+  .trail .sep { color: var(--ink-3); }
+  .here { display: flex; height: 22px; max-width: 220px; }
+  .sp-rows .here button { flex: 1 1 0; min-width: 0; height: 100%; border: 0; padding: 0; cursor: pointer; background: var(--c); }
+  .sp-rows .here button:hover { box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px #1d1d1f; text-decoration: none; }
+  .pad { margin-top: auto; padding-top: 12px; }
+  .pad label { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 2px; }
+  .pad textarea { display: block; width: 100%; height: 60px; resize: none; border: 0; outline: none; padding: 0; font: 13px/20px var(--font); background: repeating-linear-gradient(transparent 0 19px, var(--rule-soft) 19px 20px); box-sizing: border-box; }
+
+  /* A share card (entry 109): the colors and their codes, ready to send */
+  .share { width: 600px; background: var(--paper); box-shadow: 0 26px 64px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.18); padding: 22px; }
+  .sc { border: 1px solid var(--rule-soft); }
+  .sc-chips { display: flex; height: 190px; }
+  .sc-chips i { flex: 1; }
+  .sc-names { display: grid; border-top: 1px solid var(--rule-soft); }
+  .sc-names div { padding: 9px 10px 11px; font-size: 12px; min-width: 0; }
+  .sc-names div + div { border-left: 1px solid var(--rule-soft); }
+  .sc-names b { display: block; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-names span { color: var(--ink-2); font-size: 11px; }
+  .sc-foot { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 12px 12px; border-top: 1px solid var(--rule-soft); }
+  .sc-foot .tt { font-size: 22px; letter-spacing: -0.025em; }
+  .sc-foot .by { font-size: 11px; color: var(--ink-2); }
+  .share .acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+  /* The controls under the stage */
+  #controls { position: fixed; left: 0; right: 0; bottom: 0; height: var(--ctl, 76px); box-sizing: border-box; padding: 10px 20px; background: #1c1c1e; color: #e5e5ea; font-size: 12px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  body.clean #controls { display: none; }
+  .c-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .c-lb { color: #8e8e93; }
+  .c-seg { display: inline-flex; background: #2c2c2e; border-radius: 7px; padding: 2px; }
+  .c-seg button, .c-btn { border: 0; background: none; color: #e5e5ea; padding: 3px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+  .c-seg button[aria-pressed="true"] { background: #48484a; }
+  .c-btn { background: #2c2c2e; }
+  .c-btn:hover, .c-seg button:hover { background: #3a3a3c; }
+  .c-hint { color: #8e8e93; }
+  .c-hint b { color: #e5e5ea; font-weight: 400; }
+  kbd { font: inherit; font-size: 11px; color: #8e8e93; margin-left: 4px; }
+  .c-grow { flex: 1; }
+  .c-row2 { flex-wrap: nowrap; align-items: baseline; }
+  .c-row2 .c-hint { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .c-credit { flex: 0 1 auto; max-width: 42%; color: #636366; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
+
+  /* ---------- v3 (entry 156): v2 with a switch for each piece added since this afternoon, so the v3 workshop can
+     show as it was, now, and the middle, live. Each switch is a class on the window; with no switches it's v2 as merged. ---------- */
+  .pw.shell-native .bar { height: 52px; background: #f6f6f7; border-bottom: 0.5px solid rgba(0, 0, 0, 0.12); }
+  .pw.shell-native .tabs { gap: 0; padding: 2px; background: rgba(0, 0, 0, 0.07); border-radius: 8px; }
+  .pw.shell-native .tabs button { padding: 4px 16px; border-radius: 6px; font-size: 13px; color: var(--ink); }
+  .pw.shell-native .tabs button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); }
+  .pw.shell-native .tabs button[aria-pressed="true"]::after { display: none; }
+  .pw.shell-native .search { background: rgba(0, 0, 0, 0.06); }
+  /* With the letters in their own row, the tabs sit in the middle of the window, the way the Mac centers a toolbar's control */
+  .pw.lt-row .bar { position: relative; display: flex; }
+  .pw.lt-row .bar .search { margin-left: auto; }
+  .pw.lt-row .bar .tabs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .hrow { flex: none; height: 46px; display: flex; align-items: center; padding: 0 18px 0 14px; }
+  .hrow .hue { flex: none; }
+  .hrow .pw-count.inrow { position: static; margin-left: auto; background: none; padding: 0; }
+  .pw.lt-row.shell-words .hrow { height: 44px; }
+  /* Spectrum as a tab: the ring goes */
+  .pw.sp-tab .wheel { display: none; }
+  /* Search behind a magnifier until you click it or press ⌘F */
+  .pw.s-icon .search { width: 30px; padding: 0; justify-content: center; background: none; cursor: pointer; border-radius: 6px; transition: width 200ms cubic-bezier(.2, .8, .2, 1); }
+  .pw.s-icon .search:hover { background: rgba(0, 0, 0, 0.05); }
+  .pw.s-icon .search input { display: none; }
+  .pw.s-icon .search::before { width: 14px; height: 14px; border: 0; border-radius: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='5.8' cy='5.8' r='4.4' fill='none' stroke='%236b6b70' stroke-width='1.4'/><path d='M9.1 9.1 12.6 12.6' stroke='%236b6b70' stroke-width='1.4' stroke-linecap='round'/></svg>") center / 14px no-repeat; }
+  .pw.s-icon .search.open { width: 180px; padding: 0 10px; justify-content: flex-start; background: #f3f3f5; cursor: text; }
+  .pw.s-icon.shell-native .search.open { background: rgba(0, 0, 0, 0.06); }
+  .pw.s-icon .search.open input { display: block; }
+  /* The zoom without its dots: the stop's name shows for a moment as you turn it */
+  .pw.z-plain .zdots { display: none; }
+  .zname { position: absolute; z-index: 35; right: 16px; padding: 3px 9px; border-radius: 6px; background: rgba(29, 29, 31, 0.86); color: #fff; font-size: 12px; pointer-events: none; animation: zname 1300ms ease-out both; }
+  @keyframes zname { 0% { opacity: 0; transform: translateY(-3px); } 12% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
+  /* How much each day says */
+  .pw.d-date .dh span, .pw.d-date .dh i, .pw.d-small .dh span, .pw.d-small .dh i { display: none; }
+  .pw.d-small .dh { padding-bottom: 6px; }
+  .pw.d-small .dh b { font-size: 11px; letter-spacing: 0; color: var(--ink-2); }
+  .pw.d-small .day:first-child .dh b { color: var(--ink); }
+  .pw.d-small .dh:hover b { color: var(--ink); }
+  /* Unnamed colors on two lines: the color word, then where it's from, so nothing is cut off */
+  .table .tback { position: absolute; left: 22px; top: 18px; z-index: 5; }
+  .table .tback ~ .hint { top: 46px; }
+  .nm small { display: block; font-size: 1em; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ---------- v3's polish (A97, entry 159): one type scale, one gray, one left edge, nothing on the colors, one motion,
+     nothing cut off. Scoped to .polished, so ?cfg=polish:off shows the window the way the v3 workshop showed it. ---------- */
+  :root { --ease: cubic-bezier(.2, .8, .2, 1); --move: 240ms; --off: #c7c7cc; }
+  @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+  /* One motion: every open, close, view change and zoom takes 240ms on the same ease. Menus stay quick, like the Mac's own. */
+  .pw.polished { animation: fadeIn var(--move) var(--ease) both; }
+  .pw.polished.out { animation: fadeOut var(--move) var(--ease) both; }
+  .pw.polished .pw-body > * { animation: fadeIn var(--move) var(--ease) both; }
+  .pw.polished .t { transition: flex-grow var(--move) var(--ease); animation: fadeIn var(--move) var(--ease) both; }
+  .pw.polished .strip .t { animation: none; }
+  .pw.polished .fan-card { transition: transform var(--move) var(--ease), opacity var(--move) var(--ease); }
+  .pw.polished .sheet { animation: fadeIn var(--move) var(--ease) both; }
+  .pw.polished .sheet.out { animation: fadeOut var(--move) var(--ease) both; }
+  .pw.polished .toast, .pw.polished .selpill { animation: fadeIn var(--move) var(--ease) both; }
+  .pw.polished .toast.out { animation: fadeOut var(--move) var(--ease) both; }
+  .pw.polished.s-icon .search { transition: width var(--move) var(--ease), background-color var(--move) var(--ease); }
+  body.polished .menu { animation: fadeIn 110ms var(--ease) both; }
+
+  /* One type scale: 11 for what's said about a color, 13 for names and controls, 17 for dates and today, 26 for Today
+     and a palette's title, and 50 for the one name a screen is about */
+  .pw.polished .tabs button { font-size: 13px; }
+  .pw.polished .zoom > button { font-size: 17px; }
+  .pw.polished .t .nm { font-size: var(--ts, 13px); }
+  .pw.polished .pg .w { font-size: 13px; }
+  .pw.polished .pg .w .via { display: block; margin-top: 1px; font-size: 11px; color: var(--ink-2); }
+  .pw.polished .hunt .st .w { font-size: 13px; }
+  .pw.polished .hunt .st .v { font-size: 11px; }
+  .pw.polished .fan-cap .mt { font-size: 11px; }
+  .pw.polished .fan-card .fno { font-size: 11px; }
+  .pw.polished .sub-h { font-size: 13px; }
+  .pw.polished .pins .t .nm { font-size: 13px; }
+  .pw.polished .pal .pn { font-size: 17px; }
+  .pw.polished .pal .pstrip .none, .pw.polished .back, .pw.polished .table .hint, .pw.polished .tfield input, .pw.polished .tbtn { font-size: 13px; }
+  .pw.polished .study-h .sn2 { font-size: 26px; }
+  .pw.polished .study-h span.meta, .pw.polished .col .meta, .pw.polished .col .codes, .pw.polished .ver, .pw.polished .tres .none, .pw.polished .res .q, .pw.polished .res .v { font-size: 11px; }
+  .pw.polished .col .big .nm { font-size: 17px; }
+  .pw.polished .first .big { font-size: 50px; letter-spacing: -0.045em; line-height: 1; }
+  .pw.polished .first .small { font-size: 13px; }
+  .pw.polished .first .tiny { font-size: 11px; color: var(--ink-2); }
+  .pw.polished .toast, .pw.polished .selpill .sn { font-size: 13px; }
+  .pw.polished .sp-top, .pw.polished .trail, .pw.polished .trail button { font-size: 11px; }
+  .pw.polished .sp-x { font-size: 17px; color: var(--ink-2); }
+  .pw.polished .sp-nm { font-size: 50px; }
+  .pw.polished .sp-rows { font-size: 13px; grid-template-columns: 96px minmax(0, 1fr); }
+  .pw.polished .sc-names div { font-size: 13px; }
+  .pw.polished .sc-foot .tt { font-size: 26px; }
+
+  /* One gray: everything said about a color in ink-2; one lighter gray for what can't be pressed yet */
+  .pw.polished .letters button:disabled, .pw.polished .wheel:disabled, .pw.polished .zoom > button:disabled { color: var(--off); }
+  .pw.polished .trail .sep { color: var(--ink-2); }
+  .pw.polished .tres b.ph { opacity: 1; color: var(--ink-2); }
+  body.polished .menu .mi:disabled { color: var(--off); }
+
+  /* One left edge: the traffic lights, the letters, the dates and the colors all start 20px in */
+  .pw.polished .bar { padding-left: 20px; padding-right: 20px; }
+  .pw.polished .hrow { padding: 0 20px 0 10px; }
+  .pw.polished .days { padding-left: 20px; padding-right: 20px; }
+  .pw.polished .pals, .pw.polished .study, .pw.polished .res { padding-left: 20px; padding-right: 20px; }
+  .pw.polished .fan-cap { left: 20px; }
+  .pw.polished .table .tback, .pw.polished .table .hint { left: 20px; }
+
+  /* Nothing on the colors: the row's end holds the count, what just happened, the zoom's stop and what you've gathered */
+  .rowend { margin-left: auto; display: flex; align-items: center; gap: 14px; min-width: 0; padding-left: 16px; }
+  .rowend.busy .pw-count { display: none; }
+  .rowmsg { display: flex; align-items: center; gap: 8px; font-size: 13px; white-space: nowrap; animation: fadeIn var(--move) var(--ease) both; }
+  .rowmsg.out { animation: fadeOut var(--move) var(--ease) both; }
+  .rowmsg .ms { display: flex; height: 14px; }
+  .rowmsg .ms i { width: 12px; }
+  .rowsel { display: flex; align-items: center; gap: 6px; animation: fadeIn var(--move) var(--ease) both; }
+  .rowsel .ss { display: flex; height: 14px; margin-right: 2px; }
+  .rowsel .ss i { width: 12px; }
+  .rowsel .sn { font-size: 13px; color: var(--ink-2); margin-right: 6px; white-space: nowrap; }
+  .pw.polished .hrow .pw-count.inrow { font-size: 11px; }
+
+  /* Nothing cut off: names, places and file names wrap instead */
+  .pw.polished .t .nm, .pw.polished .nm small, .pw.polished .lbl, .pw.polished .pg .w, .pw.polished .chip .nm,
+  .pw.polished .tres b, .pw.polished .tres span, .pw.polished .sp-pal .pl, .pw.polished .sc-names b { white-space: normal; text-overflow: clip; overflow-wrap: anywhere; }
+  .pw.polished .pls { align-items: flex-end; }
+  body.polished .menu .mi { height: auto; min-height: 24px; padding-top: 3px; padding-bottom: 3px; white-space: normal; }
+  body.polished .menu .lb { overflow: visible; text-overflow: clip; }
+
+  /* In Spectrum, the chosen color's name is yours to change right there (A98) */
+  .fan-cap .nm { pointer-events: auto; outline: none; border-radius: 3px; cursor: text; min-width: 60px; overflow-wrap: anywhere; }
+  .fan-cap .nm:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .fan-cap .nm:hover { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.06); }
+  .fan-cap .nm:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage" aria-label="Palit v2 on a Mac desktop">
+    <img id="desk" alt="A Mac desktop with a Wikipedia article in Safari and a photo open in Preview" draggable="false">
+    <button type="button" class="mbi" id="mbi" aria-expanded="false" aria-label="Palit"><span class="mark" id="mark" aria-hidden="true"></span></button>
+    <div class="strips" id="strips" role="toolbar" aria-label="Desktop palette"></div>
+    <section class="pw" id="pw" hidden aria-label="Palit">
+      <div class="bar">
+        <div class="lights"><button type="button" id="pw-close" aria-label="Close Palit"></button><button type="button" aria-label="Minimize" tabindex="-1"></button><button type="button" aria-label="Zoom" tabindex="-1"></button></div>
+        <div class="hue"><div class="letters" id="letters" role="group" aria-label="Filter by hue"></div><button type="button" class="wheel" id="wheel" aria-pressed="false" aria-label="All colors, by hue" title="All colors, by hue"><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle class="hub" cx="9" cy="9" r="2.6" fill="none"/></svg></button></div>
+        <div class="tabs" id="tabs" role="group" aria-label="View"></div>
+        <label class="search"><input id="q" type="search" placeholder="Search" aria-label="Search your colors by name, place, code or note" spellcheck="false" autocomplete="off"></label>
+        <div class="zoom" id="zoom" role="group" aria-label="Zoom"><button type="button" id="z-out" aria-label="Zoom out" title="Zoom out  ⌘−">−</button><span class="zdots" id="zdots" role="group" aria-label="Zoom stops"></span><button type="button" id="z-in" aria-label="Zoom in" title="Zoom in  ⌘+">+</button></div>
+      </div>
+      <div class="hrow" id="hrow" hidden></div>
+      <div class="main" id="main">
+        <nav class="rail" id="rail" aria-label="Days of the week"></nav>
+        <div class="pw-body" id="body"></div>
+      </div>
+      <p class="pw-count num" id="count" aria-live="polite"></p>
+    </section>
+  </div>
+</div>
+
+<div id="controls">
+  <div class="c-row">
+    <span class="c-lb">Screen</span><span class="c-seg" id="c-screen"></span>
+    <span class="c-lb">Sound</span><span class="c-seg" id="c-sound"></span>
+    <button type="button" class="c-btn" id="c-play">Play<kbd>P</kbd></button>
+    <button type="button" class="c-btn" id="c-keys" aria-pressed="true">Keystrokes<kbd>K</kbd></button>
+    <button type="button" class="c-btn" id="c-reset">Start over</button>
+    <button type="button" class="c-btn" id="c-hide">Hide<kbd>H</kbd></button>
+  </div>
+  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it; right-click to name it, hold <b>⇧</b> to keep a palette. Click Palit in the menu bar: <b>⌘−</b> <b>⌘+</b> zoom from only color to the whole hunt, the ring shows all colors by hue, right-click any color to take it to the table, <b>⇧</b>-click gathers. <b>P</b> plays the demo; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
+</div>
+
+<script src="../system/sample.js"></script>
+<script src="archive.js"></script>
+<script src="../system/color.js"></script>
+<script src="../system/components.js"></script>
+<script src="../v2/screens/screens.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SAMPLE, PC = window.PalitColor, U = window.PalitUI, SCREENS = (window.PALIT_V2_SCREENS || {}).list || [];
+  var el = U.el, pad = U.pad, no = U.no;
+  function $(id) { return document.getElementById(id); }
+  var W = 1440, H = 900, TODAY = "October 18";
+  var q = new URLSearchParams(location.search);
+  if (q.has("clean")) document.body.classList.add("clean");
+
+  /* ---------- Color ---------- */
+  function lum(hex) {
+    var v = [1, 3, 5].map(function (i) { var c = parseInt(hex.slice(i, i + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  var INK_L = lum("#1d1d1f");
+  function inkOn(hex) { var l = lum(hex); return 1.05 / (l + 0.05) >= (l + 0.05) / (INK_L + 0.05) ? "#ffffff" : "#1d1d1f"; }
+  // Copy quietly: the clipboard refuses when the page isn't focused, as during playback.
+  function copy(text) { try { var p = navigator.clipboard.writeText(text); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  function toHex(r, g, b) { return "#" + [r, g, b].map(function (v) { return ("0" + v.toString(16)).slice(-2); }).join(""); }
+  // ROYGBIV, strictly seven letters (A58). Neutrals have no letter; they show when no letter is picked.
+  var LETTERS = [["R", "Red", "#b5462e"], ["O", "Orange", "#d9822b"], ["Y", "Yellow", "#e2b93b"], ["G", "Green", "#6e9a5a"], ["B", "Blue", "#3f78a8"], ["I", "Indigo", "#4b4fa0"], ["V", "Violet", "#7a5aa6"]];
+  function bandOf(c) {
+    if (c.C < 0.03) return null;
+    var h = c.h;
+    return h < 40 || h >= 350 ? "R" : h < 75 ? "O" : h < 115 ? "Y" : h < 190 ? "G" : h < 265 ? "B" : h < 290 ? "I" : "V";
+  }
+  function hueKey(c) { var b = bandOf(c); return b ? "ROYGBIV".indexOf(b) * 1000 + ((c.h + 10) % 360) : 9000 - c.L * 100; }
+
+  /* ---------- Sounds: duller than the old chime (A63). Pick one by ear (Q22). ---------- */
+  var actx = null, noiseBuf = null;
+  function audio() {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!noiseBuf) { noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.2, actx.sampleRate); var d = noiseBuf.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    return actx;
+  }
+  function env(g, t, peak, attack, decay) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay); }
+  function noise(ctx, t, freq, q, peak, decay, out) {
+    var n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    n.buffer = noiseBuf; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q;
+    env(g, t, peak, 0.002, decay); n.connect(f); f.connect(g); g.connect(out); n.start(t); n.stop(t + decay + 0.05);
+  }
+  var SOUNDS = {
+    felt: { label: "Felt", play: function (ctx, t, out) {   // a soft, low, rounded note
+      var lp = ctx.createBiquadFilter(), g = ctx.createGain(); lp.type = "lowpass"; lp.frequency.value = 1000; env(g, t, 0.2, 0.006, 0.34);
+      [[392, 1], [784, 0.16]].forEach(function (p) { var o = ctx.createOscillator(), og = ctx.createGain(); o.type = "sine"; o.frequency.value = p[0]; og.gain.value = p[1]; o.connect(og); og.connect(lp); o.start(t); o.stop(t + 0.4); });
+      lp.connect(g); g.connect(out);
+    } },
+    wood: { label: "Wood", play: function (ctx, t, out) {   // a short, dry tock
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle";
+      o.frequency.setValueAtTime(640, t); o.frequency.exponentialRampToValueAtTime(390, t + 0.05);
+      env(g, t, 0.26, 0.002, 0.11); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.15);
+      noise(ctx, t, 2400, 1.2, 0.05, 0.014, out);
+    } },
+    stamp: { label: "Stamp", play: function (ctx, t, out) {   // a soft press on paper
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
+      o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(82, t + 0.07);
+      env(g, t, 0.34, 0.003, 0.15); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.2);
+      noise(ctx, t, 900, 0.8, 0.07, 0.06, out);
+    } },
+    off: { label: "Off", play: null }
+  };
+  function sound() { var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
+
+  /* ---------- The real screens ---------- */
+  var stage = $("stage"), desk = $("desk"), canvases = {};
+  function canvasFor(sc, done) {
+    if (canvases[sc.id]) { done(canvases[sc.id]); return; }
+    var img = new Image();
+    img.onload = function () {
+      // Colors are read from a 1440 x 900 canvas; crops come from the full image, so they stay sharp.
+      var c = document.createElement("canvas"); c.width = W; c.height = H;
+      var ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, W, H);
+      canvases[sc.id] = { canvas: c, ctx: ctx, img: img, k: img.naturalWidth / W }; done(canvases[sc.id]);
+    };
+    img.src = sc.data || "../v2/screens/" + sc.file;
+  }
+  function px(cv, x, y) { var d = cv.ctx.getImageData(Math.min(W - 1, Math.round(x)), Math.min(H - 1, Math.round(y)), 1, 1).data; return toHex(d[0], d[1], d[2]); }
+  function cropOf(cv, x, y) {
+    var r = 90, c = document.createElement("canvas"); c.width = 360; c.height = 360;
+    c.getContext("2d").drawImage(cv.img, (x - r) * cv.k, (y - r) * cv.k, 2 * r * cv.k, 2 * r * cv.k, 0, 0, 360, 360);
+    try { return c.toDataURL("image/jpeg", 0.86); } catch (e) { return null; }
+  }
+  function sourceOf(sc, x, y) {
+    var r = sc.regions.filter(function (g) { return x >= g.x && y >= g.y && x < g.x + g.w && y < g.y + g.h; })[0];
+    return r || sc.fallback;
+  }
+
+  /* ---------- The collection ---------- */
+  // selected: the colors gathered with ⇧-click, by number (entry 116).
+  // view: days, palettes or table. all: Days shows every color by hue (the fan). zoom: one of four stops. open: days opened out.
+  // q: search. study: the palette opened as a study. week: the week the weekday column shows. fresh: the first open, before any color.
+  var st = { screen: 0, sound: "felt", view: "days", band: null, all: false, zoom: 1, open: {}, q: "", study: null, week: null, fresh: false, selected: [], picking: false, run: null, deskPal: null };
+  /* v3's switches (entry 156). The first value of each is v2 as merged on October 18; v3's own settings are Noah's picks
+     from the v3 workshop (entry 157), with the polish on (A97). ?cfg=shell:native,letters:bar (and so on) or
+     PalitV3.set() still switches any piece, so the workshop and the process story can show what came before. */
+  var CFG_KEYS = {
+    shell: ["words", "native"], letters: ["bar", "row"], spectrum: ["ring", "tab"], table: ["tab", "palette", "off"],
+    search: ["field", "icon"], zoom: ["dots", "plain"], rail: ["on", "off"], days: ["full", "date", "small"],
+    names: ["one", "two", "word"], count: ["full", "plain", "off"], similar: ["long", "short"], also: ["on", "off"],
+    polish: ["off", "on"]
+  };
+  var V3 = { shell: "words", letters: "row", spectrum: "tab", table: "palette", search: "icon", zoom: "plain", rail: "off",
+    days: "date", names: "two", count: "plain", similar: "short", also: "on", polish: "on" };
+  var CFG = {};
+  Object.keys(V3).forEach(function (k) { CFG[k] = V3[k]; });
+  function setCfg(o) { Object.keys(o || {}).forEach(function (k) { if (CFG_KEYS[k] && CFG_KEYS[k].indexOf(o[k]) >= 0) CFG[k] = o[k]; }); }
+  (new URLSearchParams(location.search).get("cfg") || "").split(",").forEach(function (kv) { var p = kv.split(":"); if (p.length === 2) { var o = {}; o[p[0]] = p[1]; setCfg(o); } });
+  var colors = [], palettes = [], shared = [], next = 1;
+  function make(o) {
+    var k = PC.oklch(o.hex), c = Object.assign({ name: null, note: "", pinned: false, palette: null, crop: null, url: null, screen: null, x: null, y: null }, o);
+    c.L = k.L; c.C = k.C; c.h = k.h; c.on = inkOn(o.hex); c.band = bandOf(c);
+    c.placeholder = c.placeholder || PC.placeholder(o.hex, o.place);
+    return c;
+  }
+  function title(c) { return c.name || c.placeholder; }
+  function byNo(n) { return colors.filter(function (c) { return c.number === n; })[0]; }
+  function label(c) { return no(c.number) + ", " + (c.name || "Unnamed") + ", " + c.hex; }
+  function vars(c) { return "--c:" + c.hex + ";--on:" + c.on; }
+  // The shared sample (28 colors from June 3) and v3's older colors (archive.js, entry 161), numbered by when each was
+  // kept, so No. 001 is the oldest. sn() finds a sample color by its number in the sample; tn() finds today's colors.
+  var EARLIER = (window.PALIT_V3_EARLIER || {}).captures || [], SAMPLE_NO = {};
+  function sn(orig) { return SAMPLE_NO[orig] || orig; }
+  function tn(i) { return colors.filter(function (c) { return !c.screen; }).length + i; }
+  function seedSample() {
+    var all = S.captures.map(function (s) { return { s: s, orig: s.number }; }).concat(EARLIER.map(function (s) { return { s: s, orig: null }; }));
+    all.sort(function (a, b) { return new Date(a.s.capturedAt) - new Date(b.s.capturedAt); });
+    SAMPLE_NO = {};
+    colors = all.map(function (x, i) {
+      var s = x.s, n = i + 1;
+      if (x.orig) SAMPLE_NO[x.orig] = n;
+      var from = s.sourceType === "Photos" || s.sourceType === "Figma" ? s.sourceType : U.place(s);
+      return make({ number: n, hex: s.hex, name: s.name, placeholder: s.placeholder || PC.placeholder(s.hex, from), app: s.sourceType, place: U.place(s), src: U.sourceTitle(s), day: U.day(s.capturedAt), at: s.capturedAt, neighbors: s.neighbors });
+    });
+    next = colors.length + 1;
+    palettes = [
+      { id: "p-plant", name: "Plant shop", members: [sn(11), sn(12)], day: "August 12" },
+      { id: "p-tea", name: "Tea packaging", members: [sn(26), sn(27)], day: "October 4" }
+    ];
+    shared = [
+      { id: "s-site", name: "Studio site refresh", from: "Sam", day: "October 16", hexes: ["#1f2a44", "#e8e1d3", "#c4552d", "#f2c14e"], names: ["Ink navy", "Paper", "Brick", "Signal yellow"] },
+      { id: "s-legend", name: "Site plan legend", from: "Dana", day: "October 12", hexes: ["#2e6b6f", "#d98e04", "#a8432a", "#7a8b99", "#141414"], names: ["Water", "Grading", "Demolition", "Existing", "Linework"] }
+    ];
+    [sn(1), sn(4)].forEach(function (n) { byNo(n).pinned = true; });
+  }
+  function keep(sc, cv, x, y, extra) {
+    var src = sourceOf(sc, x, y), hex = px(cv, x, y);
+    var nb = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].map(function (d) { return px(cv, clampX(x + d[0] * 12), clampY(y + d[1] * 12)); });
+    var c = make(Object.assign({ number: next++, hex: hex, app: src.app, place: src.place, src: src.title, url: src.url || null, day: TODAY, at: new Date(2026, 9, 18, 14, 22 + colors.length % 30).toISOString(), neighbors: nb, crop: cropOf(cv, x, y), screen: sc.id, x: x, y: y }, extra || {}));
+    colors.push(c);
+    return c;
+  }
+  function clampX(x) { return Math.max(1, Math.min(W - 2, x)); }
+  function clampY(y) { return Math.max(1, Math.min(H - 2, y)); }
+  function seedToday(done) {
+    var left = SCREENS.length;
+    if (!left) { done(); return; }
+    SCREENS.forEach(function (sc) {
+      canvasFor(sc, function (cv) {
+        var runs = {};
+        sc.seeds.forEach(function (sd) {
+          var c = keep(sc, cv, sd.x, sd.y, { name: sd.name || null, pinned: !!sd.pinned });
+          if (sd.run) { (runs[sd.run] = runs[sd.run] || []).push(c.number); }
+        });
+        Object.keys(runs).forEach(function (r) {
+          var p = { id: "p-" + r, name: null, members: runs[r], day: TODAY, placeholder: "Palette from " + byNo(runs[r][0]).place };
+          palettes.unshift(p);
+          runs[r].forEach(function (n) { byNo(n).palette = p.id; });
+        });
+        if (--left === 0) { colors.sort(function (a, b) { return a.number - b.number; }); done(); }
+      });
+    });
+  }
+  // Seeds are numbered in screen order, so renumber them once both screens have answered.
+  function renumber() {
+    var sample = colors.filter(function (c) { return !c.screen; }), today = colors.filter(function (c) { return c.screen; });
+    var order = SCREENS.map(function (s) { return s.id; });
+    var map = {};
+    today.sort(function (a, b) { return order.indexOf(a.screen) - order.indexOf(b.screen) || a.number - b.number; });
+    today.forEach(function (c, i) { map[c.number] = sample.length + 1 + i; c.number = sample.length + 1 + i; });
+    palettes.forEach(function (p) { p.members = p.members.map(function (n) { return map[n] || n; }); });
+    colors = sample.concat(today);
+    next = colors.length + 1;
+  }
+
+  /* ---------- The desktop palette (A64) ---------- */
+  var strips = $("strips");
+  function deskColors() {
+    if (st.deskPal) { var p = palById(st.deskPal); if (p) return p.members.map(byNo).filter(Boolean); }
+    return colors.slice().sort(function (a, b) { return b.number - a.number; }).slice(0, 8);
+  }
+  // The menu bar's square shows the last color you kept (entry 160)
+  function drawMark() {
+    var c = colors.reduce(function (a, b) { return !a || b.number > a.number ? b : a; }, null), m = $("mbi");
+    $("mark").style.setProperty("--mk", c ? c.hex : "transparent");
+    m.setAttribute("aria-label", c ? "Palit. Last kept: " + label(c) : "Palit. Nothing kept yet");
+    m.title = c ? "Palit: " + title(c) : "Palit";
+  }
+  function drawStrips(landed) {
+    drawMark();
+    strips.textContent = "";
+    if (st.deskPal) strips.appendChild(el("div", { class: "pinmark", title: "Pinned: " + palName(palById(st.deskPal)) }));
+    deskColors().forEach(function (c) {
+      var b = el("button", { type: "button", style: vars(c), "aria-label": "Copy " + label(c) + (st.deskPal ? ", from the pinned palette" : "") });
+      if (landed && c.number === landed) b.classList.add("landed");
+      b.addEventListener("click", function (e) { copyColor(c, e, b); });
+      strips.appendChild(b);
+    });
+  }
+  function copyColor(c, e, from) {
+    var rgb = PC.displayRgb(c.hex), text = e && e.altKey ? "rgb(" + rgb.split(" ").join(", ") + ")" : e && (e.metaKey || e.ctrlKey) ? "oklch(" + PC.displayOklch(c.hex) + ")" : c.hex;
+    copy(text);
+    var r = from.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W;
+    note("Copied " + text, (r.left - s.left) / k - 12, (r.top - s.top) / k + 2, true);
+  }
+  var noteEl = null, noteT = null;
+  function note(text, x, y, rightAlign) {
+    if (noteEl) noteEl.remove();
+    noteEl = el("div", { class: "note num", role: "status", text: text });
+    stage.appendChild(noteEl);
+    noteEl.style.top = y + "px";
+    if (rightAlign) noteEl.style.right = (W - x) + "px"; else noteEl.style.left = x + "px";
+    clearTimeout(noteT); noteT = setTimeout(function () { if (noteEl) { noteEl.remove(); noteEl = null; } }, 1600);
+  }
+
+  /* ---------- Keeping a color ---------- */
+  var loupe = null, pointer = { x: 700, y: 450 }, namer = null;
+  function toStage(e) { var r = stage.getBoundingClientRect(), k = r.width / W; return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k }; }
+  function startPicking() {
+    closeWindow();
+    st.picking = true; stage.classList.add("picking"); $("mbi").classList.add("picking");
+    loupe = el("div", { class: "v2-loupe", "aria-hidden": "true" }, [el("span", { class: "hx num" })]);
+    stage.appendChild(loupe); moveLoupe(pointer.x, pointer.y);
+    if (st.fresh) showHuntPill();   // the first hunt: the instructions follow the one line (A75)
+  }
+  function stopPicking() {
+    st.picking = false; stage.classList.remove("picking"); $("mbi").classList.remove("picking");
+    if (loupe) { loupe.remove(); loupe = null; }
+    if (st.run) endRun();
+    hideHuntPill();
+    // After the first hunt, the window opens on what you found: No. 001 under Today
+    if (st.fresh) { if (colors.length) st.fresh = false; setTimeout(openWindow, colors.length ? 420 : 0); }
+  }
+  function moveLoupe(x, y) {
+    if (!loupe) return;
+    var cv = canvases[screen().id]; if (!cv) return;
+    var hex = px(cv, clampX(x), clampY(y));
+    loupe.style.left = x + "px"; loupe.style.top = y + "px"; loupe.style.setProperty("--c", hex);
+    loupe.querySelector(".hx").textContent = hex;
+  }
+  function ring(x, y) { var r = el("span", { class: "ring" }); r.style.left = x + "px"; r.style.top = y + "px"; stage.appendChild(r); setTimeout(function () { r.remove(); }, 700); }
+  function pick(x, y, opts) {
+    var sc = screen(), cv = canvases[sc.id]; if (!cv) return null;
+    var c = keep(sc, cv, clampX(x), clampY(y));
+    ring(x, y); sound();
+    if (opts.more || st.run) {
+      if (!st.run) { st.run = { id: "p-" + Date.now(), name: null, members: [], day: TODAY, placeholder: "Palette from " + c.place }; palettes.unshift(st.run); }
+      st.run.members.push(c.number); c.palette = st.run.id;
+      if (!opts.more) endRun();
+    }
+    drawStrips(c.number);
+    if (!$("pw").hidden) render();
+    return c;
+  }
+  function endRun() {
+    var r = st.run; st.run = null;
+    if (r && r.members.length < 2) { palettes = palettes.filter(function (p) { return p !== r; }); r.members.forEach(function (n) { byNo(n).palette = null; }); }
+  }
+  function nameBeside(c, x, y, quiet) {
+    if (namer) namer.remove();
+    var input = el("input", { type: "text", placeholder: c.placeholder, "aria-label": "Name " + no(c.number) });
+    namer = el("div", { class: "namer", style: "--c:" + c.hex }, [el("i"), input, el("p", { text: "Return names it. Esc leaves it for later." })]);
+    namer.style.left = Math.min(x + 18, W - 290) + "px"; namer.style.top = Math.min(y + 18, H - 90) + "px";
+    stage.appendChild(namer);
+    if (!quiet) setTimeout(function () { input.focus(); }, 0);   // a scene in an iframe must not pull focus from the page around it
+    input.addEventListener("keydown", function (e) {
+      e.stopPropagation();
+      if (e.key === "Enter") { var v = input.value.trim(); if (v) c.name = v; finish(); }
+      if (e.key === "Escape") finish();
+    });
+    function finish() { if (namer) { namer.remove(); namer = null; } drawStrips(); if (!$("pw").hidden) render(); }
+  }
+  stage.addEventListener("pointermove", function (e) { var p = toStage(e); pointer = p; if (st.picking) moveLoupe(p.x, p.y); });
+  stage.addEventListener("click", function (e) {
+    if (!st.picking || e.target.closest(".strips, .mbi, .namer")) return;
+    var p = toStage(e); pick(p.x, p.y, { more: e.shiftKey });
+    if (!e.shiftKey) stopPicking();
+  }, true);
+  stage.addEventListener("contextmenu", function (e) {
+    if (!st.picking) return;
+    e.preventDefault();
+    var p = toStage(e), c = pick(p.x, p.y, {});
+    stopPicking();
+    if (c) nameBeside(c, p.x, p.y);
+  });
+
+  /* ---------- Palit's window, after the story workshop (entries 124 to 154): Days, Palettes and Table as words along a
+     white top bar, the seven letters always on top, the days of the week down the left. Built from the preview (design/next). ---------- */
+  var VIEWS = [["days", "Days"], ["palettes", "Palettes"], ["table", "Table"]];
+  function views() {
+    var v = [["days", "Days"], ["palettes", "Palettes"]];
+    if (CFG.table === "tab") v.push(["table", "Table"]);
+    if (CFG.spectrum === "tab") v.push(["spectrum", "Spectrum"]);
+    return v;
+  }
+  /* Nothing on the colors (A97): with the letters in their own row, the row's end holds the count, what just happened,
+     the zoom's stop and what you've gathered with ⇧-click; none of it sits over a color. */
+  var rowEnd = null, rowT = null;
+  function rowEndEl() { if (!rowEnd) rowEnd = el("div", { class: "rowend" }); if (rowEnd.parentNode !== $("hrow")) $("hrow").appendChild(rowEnd); return rowEnd; }
+  function rowOn() { return CFG.polish === "on" && CFG.letters === "row"; }
+  function syncBusy() { if (rowEnd) rowEnd.classList.toggle("busy", !!rowEnd.querySelector(".rowmsg:not(.out), .rowsel")); }
+  function rowSay(kids, ms) {
+    var r = rowEndEl(); clearTimeout(rowT);
+    r.querySelectorAll(".rowmsg").forEach(function (n) { n.remove(); });
+    var m = el("div", { class: "rowmsg", role: "status" }, kids);
+    r.insertBefore(m, r.firstChild); syncBusy();
+    rowT = setTimeout(function () { m.classList.add("out"); syncBusy(); setTimeout(function () { m.remove(); syncBusy(); }, 240); }, ms);
+  }
+  // Apply the switches to the window: classes for the look, and the letters moved into their own row or back into the bar
+  function applyCfg() {
+    var pw = $("pw");
+    pw.classList.toggle("shell-native", CFG.shell === "native"); pw.classList.toggle("shell-words", CFG.shell !== "native");
+    pw.classList.toggle("lt-row", CFG.letters === "row");
+    pw.classList.toggle("sp-tab", CFG.spectrum === "tab");
+    pw.classList.toggle("s-icon", CFG.search === "icon");
+    pw.classList.toggle("z-plain", CFG.zoom === "plain");
+    pw.classList.toggle("d-date", CFG.days === "date"); pw.classList.toggle("d-small", CFG.days === "small");
+    pw.classList.toggle("polished", CFG.polish === "on"); document.body.classList.toggle("polished", CFG.polish === "on");
+    var hue = pw.querySelector(".hue"), hrow = $("hrow"), bar = pw.querySelector(".bar");
+    if (CFG.letters === "row" && hue.parentNode !== hrow) hrow.insertBefore(hue, hrow.firstChild);
+    if (CFG.letters !== "row" && hue.parentNode !== bar) bar.insertBefore(hue, bar.querySelector(".tabs"));
+    hrow.hidden = CFG.letters !== "row";
+    var cnt = $("count"), inRow = CFG.letters === "row" && CFG.count === "plain";
+    var end = rowEndEl();
+    if (inRow && cnt.parentNode !== end) end.appendChild(cnt);
+    if (!inRow && cnt.parentNode !== pw) pw.insertBefore(cnt, $("main").nextSibling);
+    cnt.classList.toggle("inrow", inRow);
+    if (!rowOn()) { end.querySelectorAll(".rowmsg, .rowsel").forEach(function (n) { n.remove(); }); end.classList.remove("busy"); }
+    if (CFG.search !== "icon") $("q").parentNode.classList.remove("open");
+    if (CFG.table === "off" && st.view === "table") st.view = "palettes";
+  }
+  var hideT = null;
+  function openWindow() { if (st.picking) stopPicking(); clearTimeout(hideT); $("pw").classList.remove("out"); $("pw").hidden = false; $("mbi").setAttribute("aria-expanded", "true"); render(); }
+  function closeWindow() {
+    closeMenus(); closeSheet(); closeWeeks(); st.selected = [];
+    var pw = $("pw");
+    if (CFG.polish === "on" && !pw.hidden && !play.on) { pw.classList.add("out"); clearTimeout(hideT); hideT = setTimeout(function () { pw.hidden = true; pw.classList.remove("out"); }, 240); }
+    else pw.hidden = true;
+    $("mbi").setAttribute("aria-expanded", "false");
+  }
+  $("mbi").addEventListener("click", function (e) { e.stopPropagation(); if ($("pw").hidden) openWindow(); else closeWindow(); });
+  $("pw-close").addEventListener("click", closeWindow);
+  // In the window, a right-click is Palit's, not the browser's, except where you type.
+  $("pw").addEventListener("contextmenu", function (e) { if (!e.target.closest("input, textarea, [contenteditable=true]")) e.preventDefault(); });
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  /* Where a color came from, said the way you'd say it, then where that lives */
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function dateOf(c) { return new Date(c.at); }
+  function shortDay(d) { return MONTHS[d.getMonth()].slice(0, 3) + " " + d.getDate(); }
+  function dayName(d) { return MONTHS[d.getMonth()] + " " + d.getDate(); }
+  function timeOf(d) { var h = d.getHours(), m = d.getMinutes(); return (h % 12 || 12) + ":" + ("0" + m).slice(-2) + (h < 12 ? " AM" : " PM"); }
+  function whereOf(c) {
+    if (c.app === "Photos") return c.src || c.place;
+    if (c.app === "Browser") return c.src ? c.src.charAt(0).toUpperCase() + c.src.slice(1) : c.place;
+    if (c.app === "Preview" || c.app === "Shared") return c.place;
+    if (c.app === "Safari") return c.place;
+    return c.place + (c.src ? ", " + c.src : "");
+  }
+  function viaOf(c) {
+    if (c.app === "Photos") return c.place + " in Photos";
+    if (c.app === "Browser") return c.place;
+    if (c.app === "Preview" || c.app === "Safari") return c.app + (c.url ? ", " + c.url : "");
+    if (c.app === "Shared") return c.src;
+    return c.app;
+  }
+  function keyOf(c) { return c.place + "|" + c.src; }
+  function dayLabel(c) { return c.day === TODAY ? "today" : c.day; }
+
+  /* The zoom (A87): four stops, each its own idea; ⌘− and ⌘+ step, ⌘0 goes back to your names */
+  var Z = [
+    { mode: "strip", sh: 26, label: "Only color" },
+    { mode: "tiles", tw: 104, th: 92, label: "Your names" },
+    { mode: "places", th: 104, label: "And where" },
+    { mode: "hunt", hh: 100, label: "The hunt" }
+  ], ZOOM_HOME = 1;
+  var znameEl = null;
+  // One type scale (A97): 11, 13, 17 and 26, so a view's own sizes map onto it
+  function ts(n) { return CFG.polish !== "on" ? n : n >= 14 ? 17 : 13; }
+  function setZoom(z) {
+    z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return; st.zoom = z; render(true);
+    if (CFG.zoom === "plain" && rowOn()) { rowSay([el("span", { text: Z[z].label })], 1300); return; }
+    if (CFG.zoom === "plain") {
+      if (znameEl) znameEl.remove();
+      var top = $("pw").querySelector(".bar").offsetHeight + ($("hrow").hidden ? 0 : $("hrow").offsetHeight) + 10;
+      znameEl = el("div", { class: "zname", role: "status", style: "top:" + top + "px", text: Z[z].label });
+      $("pw").appendChild(znameEl);
+      var mine = znameEl; setTimeout(function () { if (mine.parentNode) mine.remove(); }, 1400);
+    }
+  }
+  function zoomKey(d) {
+    if (!d) { setZoom(ZOOM_HOME); return; }
+    var b = $(d < 0 ? "z-out" : "z-in"); b.classList.add("flash"); setTimeout(function () { b.classList.remove("flash"); }, 170);
+    setZoom(st.zoom + d);
+  }
+  $("z-out").addEventListener("click", function () { setZoom(st.zoom - 1); });
+  $("z-in").addEventListener("click", function () { setZoom(st.zoom + 1); });
+  $("wheel").addEventListener("click", function () { st.view = "days"; st.all = !st.all; st.study = null; st.q = ""; $("q").value = ""; render(); });
+  $("q").addEventListener("input", function () { st.q = $("q").value; render(); });
+  function openSearch() { var lab = $("q").parentNode; lab.classList.add("open"); setTimeout(function () { $("q").focus(); }, 0); }
+  $("q").parentNode.addEventListener("click", function () { if (CFG.search === "icon") openSearch(); });
+  $("q").addEventListener("blur", function () { if (CFG.search === "icon" && !$("q").value) $("q").parentNode.classList.remove("open"); });
+  $("q").addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Escape") { $("q").value = ""; st.q = ""; render(); $("q").blur(); } });
+
+  function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }).sort(function (a, b) { return b.number - a.number; }); }
+  function render(keepScroll) {
+    closeMenus(); closeWeeks(); applyCfg();
+    var body = $("body"), top = body.scrollTop;
+    renderBar();
+    body.textContent = "";
+    var list = shown();
+    if (st.fresh) body.appendChild(firstView());
+    else if (st.q.trim()) body.appendChild(searchView());
+    else if (st.view === "days") body.appendChild(st.all ? fanView() : daysView());
+    else if (st.view === "palettes") body.appendChild(st.study && palById(st.study) ? studyView(palById(st.study)) : palettesView());
+    else body.appendChild(tableView());
+    renderRail(list);
+    countLine();
+    body.scrollTop = keepScroll ? top : 0;
+    drawSelPill();
+  }
+
+  /* ---------- The top bar ---------- */
+  function renderBar() {
+    var L = $("letters"); L.textContent = "";
+    var scope = st.view === "palettes" && !st.study ? pinnedColors() : colors;
+    LETTERS.forEach(function (x) {
+      var has = scope.some(function (c) { return c.band === x[0]; }), on = st.band === x[0];
+      var b = el("button", { type: "button", "aria-pressed": String(on), "aria-label": x[1], title: x[1], text: x[0] });
+      b.disabled = st.fresh || (!has && !on);
+      b.addEventListener("click", function () { st.band = on ? null : x[0]; render(); });
+      L.appendChild(b);
+    });
+    $("wheel").setAttribute("aria-pressed", String(st.all && st.view === "days" && !st.q));
+    $("wheel").disabled = !!st.fresh;
+    var T = $("tabs"); T.textContent = "";
+    views().forEach(function (v) {
+      var on = !st.q.trim() && (v[0] === "spectrum" ? st.view === "days" && st.all : v[0] === "days" ? st.view === "days" && !(CFG.spectrum === "tab" && st.all) : v[0] === "palettes" ? st.view === "palettes" || (st.view === "table" && CFG.table === "palette") : st.view === v[0]);
+      var b = el("button", { type: "button", "aria-pressed": String(on), text: v[1] });
+      b.addEventListener("click", function () {
+        if (v[0] === "spectrum") { st.view = "days"; st.all = true; } else { st.view = v[0]; if (v[0] === "days") st.all = false; }
+        st.study = null; st.q = ""; $("q").value = ""; render();
+      });
+      T.appendChild(b);
+    });
+    var zoomOn = st.view === "days" && !st.all && !st.q.trim() && !st.fresh;
+    $("zoom").style.visibility = zoomOn ? "visible" : "hidden";
+    $("z-out").disabled = st.zoom === 0; $("z-in").disabled = st.zoom === Z.length - 1;
+    var D = $("zdots"); D.textContent = "";
+    Z.forEach(function (z, i) { var b = el("button", { type: "button", "aria-pressed": String(i === st.zoom), "aria-label": z.label, title: z.label }); b.addEventListener("click", function () { setZoom(i); }); D.appendChild(b); });
+  }
+  function pinnedColors() { return colors.filter(function (c) { return c.pinned; }); }
+  function countLine() {
+    var n = "", list = shown();
+    if (st.fresh) n = "0 colors";
+    else if (st.q.trim()) n = "";
+    else if (st.view === "days") n = (st.band ? list.length + " of " : "") + colors.length + (colors.length === 1 ? " color" : " colors") + (CFG.count === "plain" ? "" : st.all ? ", by hue" : ", " + Z[st.zoom].label.toLowerCase());
+    else if (st.view === "palettes") n = st.study ? "" : palettes.length + (palettes.length === 1 ? " palette" : " palettes");
+    if (CFG.count === "off") n = "";
+    $("count").textContent = n; $("count").hidden = !n;
+  }
+
+  /* ---------- The days of the week (A79, A86): M T W T F S S, and the arrow for weeks and months ---------- */
+  var WD = ["M", "T", "W", "T", "F", "S", "S"], WD_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  function monday(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function weekLabel(m) { var e = addDays(m, 6); return shortDay(m) + "\nto " + (e.getMonth() === m.getMonth() ? e.getDate() : shortDay(e)); }
+  function weekName(m) { var newest = colors.slice().sort(function (a, b) { return b.number - a.number; })[0], t = newest ? monday(dateOf(newest)) : m; if (+m === +t) return "This week"; if (+m === +addDays(t, -7)) return "Last week"; return weekLabel(m).replace("\n", " "); }
+  var curDay = null, wmenu = null;
+  function renderRail(list) {
+    var R = $("rail"); R.textContent = "";
+    $("main").classList.toggle("norail", CFG.rail === "off" || !(st.view === "days" && !st.all && !st.q.trim() && !st.fresh));
+    if (CFG.rail === "off") return;
+    if (!list.length) return;
+    var has = {}; list.forEach(function (c) { has[c.day] = true; });
+    if (!st.week) st.week = monday(dateOf(list[0]));
+    R.appendChild(el("p", { class: "wk num", text: weekLabel(st.week) }));
+    WD.forEach(function (w, i) {
+      var d = addDays(st.week, i), day = dayName(d);
+      var b = el("button", { type: "button", class: "wd" + (day === TODAY ? " today" : "") + (day === curDay ? " on" : ""), text: w, "data-day": day, title: WD_FULL[i] + ", " + day + (has[day] ? "" : ": nothing kept"), "aria-label": WD_FULL[i] + ", " + day });
+      b.disabled = !has[day];
+      b.addEventListener("click", function () { jumpTo(day); });
+      R.appendChild(b);
+    });
+    var more = el("button", { type: "button", class: "wmore", "aria-haspopup": "menu", "aria-expanded": "false", "aria-label": "Other weeks and months", title: "Other weeks and months" });
+    more.innerHTML = '<svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    more.addEventListener("click", function (e) { e.stopPropagation(); if (wmenu) closeWeeks(); else openWeeks(more, list); });
+    R.appendChild(more);
+  }
+  function closeWeeks() { if (wmenu) { wmenu.remove(); wmenu = null; } var m = $("rail").querySelector(".wmore"); if (m) m.setAttribute("aria-expanded", "false"); }
+  function openWeeks(btn, list) {
+    closeWeeks();
+    var weeks = [], months = [];
+    list.forEach(function (c) {
+      var d = dateOf(c), m = monday(d), w = weeks.filter(function (x) { return +x.m === +m; })[0];
+      if (!w) { w = { m: m, n: 0, first: c.day }; weeks.push(w); } w.n++;
+      var mo = d.getFullYear() * 12 + d.getMonth(), x = months.filter(function (y) { return y.k === mo; })[0];
+      if (!x) { x = { k: mo, d: d, n: 0, first: c.day }; months.push(x); } x.n++;
+    });
+    var kids = [el("p", { class: "mh2", text: "Weeks" })];
+    weeks.forEach(function (w) {
+      var b = el("button", { type: "button" }, [el("span", { class: "ck", text: +w.m === +st.week ? "✓" : "" }), el("span", { class: "num", text: weekName(w.m) }), el("span", { class: "rt num", text: String(w.n) })]);
+      b.addEventListener("click", function () { st.week = w.m; closeWeeks(); renderRail(shown()); jumpTo(w.first); });
+      kids.push(b);
+    });
+    kids.push(el("hr")); kids.push(el("p", { class: "mh2", text: "Months" }));
+    months.forEach(function (x) {
+      var b = el("button", { type: "button" }, [el("span", { class: "ck" }), el("span", { text: MONTHS[x.d.getMonth()] }), el("span", { class: "rt num", text: String(x.n) })]);
+      b.addEventListener("click", function () { st.week = monday(x.d); closeWeeks(); renderRail(shown()); jumpTo(x.first); });
+      kids.push(b);
+    });
+    wmenu = el("div", { class: "wmenu", role: "menu", "aria-label": "Other weeks and months" }, kids);
+    var r = rectIn(btn), w2 = rectIn($("pw"));
+    wmenu.style.left = (r.x - w2.x + r.w + 6) + "px"; wmenu.style.top = Math.max(60, r.y - w2.y - 40) + "px";
+    $("pw").appendChild(wmenu);
+    btn.setAttribute("aria-expanded", "true");
+  }
+  document.addEventListener("pointerdown", function (e) { var t = e.target; if (wmenu && !(t && t.closest && t.closest(".wmenu, .wmore"))) closeWeeks(); });
+  function jumpTo(day) { var t = document.getElementById("d-" + slug(day)); if (t) $("body").scrollTop = t.offsetTop - 6; }
+  function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-"); }
+  // As you scroll, the day in view lights up, and the column follows it into its week
+  $("body").addEventListener("scroll", function () {
+    var days = $("body").querySelectorAll(".day"), cur = null, top = $("body").scrollTop + 30;
+    days.forEach(function (d) { if (d.offsetTop <= top) cur = d.getAttribute("data-day"); });
+    if (!cur && days.length) cur = days[0].getAttribute("data-day");
+    if (cur === curDay) return;
+    curDay = cur;
+    var c = colors.filter(function (x) { return x.day === cur; })[0];
+    if (c && +monday(dateOf(c)) !== +st.week) { st.week = monday(dateOf(c)); renderRail(shown()); return; }
+    $("rail").querySelectorAll(".wd").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-day") === cur); });
+  });
+
+  /* ---------- Tiles, and gathering them with ⇧-click (A67) ---------- */
+  function sw(c) { return el("i", { style: "background:" + c.hex }); }
+  function nameSpan(c, short) {
+    if (!c.name && !short && CFG.names !== "one") {
+      var parts = c.placeholder.split(" from ");
+      if (CFG.names === "word" || parts.length < 2) return el("span", { class: "nm ph", text: parts[0] });
+      return el("span", { class: "nm ph" }, [parts[0], el("small", { text: "from " + parts.slice(1).join(" from ") })]);
+    }
+    return el("span", { class: "nm" + (c.name ? "" : " ph"), text: !c.name && short ? c.placeholder.split(" from ")[0] : title(c) });
+  }
+  function tile(c, o) {
+    o = o || {};
+    var b = el("button", { type: "button", class: "t" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + (o.style ? ";" + o.style : ""), "aria-label": label(c) + (c.pinned ? ", pinned" : "") + ", " + whereOf(c) }, [o.noName ? null : nameSpan(c, o.short), c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null]);
+    b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c, o.trail || defaultTrail(c)); });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
+    return b;
+  }
+  function source(c, size) {
+    var s = size ? "width:" + size + "px;height:" + size + "px" : null;
+    if (c.crop) return el("div", { class: "src", style: s }, [el("img", { src: c.crop, alt: "" })]);
+    var nb = c.neighbors || [];
+    return el("div", { class: "src mos", style: s, "aria-hidden": "true" }, [nb[0], nb[1], nb[2], nb[3], c.hex, nb[4], nb[5], nb[6], nb[7]].map(function (h) { return el("i", { style: "background:" + (h || c.hex) }); }));
+  }
+  function firstCrop(list) { var w = list.filter(function (c) { return c.crop; }); return w.length ? w.reduce(function (a, b) { return a.number <= b.number ? a : b; }) : null; }
+  function groupsBy(list, keyFn) { var out = []; list.forEach(function (c) { var k = keyFn(c), g = out.filter(function (x) { return x.k === k; })[0]; if (g) g.list.push(c); else out.push({ k: k, list: [c] }); }); return out; }
+  function dayGroups(list) { var out = []; list.forEach(function (c) { var g = out[out.length - 1]; if (g && g.day === c.day) g.list.push(c); else out.push({ day: c.day, list: [c] }); }); return out; }
+  function defaultTrail(c) {
+    return [{ label: c.day === TODAY ? "Today" : c.day, go: function () { closeSheet(); st.view = "days"; st.all = false; st.q = ""; $("q").value = ""; render(); jumpTo(c.day); } },
+      { label: whereOf(c), go: function () { closeSheet(); st.q = whereOf(c); $("q").value = whereOf(c); render(); } }];
+  }
+  function gathers(e) { return e.shiftKey || e.metaKey; }
+  function isSel(n) { return st.selected.indexOf(n) >= 0; }
+  function toggleSel(c) { var k = st.selected.indexOf(c.number); if (k >= 0) st.selected.splice(k, 1); else st.selected.push(c.number); syncSel(); }
+  function clearSel() { if (!st.selected.length) return; st.selected = []; syncSel(); }
+  function syncSel() {
+    stage.querySelectorAll("#body [data-n]").forEach(function (n) { n.classList.toggle("sel", isSel(Number(n.getAttribute("data-n")))); });
+    drawSelPill();
+  }
+  // What you've gathered: the colors, how many, and what to do with them, as a quiet bar at the bottom of the window
+  var selPill = null;
+  function drawSelPill() {
+    var had = !!selPill; if (selPill) { selPill.remove(); selPill = null; }
+    if (!st.selected.length || $("pw").hidden) { syncBusy(); return; }
+    var cs = st.selected.map(byNo).filter(Boolean);
+    var add = el("button", { type: "button", class: "tbtn ink", "aria-haspopup": "menu", text: "Add to palette" });
+    add.addEventListener("click", function () { paletteMenu(cs, add); });
+    var table = CFG.table === "off" ? null : el("button", { type: "button", class: "tbtn", text: "Take to table" });
+    if (table) table.addEventListener("click", function () { takeToTable(cs); clearSel(); });
+    var clr = el("button", { type: "button", class: "tbtn", text: "Clear" });
+    clr.addEventListener("click", clearSel);
+    var kids = [el("span", { class: "ss", "aria-hidden": "true" }, cs.slice(-14).map(sw)), el("span", { class: "sn num", "aria-live": "polite", text: cs.length + " selected" }), clr, table, add];
+    if (rowOn()) { var r = rowEndEl(); selPill = el("div", { class: "rowsel", style: had ? "animation:none" : null }, kids); r.insertBefore(selPill, $("count").parentNode === r ? $("count") : null); syncBusy(); return; }
+    selPill = el("div", { class: "selpill", style: had ? "animation:none" : null }, kids);
+    $("pw").appendChild(selPill);
+  }
+
+  /* ---------- Days, each with its places (A72), at four stops (A87); a day opens out on a click ---------- */
+  function daysView() {
+    var z = Z[st.zoom], box = el("div", { class: "days" }), list = shown();
+    if (!list.length) { box.appendChild(el("p", { class: "empty", text: st.band ? "Nothing under this letter yet." : "Nothing kept yet." })); return box; }
+    dayGroups(list).forEach(function (g) {
+      var places = groupsBy(g.list, keyOf);
+      var open = !!st.open[g.day] || z.mode === "hunt";
+      var compact = z.mode === "strip" && !open;
+      var head = el("button", { type: "button", class: "dh", "aria-expanded": String(open), title: open ? "Fold this day" : "Open this day out" }, [
+        el("b", { text: g.day === TODAY ? "Today" : g.day }),
+        compact ? null : el("span", { class: "num", text: g.list.length + (g.list.length === 1 ? " color" : " colors") + " from " + places.length + (places.length === 1 ? " place" : " places") }),
+        el("i", { "aria-hidden": "true" })
+      ]);
+      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; render(true); });
+      var content, today = g.day === TODAY;
+      if (open) {
+        content = el("div", { style: "--hh:" + (today && z.mode === "hunt" ? 124 : (z.hh || 96)) + "px" }, places.map(function (p) {
+          var c0 = p.list[0], first = p.list[p.list.length - 1];
+          return el("div", { class: "hunt" }, [
+            el("div", { class: "st" }, [el("p", { class: "w", text: whereOf(c0) }), el("p", { class: "v", text: viaOf(c0) + (today ? ", " + timeOf(dateOf(first)) : "") })]),
+            source(firstCrop(p.list) || c0),
+            el("div", { class: "cs" }, p.list.slice().reverse().map(function (c) { return tile(c, { short: true, style: "--ts:" + ts(today ? 14 : 12) + "px" }); }))
+          ]);
+        }));
+      } else if (z.mode === "strip") {
+        content = el("div", { class: "strip", style: "--sh:" + z.sh + "px" }, g.list.slice().reverse().map(function (c) { return tile(c, { noName: true }); }));
+      } else if (z.mode === "tiles") {
+        content = el("div", { class: "row", style: "--tw:" + (today ? z.tw * 1.4 : z.tw) + "px;--th:" + (today ? Math.round(z.th * 1.6) : z.th) + "px" }, g.list.slice().reverse().map(function (c) { return tile(c, { style: today ? "--ts:" + ts(16) + "px" : null }); }));
+      } else {
+        content = el("div", { class: "pls", style: "--th:" + (today ? 130 : z.th) + "px" }, places.map(function (p) {
+          var c0 = p.list[0];
+          return el("div", { class: "pg", style: "flex-grow:" + p.list.length }, [
+            el("p", { class: "w" }, CFG.polish === "on" ? [el("b", { text: whereOf(c0) }), el("span", { class: "via", text: viaOf(c0) })] : [el("b", { text: whereOf(c0) }), "  " + viaOf(c0)]),
+            el("div", { class: "cs" }, p.list.slice().reverse().map(function (c) { return el("div", null, [tile(c, { short: true }), el("p", { class: "lbl num", text: no(c.number) + (today ? ", " + timeOf(dateOf(c)) : "") })]); }))
+          ]);
+        }));
+      }
+      box.appendChild(el("section", { class: "day" + (compact ? " compact" : ""), id: "d-" + slug(g.day), "data-day": g.day, style: "--dhs:" + (today ? 26 : CFG.polish === "on" ? 17 : 20) + "px" }, [head, content]));
+    });
+    return box;
+  }
+
+  /* ---------- All colors, by hue: the fan, folded into Days behind the ring (A74, A81, A91) ---------- */
+  var fanPos = null;
+  function fanView() {
+    var list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+    var f = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "All your colors, by hue. Scroll or use the arrow keys to turn it." });
+    if (!list.length) { f.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return f; }
+    // Click the name and type (A98): kept as you type, Enter or Esc ends it, and the fan holds still while you write
+    var nm = el("p", { class: "nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", spellcheck: "false", title: "Click to rename" }), mt = el("p", { class: "mt num" });
+    nm.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); nm.blur(); } });
+    nm.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+    nm.addEventListener("input", function () {
+      var c = list[pos], v = nm.textContent.trim();
+      c.name = v || null; if (!v) nm.textContent = "";
+      nm.classList.toggle("ph", !c.name);
+      if (cards[pos]) cards[pos].setAttribute("aria-label", label(c));
+      drawStrips();
+    });
+    f.appendChild(el("div", { class: "fan-cap", "aria-live": "polite" }, [nm, mt]));
+    var pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
+    // Once your colors fill a full circle (30 cards, 12° apart), the fan loops (Noah's ask, after D25): past violet and the
+    // neutrals, red comes round again. Fewer than that, and it keeps its ends. A card crossing the seam is out of sight.
+    var STEP = 12, n = list.length, loop = n * STEP >= 360;
+    if (loop) f.setAttribute("aria-label", "All your colors, by hue, all the way around. Scroll or use the arrow keys to turn it.");
+    function rel(i) { var d = i - pos; if (loop) { d = ((d % n) + n) % n; if (d > n / 2) d -= n; } return d; }
+    function turn(dir) { pos = loop ? (pos + dir + n) % n : clamp(pos + dir, 0, n - 1); place(); }
+    var cards = list.map(function (c, i) {
+      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c), role: "img", "aria-label": label(c) }, [el("span", { class: "fno num", "aria-hidden": "true", text: pad(c.number) })]);
+      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (i === pos) openCard(c, defaultTrail(c)); else { pos = i; place(); } });
+      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (i !== pos) { pos = i; place(); } colorMenu(c, toStage(e)); });
+      f.appendChild(d); return d;
+    });
+    function place() {
+      fanPos = pos;
+      cards.forEach(function (d, i) { var r = rel(i), a = r * STEP; d.style.transform = "rotate(" + a + "deg)" + (i === pos ? " translateY(-124px)" : ""); d.style.opacity = Math.abs(a) > 80 ? "0" : "1"; d.style.zIndex = String(200 - Math.abs(r)); });
+      var c = list[pos];
+      if (document.activeElement === nm) nm.blur();
+      nm.textContent = c.name || ""; nm.setAttribute("data-placeholder", c.placeholder); nm.className = "nm" + (c.name ? "" : " ph");
+      mt.textContent = whereOf(c) + ", " + dayLabel(c);
+    }
+    var acc = 0;
+    f.addEventListener("wheel", function (e) { e.preventDefault(); acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (Math.abs(acc) < 34) return; var dir = acc > 0 ? 1 : -1; acc = 0; turn(dir); }, { passive: false });
+    f.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); turn(e.key === "ArrowRight" ? 1 : -1); }
+      if (e.key === "Enter") openCard(list[pos], defaultTrail(list[pos]));
+    });
+    place();
+    // The arrow keys turn it right away, but only when Palit is its own page: in the dashboard's frames, taking focus scrolls the page around it
+    if (window.self === window.top) setTimeout(function () { f.focus({ preventScroll: true }); }, 0);
+    return f;
+  }
+
+  /* ---------- Palettes: what you pinned, your palettes, what's shared with you; a palette opens as a study (A74) ---------- */
+  function palById(id) { return palettes.filter(function (p) { return p.id === id; })[0]; }
+  function palName(p) { return p.name || p.placeholder || "Untitled palette"; }
+  function palettesView() {
+    var box = el("div", { class: "pals" });
+    var pins = pinnedColors().filter(function (c) { return !st.band || c.band === st.band; });
+    box.appendChild(el("p", { class: "sub-h", text: "Pinned" }));
+    if (!pinnedColors().length) box.appendChild(el("p", { class: "lbl", text: "Pin a color with a right-click or from its card, and it waits here." }));
+    else if (!pins.length) box.appendChild(el("p", { class: "lbl", text: "Nothing pinned under this letter." }));
+    else box.appendChild(el("div", { class: "pins" }, pins.map(function (c) { return tile(c, { trail: [{ label: "Palettes", go: closeSheet }] }); })));
+    box.appendChild(el("p", { class: "sub-h", text: "Your palettes" }));
+    palettes.forEach(function (p) { box.appendChild(paletteRow(p)); });
+    box.appendChild(el("p", { class: "sub-h", text: "Shared with you" }));
+    shared.forEach(function (s) { box.appendChild(sharedRow(s)); });
+    return box;
+  }
+  function paletteRow(p) {
+    var cs = p.members.map(byNo).filter(Boolean);
+    var onDesk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
+    onDesk.addEventListener("click", function (e) { e.stopPropagation(); st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function (e) { e.stopPropagation(); openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    share.disabled = !cs.length;
+    var row = el("div", { class: "pal open-able", role: "button", tabindex: "0", "aria-label": "Open " + palName(p) + " as a study" }, [
+      el("div", null, [el("p", { class: "pn" + (p.name ? "" : " ph"), text: palName(p) }), el("p", { class: "pm num", text: cs.length + (cs.length === 1 ? " color, " : " colors, ") + (p.day === TODAY ? "today" : p.day) })]),
+      el("div", { class: "pstrip" }, cs.length ? cs.map(sw) : [el("i", { class: "none", text: "No colors yet. Right-click a color to add it." })]),
+      el("div", { class: "acts" }, [share, onDesk])
+    ]);
+    function open() { st.study = p.id; render(); }
+    row.addEventListener("click", open);
+    row.addEventListener("keydown", function (e) { if (e.key === "Enter") open(); });
+    return row;
+  }
+  function sharedRow(s) {
+    var keepB = el("button", { type: "button", class: "tbtn", text: "Keep a copy" });
+    keepB.addEventListener("click", function () {
+      var members = s.hexes.map(function (h, i) { var c = make({ number: next++, hex: h, name: s.names[i], app: "Shared", place: "Shared by " + s.from, src: s.name, day: TODAY, at: new Date().toISOString(), neighbors: null }); colors.push(c); return c.number; });
+      var p = { id: "p-" + s.id, name: s.name, members: members, day: TODAY };
+      members.forEach(function (n) { byNo(n).palette = p.id; });
+      palettes.unshift(p); keepB.disabled = true; keepB.textContent = "Kept"; drawStrips();
+    });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(s.name, s.hexes.map(function (h, i) { return { hex: h, name: s.names[i] }; })); });
+    return el("div", { class: "pal" }, [
+      el("div", null, [el("p", { class: "pn", text: s.name }), el("p", { class: "pm num", text: "From " + s.from + ", " + s.day })]),
+      el("div", { class: "pstrip" }, s.hexes.map(function (h, i) { return el("i", { style: "background:" + h, title: s.names[i] + ", " + h }); })),
+      el("div", { class: "acts" }, [share, keepB])
+    ]);
+  }
+  function studyView(p) {
+    var cs = p.members.map(byNo).filter(Boolean);
+    var back = el("button", { type: "button", class: "back", text: "Palettes" });
+    back.addEventListener("click", function () { st.study = null; render(); });
+    // Until you name a palette it keeps a placeholder from where its colors came from (A24); click the name to give it yours.
+    var nm = el("p", { class: "sn2", contenteditable: "true", role: "textbox", "aria-label": "Name this palette", "data-placeholder": p.placeholder || "Untitled palette", spellcheck: "false" });
+    nm.textContent = p.name || "";
+    nm.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); nm.blur(); } });
+    nm.addEventListener("input", function () { var v = nm.textContent.trim(); p.name = v || null; if (!v) nm.textContent = ""; if (st.deskPal === p.id) drawStrips(); });
+    var copyB = el("button", { type: "button", class: "tbtn", text: "Copy the codes" });
+    copyB.addEventListener("click", function () { copy(palName(p) + "\n" + cs.map(function (c) { return title(c) + "  " + c.hex; }).join("\n")); toast("Copied the codes", cs); });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    var desk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
+    desk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
+    var onTable = CFG.table === "palette" ? el("button", { type: "button", class: "tbtn", text: "Try on the table" }) : null;
+    if (onTable) onTable.addEventListener("click", function () { placed = []; takeToTableQuiet(p.members); st.view = "table"; st.study = null; render(); });
+    var keepV = el("button", { type: "button", class: "tbtn ink", text: "Keep this version" });
+    keepV.addEventListener("click", function () { p.version = (p.version || 0) + 1; p.keptCodes = cs.map(function (c) { return c.hex; }); render(true); toast("Kept as version " + p.version + ". Everyone you share it with gets these codes.", cs); });
+    var ver = p.version ? "Version " + p.version + ", kept today. Everyone you share it with gets the same codes." : "Each color on white, mid gray and black, the way the surface changes it. Keep a version, and everyone you share it with gets the same codes.";
+    return el("div", { class: "study" }, [back,
+      el("div", { class: "study-h" }, [nm, el("span", { class: "meta num", text: cs.length + " colors, " + (p.day === TODAY ? "today" : p.day) }), el("div", { class: "acts" }, [copyB, share, desk, onTable, keepV])]),
+      el("div", { class: "cols", style: "grid-template-columns:repeat(" + Math.max(1, cs.length) + ",minmax(0,1fr))" }, cs.map(function (c) {
+        var big = el("div", { class: "big", style: "background:" + c.hex + ";color:" + c.on }, [nameSpan(c)]);
+        big.addEventListener("click", function () { openCard(c, [{ label: "Palettes", go: function () { closeSheet(); st.study = null; render(); } }, { label: palName(p), go: closeSheet }]); });
+        big.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e), p); });
+        return el("div", { class: "col" }, [big,
+          el("div", { class: "grounds", title: "On white, mid gray and black" }, ["#ffffff", "#7f7f7f", "#111111"].map(function (g) { return el("div", { style: "background:" + g }, [el("i", { style: "background:" + c.hex })]); })),
+          el("div", { class: "meta" }, [source(c, 30), el("div", null, [el("span", { text: whereOf(c) }), el("br"), el("span", { class: "v", text: viaOf(c) })])]),
+          el("p", { class: "codes num" }, [el("b", { text: c.hex }), "  " + PC.displayRgb(c.hex)])]);
+      })),
+      el("p", { class: "ver", text: ver })
+    ]);
+  }
+
+  /* ---------- Table: try colors together (A74, A84, A85). What's on it stays while you look elsewhere. ---------- */
+  var placed = [], tableNames = false;
+  function freeSpot() { var k = placed.length; return { x: 70 + (k * 131) % 760, y: 70 + (Math.floor(k * 131 / 760) * 124) % 420 }; }
+  function takeToTable(list) {
+    var fresh = list.filter(function (c) { return !placed.some(function (x) { return x.n === c.number; }); });
+    fresh.forEach(function (c) { var f = freeSpot(); placed.push({ n: c.number, x: f.x, y: f.y }); });
+    toast(fresh.length ? (fresh.length > 1 ? "Taken to table: " + fresh.length + " colors" : "Taken to table") : "Already on the table", list);
+    if (CFG.table === "palette" && !$("pw").hidden && st.view !== "table") { closeSheet(); st.view = "table"; st.study = null; st.all = false; render(); return; }
+    if (st.view === "table" && !$("pw").hidden) render(true);
+  }
+  function tableView() {
+    var t = el("div", { class: "table" + (tableNames ? " named" : "") });
+    var names = el("button", { type: "button", class: "tbtn", "aria-pressed": String(tableNames), text: "Show names" });
+    names.addEventListener("click", function () { tableNames = !tableNames; t.classList.toggle("named", tableNames); names.setAttribute("aria-pressed", String(tableNames)); });
+    var clear = el("button", { type: "button", class: "tbtn", text: "Clear the table" });
+    clear.addEventListener("click", function () { placed = []; render(true); });
+    var keepP = el("button", { type: "button", class: "tbtn ink", text: "Keep as a palette" });
+    keepP.addEventListener("click", function () { var cs = placed.map(function (p) { return byNo(p.n); }).filter(Boolean); if (cs.length) newPalette(cs); });
+    keepP.disabled = !placed.length;
+    t.appendChild(el("div", { class: "acts" }, [names, clear, keepP]));
+    if (CFG.table === "palette") { var tback = el("button", { type: "button", class: "back tback", text: "Palettes" }); tback.addEventListener("click", function () { st.view = "palettes"; render(); }); t.appendChild(tback); }
+    // Three grounds down the right: white, mid gray and black, to set a color on (Albers; deep dive 1)
+    [["#ffffff", "On white"], ["#7f7f7f", "On mid gray"], ["#111111", "On black"]].forEach(function (g, i) {
+      t.appendChild(el("div", { class: "ground", style: "left:900px;top:" + (56 + i * 196) + "px;background:" + g[0] + (i ? "" : ";box-shadow:inset 0 0 0 1px #e2e2e4") }, [el("p", { text: g[1] })]));
+    });
+    function toT(e) { var r = t.getBoundingClientRect(), k = r.width / t.offsetWidth; return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k }; }
+    function chip(p) {
+      var c = byNo(p.n); if (!c) return;
+      var d = el("div", { class: "chip", "data-n": String(c.number), style: vars(c) + ";background:" + c.hex + ";left:" + p.x + "px;top:" + p.y + "px", "aria-label": label(c) }, [nameSpan(c)]);
+      var off = null;
+      function move(e) { var q2 = toT(e); p.x = q2.x - off.x; p.y = q2.y - off.y; d.style.left = p.x + "px"; d.style.top = p.y + "px"; }
+      function up() { removeEventListener("pointermove", move); removeEventListener("pointerup", up); off = null; }
+      d.addEventListener("pointerdown", function (e) { if (e.button !== 0) return; e.preventDefault(); var q2 = toT(e); off = { x: q2.x - p.x, y: q2.y - p.y }; t.appendChild(d); addEventListener("pointermove", move); addEventListener("pointerup", up); });
+      d.addEventListener("dblclick", function () { openCard(c, [{ label: "Table", go: closeSheet }]); });
+      d.addEventListener("contextmenu", function (e) {
+        e.preventDefault(); e.stopPropagation();
+        openMenu([{ label: "Remove from table", act: function () { placed = placed.filter(function (x) { return x !== p; }); d.remove(); keepP.disabled = !placed.length; } }, "-",
+          { label: "Open", act: function () { openCard(c, [{ label: "Table", go: closeSheet }]); } },
+          { label: "Add to palette", sub: function () { return paletteItems([c]); } },
+          { label: "Copy hex", right: c.hex, act: function () { copy(c.hex); toast("Copied " + c.hex, [c]); } }], toStage(e), { label: title(c) });
+      });
+      t.appendChild(d);
+    }
+    placed.forEach(chip);
+    if (!placed.length) t.appendChild(el("p", { class: "hint", text: "An empty table. Bring a color here by its name, below, or right-click any color and take it to the table." }));
+    // The search at the bottom, instead of a bar of every color (A84)
+    var input = el("input", { type: "search", placeholder: "Bring a color here by its name", "aria-label": "Find a color by its name to bring to the table", spellcheck: "false", autocomplete: "off" });
+    var results = el("ul", { class: "tres", role: "listbox", "aria-label": "Colors that match" });
+    var hits = [], hi = 0;
+    function add(c) {
+      if (!placed.some(function (x) { return x.n === c.number; })) { var f = freeSpot(), p = { n: c.number, x: f.x, y: f.y }; placed.push(p); chip(p); var h = t.querySelector(".hint"); if (h) h.remove(); keepP.disabled = false; }
+      toast("On the table", [c]); input.value = ""; update(); input.focus();
+    }
+    function update() {
+      var qq = input.value.trim().toLowerCase(); results.textContent = ""; hits = []; hi = 0;
+      if (!qq) return;
+      hits = colors.filter(function (c) { return (title(c) + " " + whereOf(c)).toLowerCase().indexOf(qq) >= 0; }).sort(function (a, b) { return (a.name ? 0 : 1) - (b.name ? 0 : 1) || b.number - a.number; }).slice(0, 6);
+      if (!hits.length) { results.appendChild(el("li", { class: "none", text: "No color by that name. Name one from its card, or go find it." })); return; }
+      hits.forEach(function (c, i) {
+        var li = el("li", { class: i === hi ? "hi" : null, role: "option" }, [sw(c), el("div", { style: "min-width:0" }, [el("b", { class: c.name ? null : "ph", text: title(c) }), el("span", { text: whereOf(c) + ", " + dayLabel(c) + (placed.some(function (x) { return x.n === c.number; }) ? ". On the table" : "") })])]);
+        li.addEventListener("pointerdown", function (e) { e.preventDefault(); add(c); });
+        results.appendChild(li);
+      });
+    }
+    input.addEventListener("input", update);
+    input.addEventListener("keydown", function (e) {
+      e.stopPropagation();
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!hits.length) return; hi = (hi + (e.key === "ArrowDown" ? 1 : hits.length - 1)) % hits.length; Array.prototype.forEach.call(results.children, function (li, i) { li.classList.toggle("hi", i === hi); }); }
+      if (e.key === "Enter" && hits[hi]) { e.preventDefault(); add(hits[hi]); }
+      if (e.key === "Escape") { input.value = ""; update(); input.blur(); }
+    });
+    t.appendChild(el("div", { class: "tsearch" }, [results, el("label", { class: "tfield" }, [input])]));
+    return t;
+  }
+
+  /* ---------- Search: find it again (A76) ---------- */
+  function searchView() {
+    var qq = st.q.trim().toLowerCase();
+    var hits = colors.filter(function (c) { return (title(c) + " " + whereOf(c) + " " + viaOf(c) + " " + c.hex + " " + (c.note || "")).toLowerCase().indexOf(qq) >= 0; }).sort(function (a, b) { return b.number - a.number; });
+    function mark(t2) { var i = t2.toLowerCase().indexOf(qq); return i < 0 || !qq ? [t2] : [t2.slice(0, i), el("mark", { text: t2.slice(i, i + qq.length) }), t2.slice(i + qq.length)]; }
+    return el("div", { class: "res" }, [el("p", { class: "q num", text: hits.length ? hits.length + (hits.length === 1 ? " color matches" : " colors match") + " “" + st.q.trim() + "”, by your name for it, the place, its code or your note" : "Nothing matches “" + st.q.trim() + "”. Every color here is one you found, so if it isn't here, it's still out there." }),
+      el("ul", null, hits.map(function (c) {
+        var li = el("li", null, [el("div", { class: "t", style: vars(c) }, [nameSpan(c)]), source(c, 72), el("div", null, [el("p", { class: "w" + (c.name ? "" : " ph") }, mark(title(c))), el("p", { class: "v" }, mark(whereOf(c) + ", " + viaOf(c) + ", " + dayLabel(c)))])]);
+        li.addEventListener("click", function () { openCard(c, [{ label: "Search: “" + st.q.trim() + "”", go: closeSheet }]); });
+        li.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
+        return li;
+      }))]);
+  }
+
+  /* ---------- First open: the opinion as the empty window (A71, A75), then the first hunt ---------- */
+  function firstView() {
+    var keys = el("button", { type: "button", class: "keys", "aria-label": "Press Option Shift C" }, [el("span", { class: "kc", text: "⌥" }), el("span", { class: "kc", text: "⇧" }), el("span", { class: "kc", text: "C" })]);
+    keys.addEventListener("click", function (e) { e.stopPropagation(); startPicking(); });
+    return el("div", { class: "first" }, [el("div", null, [
+      el("p", { class: "big", text: "Every color in Palit is one you found." }),
+      el("p", { class: "small" }, ["Press", keys, "then click any color on your screen."]),
+      el("p", { class: "tiny", text: "There's no way to type or make one. Your first becomes No. 001." })
+    ])]);
+  }
+
+  /* ---------- Palettes: a color can sit in as many as you like (entry 116) ---------- */
+  function palettesOf(c) { return palettes.filter(function (p) { return p.members.indexOf(c.number) >= 0; }); }
+  function newPalette(list) {
+    var places = list.map(function (c) { return c.place; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    var ph = places.length === 1 ? "Palette from " + places[0] : list.every(function (c) { return c.pinned; }) ? "Palette from your pins" : "Palette from " + places.length + " places";
+    var p = { id: "p-" + Date.now(), name: null, placeholder: ph, members: list.map(function (c) { return c.number; }), day: TODAY };
+    palettes.unshift(p);
+    afterPalettes(p, "Added to ");
+    return p;
+  }
+  function addTo(p, list) {
+    var fresh = list.filter(function (c) { return p.members.indexOf(c.number) < 0; });
+    fresh.forEach(function (c) { p.members.push(c.number); });
+    afterPalettes(p, fresh.length ? "Added to " : "Already in ");
+  }
+  function removeFrom(p, list) {
+    var gone = list.map(function (c) { return c.number; });
+    p.members = p.members.filter(function (n) { return gone.indexOf(n) < 0; });
+    list.forEach(function (c) { if (c.palette === p.id) c.palette = null; });   // Days stops setting it beside the palette it was kept with
+    afterPalettes(p, "Removed from ");
+  }
+  function afterPalettes(p, verb) {
+    st.selected = [];
+    if (st.deskPal) drawStrips();
+    if (sheetRefresh) sheetRefresh();
+    if (!$("pw").hidden && (st.view === "palettes" || st.view === "table")) render(true); else syncSel();
+    toast(verb + palName(p), p.members.map(byNo).filter(Boolean));
+  }
+  function setPinned(list, on) {
+    list.forEach(function (c) { c.pinned = on; });
+    if (sheetRefresh) sheetRefresh();
+    if (!$("pw").hidden && st.view === "palettes") { render(true); return; }
+    stage.querySelectorAll("#body .t[data-n]").forEach(function (t) {
+      var c = byNo(Number(t.getAttribute("data-n"))), dot = t.querySelector(".pin");
+      if (c.pinned && !dot) t.appendChild(el("span", { class: "pin", "aria-hidden": "true" }));
+      if (!c.pinned && dot) dot.remove();
+      t.setAttribute("aria-label", label(c) + (c.pinned ? ", pinned" : ""));
+    });
+  }
+
+  /* ---------- The menu (entry 116): right-click any color for Add to palette, the way Spotify adds a song to a
+     playlist, as a Mac menu. Palettes show their colors; a check marks the ones it's already in, a dash when only
+     some of what you gathered is, and choosing a checked one takes it out, the way Finder's tags work. ---------- */
+  var menus = [], menuGone = { at: 0, by: null }, sheetRefresh = null;
+  function rectIn(node) { var r = node.getBoundingClientRect(), s = stage.getBoundingClientRect(), k = s.width / W; return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k }; }
+  function closeMenus(from) {
+    from = from || 0;
+    while (menus.length > from) { var m = menus.pop(); m.node.remove(); if (m.opener) { m.opener.classList.remove("open"); m.opener.setAttribute("aria-expanded", "false"); } }
+  }
+  function chev() {
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("class", "chev"); s.setAttribute("viewBox", "0 0 6 10"); s.setAttribute("aria-hidden", "true");
+    s.innerHTML = '<path d="M1 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    return s;
+  }
+  // at: a point for a right-click, or { rect } to sit under a button, or { beside } for a submenu.
+  function openMenu(items, at, opts) {
+    opts = opts || {};
+    var level = opts.level || 0, col = items.some(function (it) { return it && it.checks; });
+    closeMenus(level);
+    var m = el("div", { class: "menu", role: "menu", "aria-label": opts.label || "Color" });
+    items.forEach(function (it) {
+      if (it === "-") { m.appendChild(el("hr")); return; }
+      if (it.head) { m.appendChild(it.head); return; }
+      var kids = [];
+      if (col) kids.push(el("span", { class: "ck", "aria-hidden": "true", text: it.check === true ? "✓" : it.check === "mixed" ? "–" : "" }));
+      if (it.strip) kids.push(it.strip);
+      kids.push(el("span", { class: "lb" + (it.ph ? " ph" : ""), text: it.label }));
+      if (it.right) kids.push(el("span", { class: "rt", text: it.right }));
+      if (it.sub) kids.push(chev());
+      var b = el("button", { type: "button", class: "mi", role: it.checks ? "menuitemcheckbox" : "menuitem", tabindex: "-1" }, kids);
+      if (it.checks) b.setAttribute("aria-checked", it.check === true ? "true" : it.check === "mixed" ? "mixed" : "false");
+      if (it.disabled) b.disabled = true;
+      if (it.sub) {
+        b.setAttribute("aria-haspopup", "menu"); b.setAttribute("aria-expanded", "false");
+        b._open = function (focus) {
+          if (menus[level + 1] && menus[level + 1].opener === b) return;
+          var sm = openMenu(it.sub(), { beside: rectIn(b), menu: rectIn(m) }, { level: level + 1, opener: b, label: it.label });
+          b.classList.add("open"); b.setAttribute("aria-expanded", "true");
+          if (focus) { var f = sm.querySelector(".mi:not(:disabled)"); if (f) f.focus(); }
+        };
+        var hov = null;
+        b.addEventListener("mouseenter", function () { clearTimeout(hov); hov = setTimeout(function () { b._open(false); }, 110); });
+        b.addEventListener("mouseleave", function () { clearTimeout(hov); });
+        b.addEventListener("click", function () { b._open(false); });
+      } else {
+        b.addEventListener("mouseenter", function () { closeMenus(level + 1); });
+        b.addEventListener("click", function () { closeMenus(); if (it.act) it.act(); });
+      }
+      m.appendChild(b);
+    });
+    m.style.visibility = "hidden"; stage.appendChild(m);
+    var w = m.offsetWidth, h = m.offsetHeight, x, y;
+    if (at.beside) {   // a submenu: to the right of its menu, its first row level with the row that opened it
+      x = at.menu.x + at.menu.w - 4; y = at.beside.y - 5;
+      if (x + w > W - 6) x = at.menu.x - w + 4;
+    } else if (at.rect) {   // under a button, or above it when there's no room
+      x = Math.min(at.rect.x, W - 6 - w); y = at.rect.y + at.rect.h + 4;
+      if (y + h > H - 6) y = at.rect.y - h - 4;
+    } else {   // at the pointer, flipped at the edges like a Mac menu
+      x = at.x + 1; y = at.y + 1;
+      if (x + w > W - 6) x = at.x - w - 1;
+    }
+    y = Math.max(6, Math.min(y, H - 6 - h)); x = Math.max(6, x);
+    m.style.left = x + "px"; m.style.top = y + "px"; m.style.visibility = "";
+    menus.push({ node: m, opener: opts.opener || null });
+    return m;
+  }
+  function colorMenu(c, at, inPal) {
+    if (!isSel(c.number)) clearSel();   // the Mac way: right-click outside what's selected acts on that color alone
+    var list = isSel(c.number) && st.selected.length > 1 ? st.selected.map(byNo).filter(Boolean) : [c];
+    var many = list.length > 1, allPinned = list.every(function (x) { return x.pinned; });
+    var items = [];
+    if (many) items.push({ head: el("div", { class: "mh" }, [el("span", { class: "ms", "aria-hidden": "true" }, list.slice(0, 14).map(sw)), el("span", { class: "num", text: list.length + " colors" })]) });
+    var allOn = list.every(function (x) { return placed.some(function (p) { return p.n === x.number; }); });
+    if (CFG.table !== "off") items.push({ label: allOn ? "On the table" : many ? "Take " + list.length + " to table" : "Take to table", act: function () { takeToTable(list); clearSel(); } });
+    items.push({ label: "Add to palette", sub: function () { return paletteItems(list); } });
+    items.push({ label: allPinned ? "Unpin" : "Pin", act: function () { setPinned(list, !allPinned); } });
+    if (inPal) items.push({ label: "Remove from this palette", act: function () { removeFrom(inPal, list); } });
+    items.push("-");
+    items.push({ label: many ? "Copy hex codes" : "Copy hex", right: many ? null : c.hex, act: function () {
+      copy(list.map(function (x) { return x.hex; }).join("\n"));
+      toast("Copied " + (many ? list.length + " hex codes" : c.hex), list);
+    } });
+    items.push({ label: "Share", act: function () { openShare(many ? list.length + " colors" : title(c), list.map(function (x) { return { hex: x.hex, name: title(x) }; })); } });
+    openMenu(items, at, { label: many ? list.length + " colors" : title(c) });
+  }
+  function paletteItems(list) {
+    var nums = list.map(function (c) { return c.number; });
+    var items = [{ checks: true, strip: el("span", { class: "ms blank", "aria-hidden": "true" }), label: "New palette", act: function () { newPalette(list); } }];
+    if (palettes.length) items.push("-");
+    palettes.forEach(function (p) {
+      var n = nums.filter(function (k) { return p.members.indexOf(k) >= 0; }).length, state = n === nums.length ? true : n ? "mixed" : false;
+      var cs = p.members.map(byNo).filter(Boolean);
+      items.push({ checks: true, check: state, label: palName(p), ph: !p.name,
+        strip: el("span", { class: "ms" + (cs.length ? "" : " blank"), "aria-hidden": "true" }, cs.slice(0, 8).map(sw)),
+        act: function () { if (state === true) removeFrom(p, list); else addTo(p, list); } });
+    });
+    return items;
+  }
+  function paletteMenu(list, btn) {
+    if (menuGone.by === btn && performance.now() - menuGone.at < 400) return;   // the click that closed it shouldn't open it again
+    openMenu(paletteItems(list), { rect: rectIn(btn) }, { opener: btn, label: "Add to palette" });
+    btn.classList.add("open");
+  }
+  stage.addEventListener("pointerdown", function (e) {
+    if (!menus.length || e.target.closest(".menu")) return;
+    var op = menus[0].opener;
+    menuGone = { at: performance.now(), by: op && op.contains(e.target) ? op : null };   // pressing the button that opened it closes it
+    closeMenus();
+  }, true);
+  stage.addEventListener("wheel", function (e) { if (menus.length && !e.target.closest(".menu")) closeMenus(); }, { capture: true, passive: true });
+  $("body").addEventListener("scroll", function () { closeMenus(); });
+  // Arrow keys move through a menu, → opens a submenu, ← and Esc step back out.
+  document.addEventListener("keydown", function (e) {
+    if (!menus.length) return;
+    var top = menus[menus.length - 1], its = Array.prototype.filter.call(top.node.querySelectorAll(".mi"), function (b) { return !b.disabled; });
+    var i = its.indexOf(document.activeElement), k = e.key;
+    if (k === "ArrowDown" || k === "ArrowUp") { e.preventDefault(); e.stopPropagation(); var n = i < 0 ? (k === "ArrowDown" ? 0 : its.length - 1) : (i + (k === "ArrowDown" ? 1 : its.length - 1)) % its.length; if (its[n]) its[n].focus(); }
+    else if (k === "ArrowRight") { if (i >= 0 && its[i]._open) { e.preventDefault(); e.stopPropagation(); its[i]._open(true); } }
+    else if (k === "ArrowLeft" || k === "Escape") {
+      e.preventDefault(); e.stopPropagation();
+      if (menus.length > 1) { var op = top.opener; closeMenus(menus.length - 1); if (op) op.focus(); } else closeMenus();
+    }
+  }, true);
+
+  /* A quiet line at the bottom of the window: what just happened, with the colors it happened to */
+  var toastEl = null, toastT = null;
+  function toast(text, cs) {
+    if (rowOn() && !sheet && !$("pw").hidden) { rowSay([cs && cs.length ? el("span", { class: "ms", "aria-hidden": "true" }, cs.slice(0, 14).map(sw)) : null, el("span", { text: text })], 2400); return; }
+    if (toastEl) toastEl.remove();
+    toastEl = el("div", { class: "toast", role: "status" }, [cs && cs.length ? el("span", { class: "ms", "aria-hidden": "true" }, cs.slice(0, 14).map(sw)) : null, el("span", { text: text })]);
+    $("pw").appendChild(toastEl);
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { var t = toastEl; if (!t) return; t.classList.add("out"); setTimeout(function () { t.remove(); if (toastEl === t) toastEl = null; }, 280); }, 2400);
+  }
+
+  /* ---------- The specimen card ---------- */
+  var sheet = null;
+  // fade: when you close it yourself (×, a click outside, Esc), it fades the way it opened; swapping one card for another is instant
+  function closeSheet(fade) {
+    closeMenus(); sheetRefresh = null;
+    if (!sheet) return;
+    var s0 = sheet; sheet = null;
+    if (fade === true && CFG.polish === "on") { s0.classList.add("out"); s0.style.pointerEvents = "none"; setTimeout(function () { s0.remove(); }, 240); }
+    else s0.remove();
+  }
+  function openCard(c, trail) {
+    closeSheet();
+    trail = trail || defaultTrail(c);
+    var nextTrail = trail.concat([{ label: title(c), go: function () { openCard(c, trail); } }]);
+    var src = c.crop ? el("img", { class: "crop", src: c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
+    var name = el("p", { class: "sp-nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", "data-placeholder": c.placeholder, spellcheck: "false" });
+    name.textContent = c.name || "";
+    name.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); name.blur(); } });
+    name.addEventListener("input", function () { var v = name.textContent.trim(); c.name = v || null; if (!v) name.textContent = ""; drawStrips(); });
+    var dl = el("dl", { class: "sp-rows" });
+    function row(k, v) { dl.appendChild(el("dt", { text: k })); dl.appendChild(el("dd", null, [v])); }
+    var found = el("span", null, [c.app + ", " + c.src]);
+    if (c.screen) {
+      var back = el("button", { type: "button", text: c.url ? c.url : "Back to the source" });
+      back.addEventListener("click", function () { goToSource(c); });
+      found = el("span", null, [c.app + ", " + c.src + ". ", back]);
+    }
+    row("Found", found);
+    row("Kept", el("span", { class: "num", text: c.day + (c.screen ? ", 2:22 PM" : "") }));
+    var vals = el("span", { class: "vals num" });
+    [["Hex", c.hex], ["RGB", PC.displayRgb(c.hex)], ["OKLCH", PC.displayOklch(c.hex)]].forEach(function (v) {
+      var b = el("button", { type: "button", title: "Copy " + v[0], text: v[1] });
+      b.addEventListener("click", function () { copy(v[1]); b.textContent = "Copied"; setTimeout(function () { b.textContent = v[1]; }, 900); });
+      vals.appendChild(b);
+    });
+    row("Values", vals);
+    row("Reads as", el("span", { text: PC.reads(c.hex).join(", ") }));
+    var sims = colors.filter(function (o) { return o !== c && PC.deltaE(o.hex, c.hex) < 7; }).sort(function (a, b) { return PC.deltaE(a.hex, c.hex) - PC.deltaE(b.hex, c.hex); }).slice(0, 3);
+    var simBox = el("span", { class: "sim" });
+    if (!sims.length) simBox.appendChild(el("span", { text: "Nothing close yet. This one is new to your collection." }));
+    sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: (CFG.similar === "short" ? "" : title(o) + ", ") + whereOf(o) + ", " + dayLabel(o) })]); b.addEventListener("click", function () { openCard(o, nextTrail); }); simBox.appendChild(b); });
+    row("Similar", simBox);
+    var sameHere = colors.filter(function (o) { return o !== c && keyOf(o) === keyOf(c); });
+    if (sameHere.length && CFG.also !== "off") row("Also from here", el("span", { class: "here" }, sameHere.map(function (o) { var b = el("button", { type: "button", style: "--c:" + o.hex, title: title(o), "aria-label": label(o) }); b.addEventListener("click", function () { openCard(o, nextTrail); }); return b; })));
+    // Every palette it's in, each with its colors (entry 116); the row hides until there's one.
+    var palDt = el("dt"), palDd = el("dd");
+    dl.appendChild(palDt); dl.appendChild(palDd);
+    var pin = el("button", { type: "button", class: "tbtn" });
+    pin.addEventListener("click", function () { setPinned([c], !c.pinned); });
+    var addB = el("button", { type: "button", class: "tbtn", "aria-haspopup": "menu", text: "Add to palette" });
+    addB.addEventListener("click", function () { paletteMenu([c], addB); });
+    function refresh() {
+      var mine = palettesOf(c);
+      palDt.textContent = mine.length > 1 ? "Palettes" : "Palette";
+      palDt.hidden = palDd.hidden = !mine.length;
+      palDd.textContent = "";
+      palDd.appendChild(el("span", { class: "sp-pals" }, mine.map(function (p) {
+        return el("span", { class: "sp-pal" }, [el("span", { class: "pl", text: palName(p) }), el("span", { class: "sp-strip", "aria-hidden": "true" }, p.members.map(byNo).filter(Boolean).map(sw))]);
+      })));
+      pin.setAttribute("aria-pressed", String(c.pinned)); pin.textContent = c.pinned ? "Pinned" : "Pin";
+    }
+    refresh();
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(title(c), [{ hex: c.hex, name: title(c) }]); });
+    var padArea = el("textarea", { id: "pad", placeholder: "Anything you want to remember about it" });
+    padArea.value = c.note || "";
+    padArea.addEventListener("input", function () { c.note = padArea.value; });
+    padArea.addEventListener("keydown", function (e) { e.stopPropagation(); });
+    var x = el("button", { type: "button", class: "sp-x", "aria-label": "Close", text: "×" });
+    x.addEventListener("click", function () { closeSheet(true); });
+    var card = el("div", { class: "spec", role: "dialog", "aria-label": title(c) }, [
+      el("div", { class: "sp-src" }, [src,
+        el("div", { class: "sp-chip" }, [el("div", { class: "sw", style: "background:" + c.hex }), el("p", { class: "lb num" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })])]),
+        el("p", { class: "sp-cap", text: c.crop ? "Where you found it" : "The eight samples around it" })]),
+      el("div", { class: "sp-form" }, [
+        el("div", { class: "sp-top" }, [trailRow(trail, c), x]),
+        name,
+        el("p", { class: "sp-hint", text: c.name ? "Your name for it." : "Click the name to give it yours." }),
+        dl,
+        el("div", { class: "sp-acts" }, [pin, addB, share]),
+        el("div", { class: "pad" }, [el("label", { for: "pad", text: "Scratch pad" }), padArea])
+      ])
+    ]);
+    sheet = el("div", { class: "sheet" }, [card]);
+    sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(true); });
+    $("pw").appendChild(sheet);
+    sheetRefresh = refresh;
+  }
+  function trailRow(trail, c) {
+    var tr = el("p", { class: "trail" });
+    trail.forEach(function (t) { var b = el("button", { type: "button", text: t.label }); b.addEventListener("click", t.go); tr.appendChild(b); tr.appendChild(el("span", { class: "sep", "aria-hidden": "true", text: "›" })); });
+    tr.appendChild(el("span", { class: "here-now num", text: no(c.number) }));
+    return tr;
+  }
+  function goToSource(c) {
+    closeWindow();
+    var i = SCREENS.map(function (s) { return s.id; }).indexOf(c.screen);
+    if (i >= 0 && i !== st.screen) showScreen(i);
+    setTimeout(function () { ring(c.x, c.y); setTimeout(function () { ring(c.x, c.y); }, 260); }, 240);
+  }
+
+  /* ---------- A share card ---------- */
+  function openShare(name, items) {
+    closeSheet();
+    var n = items.length;
+    var codes = items.map(function (it) { return it.name + "  " + it.hex; }).join("\n");
+    var copyB = el("button", { type: "button", class: "tbtn ink", text: "Copy the codes" });
+    copyB.addEventListener("click", function () { copy(name + "\n" + codes); copyB.textContent = "Copied"; });
+    var closeB = el("button", { type: "button", class: "tbtn", text: "Close" });
+    closeB.addEventListener("click", function () { closeSheet(true); });
+    var box = el("div", { class: "share", role: "dialog", "aria-label": "Share " + name }, [
+      el("div", { class: "sc" }, [
+        el("div", { class: "sc-chips" }, items.map(function (it) { return el("i", { style: "background:" + it.hex }); })),
+        el("div", { class: "sc-names", style: "grid-template-columns:repeat(" + n + ",minmax(0,1fr))" }, items.map(function (it) { return el("div", null, [el("b", { text: it.name }), el("span", { class: "num", text: it.hex })]); })),
+        el("div", { class: "sc-foot" }, [el("span", { class: "tt", text: name }), el("span", { class: "by", text: "Kept with Palit" })])
+      ]),
+      el("div", { class: "acts" }, [closeB, copyB])
+    ]);
+    sheet = el("div", { class: "sheet" }, [box]);
+    sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(true); });
+    $("pw").appendChild(sheet);
+  }
+
+  /* ---------- Screens, sound, keys ---------- */
+  function screen() { return SCREENS[st.screen]; }
+  function showScreen(i) {
+    st.screen = i; var sc = screen();
+    desk.src = sc.data || "../v2/screens/" + sc.file;
+    var m = $("mbi"); m.style.left = (sc.icon[0] + 7) + "px"; m.style.top = sc.icon[1] + "px";
+    $("c-credit").textContent = sc.credit || ""; $("c-credit").title = sc.credit || "";
+    Array.prototype.forEach.call($("c-screen").children, function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
+  }
+  SCREENS.forEach(function (sc, i) {
+    var b = el("button", { type: "button", "aria-pressed": "false", text: sc.label });
+    b.addEventListener("click", function () { showScreen(i); });
+    $("c-screen").appendChild(b);
+  });
+  Object.keys(SOUNDS).forEach(function (k) {
+    var b = el("button", { type: "button", "aria-pressed": String(k === st.sound), text: SOUNDS[k].label });
+    b.addEventListener("click", function () { st.sound = k; Array.prototype.forEach.call($("c-sound").children, function (x) { x.setAttribute("aria-pressed", String(x === b)); }); sound(); });
+    $("c-sound").appendChild(b);
+  });
+  $("c-hide").addEventListener("click", function () { document.body.classList.toggle("clean"); fit(); });
+  $("c-reset").addEventListener("click", function () { stopPlay(); start(); });
+  $("c-play").addEventListener("click", function () { if (play.on) stopPlay(); else runPlay(); });
+  $("c-keys").addEventListener("click", toggleKeys);
+  function toggleKeys() { var off = document.body.classList.toggle("nokeys"); $("c-keys").setAttribute("aria-pressed", String(!off)); }
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea, [contenteditable=true]")) return;
+    if (play.on && (e.key === "Escape" || e.key === "p" || e.key === "P")) { e.preventDefault(); stopPlay(); return; }
+    if (play.on) return;
+    if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); runPlay(); return; }
+    if ((e.key === "k" || e.key === "K") && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleKeys(); return; }
+    if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
+    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(true); else if (wmenu) closeWeeks(); else if (st.selected.length) clearSel(); else if (st.study) { st.study = null; render(); } else closeWindow(); return; }
+    if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
+    // ⌘− and ⌘+ step through the four stops, ⌘0 goes back to your names (A87). While the window is open they're Palit's, not the browser's.
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && !$("pw").hidden) {
+      var zk = e.key === "-" || e.key === "_" ? -1 : e.key === "=" || e.key === "+" ? 1 : e.key === "0" ? 0 : null;
+      if (zk !== null) { e.preventDefault(); if (st.view === "days" && !st.all && !st.q.trim() && !st.fresh && !sheet) zoomKey(zk); return; }
+    }
+    if ((e.metaKey || e.ctrlKey) && (e.key === "f" || e.key === "F") && !$("pw").hidden && !st.fresh) { e.preventDefault(); openSearch(); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === "h" || e.key === "H") { document.body.classList.toggle("clean"); fit(); }
+  });
+
+  function fit() {
+    var vp = $("viewport").getBoundingClientRect(), k = Math.min(vp.width / W, vp.height / H);
+    stage.style.transform = "translate(-50%, -50%) scale(" + k + ")";
+  }
+  addEventListener("resize", fit);
+
+  function start(done) {
+    closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
+    strips.classList.remove("open");
+    st.view = "days"; st.band = null; st.all = false; st.zoom = ZOOM_HOME; st.open = {}; st.q = ""; st.study = null; st.week = null; st.fresh = false; st.deskPal = null; st.selected = []; fanPos = null; curDay = null;
+    placed = []; tableNames = false; $("q").value = ""; hideHuntPill();
+    if (toastEl) { toastEl.remove(); toastEl = null; }
+    seedSample();
+    seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); if (typeof done === "function") done(); });
+  }
+  /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, first, days, compact,
+     where, hunt, zoom-out, zoom-in, all (or spectrum), palettes (or pins, shared, collections), study, table, search, menu,
+     card (&n=), share; add &band=R (or O Y G B I V) to filter by a letter, and &menu=1 with card to open its Add to palette. */
+  function scene(name) {
+    var sd = screen().seeds[0];
+    if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
+    if (name === "naming") { var c0 = pick(sd.x, sd.y, {}); nameBeside(c0, sd.x, sd.y, true); namer.querySelector("input").value = "Crocoite"; return; }
+    if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
+    if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
+    if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }
+    if (name === "first") { goFresh(); return; }
+    var stops = { "days": ZOOM_HOME, "compact": 0, "zoom-out": 0, "where": 2, "hunt": 3, "zoom-in": 3 };
+    if (name in stops) { st.view = "days"; st.zoom = stops[name]; openWindow(); return; }
+    if (name === "all" || name === "spectrum") { st.view = "days"; st.all = true; openWindow(); return; }
+    if (name === "palettes" || name === "pins" || name === "shared" || name === "collections") { st.view = "palettes"; openWindow(); return; }
+    if (name === "study") { st.view = "palettes"; st.study = palettes[0].id; openWindow(); return; }
+    if (name === "table") { takeToTableQuiet([tn(1), tn(3), tn(4), sn(4), sn(24), sn(12)]); st.view = "table"; openWindow(); return; }
+    if (name === "search") { st.q = "brick"; $("q").value = "brick"; $("q").parentNode.classList.add("open"); openWindow(); return; }
+    if (name === "menu") {   // two colors gathered with ⇧-click, right-clicked: Take 2 to table first, then Add to palette
+      st.view = "days"; st.zoom = ZOOM_HOME; openWindow();
+      st.selected = [tn(1), tn(5)].filter(byNo); syncSel();
+      var t3 = stage.querySelector('#body .t[data-n="' + tn(5) + '"]');
+      if (t3) { var r3 = rectIn(t3); colorMenu(byNo(tn(5)), { x: r3.x + r3.w * 0.5, y: r3.y + r3.h * 0.5 }); }
+      return;
+    }
+    if (name === "card") {
+      st.view = "days"; openWindow(); var cc = byNo(Number(q.get("n")) || tn(1)); openCard(cc, defaultTrail(cc));
+      if (q.get("menu") === "1") { var ab = sheet.querySelector('.sp-acts [aria-haspopup]'); if (ab) paletteMenu([cc], ab); }
+      return;
+    }
+    if (name === "share") { st.view = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
+  }
+  // Put colors on the table without a toast, for a scene
+  function takeToTableQuiet(nums) { nums.forEach(function (n) { if (byNo(n) && !placed.some(function (x) { return x.n === n; })) { var f = freeSpot(); placed.push({ n: n, x: f.x, y: f.y }); } }); }
+  // The first open (A71, A75): an empty archive and one line; ⌥⇧C starts the first hunt, and the first color is No. 001
+  var huntPill = null;
+  function goFresh() {
+    colors = []; palettes = []; next = 1; placed = []; st.deskPal = null; drawStrips();
+    st.fresh = true; st.view = "days"; openWindow();
+  }
+  function showHuntPill() { hideHuntPill(); huntPill = el("div", { class: "huntpill" }, ["Pick a color from anything on your screen.", el("span", { text: "It becomes No. " + pad(next) + "." })]); stage.appendChild(huntPill); }
+  function hideHuntPill() { if (huntPill) { huntPill.remove(); huntPill = null; } }
+
+  /* ---------- Playback (entry 112): the demo storyboard, shot by shot, for recording hands-free.
+     P or ?play starts it, Esc or P stops it, K hides the keystrokes. Times are the storyboard's (entry 111). ---------- */
+  var play = { on: false, token: 0, pos: { x: 1180, y: 700 }, t0: 0 };
+  var pcur = el("div", { class: "pcursor", "aria-hidden": "true", hidden: "" });
+  pcur.innerHTML = '<svg width="22" height="30" viewBox="0 0 22 30"><path d="M3 3 L3 24 L8.4 18.6 L12.2 27.2 L15.9 25.6 L12.2 17.2 L19.4 17.2 Z" fill="#111" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+  var pkeys = el("div", { class: "pkeys", "aria-hidden": "true" });
+  stage.appendChild(pcur); stage.appendChild(pkeys);
+  if (q.get("keys") === "0") toggleKeys();
+  function closeShare() { closeSheet(); }
+  function stopped(tok) { return tok !== play.token; }
+  // ?speed=10 plays it ten times faster, with glides as jumps: for checking the whole run quickly, not for recording
+  var SPEED = Math.max(1, Number(q.get("speed")) || 1);
+  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms / SPEED)); }); }
+  function until(sec, tok) { return sleep((play.t0 + sec * 1000 / SPEED - performance.now()) * SPEED, tok); }
+  function setCur(x, y) { play.pos = { x: x, y: y }; pcur.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; if (st.picking) moveLoupe(x, y); }
+  function glide(x, y, ms, tok) {
+    if (SPEED > 1) return sleep(ms, tok).then(function () { setCur(x, y); });
+    var from = play.pos, t0 = performance.now();
+    return new Promise(function (res, rej) {
+      function step(now) {
+        if (stopped(tok)) { rej("stopped"); return; }
+        var k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        setCur(from.x + (x - from.x) * e, from.y + (y - from.y) * e);
+        if (k < 1) requestAnimationFrame(step); else res();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  function centerOf(node) { var r = node.getBoundingClientRect(), sr = stage.getBoundingClientRect(), k = sr.width / W; return { x: (r.left - sr.left + r.width / 2) / k, y: (r.top - sr.top + r.height / 2) / k }; }
+  async function goTo(node, ms, tok) { if (!node) return; var c = centerOf(node); await glide(c.x, c.y, ms, tok); }
+  function showKeys(list) { pkeys.textContent = ""; (list || []).forEach(function (k) { pkeys.appendChild(el("kbd", { text: k })); }); pkeys.classList.toggle("on", !!(list && list.length)); }
+  function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); }
+  async function clickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.click(); }
+  async function typeInto(set, text, tok) { for (var i = 1; i <= text.length; i++) { set(text.slice(0, i)); await sleep(70 + Math.random() * 50, tok); } }
+  async function shiftClickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, shiftKey: true })); }
+  async function rightClickOn(node, ms, tok) {
+    await goTo(node, ms, tok); await sleep(160, tok); press();
+    if (!node) return;
+    var s = stage.getBoundingClientRect(), k = s.width / W;
+    node.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: s.left + play.pos.x * k, clientY: s.top + play.pos.y * k }));
+  }
+  async function menuPick(node, ms, tok) { await goTo(node, ms, tok); if (node) node.classList.add("phover"); await sleep(200, tok); press(); if (node) node.click(); }
+  function byText(sel, text) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return n.textContent === text; })[0]; }
+  function q1(sel) { return stage.querySelector(sel); }
+  function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
+  function stopPlay() {
+    if (!play.on) return;
+    play.token++; play.on = false;
+    document.body.classList.remove("playing"); showKeys([]); pcur.hidden = true;
+    stage.querySelectorAll(".t.phover").forEach(function (t) { t.classList.remove("phover"); });
+    $("c-play").firstChild.textContent = "Play";
+  }
+  async function runPlay() {
+    if (play.on) return;
+    var tok = ++play.token;
+    play.on = true; document.body.classList.add("playing"); $("c-play").firstChild.textContent = "Stop";
+    try {
+      if (st.screen !== 0) showScreen(0);
+      await new Promise(function (res) { start(res); });
+      if (stopped(tok)) return;
+      setCur(1190, 720); pcur.hidden = false;
+      play.t0 = performance.now();
+      var croc = byNo(tn(1));   // Hyacinth red, the first color kept from the crocoite photo today
+
+      // 1. A real desktop (0:00 to 0:06)
+      await sleep(1300, tok); await glide(1000, 560, 2800, tok);
+
+      // 2. One keystroke, real pixels (0:06 to 0:13)
+      await until(6, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
+      await sleep(900, tok); showKeys([]);
+      await glide(900, 380, 1700, tok); await glide(840, 470, 1500, tok); await glide(819, 452, 1100, tok);
+
+      // 3. It lands (0:13 to 0:20)
+      await until(13, tok);
+      showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
+      await sleep(900, tok); showKeys([]);
+      await glide(1424, 450, 1500, tok); strips.classList.add("open");
+      await sleep(2300, tok); strips.classList.remove("open"); await glide(1120, 560, 1700, tok);
+
+      // 4. Name it, or keep a palette (0:20 to 0:28)
+      await until(20, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
+      await glide(1040, 548, 800, tok);
+      showKeys(["Right-click"]);
+      var named = pick(1040, 548, {}); stopPicking(); nameBeside(named, 1040, 548, true);
+      var input = namer.querySelector("input");
+      await sleep(350, tok); showKeys([]);
+      await typeInto(function (v) { input.value = v; }, "Crocoite", tok);
+      await sleep(250, tok); showKeys(["Return"]);
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      await sleep(600, tok);
+      showKeys(["⌥", "⇧", "C"]); startPicking();
+      await glide(880, 360, 600, tok); showKeys(["⇧", "Click"]); pick(880, 360, { more: true });
+      await glide(980, 610, 600, tok); pick(980, 610, { more: true });
+      await glide(700, 300, 600, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
+      await sleep(500, tok); showKeys([]); pcur.hidden = false;
+
+      if (SPEED > 1) console.log("palit-play: shot 5");
+      // 5. Days, each with its places (0:28 to 0:38): the window opens on today, and opening the day out shows where you were (A72)
+      await until(28, tok);
+      await clickOn($("mbi"), 1100, tok);
+      await sleep(1400, tok);
+      var tile = byLabel("#body .t", no(named.number));
+      await goTo(tile, 1000, tok); if (tile) tile.classList.add("phover");
+      await sleep(1700, tok); if (tile) tile.classList.remove("phover");
+      await clickOn(q1("#body .dh"), 900, tok);   // Today opens out: each place, what it looked like, the colors kept there
+      await sleep(1500, tok);
+
+      // 6. The zoom, four stops (0:38 to 0:46): ⌘− to only color, then ⌘+ through your names and where to the whole hunt (A87)
+      await until(38, tok);
+      st.open = {};
+      await glide(1150, 170, 700, tok);
+      showKeys(["⌘", "−"]); zoomKey(-1); await sleep(1700, tok);
+      showKeys(["⌘", "+"]); zoomKey(1); await sleep(1200, tok);
+      zoomKey(1); await sleep(1300, tok);
+      zoomKey(1); await sleep(1300, tok); showKeys([]);
+
+      // 7. Seven letters, underlined in ink (0:46 to 0:52)
+      await until(46, tok);
+      await clickOn(byLabel(".letters button", "Orange"), 900, tok);
+      await sleep(3000, tok);
+      await clickOn(byLabel(".letters button", "Orange"), 400, tok);
+
+      // 8. All colors, by hue (0:52 to 1:01): Spectrum, its own tab again (A93); the ring when it's switched back on
+      await until(52, tok);
+      var byHue = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      fanPos = Math.max(0, byHue.indexOf(croc) - 8);
+      await clickOn(CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel"), 900, tok);
+      await sleep(900, tok);
+      var fanEl = q1(".fan"), list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      var target = list.indexOf(croc), steps = target - (fanPos || 0);
+      await glide(720, 620, 700, tok); showKeys(["Scroll"]);
+      for (var i = 0; i < Math.abs(steps); i++) { fanEl.dispatchEvent(new WheelEvent("wheel", { deltaY: steps > 0 ? 40 : -40, bubbles: true, cancelable: true })); await sleep(Math.max(140, 2600 / Math.max(1, Math.abs(steps))), tok); }
+      await sleep(500, tok); showKeys([]);
+
+      // 9. The specimen card, and the trail that led to it (1:01 to 1:16)
+      await until(61, tok);
+      await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 1000, tok);
+      await sleep(2400, tok);
+      var padEl = q1(".pad textarea");
+      await goTo(padEl, 1000, tok); await sleep(300, tok);
+      await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
+      await sleep(800, tok);
+      await goTo(q1(".sim button") || padEl, 1100, tok);
+
+      // 10. Take to table, and keep what works (1:16 to 1:24): right-click two colors, Take to table, then Keep as a palette (A84, A85)
+      await until(76, tok);
+      await clickOn(q1(".sp-x"), 600, tok);
+      await sleep(300, tok);
+      if (CFG.table === "palette") {   // v3 (A93): gather two with ⇧-click, then Take 2 to table, and the table opens
+        showKeys(["⇧", "Click"]);
+        await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
+        await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos + 1], 450, tok);
+        showKeys(["Right-click"]);
+        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
+        await menuPick(q1(".menu .mi"), 500, tok);   // Take 2 to table
+        showKeys([]);
+        await sleep(700, tok);
+      } else {
+        showKeys(["Right-click"]);
+        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
+        await menuPick(q1(".menu .mi"), 400, tok);   // Take to table
+        await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos + 1], 450, tok);
+        await menuPick(q1(".menu .mi"), 400, tok);
+        showKeys([]);
+        await clickOn(byText(".tabs button", "Table"), 700, tok);
+        await sleep(500, tok);
+      }
+      await clickOn(byText(".table .acts .tbtn", "Show names"), 600, tok);
+      await sleep(500, tok);
+      await clickOn(byText(".table .acts .tbtn", "Keep as a palette"), 600, tok);
+
+      if (SPEED > 1) console.log("palit-play: shot 11, " + palettes.length + " palettes, " + placed.length + " on the table");
+      // 11. The palette as a study, and a share card (1:24 to 1:35)
+      await until(84, tok);
+      await clickOn(byText(".tabs button", "Palettes"), 800, tok);
+      await sleep(700, tok);
+      await clickOn(q1(".pal.open-able"), 800, tok);
+      await sleep(1800, tok);
+      await clickOn(byText(".study-h .acts .tbtn", "Share"), 900, tok);
+      await sleep(2200, tok);
+      await clickOn(q1(".share .acts .tbtn.ink"), 900, tok);
+      if (SPEED > 1) console.log("palit-play: done, share card for " + ((q1(".share .sc-foot .tt") || {}).textContent || "nothing"));
+      await until(95, tok);
+    } catch (err) {
+      if (err !== "stopped") throw err;
+      return;
+    }
+    stopPlay();
+  }
+  showScreen(Math.max(0, SCREENS.map(function (s) { return s.id; }).indexOf(q.get("screen") || "crocoite")));
+  fit();
+  if (q.has("play")) setTimeout(runPlay, 900); else start();
+  window.PalitV3 = { set: function (o) { setCfg(o); if (!$("pw").hidden) render(true); else applyCfg(); return CFG; }, get: function () { return JSON.parse(JSON.stringify(CFG)); }, keys: CFG_KEYS, scene: function (n) { closeSheet(); hideHuntPill(); if (st.fresh || !colors.length) { start(function () { scene(n); }); return; } st.all = false; st.study = null; st.q = ""; $("q").value = ""; st.open = {}; st.selected = []; $("q").parentNode.classList.remove("open"); scene(n); } };
+  window.PalitV2 = { play: runPlay, stop: stopPlay, playing: function () { return play.on; }, colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
+})();
+</script>
+</body>
+</html>

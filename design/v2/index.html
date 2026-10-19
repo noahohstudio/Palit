@@ -46,58 +46,228 @@
   .namer input { border: 0; outline: none; font: 14px var(--font); background: none; }
   .namer p { grid-column: 2; font-size: 11px; color: var(--ink-2); }
 
-  /* Palit's window: a native shell around the collection */
+  /* Palit's window, after the story workshop (entries 124 to 154): a white top bar of Palit's own, not a Mac toolbar (A77) */
   .pw { position: absolute; left: 150px; top: 62px; width: 1120px; height: 776px; z-index: 20; display: flex; flex-direction: column; background: var(--paper); border-radius: 12px; overflow: hidden; box-shadow: 0 32px 90px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.26); animation: fadeIn 240ms ease-out both; }
   .pw[hidden] { display: none; }
-  .pw-tb { flex: none; height: 52px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px; background: #f6f6f7; border-bottom: 0.5px solid rgba(0, 0, 0, 0.12); }
+  .bar { flex: none; height: 56px; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 0 16px; border-bottom: 1px solid #ededef; }
   .lights { display: flex; gap: 8px; }
   .lights button { width: 12px; height: 12px; border-radius: 50%; border: 0; padding: 0; background: #ff5f57; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.14); cursor: pointer; }
   .lights button:nth-child(2) { background: #febc2e; } .lights button:nth-child(3) { background: #28c840; }
-  .seg { display: inline-flex; padding: 2px; background: rgba(0, 0, 0, 0.07); border-radius: 8px; }
-  .seg button { border: 0; background: none; padding: 4px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-  .seg button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.08); }
-  /* The zoom is just − and +, with ⌘− and ⌘+ (entry 117): no slider */
-  .zoom { justify-self: end; display: flex; align-items: center; gap: 2px; }
-  .zoom button { width: 26px; height: 24px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1; color: var(--ink-2); }
-  .zoom button:hover { background: rgba(0, 0, 0, 0.06); color: var(--ink); }
-  .zoom button:disabled { color: #c7c7cc; background: none; cursor: default; }
-  .zoom button.flash { background: rgba(0, 0, 0, 0.08); color: var(--ink); }
-  .zoom[hidden] { display: none; }
-  .pw-nav { flex: none; height: 46px; display: flex; align-items: center; gap: 2px; padding: 0 18px; }
-  .letters button { position: relative; width: 30px; height: 30px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .hue { display: flex; align-items: center; }
+  .letters { display: flex; }
+  .letters button { position: relative; width: 28px; height: 30px; border: 0; background: none; cursor: pointer; font-size: 13px; color: var(--ink-2); }
   .letters button:hover { color: var(--ink); }
   .letters button[aria-pressed="true"] { color: var(--ink); }
-  .letters button[aria-pressed="true"]::after { content: ""; position: absolute; left: 9px; right: 9px; bottom: 3px; height: 2px; background: var(--band); }
-  .letters button:disabled { color: #D8D8DB; cursor: default; }
-  .subnav button { border: 0; background: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
-  .subnav button:hover { color: var(--ink); }
-  .subnav button[aria-pressed="true"] { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
-  .pw-nav .act { margin-left: auto; display: flex; gap: 8px; }
-  .pw-nav .subnav + .letters { margin-left: 12px; padding-left: 12px; border-left: 1px solid rgba(0, 0, 0, 0.1); }
-  /* What you've gathered with ⇧-click (entry 116): the colors, how many, and what to do with them */
-  .selbar { margin-left: auto; display: flex; align-items: center; gap: 8px; animation: fadeIn 160ms ease-out both; }
-  .selbar .ss { display: flex; height: 16px; }
-  .selbar .ss i { width: 16px; }
-  .selbar .sn { font-size: 12px; color: var(--ink-2); margin: 0 4px 0 2px; }
-  .pw-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
-  .pw-body > * { animation: fadeIn 260ms ease-out both; }
-  .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.86); padding: 1px 6px; border-radius: 4px; }
+  .letters button[aria-pressed="true"]::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 3px; height: 2px; background: #1d1d1f; }   /* ink, not the letter's hue (A83) */
+  .letters button:disabled { color: #d8d8db; cursor: default; }
+  /* All colors, by hue: a plain ink ring, with a dot when it's on (A80) */
+  .wheel { width: 26px; height: 26px; margin-left: 8px; border: 0; padding: 0; border-radius: 6px; background: none; cursor: pointer; display: grid; place-items: center; color: var(--ink-2); }
+  .wheel svg { width: 18px; height: 18px; }
+  .wheel:hover { color: var(--ink); background: rgba(0, 0, 0, 0.05); }
+  .wheel[aria-pressed="true"] { color: var(--ink); background: rgba(0, 0, 0, 0.07); }
+  .wheel[aria-pressed="true"] .hub { fill: currentColor; }
+  .wheel:disabled { color: #d8d8db; background: none; cursor: default; }
+  .tabs { justify-self: center; display: flex; gap: 26px; }
+  .tabs button { position: relative; border: 0; background: none; padding: 8px 0; cursor: pointer; font-size: 14px; color: var(--ink-2); }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-pressed="true"] { color: var(--ink); }
+  .tabs button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; background: #1d1d1f; }
+  .search { width: 180px; height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 10px; border-radius: 8px; background: #f3f3f5; box-sizing: border-box; }
+  .search::before { content: ""; flex: none; width: 9px; height: 9px; border: 1.5px solid var(--ink-2); border-radius: 50%; }
+  .search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 13px; }
+  /* The zoom: four stops, each its own idea (A87), − and + with a dot for each */
+  .zoom { display: flex; align-items: center; gap: 2px; }
+  .zoom > button { width: 26px; height: 26px; border: 0; background: none; border-radius: 6px; cursor: pointer; font-size: 16px; color: var(--ink-2); }
+  .zoom > button:hover { background: rgba(0, 0, 0, 0.05); color: var(--ink); }
+  .zoom > button:disabled { color: #c7c7cc; background: none; cursor: default; }
+  .zoom > button.flash { background: rgba(0, 0, 0, 0.08); color: var(--ink); }
+  .zdots { display: flex; align-items: center; gap: 2px; }
+  .zdots button { width: 12px; height: 26px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+  .zdots button::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #d1d1d6; }
+  .zdots button:hover::before { background: var(--ink-2); }
+  .zdots button[aria-pressed="true"]::before { background: #1d1d1f; }
+  .main { flex: 1; min-height: 0; display: grid; grid-template-columns: 58px minmax(0, 1fr); }
+  .main.norail { grid-template-columns: minmax(0, 1fr); }
+  .main.norail .rail { display: none; }
+  /* The days of the week down the left, the way ROYGBIV runs across the top (A79, A86); the arrow sifts by week and month */
+  .rail { position: relative; border-right: 1px solid #f1f1f3; padding: 14px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .rail .wk { font-size: 10px; line-height: 1.25; color: var(--ink-2); text-align: center; margin-bottom: 8px; white-space: pre-line; }
+  .rail .wd { position: relative; width: 32px; height: 30px; border: 0; background: none; padding: 0; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .rail .wd:hover, .rail .wd.on { color: var(--ink); }
+  .rail .wd.on::after { content: ""; position: absolute; left: 9px; right: 9px; bottom: 3px; height: 2px; background: #1d1d1f; }
+  .rail .wd:disabled { color: #d8d8db; cursor: default; }
+  .rail .wd.today::before { content: ""; position: absolute; right: 3px; top: 9px; width: 4px; height: 4px; border-radius: 50%; background: #1d1d1f; }
+  .rail .wd.today:disabled::before { background: #d8d8db; }
+  .rail .wmore { width: 32px; height: 26px; margin-top: 8px; border: 0; background: none; border-radius: 6px; cursor: pointer; display: grid; place-items: center; color: var(--ink-2); }
+  .rail .wmore:hover, .rail .wmore[aria-expanded="true"] { background: rgba(0, 0, 0, 0.05); color: var(--ink); }
+  .rail .wmore svg { width: 10px; height: 6px; }
+  .wmenu { position: absolute; z-index: 60; min-width: 190px; padding: 5px; background: rgba(250, 250, 251, 0.97); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.24); font-size: 13px; animation: fadeIn 110ms ease-out both; }
+  .wmenu .mh2 { padding: 4px 9px 3px; font-size: 11px; color: var(--ink-2); }
+  .wmenu button { display: flex; align-items: center; gap: 8px; width: 100%; height: 24px; padding: 0 9px; border: 0; background: none; border-radius: 4px; text-align: left; cursor: default; font-size: 13px; }
+  .wmenu button:hover { background: rgba(0, 0, 0, 0.08); }
+  .wmenu button .ck { width: 12px; flex: none; }
+  .wmenu button .rt { margin-left: auto; padding-left: 14px; color: var(--ink-2); font-size: 12px; }
+  .wmenu hr { border: 0; height: 1px; margin: 5px 9px; background: rgba(0, 0, 0, 0.1); }
+  .pw-body { position: relative; overflow-y: auto; overflow-x: hidden; min-width: 0; }
+  .pw-body > * { animation: fadeIn 240ms ease-out both; }
+  .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.9); padding: 1px 6px; border-radius: 4px; }
   .tbtn { border: 0; background: rgba(0, 0, 0, 0.05); padding: 4px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; }
   .tbtn:hover { background: rgba(0, 0, 0, 0.09); }
   .tbtn.ink { background: #1d1d1f; color: #fff; }
   .tbtn:disabled { opacity: 0.4; cursor: default; }
+  .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  .empty { padding: 60px 22px; border: 0; color: var(--ink-2); font-size: 13px; }   /* no dashed box: that was v1's */
 
-  /* Days: a wall with nothing on it but color (A57). Zoom sets the tile size; names only when there's room. */
-  /* Seven stops, set from ZOOM in the script; the two smallest carry no text at all (A62) */
-  .days { padding: 2px 18px 46px; --tw: 104px; --th: 92px; --ts: 12px; --tl: 1; --today: 1.7; --tts: 17px; }
+  /* Tiles: one typeface, unbolded SF Pro (A30, A78); names you haven't given yet dimmed */
+  .t { position: relative; border: 0; padding: 0; background: var(--c); color: var(--on); overflow: hidden; cursor: pointer; text-align: left; transition: flex-grow 320ms cubic-bezier(.2, .8, .2, 1); animation: fadeIn 300ms ease-out both; }
+  .t:hover, .t:focus-visible { flex-grow: 1.6; z-index: 2; outline: none; }
+  .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts, 12px); line-height: 1.12; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t .nm.ph { opacity: 0.6; }
+  .t .pin { position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--on); }
+  /* Selected with ⇧-click: an ink edge, then a white line inside it, so it shows on light colors and dark ones alike */
+  .t.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff; }
+  .fan-card.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff, 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.07); }
+  .lbl { margin-top: 5px; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Days, each with its places (A72): compact as the letters when zoomed out; open a day to see its hunt */
+  .days { padding: 6px 22px 54px 20px; }
   .day + .day { margin-top: 18px; }
-  .dl { font-size: 11px; color: var(--ink-2); margin-bottom: 6px; }
-  .day.today .dl { color: var(--ink); }
-  .drow { display: flex; flex-wrap: wrap; gap: 3px; }
-  .t { position: relative; flex: 1 0 var(--tw); height: var(--th); min-width: 0; max-width: calc(var(--tw) * 2.6); border: 0; padding: 0; background: var(--c); color: var(--on); cursor: pointer; overflow: hidden; text-align: left; transition: flex-grow 360ms cubic-bezier(.2, .8, .2, 1); animation: fadeIn 320ms ease-out both; }
-  .day.today .t { height: calc(var(--th) * var(--today)); }
-  .t.join { margin-left: -3px; }
-  .t:hover, .t:focus-visible { flex-grow: 2.4; outline: none; z-index: 2; }
+  .dh { display: flex; align-items: baseline; gap: 10px; border: 0; background: none; padding: 0 0 8px; cursor: pointer; text-align: left; }
+  .dh b { font-weight: 400; font-size: var(--dhs, 22px); letter-spacing: -0.02em; line-height: 1; }
+  .dh span { font-size: 12px; color: var(--ink-2); }
+  .dh i { width: 6px; height: 6px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(-45deg); margin-left: 2px; align-self: center; transition: transform 200ms; }
+  .dh[aria-expanded="true"] i { transform: rotate(45deg); }
+  .dh:hover b { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .day.compact { display: grid; grid-template-columns: 168px minmax(0, 1fr); align-items: center; }
+  .day.compact + .day.compact { margin-top: 6px; }
+  .day.compact .dh { padding: 0; }
+  .day.compact .dh b { font-size: 13px; letter-spacing: 0; }
+  .strip { display: flex; gap: 2px; height: var(--sh, 26px); }
+  .strip .t { flex: 1; animation: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 3px; }
+  .row .t { flex: 1 0 var(--tw, 104px); max-width: calc(var(--tw, 104px) * 2.4); height: var(--th, 92px); }
+  .pls { display: flex; flex-wrap: wrap; gap: 14px 18px; }
+  .pg { flex: 1 1 260px; min-width: 0; }
+  .pg .w { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg .w b { font-weight: 400; color: var(--ink); }
+  .pg .cs { display: flex; gap: 3px; }
+  .pg .cs > div { flex: 1; min-width: 0; }
+  .pg .cs .t { width: 100%; height: var(--th, 104px); }
+  .hunt { display: grid; grid-template-columns: 200px var(--hh, 96px) minmax(0, 1fr); gap: 3px; margin-bottom: 3px; }
+  .hunt .st { padding: 2px 14px 0 0; min-width: 0; }
+  .hunt .st .w { font-size: 15px; line-height: 1.15; letter-spacing: -0.012em; }
+  .hunt .st .v { font-size: 11.5px; color: var(--ink-2); margin-top: 3px; line-height: 1.3; }
+  .hunt .src { width: var(--hh, 96px); height: var(--hh, 96px); }
+  .hunt .cs { display: flex; gap: 3px; min-width: 0; height: var(--hh, 96px); }
+  .hunt .cs .t { flex: 1 1 0; max-width: 230px; }
+  .src { position: relative; overflow: hidden; background: #e9e9eb; }
+  .src img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .src.mos { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .src.mos i { display: block; }
+
+  /* All colors, by hue: the fan, in Days behind the ring (A74, A81, A91). 168 by 274, 12° apart, the chosen card lifted 124px */
+  .fan { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
+  .fan:focus-visible { outline: none; }
+  .fan-cap { position: absolute; left: 28px; top: 18px; z-index: 300; max-width: 52%; pointer-events: none; }
+  .fan-cap .nm { font-size: 50px; line-height: 1; letter-spacing: -0.045em; }
+  .fan-cap .nm.ph { color: var(--ink-2); }
+  .fan-cap .mt { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+  .fan-card { position: absolute; left: calc(50% - 84px); bottom: 54px; width: 168px; height: 274px; background: var(--c); color: var(--on); transform-origin: 50% 632px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.07); cursor: pointer; transition: transform 320ms cubic-bezier(.2, .8, .2, 1), opacity 320ms; }
+  .fan-card .fno { position: absolute; left: 10px; bottom: 8px; font-size: 10px; letter-spacing: 0.01em; opacity: 0.5; }
+
+  /* Palettes: what you pinned, your palettes, and what's shared with you; a palette opens as a study (A74) */
+  .pals { padding: 4px 22px 44px 20px; }
+  .sub-h { padding: 18px 0 8px; font-size: 12px; color: var(--ink-2); }
+  .sub-h:first-child { padding-top: 12px; }
+  .pins { display: flex; flex-wrap: wrap; gap: 3px; }
+  .pins .t { flex: 0 0 150px; height: 120px; max-width: none; }
+  .pins .t .nm { font-size: 14px; }
+  .pal { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule-soft); }
+  .pal.open-able { cursor: pointer; }
+  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; }
+  .pal .pn.ph { color: var(--ink-2); }
+  .pal .pm { margin-top: 4px; font-size: 11px; color: var(--ink-2); }
+  .pal .pstrip { display: flex; height: 60px; }
+  .pal .pstrip i { flex: 1; }
+  .pal .pstrip .none { flex: 1; align-self: center; font-size: 12px; color: var(--ink-2); font-style: normal; }
+  .pal .acts { display: flex; gap: 6px; }
+  .pal.open-able:hover .pn { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .study { padding: 16px 22px 40px 20px; }
+  .back { border: 0; background: none; padding: 0; color: var(--ink-2); cursor: pointer; font-size: 12px; }
+  .back:hover { color: var(--ink); }
+  .study-h { display: flex; align-items: baseline; gap: 14px; margin-top: 10px; }
+  .study-h .sn2 { font-size: 34px; letter-spacing: -0.03em; line-height: 1; outline: none; border-radius: 3px; min-width: 40px; }
+  .study-h .sn2:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+  .study-h .sn2:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
+  .study-h span.meta { font-size: 12px; color: var(--ink-2); }
+  .study-h .acts { margin-left: auto; display: flex; gap: 6px; }
+  .cols { display: grid; gap: 3px; margin-top: 16px; }
+  .col .big { position: relative; height: 250px; cursor: pointer; }
+  .col .big .nm { position: absolute; left: 12px; bottom: 10px; font-size: 15px; letter-spacing: -0.01em; }
+  .col .big .nm.ph { opacity: 0.6; }
+  .grounds { display: grid; grid-template-columns: repeat(3, 1fr); height: 72px; margin-top: 3px; }
+  .grounds div { display: grid; place-items: center; }
+  .grounds i { display: block; width: 28px; height: 28px; }
+  .col .meta { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; align-items: center; margin-top: 10px; font-size: 11.5px; }
+  .col .meta .src { width: 30px; height: 30px; }
+  .col .meta .v { color: var(--ink-2); }
+  .col .codes { margin-top: 6px; font-size: 11.5px; color: var(--ink-2); }
+  .col .codes b { font-weight: 400; color: var(--ink); }
+  .ver { margin-top: 14px; font-size: 12px; color: var(--ink-2); }
+
+  /* Table: try colors together (A74, A84, A85). Grounds to set them on, a search at the bottom, names when you ask. */
+  .table { position: absolute; inset: 0; background: #efeff0; overflow: hidden; }
+  .table .hint { position: absolute; left: 22px; top: 16px; font-size: 13px; color: var(--ink-2); pointer-events: none; }
+  .table .acts { position: absolute; right: 20px; top: 12px; display: flex; gap: 6px; z-index: 50; }
+  .ground { position: absolute; width: 150px; height: 150px; }
+  .ground p { position: absolute; left: 0; top: calc(100% + 6px); font-size: 11px; color: var(--ink-2); }
+  .chip { position: absolute; width: 96px; height: 96px; cursor: grab; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14), 0 6px 14px rgba(0, 0, 0, 0.1); touch-action: none; }
+  .chip:active { cursor: grabbing; }
+  .chip .nm { position: absolute; left: 8px; right: 8px; bottom: 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--on); display: none; }
+  .table.named .chip .nm { display: block; }
+  .tsearch { position: absolute; left: 50%; bottom: 20px; z-index: 45; width: 340px; transform: translateX(-50%); }
+  .tfield { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .tfield::before { content: ""; flex: none; width: 10px; height: 10px; border: 1.5px solid var(--ink-2); border-radius: 50%; }
+  .tfield input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 14px; }
+  .tres { list-style: none; margin: 0 0 6px; padding: 5px; background: rgba(250, 250, 251, 0.98); border-radius: 10px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+  .tres:empty { display: none; }
+  .tres li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: center; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
+  .tres li:hover, .tres li.hi { background: rgba(0, 0, 0, 0.07); }
+  .tres i { width: 22px; height: 22px; }
+  .tres b { display: block; font-weight: 400; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tres b.ph { opacity: 0.6; }
+  .tres span { display: block; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tres .none { display: block; padding: 6px 8px; font-size: 12px; color: var(--ink-2); cursor: default; }
+  .tres .none:hover { background: none; }
+
+  /* Search: find it again (A76) */
+  .res { padding: 4px 22px 40px 20px; }
+  .res .q { font-size: 12px; color: var(--ink-2); margin: 8px 0; }
+  .res ul { margin: 0; padding: 0; }
+  .res li { list-style: none; display: grid; grid-template-columns: 150px 72px minmax(0, 1fr); gap: 14px; align-items: center; padding: 8px 0; border-top: 1px solid var(--rule-soft); cursor: pointer; }
+  .res .t { height: 72px; }
+  .res .src { width: 72px; height: 72px; }
+  .res .w { font-size: 17px; letter-spacing: -0.015em; }
+  .res .w.ph { color: var(--ink-2); }
+  .res .v { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .res mark { background: none; color: inherit; box-shadow: inset 0 -2px 0 rgba(29, 29, 31, 0.45); }
+
+  /* First open: the opinion as the empty window (A71, A75), then the first hunt */
+  .first { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+  .first .big { font-size: 36px; letter-spacing: -0.03em; line-height: 1.1; }
+  .first .small { margin-top: 14px; font-size: 14px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; justify-content: center; }
+  .first .tiny { margin-top: 22px; font-size: 12px; color: var(--ink-3); }
+  .kc { font: 13px/1 var(--font); min-width: 24px; height: 24px; padding: 0 6px; display: inline-grid; place-items: center; background: linear-gradient(#fff, #f1f1f3); color: var(--ink); border: 0.5px solid rgba(0, 0, 0, 0.18); border-radius: 6px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); }
+  .keys { border: 0; background: none; padding: 0; display: inline-flex; gap: 6px; cursor: pointer; }
+  .huntpill { position: absolute; left: 50%; top: 52px; z-index: 70; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(255, 255, 255, 0.96); border-radius: 12px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.2); font-size: 17px; white-space: nowrap; pointer-events: none; animation: fadeIn 200ms ease-out both; }
+  .huntpill span { color: var(--ink-2); }
+
+  /* What you've gathered with ⇧-click (A67): a quiet bar at the bottom of the window */
+  .selpill { position: absolute; left: 50%; bottom: 18px; z-index: 44; display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 10px; transform: translateX(-50%); background: rgba(255, 255, 255, 0.97); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); animation: fadeIn 160ms ease-out both; }
+  .selpill .ss { display: flex; height: 18px; }
+  .selpill .ss i { width: 16px; }
+  .selpill .sn { font-size: 12px; color: var(--ink-2); margin: 0 4px 0 2px; white-space: nowrap; }
+
   /* Playback (entry 112): a drawn cursor and keystroke chips, so the demo records hands-free */
   .pcursor { position: absolute; left: 0; top: 0; z-index: 100; width: 22px; height: 30px; pointer-events: none; }
   .pcursor[hidden] { display: none; }
@@ -110,48 +280,6 @@
   body.playing #stage { pointer-events: none; }
   body.playing #stage, body.playing #stage * { cursor: none !important; }
   .t.phover { flex-grow: 2.4; z-index: 2; }
-  .t.phover .dt { opacity: 0.86; }
-  .t .nm { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: var(--ts); line-height: 1.12; letter-spacing: -0.01em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: var(--tl); -webkit-box-orient: vertical; }
-  .days.bare .t .nm { display: none; }
-  .day.today .t .nm { font-size: var(--tts); letter-spacing: -0.025em; }
-  .t .nm.ph { opacity: 0.82; }
-  .t .dt { position: absolute; left: 10px; right: 10px; top: 9px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 200ms; }
-  .t:hover .dt, .t:focus-visible .dt { opacity: 0.86; }
-  .days.bare .t:hover .dt { opacity: 0; }
-  .t .pin { position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--on); }
-  .days.bare .t .pin { right: 5px; top: 5px; width: 4px; height: 4px; }
-  /* Selected with ⇧-click: an ink edge, then a white line inside it, so it shows on light colors and dark ones alike */
-  .t.sel, .pal .strip button.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff; }
-  .fan-card.sel { box-shadow: inset 0 0 0 2px #1d1d1f, inset 0 0 0 4px #fff, 0 1px 2px rgba(0, 0, 0, 0.1), 0 10px 22px rgba(0, 0, 0, 0.12); }
-  .empty { padding: 60px 22px; border: 0; color: var(--ink-2); font-size: 13px; }   /* no dashed box: that was v1's */
-
-  /* Spectrum: every color you've found, fanned by hue, one long scroll */
-  .fan { position: absolute; inset: 0; cursor: grab; touch-action: none; overflow: hidden; }
-  .fan:active { cursor: grabbing; }
-  .fan-cap { position: absolute; left: 28px; top: 14px; z-index: 300; max-width: 52%; pointer-events: none; }
-  .fan-cap .nm { font-size: 52px; line-height: 1; letter-spacing: -0.045em; }
-  .fan-cap .nm.ph { color: var(--ink-2); }
-  .fan-cap .mt { margin-top: 10px; font-size: 12px; color: var(--ink-2); }
-  .fan-card { position: absolute; left: calc(50% - 66px); bottom: 74px; width: 132px; height: 214px; background: var(--c); color: var(--on); transform-origin: 50% 500px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 10px 22px rgba(0, 0, 0, 0.12); cursor: pointer; }
-  .fan-hint { position: absolute; left: 28px; bottom: 12px; font-size: 11px; color: var(--ink-2); }
-
-  /* Collections: pins, palettes, and what's shared with you */
-  .col { padding: 6px 18px 46px; }
-  .pins { display: flex; flex-wrap: wrap; gap: 3px; }
-  .pins .t { flex: 0 0 168px; height: 150px; max-width: none; }
-  .pins .t .nm { display: -webkit-box; font-size: 16px; -webkit-line-clamp: 2; }
-  .pal { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule-soft); animation: fadeIn 300ms ease-out both; }
-  .pal:first-child { border-top: 0; }
-  .pal .pn { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; outline: none; border-radius: 3px; overflow-wrap: anywhere; cursor: text; }
-  .pal .pn:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
-  .pal .pn:focus { box-shadow: 0 0 0 2px rgba(29, 29, 31, 0.12); }
-  .pal .strip .none { flex: 1; align-self: center; font-size: 12px; color: var(--ink-2); }
-  .pal .pm { margin-top: 4px; font-size: 11px; color: var(--ink-2); }
-  .pal .strip { display: flex; height: 64px; }
-  .pal .strip button { flex: 1; border: 0; padding: 0; background: var(--c); cursor: pointer; transition: flex-grow 300ms cubic-bezier(.2, .8, .2, 1); }
-  .pal .strip button:hover { flex-grow: 1.8; }
-  .pal .acts { display: flex; gap: 6px; }
-  .pal .acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
 
   /* The menu (entry 116): right-click a color, or Add to palette. A Mac menu, kept neutral so only the colors have color. */
   .menu { position: absolute; z-index: 80; min-width: 216px; max-width: 300px; padding: 5px; box-sizing: border-box; background: rgba(248, 248, 250, 0.95); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.26); font-size: 13px; animation: fadeIn 110ms ease-out both; }
@@ -211,6 +339,15 @@
   .sp-pal .sp-strip { margin-top: 0; }
   .sp-acts { display: flex; gap: 6px; margin-top: 12px; }
   .sp-acts .tbtn[aria-pressed="true"] { background: #1d1d1f; color: #fff; }
+  /* The trail you followed to get here (D19, entry 124), and the other colors from the same place, as one strip */
+  .trail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 12px; color: var(--ink-2); min-width: 0; }
+  .trail button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink-2); font-size: 12px; }
+  .trail button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+  .trail .here-now { color: var(--ink); }
+  .trail .sep { color: var(--ink-3); }
+  .here { display: flex; height: 22px; max-width: 220px; }
+  .sp-rows .here button { flex: 1 1 0; min-width: 0; height: 100%; border: 0; padding: 0; cursor: pointer; background: var(--c); }
+  .sp-rows .here button:hover { box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px #1d1d1f; text-decoration: none; }
   .pad { margin-top: auto; padding-top: 12px; }
   .pad label { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 2px; }
   .pad textarea { display: block; width: 100%; height: 60px; resize: none; border: 0; outline: none; padding: 0; font: 13px/20px var(--font); background: repeating-linear-gradient(transparent 0 19px, var(--rule-soft) 19px 20px); box-sizing: border-box; }
@@ -257,13 +394,17 @@
     <button type="button" class="mbi" id="mbi" aria-expanded="false">Palit</button>
     <div class="strips" id="strips" role="toolbar" aria-label="Desktop palette"></div>
     <section class="pw" id="pw" hidden aria-label="Palit">
-      <div class="pw-tb">
+      <div class="bar">
         <div class="lights"><button type="button" id="pw-close" aria-label="Close Palit"></button><button type="button" aria-label="Minimize" tabindex="-1"></button><button type="button" aria-label="Zoom" tabindex="-1"></button></div>
-        <div class="seg" id="views" role="group" aria-label="View"></div>
-        <div class="zoom" id="zoom" role="group" aria-label="Zoom"><button type="button" id="z-out" aria-label="Zoom out" title="Zoom out  ⌘−">−</button><button type="button" id="z-in" aria-label="Zoom in" title="Zoom in  ⌘+">+</button></div>
+        <div class="hue"><div class="letters" id="letters" role="group" aria-label="Filter by hue"></div><button type="button" class="wheel" id="wheel" aria-pressed="false" aria-label="All colors, by hue" title="All colors, by hue"><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle class="hub" cx="9" cy="9" r="2.6" fill="none"/></svg></button></div>
+        <div class="tabs" id="tabs" role="group" aria-label="View"></div>
+        <label class="search"><input id="q" type="search" placeholder="Search" aria-label="Search your colors by name, place, code or note" spellcheck="false" autocomplete="off"></label>
+        <div class="zoom" id="zoom" role="group" aria-label="Zoom"><button type="button" id="z-out" aria-label="Zoom out" title="Zoom out  ⌘−">−</button><span class="zdots" id="zdots" role="group" aria-label="Zoom stops"></span><button type="button" id="z-in" aria-label="Zoom in" title="Zoom in  ⌘+">+</button></div>
       </div>
-      <div class="pw-nav" id="nav"></div>
-      <div class="pw-body" id="body"></div>
+      <div class="main" id="main">
+        <nav class="rail" id="rail" aria-label="Days of the week"></nav>
+        <div class="pw-body" id="body"></div>
+      </div>
       <p class="pw-count num" id="count" aria-live="polite"></p>
     </section>
   </div>
@@ -278,7 +419,7 @@
     <button type="button" class="c-btn" id="c-reset">Start over</button>
     <button type="button" class="c-btn" id="c-hide">Hide<kbd>H</kbd></button>
   </div>
-  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it. Right-click to name it as you keep it; hold <b>⇧</b> as you click to keep a palette. Click Palit in the menu bar for Days, Collections and Spectrum; there, <b>⇧</b>-click gathers colors, right-click adds them to a palette, and <b>⌘−</b> <b>⌘+</b> zoom. <b>P</b> plays the demo for recording; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
+  <div class="c-row c-row2"><p class="c-hint"><b>⌥⇧C</b>, then click any color to keep it; right-click to name it, hold <b>⇧</b> to keep a palette. Click Palit in the menu bar: <b>⌘−</b> <b>⌘+</b> zoom from only color to the whole hunt, the ring shows all colors by hue, right-click any color to take it to the table, <b>⇧</b>-click gathers. <b>P</b> plays the demo; Esc stops it.</p><span class="c-credit" id="c-credit"></span></div>
 </div>
 
 <script src="../system/sample.js"></script>
@@ -374,8 +515,10 @@
   }
 
   /* ---------- The collection ---------- */
-  // selected: the colors gathered with ⇧-click, by number (entry 116). zoom: a stop in ZOOM.
-  var st = { screen: 0, sound: "felt", view: "days", band: null, zoom: 3, sub: "pins", selected: [], picking: false, run: null, deskPal: null };
+  // selected: the colors gathered with ⇧-click, by number (entry 116).
+  // view: days, palettes or table. all: Days shows every color by hue (the fan). zoom: one of four stops. open: days opened out.
+  // q: search. study: the palette opened as a study. week: the week the weekday column shows. fresh: the first open, before any color.
+  var st = { screen: 0, sound: "felt", view: "days", band: null, all: false, zoom: 1, open: {}, q: "", study: null, week: null, fresh: false, selected: [], picking: false, run: null, deskPal: null };
   var colors = [], palettes = [], shared = [], next = 1;
   function make(o) {
     var k = PC.oklch(o.hex), c = Object.assign({ name: null, note: "", pinned: false, palette: null, crop: null, url: null, screen: null, x: null, y: null }, o);
@@ -482,11 +625,15 @@
     st.picking = true; stage.classList.add("picking"); $("mbi").classList.add("picking");
     loupe = el("div", { class: "v2-loupe", "aria-hidden": "true" }, [el("span", { class: "hx num" })]);
     stage.appendChild(loupe); moveLoupe(pointer.x, pointer.y);
+    if (st.fresh) showHuntPill();   // the first hunt: the instructions follow the one line (A75)
   }
   function stopPicking() {
     st.picking = false; stage.classList.remove("picking"); $("mbi").classList.remove("picking");
     if (loupe) { loupe.remove(); loupe = null; }
     if (st.run) endRun();
+    hideHuntPill();
+    // After the first hunt, the window opens on what you found: No. 001 under Today
+    if (st.fresh) { if (colors.length) st.fresh = false; setTimeout(openWindow, colors.length ? 420 : 0); }
   }
   function moveLoupe(x, y) {
     if (!loupe) return;
@@ -541,245 +688,333 @@
     if (c) nameBeside(c, p.x, p.y);
   });
 
-  /* ---------- Palit's window: Days, Collections, Spectrum (A58) ---------- */
-  var VIEWS = [["days", "Days"], ["collections", "Collections"], ["spectrum", "Spectrum"]];
-  VIEWS.forEach(function (v) {
-    var b = el("button", { type: "button", "aria-pressed": "false", text: v[1] });
-    b.addEventListener("click", function () { st.view = v[0]; render(); });
-    $("views").appendChild(b);
-  });
+  /* ---------- Palit's window, after the story workshop (entries 124 to 154): Days, Palettes and Table as words along a
+     white top bar, the seven letters always on top, the days of the week down the left. Built from the preview (design/next). ---------- */
+  var VIEWS = [["days", "Days"], ["palettes", "Palettes"], ["table", "Table"]];
   function openWindow() { if (st.picking) stopPicking(); $("pw").hidden = false; $("mbi").setAttribute("aria-expanded", "true"); render(); }
-  function closeWindow() { closeMenus(); closeSheet(); st.selected = []; $("pw").hidden = true; $("mbi").setAttribute("aria-expanded", "false"); }
+  function closeWindow() { closeMenus(); closeSheet(); closeWeeks(); st.selected = []; $("pw").hidden = true; $("mbi").setAttribute("aria-expanded", "false"); }
   $("mbi").addEventListener("click", function (e) { e.stopPropagation(); if ($("pw").hidden) openWindow(); else closeWindow(); });
   $("pw-close").addEventListener("click", closeWindow);
   // In the window, a right-click is Palit's, not the browser's, except where you type.
   $("pw").addEventListener("contextmenu", function (e) { if (!e.target.closest("input, textarea, [contenteditable=true]")) e.preventDefault(); });
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-  /* The zoom for Days (entry 117): seven stops, − and + at the top, ⌘− and ⌘+, ⌘0 back to the middle.
-     Each stop: tile width and height, name size and lines, how much larger today is, and today's name size.
-     The two smallest are only color; the largest carries the full name (A62). */
-  var ZOOM = [
-    { tw: 46, th: 46, today: 1.45, bare: true },
-    { tw: 62, th: 58, today: 1.5, bare: true },
-    { tw: 80, th: 72, ts: 11, tl: 1, today: 1.6, tts: 14 },
-    { tw: 104, th: 92, ts: 12, tl: 1, today: 1.7, tts: 17 },
-    { tw: 132, th: 118, ts: 14, tl: 2, today: 1.6, tts: 22 },
-    { tw: 158, th: 142, ts: 15.5, tl: 3, today: 1.5, tts: 26 },
-    { tw: 186, th: 166, ts: 17, tl: 3, today: 1.45, tts: 30 }
-  ], ZOOM_MID = 3;
-  function zoomVars(box) {
-    var z = ZOOM[st.zoom];
-    box.classList.toggle("bare", !!z.bare);
-    box.style.cssText = "--tw:" + z.tw + "px;--th:" + z.th + "px;--today:" + z.today + (z.bare ? "" : ";--ts:" + z.ts + "px;--tl:" + z.tl + ";--tts:" + z.tts + "px");
+  /* Where a color came from, said the way you'd say it, then where that lives */
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function dateOf(c) { return new Date(c.at); }
+  function shortDay(d) { return MONTHS[d.getMonth()].slice(0, 3) + " " + d.getDate(); }
+  function dayName(d) { return MONTHS[d.getMonth()] + " " + d.getDate(); }
+  function timeOf(d) { var h = d.getHours(), m = d.getMinutes(); return (h % 12 || 12) + ":" + ("0" + m).slice(-2) + (h < 12 ? " AM" : " PM"); }
+  function whereOf(c) {
+    if (c.app === "Photos") return c.src || c.place;
+    if (c.app === "Browser") return c.src ? c.src.charAt(0).toUpperCase() + c.src.slice(1) : c.place;
+    if (c.app === "Preview" || c.app === "Shared") return c.place;
+    if (c.app === "Safari") return c.place;
+    return c.place + (c.src ? ", " + c.src : "");
   }
-  function zoomButtons() { $("z-out").disabled = st.zoom === 0; $("z-in").disabled = st.zoom === ZOOM.length - 1; }
-  // Resize what's there rather than drawing Days again, so a step reads as a zoom, not a reload.
-  function setZoom(z) {
-    z = Math.max(0, Math.min(ZOOM.length - 1, z));
-    if (z === st.zoom) return;
-    st.zoom = z; zoomButtons();
-    var days = $("body").querySelector(".days");
-    if (days) zoomVars(days); else render();
+  function viaOf(c) {
+    if (c.app === "Photos") return c.place + " in Photos";
+    if (c.app === "Browser") return c.place;
+    if (c.app === "Preview" || c.app === "Safari") return c.app + (c.url ? ", " + c.url : "");
+    if (c.app === "Shared") return c.src;
+    return c.app;
   }
+  function keyOf(c) { return c.place + "|" + c.src; }
+  function dayLabel(c) { return c.day === TODAY ? "today" : c.day; }
+
+  /* The zoom (A87): four stops, each its own idea; ⌘− and ⌘+ step, ⌘0 goes back to your names */
+  var Z = [
+    { mode: "strip", sh: 26, label: "Only color" },
+    { mode: "tiles", tw: 104, th: 92, label: "Your names" },
+    { mode: "places", th: 104, label: "And where" },
+    { mode: "hunt", hh: 100, label: "The hunt" }
+  ], ZOOM_HOME = 1;
+  function setZoom(z) { z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return; st.zoom = z; render(true); }
   function zoomKey(d) {
-    if (!d) { setZoom(ZOOM_MID); return; }
-    var b = $(d < 0 ? "z-out" : "z-in");
-    b.classList.add("flash"); setTimeout(function () { b.classList.remove("flash"); }, 170);
+    if (!d) { setZoom(ZOOM_HOME); return; }
+    var b = $(d < 0 ? "z-out" : "z-in"); b.classList.add("flash"); setTimeout(function () { b.classList.remove("flash"); }, 170);
     setZoom(st.zoom + d);
   }
   $("z-out").addEventListener("click", function () { setZoom(st.zoom - 1); });
   $("z-in").addEventListener("click", function () { setZoom(st.zoom + 1); });
+  $("wheel").addEventListener("click", function () { st.view = "days"; st.all = !st.all; st.study = null; st.q = ""; $("q").value = ""; render(); });
+  $("q").addEventListener("input", function () { st.q = $("q").value; render(); });
+  $("q").addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Escape") { $("q").value = ""; st.q = ""; render(); $("q").blur(); } });
 
-  function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }); }
-  function render() {
-    closeMenus();
-    Array.prototype.forEach.call($("views").children, function (b, i) { b.setAttribute("aria-pressed", String(VIEWS[i][0] === st.view)); });
-    $("zoom").hidden = st.view !== "days";
-    zoomButtons();
-    renderNav();
-    var body = $("body"); body.textContent = ""; body.scrollTop = 0;
-    if (st.view === "days") body.appendChild(daysView());
-    else if (st.view === "spectrum") body.appendChild(spectrumView());
-    else body.appendChild(collectionsView());
+  function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }).sort(function (a, b) { return b.number - a.number; }); }
+  function render(keepScroll) {
+    closeMenus(); closeWeeks();
+    var body = $("body"), top = body.scrollTop;
+    renderBar();
+    body.textContent = "";
+    var list = shown();
+    if (st.fresh) body.appendChild(firstView());
+    else if (st.q.trim()) body.appendChild(searchView());
+    else if (st.view === "days") body.appendChild(st.all ? fanView() : daysView());
+    else if (st.view === "palettes") body.appendChild(st.study && palById(st.study) ? studyView(palById(st.study)) : palettesView());
+    else body.appendChild(tableView());
+    renderRail(list);
     countLine();
+    body.scrollTop = keepScroll ? top : 0;
+    drawSelPill();
   }
-  function renderNav() {
-    var nav = $("nav"), hadBar = !!nav.querySelector(".selbar"); nav.textContent = "";
-    if (st.view === "collections") {
-      var sub = el("div", { class: "subnav", role: "group", "aria-label": "Collections" });
-      [["pins", "Pinned"], ["palettes", "Palettes"], ["shared", "Shared with you"]].forEach(function (s) {
-        var b = el("button", { type: "button", "aria-pressed": String(st.sub === s[0]), text: s[1] });
-        b.addEventListener("click", function () { st.sub = s[0]; render(); });
-        sub.appendChild(b);
-      });
-      nav.appendChild(sub);
-      if (st.sub === "pins") nav.appendChild(letters(pinnedColors()));   // Pinned gets the seven letters too (entry 118)
-    } else nav.appendChild(letters(colors));
-    if (st.selected.length) { var bar = selBar(); if (hadBar) bar.style.animation = "none"; nav.appendChild(bar); }
-  }
-  // ROYGBIV, strictly seven (A58). A letter with nothing under it is greyed, unless it's the one picked.
-  function letters(scope) {
-    var row = el("div", { class: "letters", role: "group", "aria-label": "Filter by hue" });
-    LETTERS.forEach(function (L) {
-      var has = scope.some(function (c) { return c.band === L[0]; }), on = st.band === L[0];
-      var b = el("button", { type: "button", "aria-pressed": String(on), "aria-label": L[1], title: L[1], style: "--band:" + L[2], text: L[0] });
-      b.disabled = !has && !on;
-      b.addEventListener("click", function () { st.band = on ? null : L[0]; render(); });
-      row.appendChild(b);
+
+  /* ---------- The top bar ---------- */
+  function renderBar() {
+    var L = $("letters"); L.textContent = "";
+    var scope = st.view === "palettes" && !st.study ? pinnedColors() : colors;
+    LETTERS.forEach(function (x) {
+      var has = scope.some(function (c) { return c.band === x[0]; }), on = st.band === x[0];
+      var b = el("button", { type: "button", "aria-pressed": String(on), "aria-label": x[1], title: x[1], text: x[0] });
+      b.disabled = st.fresh || (!has && !on);
+      b.addEventListener("click", function () { st.band = on ? null : x[0]; render(); });
+      L.appendChild(b);
     });
-    return row;
+    $("wheel").setAttribute("aria-pressed", String(st.all && st.view === "days" && !st.q));
+    $("wheel").disabled = !!st.fresh;
+    var T = $("tabs"); T.textContent = "";
+    VIEWS.forEach(function (v) {
+      var b = el("button", { type: "button", "aria-pressed": String(st.view === v[0] && !st.q.trim()), text: v[1] });
+      b.addEventListener("click", function () { st.view = v[0]; st.study = null; st.q = ""; $("q").value = ""; if (v[0] === "days") st.all = false; render(); });
+      T.appendChild(b);
+    });
+    var zoomOn = st.view === "days" && !st.all && !st.q.trim() && !st.fresh;
+    $("zoom").style.visibility = zoomOn ? "visible" : "hidden";
+    $("z-out").disabled = st.zoom === 0; $("z-in").disabled = st.zoom === Z.length - 1;
+    var D = $("zdots"); D.textContent = "";
+    Z.forEach(function (z, i) { var b = el("button", { type: "button", "aria-pressed": String(i === st.zoom), "aria-label": z.label, title: z.label }); b.addEventListener("click", function () { setZoom(i); }); D.appendChild(b); });
   }
   function pinnedColors() { return colors.filter(function (c) { return c.pinned; }); }
   function countLine() {
-    var n, pinned = pinnedColors();
-    if (st.view === "collections") n = st.sub === "pins" ? (st.band ? pinned.filter(function (c) { return c.band === st.band; }).length + " of " : "") + pinned.length + " pinned" : st.sub === "palettes" ? palettes.length + (palettes.length === 1 ? " palette" : " palettes") : shared.length + " shared with you";
-    else n = (st.band ? shown().length + " of " : "") + colors.length + " colors";
-    $("count").textContent = n;
+    var n = "", list = shown();
+    if (st.fresh) n = "0 colors";
+    else if (st.q.trim()) n = "";
+    else if (st.view === "days") n = (st.band ? list.length + " of " : "") + colors.length + " colors" + (st.all ? ", by hue" : ", " + Z[st.zoom].label.toLowerCase());
+    else if (st.view === "palettes") n = st.study ? "" : palettes.length + (palettes.length === 1 ? " palette" : " palettes");
+    $("count").textContent = n; $("count").hidden = !n;
   }
-  function tile(c, i, opts) {
-    opts = opts || {};
-    var b = el("button", { type: "button", class: "t" + (opts.join ? " join" : "") + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + ";animation-delay:" + Math.min(i * 14, 280) + "ms", "aria-label": label(c) + (c.pinned ? ", pinned" : "") }, [
-      el("span", { class: "dt num", text: [no(c.number), c.place, c.day].join(", ") }),
-      el("span", { class: "nm" + (c.name ? "" : " ph"), text: title(c) }),
-      c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null
-    ]);
-    b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c); });
+
+  /* ---------- The days of the week (A79, A86): M T W T F S S, and the arrow for weeks and months ---------- */
+  var WD = ["M", "T", "W", "T", "F", "S", "S"], WD_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  function monday(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function weekLabel(m) { var e = addDays(m, 6); return shortDay(m) + "\nto " + (e.getMonth() === m.getMonth() ? e.getDate() : shortDay(e)); }
+  function weekName(m) { var newest = colors.slice().sort(function (a, b) { return b.number - a.number; })[0], t = newest ? monday(dateOf(newest)) : m; if (+m === +t) return "This week"; if (+m === +addDays(t, -7)) return "Last week"; return weekLabel(m).replace("\n", " "); }
+  var curDay = null, wmenu = null;
+  function renderRail(list) {
+    var R = $("rail"); R.textContent = "";
+    $("main").classList.toggle("norail", !(st.view === "days" && !st.all && !st.q.trim() && !st.fresh));
+    if (!list.length) return;
+    var has = {}; list.forEach(function (c) { has[c.day] = true; });
+    if (!st.week) st.week = monday(dateOf(list[0]));
+    R.appendChild(el("p", { class: "wk num", text: weekLabel(st.week) }));
+    WD.forEach(function (w, i) {
+      var d = addDays(st.week, i), day = dayName(d);
+      var b = el("button", { type: "button", class: "wd" + (day === TODAY ? " today" : "") + (day === curDay ? " on" : ""), text: w, "data-day": day, title: WD_FULL[i] + ", " + day + (has[day] ? "" : ": nothing kept"), "aria-label": WD_FULL[i] + ", " + day });
+      b.disabled = !has[day];
+      b.addEventListener("click", function () { jumpTo(day); });
+      R.appendChild(b);
+    });
+    var more = el("button", { type: "button", class: "wmore", "aria-haspopup": "menu", "aria-expanded": "false", "aria-label": "Other weeks and months", title: "Other weeks and months" });
+    more.innerHTML = '<svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    more.addEventListener("click", function (e) { e.stopPropagation(); if (wmenu) closeWeeks(); else openWeeks(more, list); });
+    R.appendChild(more);
+  }
+  function closeWeeks() { if (wmenu) { wmenu.remove(); wmenu = null; } var m = $("rail").querySelector(".wmore"); if (m) m.setAttribute("aria-expanded", "false"); }
+  function openWeeks(btn, list) {
+    closeWeeks();
+    var weeks = [], months = [];
+    list.forEach(function (c) {
+      var d = dateOf(c), m = monday(d), w = weeks.filter(function (x) { return +x.m === +m; })[0];
+      if (!w) { w = { m: m, n: 0, first: c.day }; weeks.push(w); } w.n++;
+      var mo = d.getFullYear() * 12 + d.getMonth(), x = months.filter(function (y) { return y.k === mo; })[0];
+      if (!x) { x = { k: mo, d: d, n: 0, first: c.day }; months.push(x); } x.n++;
+    });
+    var kids = [el("p", { class: "mh2", text: "Weeks" })];
+    weeks.forEach(function (w) {
+      var b = el("button", { type: "button" }, [el("span", { class: "ck", text: +w.m === +st.week ? "✓" : "" }), el("span", { class: "num", text: weekName(w.m) }), el("span", { class: "rt num", text: String(w.n) })]);
+      b.addEventListener("click", function () { st.week = w.m; closeWeeks(); renderRail(shown()); jumpTo(w.first); });
+      kids.push(b);
+    });
+    kids.push(el("hr")); kids.push(el("p", { class: "mh2", text: "Months" }));
+    months.forEach(function (x) {
+      var b = el("button", { type: "button" }, [el("span", { class: "ck" }), el("span", { text: MONTHS[x.d.getMonth()] }), el("span", { class: "rt num", text: String(x.n) })]);
+      b.addEventListener("click", function () { st.week = monday(x.d); closeWeeks(); renderRail(shown()); jumpTo(x.first); });
+      kids.push(b);
+    });
+    wmenu = el("div", { class: "wmenu", role: "menu", "aria-label": "Other weeks and months" }, kids);
+    var r = rectIn(btn), w2 = rectIn($("pw"));
+    wmenu.style.left = (r.x - w2.x + r.w + 6) + "px"; wmenu.style.top = Math.max(60, r.y - w2.y - 40) + "px";
+    $("pw").appendChild(wmenu);
+    btn.setAttribute("aria-expanded", "true");
+  }
+  document.addEventListener("pointerdown", function (e) { var t = e.target; if (wmenu && !(t && t.closest && t.closest(".wmenu, .wmore"))) closeWeeks(); });
+  function jumpTo(day) { var t = document.getElementById("d-" + slug(day)); if (t) $("body").scrollTop = t.offsetTop - 6; }
+  function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-"); }
+  // As you scroll, the day in view lights up, and the column follows it into its week
+  $("body").addEventListener("scroll", function () {
+    var days = $("body").querySelectorAll(".day"), cur = null, top = $("body").scrollTop + 30;
+    days.forEach(function (d) { if (d.offsetTop <= top) cur = d.getAttribute("data-day"); });
+    if (!cur && days.length) cur = days[0].getAttribute("data-day");
+    if (cur === curDay) return;
+    curDay = cur;
+    var c = colors.filter(function (x) { return x.day === cur; })[0];
+    if (c && +monday(dateOf(c)) !== +st.week) { st.week = monday(dateOf(c)); renderRail(shown()); return; }
+    $("rail").querySelectorAll(".wd").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-day") === cur); });
+  });
+
+  /* ---------- Tiles, and gathering them with ⇧-click (A67) ---------- */
+  function sw(c) { return el("i", { style: "background:" + c.hex }); }
+  function nameSpan(c, short) { return el("span", { class: "nm" + (c.name ? "" : " ph"), text: !c.name && short ? c.placeholder.split(" from ")[0] : title(c) }); }
+  function tile(c, o) {
+    o = o || {};
+    var b = el("button", { type: "button", class: "t" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c) + (o.style ? ";" + o.style : ""), "aria-label": label(c) + (c.pinned ? ", pinned" : "") + ", " + whereOf(c) }, [o.noName ? null : nameSpan(c, o.short), c.pinned ? el("span", { class: "pin", "aria-hidden": "true" }) : null]);
+    b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c, o.trail || defaultTrail(c)); });
     b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
     return b;
   }
-
-  /* ---------- Gathering colors (entry 116): ⇧-click any color, anywhere in the window; the bar in the nav says
-     how many and adds them to a palette. ⇧ already means "more than one" when you pick (A45). ⌘-click works too, the Mac habit. ---------- */
+  function source(c, size) {
+    var s = size ? "width:" + size + "px;height:" + size + "px" : null;
+    if (c.crop) return el("div", { class: "src", style: s }, [el("img", { src: c.crop, alt: "" })]);
+    var nb = c.neighbors || [];
+    return el("div", { class: "src mos", style: s, "aria-hidden": "true" }, [nb[0], nb[1], nb[2], nb[3], c.hex, nb[4], nb[5], nb[6], nb[7]].map(function (h) { return el("i", { style: "background:" + (h || c.hex) }); }));
+  }
+  function firstCrop(list) { var w = list.filter(function (c) { return c.crop; }); return w.length ? w.reduce(function (a, b) { return a.number <= b.number ? a : b; }) : null; }
+  function groupsBy(list, keyFn) { var out = []; list.forEach(function (c) { var k = keyFn(c), g = out.filter(function (x) { return x.k === k; })[0]; if (g) g.list.push(c); else out.push({ k: k, list: [c] }); }); return out; }
+  function dayGroups(list) { var out = []; list.forEach(function (c) { var g = out[out.length - 1]; if (g && g.day === c.day) g.list.push(c); else out.push({ day: c.day, list: [c] }); }); return out; }
+  function defaultTrail(c) {
+    return [{ label: c.day === TODAY ? "Today" : c.day, go: function () { closeSheet(); st.view = "days"; st.all = false; st.q = ""; $("q").value = ""; render(); jumpTo(c.day); } },
+      { label: whereOf(c), go: function () { closeSheet(); st.q = whereOf(c); $("q").value = whereOf(c); render(); } }];
+  }
   function gathers(e) { return e.shiftKey || e.metaKey; }
   function isSel(n) { return st.selected.indexOf(n) >= 0; }
   function toggleSel(c) { var k = st.selected.indexOf(c.number); if (k >= 0) st.selected.splice(k, 1); else st.selected.push(c.number); syncSel(); }
   function clearSel() { if (!st.selected.length) return; st.selected = []; syncSel(); }
   function syncSel() {
     stage.querySelectorAll("#body [data-n]").forEach(function (n) { n.classList.toggle("sel", isSel(Number(n.getAttribute("data-n")))); });
-    renderNav();
+    drawSelPill();
   }
-  function sw(c) { return el("i", { style: "background:" + c.hex }); }
-  function selBar() {
+  // What you've gathered: the colors, how many, and what to do with them, as a quiet bar at the bottom of the window
+  var selPill = null;
+  function drawSelPill() {
+    var had = !!selPill; if (selPill) { selPill.remove(); selPill = null; }
+    if (!st.selected.length || $("pw").hidden) return;
     var cs = st.selected.map(byNo).filter(Boolean);
     var add = el("button", { type: "button", class: "tbtn ink", "aria-haspopup": "menu", text: "Add to palette" });
     add.addEventListener("click", function () { paletteMenu(cs, add); });
+    var table = el("button", { type: "button", class: "tbtn", text: "Take to table" });
+    table.addEventListener("click", function () { takeToTable(cs); clearSel(); });
     var clr = el("button", { type: "button", class: "tbtn", text: "Clear" });
     clr.addEventListener("click", clearSel);
-    return el("div", { class: "selbar" }, [
-      el("span", { class: "ss", "aria-hidden": "true" }, cs.slice(-14).map(sw)),
-      el("span", { class: "sn num", "aria-live": "polite", text: cs.length + " selected" }),
-      clr, add
-    ]);
+    selPill = el("div", { class: "selpill", style: had ? "animation:none" : null }, [el("span", { class: "ss", "aria-hidden": "true" }, cs.slice(-14).map(sw)), el("span", { class: "sn num", "aria-live": "polite", text: cs.length + " selected" }), clr, table, add]);
+    $("pw").appendChild(selPill);
   }
 
-  /* Days: today first (A59), then each earlier day; a palette's colors sit together with no gap */
+  /* ---------- Days, each with its places (A72), at four stops (A87); a day opens out on a click ---------- */
   function daysView() {
-    var box = el("div", { class: "days" }), list = shown(), groups = [];
-    zoomVars(box);
-    list.slice().sort(function (a, b) { return b.number - a.number; }).forEach(function (c) {
-      var g = groups[groups.length - 1];
-      if (g && g.day === c.day) g.list.push(c); else groups.push({ day: c.day, list: [c] });
-    });
-    if (!groups.length) { box.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return box; }
-    var i = 0;
-    groups.forEach(function (g) {
-      var row = el("div", { class: "drow" }), prev = null;
-      g.list.forEach(function (c) { row.appendChild(tile(c, i++, { join: prev && c.palette && prev.palette === c.palette })); prev = c; });
-      box.appendChild(el("section", { class: "day" + (g.day === TODAY ? " today" : "") }, [el("p", { class: "dl num", text: g.day === TODAY ? "Today" : g.day }), row]));
+    var z = Z[st.zoom], box = el("div", { class: "days" }), list = shown();
+    if (!list.length) { box.appendChild(el("p", { class: "empty", text: st.band ? "Nothing under this letter yet." : "Nothing kept yet." })); return box; }
+    dayGroups(list).forEach(function (g) {
+      var places = groupsBy(g.list, keyOf);
+      var open = !!st.open[g.day] || z.mode === "hunt";
+      var compact = z.mode === "strip" && !open;
+      var head = el("button", { type: "button", class: "dh", "aria-expanded": String(open), title: open ? "Fold this day" : "Open this day out" }, [
+        el("b", { text: g.day === TODAY ? "Today" : g.day }),
+        compact ? null : el("span", { class: "num", text: g.list.length + (g.list.length === 1 ? " color" : " colors") + " from " + places.length + (places.length === 1 ? " place" : " places") }),
+        el("i", { "aria-hidden": "true" })
+      ]);
+      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; render(true); });
+      var content, today = g.day === TODAY;
+      if (open) {
+        content = el("div", { style: "--hh:" + (today && z.mode === "hunt" ? 124 : (z.hh || 96)) + "px" }, places.map(function (p) {
+          var c0 = p.list[0], first = p.list[p.list.length - 1];
+          return el("div", { class: "hunt" }, [
+            el("div", { class: "st" }, [el("p", { class: "w", text: whereOf(c0) }), el("p", { class: "v", text: viaOf(c0) + (today ? ", " + timeOf(dateOf(first)) : "") })]),
+            source(firstCrop(p.list) || c0),
+            el("div", { class: "cs" }, p.list.slice().reverse().map(function (c) { return tile(c, { short: true, style: "--ts:" + (today ? 14 : 12) + "px" }); }))
+          ]);
+        }));
+      } else if (z.mode === "strip") {
+        content = el("div", { class: "strip", style: "--sh:" + z.sh + "px" }, g.list.slice().reverse().map(function (c) { return tile(c, { noName: true }); }));
+      } else if (z.mode === "tiles") {
+        content = el("div", { class: "row", style: "--tw:" + (today ? z.tw * 1.4 : z.tw) + "px;--th:" + (today ? Math.round(z.th * 1.6) : z.th) + "px" }, g.list.slice().reverse().map(function (c) { return tile(c, { style: today ? "--ts:16px" : null }); }));
+      } else {
+        content = el("div", { class: "pls", style: "--th:" + (today ? 130 : z.th) + "px" }, places.map(function (p) {
+          var c0 = p.list[0];
+          return el("div", { class: "pg", style: "flex-grow:" + p.list.length }, [
+            el("p", { class: "w" }, [el("b", { text: whereOf(c0) }), "  " + viaOf(c0)]),
+            el("div", { class: "cs" }, p.list.slice().reverse().map(function (c) { return el("div", null, [tile(c, { short: true }), el("p", { class: "lbl num", text: no(c.number) + (today ? ", " + timeOf(dateOf(c)) : "") })]); }))
+          ]);
+        }));
+      }
+      box.appendChild(el("section", { class: "day" + (compact ? " compact" : ""), id: "d-" + slug(g.day), "data-day": g.day, style: "--dhs:" + (today ? 26 : 20) + "px" }, [head, content]));
     });
     return box;
   }
 
-  /* Spectrum: the fan (A58), one long scroll; letters narrow it */
+  /* ---------- All colors, by hue: the fan, folded into Days behind the ring (A74, A81, A91) ---------- */
   var fanPos = null;
-  function spectrumView() {
+  function fanView() {
     var list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
-    var stageF = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "Every color you've found, by hue. Scroll or use the arrow keys to turn it." });
-    if (!list.length) { stageF.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return stageF; }
+    var f = el("div", { class: "fan", tabindex: "0", role: "group", "aria-label": "All your colors, by hue. Scroll or use the arrow keys to turn it." });
+    if (!list.length) { f.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return f; }
     var nm = el("p", { class: "nm" }), mt = el("p", { class: "mt num" });
-    stageF.appendChild(el("div", { class: "fan-cap", "aria-live": "polite" }, [nm, mt]));
-    stageF.appendChild(el("p", { class: "fan-hint", text: "Scroll to turn it. Click the top card to open it." }));
-    var STEP = list.length > 24 ? 5.6 : 8, pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
+    f.appendChild(el("div", { class: "fan-cap", "aria-live": "polite" }, [nm, mt]));
+    var pos = fanPos !== null && fanPos < list.length ? fanPos : Math.floor(list.length / 2);
     var cards = list.map(function (c, i) {
-      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c), role: "img", "aria-label": label(c) });   // just the color: its name and details sit top left (entry 113)
-      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (Math.round(pos) === i) openCard(c); else { pos = i; place(true); } });
-      // A right-click turns the fan to that card first, so the name top left is the color the menu acts on.
-      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (Math.round(pos) !== i) { pos = i; place(true); } colorMenu(c, toStage(e)); });
-      stageF.appendChild(d);
-      return d;
+      var d = el("div", { class: "fan-card" + (isSel(c.number) ? " sel" : ""), "data-n": String(c.number), style: vars(c), role: "img", "aria-label": label(c) }, [el("span", { class: "fno num", "aria-hidden": "true", text: pad(c.number) })]);
+      d.addEventListener("click", function (e) { if (gathers(e)) { toggleSel(c); return; } if (i === pos) openCard(c, defaultTrail(c)); else { pos = i; place(); } });
+      d.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); if (i !== pos) { pos = i; place(); } colorMenu(c, toStage(e)); });
+      f.appendChild(d); return d;
     });
-    function place(ease) {
-      fanPos = Math.round(pos);
-      cards.forEach(function (d, i) {
-        var off = i - pos, a = off * STEP, top = Math.abs(off) < 0.5;
-        d.style.transition = ease ? "transform 340ms cubic-bezier(.2,.8,.2,1), opacity 340ms" : "none";
-        d.style.transform = "rotate(" + a.toFixed(2) + "deg)" + (top ? " translateY(-34px)" : "");
-        d.style.opacity = Math.abs(a) > 84 ? "0" : "1";
-        d.style.zIndex = String(200 - Math.round(Math.abs(off) * 2));
-      });
-      var c = list[Math.round(pos)];
-      nm.textContent = title(c); nm.className = "nm" + (c.name ? "" : " ph");
-      mt.textContent = c.place + ", " + c.day;
+    function place() {
+      fanPos = pos;
+      cards.forEach(function (d, i) { var a = (i - pos) * 12; d.style.transform = "rotate(" + a + "deg)" + (i === pos ? " translateY(-124px)" : ""); d.style.opacity = Math.abs(a) > 80 ? "0" : "1"; d.style.zIndex = String(200 - Math.abs(i - pos)); });
+      var c = list[pos]; nm.textContent = title(c); nm.className = "nm" + (c.name ? "" : " ph"); mt.textContent = whereOf(c) + ", " + dayLabel(c);
     }
-    var acc = 0, drag = null;
-    stageF.addEventListener("wheel", function (e) {
-      e.preventDefault(); acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(acc) < 34) return;
-      pos = Math.max(0, Math.min(list.length - 1, Math.round(pos) + (acc > 0 ? 1 : -1))); acc = 0; place(true);
-    }, { passive: false });
-    stageF.addEventListener("pointerdown", function (e) { if (e.button !== 0 || e.target.closest(".fan-card")) return; drag = { x: e.clientX, p: pos }; stageF.setPointerCapture(e.pointerId); });
-    stageF.addEventListener("pointermove", function (e) { if (!drag) return; pos = Math.max(0, Math.min(list.length - 1, drag.p - (e.clientX - drag.x) / 24)); place(false); });
-    stageF.addEventListener("pointerup", function () { if (!drag) return; drag = null; pos = Math.round(pos); place(true); });
-    stageF.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); pos = Math.max(0, Math.min(list.length - 1, Math.round(pos) + (e.key === "ArrowRight" ? 1 : -1))); place(true); }
-      if (e.key === "Enter") openCard(list[Math.round(pos)]);
+    var acc = 0;
+    f.addEventListener("wheel", function (e) { e.preventDefault(); acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (Math.abs(acc) < 34) return; pos = clamp(pos + (acc > 0 ? 1 : -1), 0, list.length - 1); acc = 0; place(); }, { passive: false });
+    f.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); pos = clamp(pos + (e.key === "ArrowRight" ? 1 : -1), 0, list.length - 1); place(); }
+      if (e.key === "Enter") openCard(list[pos], defaultTrail(list[pos]));
     });
-    place(false);
-    setTimeout(function () { stageF.focus({ preventScroll: true }); }, 0);
-    return stageF;
+    place();
+    setTimeout(function () { f.focus({ preventScroll: true }); }, 0);
+    return f;
   }
 
-  /* Collections: what matters most is what you pin; pins group into palettes; palettes can be shared */
+  /* ---------- Palettes: what you pinned, your palettes, what's shared with you; a palette opens as a study (A74) ---------- */
   function palById(id) { return palettes.filter(function (p) { return p.id === id; })[0]; }
   function palName(p) { return p.name || p.placeholder || "Untitled palette"; }
-  function collectionsView() {
-    var box = el("div", { class: "col" });
-    if (st.sub === "pins") {
-      var pinned = pinnedColors(), pins = pinned.filter(function (c) { return !st.band || c.band === st.band; });
-      if (!pinned.length) { box.appendChild(el("p", { class: "empty", text: "Pin a color with a right-click or from its card, and it waits here." })); return box; }
-      if (!pins.length) { box.appendChild(el("p", { class: "empty", text: "Nothing under this letter yet." })); return box; }
-      var grid = el("div", { class: "pins" });
-      pins.forEach(function (c, i) { grid.appendChild(tile(c, i)); });
-      box.appendChild(grid);
-    } else if (st.sub === "palettes") {
-      palettes.forEach(function (p) { box.appendChild(paletteRow(p)); });
-    } else {
-      shared.forEach(function (s) { box.appendChild(sharedRow(s)); });
-    }
+  function palettesView() {
+    var box = el("div", { class: "pals" });
+    var pins = pinnedColors().filter(function (c) { return !st.band || c.band === st.band; });
+    box.appendChild(el("p", { class: "sub-h", text: "Pinned" }));
+    if (!pinnedColors().length) box.appendChild(el("p", { class: "lbl", text: "Pin a color with a right-click or from its card, and it waits here." }));
+    else if (!pins.length) box.appendChild(el("p", { class: "lbl", text: "Nothing pinned under this letter." }));
+    else box.appendChild(el("div", { class: "pins" }, pins.map(function (c) { return tile(c, { trail: [{ label: "Palettes", go: closeSheet }] }); })));
+    box.appendChild(el("p", { class: "sub-h", text: "Your palettes" }));
+    palettes.forEach(function (p) { box.appendChild(paletteRow(p)); });
+    box.appendChild(el("p", { class: "sub-h", text: "Shared with you" }));
+    shared.forEach(function (s) { box.appendChild(sharedRow(s)); });
     return box;
   }
   function paletteRow(p) {
     var cs = p.members.map(byNo).filter(Boolean);
     var onDesk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
-    onDesk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(); });
+    onDesk.addEventListener("click", function (e) { e.stopPropagation(); st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
     var share = el("button", { type: "button", class: "tbtn", text: "Share" });
-    share.addEventListener("click", function () { openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    share.addEventListener("click", function (e) { e.stopPropagation(); openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
     share.disabled = !cs.length;
-    // Until you name a palette it keeps a placeholder from where its colors came from (A24); click the name to give it yours.
-    var pn = el("p", { class: "pn", contenteditable: "true", role: "textbox", "aria-label": "Name this palette", "data-placeholder": p.placeholder || "Untitled palette", spellcheck: "false" });
-    pn.textContent = p.name || "";
-    pn.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); pn.blur(); } });
-    pn.addEventListener("input", function () { var v = pn.textContent.trim(); p.name = v || null; if (!v) pn.textContent = ""; if (st.deskPal === p.id) drawStrips(); });
-    return el("div", { class: "pal" }, [
-      el("div", null, [pn, el("p", { class: "pm num", text: cs.length + (cs.length === 1 ? " color, " : " colors, ") + p.day })]),
-      el("div", { class: "strip" }, cs.length ? cs.map(function (c) {
-        var b = el("button", { type: "button", class: isSel(c.number) ? "sel" : null, "data-n": String(c.number), style: vars(c), "aria-label": label(c) });
-        b.addEventListener("click", function (e) { if (gathers(e)) toggleSel(c); else openCard(c); });
-        b.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e), p); });
-        return b;
-      }) : [el("p", { class: "none", text: "No colors yet. Right-click a color to add it." })]),
+    var row = el("div", { class: "pal open-able", role: "button", tabindex: "0", "aria-label": "Open " + palName(p) + " as a study" }, [
+      el("div", null, [el("p", { class: "pn" + (p.name ? "" : " ph"), text: palName(p) }), el("p", { class: "pm num", text: cs.length + (cs.length === 1 ? " color, " : " colors, ") + (p.day === TODAY ? "today" : p.day) })]),
+      el("div", { class: "pstrip" }, cs.length ? cs.map(sw) : [el("i", { class: "none", text: "No colors yet. Right-click a color to add it." })]),
       el("div", { class: "acts" }, [share, onDesk])
     ]);
+    function open() { st.study = p.id; render(); }
+    row.addEventListener("click", open);
+    row.addEventListener("keydown", function (e) { if (e.key === "Enter") open(); });
+    return row;
   }
   function sharedRow(s) {
     var keepB = el("button", { type: "button", class: "tbtn", text: "Keep a copy" });
@@ -793,9 +1028,139 @@
     share.addEventListener("click", function () { openShare(s.name, s.hexes.map(function (h, i) { return { hex: h, name: s.names[i] }; })); });
     return el("div", { class: "pal" }, [
       el("div", null, [el("p", { class: "pn", text: s.name }), el("p", { class: "pm num", text: "From " + s.from + ", " + s.day })]),
-      el("div", { class: "strip" }, s.hexes.map(function (h, i) { return el("button", { type: "button", style: "--c:" + h, "aria-label": s.names[i] + ", " + h, title: s.names[i] + ", " + h }); })),
+      el("div", { class: "pstrip" }, s.hexes.map(function (h, i) { return el("i", { style: "background:" + h, title: s.names[i] + ", " + h }); })),
       el("div", { class: "acts" }, [share, keepB])
     ]);
+  }
+  function studyView(p) {
+    var cs = p.members.map(byNo).filter(Boolean);
+    var back = el("button", { type: "button", class: "back", text: "Palettes" });
+    back.addEventListener("click", function () { st.study = null; render(); });
+    // Until you name a palette it keeps a placeholder from where its colors came from (A24); click the name to give it yours.
+    var nm = el("p", { class: "sn2", contenteditable: "true", role: "textbox", "aria-label": "Name this palette", "data-placeholder": p.placeholder || "Untitled palette", spellcheck: "false" });
+    nm.textContent = p.name || "";
+    nm.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); nm.blur(); } });
+    nm.addEventListener("input", function () { var v = nm.textContent.trim(); p.name = v || null; if (!v) nm.textContent = ""; if (st.deskPal === p.id) drawStrips(); });
+    var copyB = el("button", { type: "button", class: "tbtn", text: "Copy the codes" });
+    copyB.addEventListener("click", function () { copy(palName(p) + "\n" + cs.map(function (c) { return title(c) + "  " + c.hex; }).join("\n")); toast("Copied the codes", cs); });
+    var share = el("button", { type: "button", class: "tbtn", text: "Share" });
+    share.addEventListener("click", function () { openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
+    var desk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
+    desk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
+    var keepV = el("button", { type: "button", class: "tbtn ink", text: "Keep this version" });
+    keepV.addEventListener("click", function () { p.version = (p.version || 0) + 1; p.keptCodes = cs.map(function (c) { return c.hex; }); render(true); toast("Kept as version " + p.version + ". Everyone you share it with gets these codes.", cs); });
+    var ver = p.version ? "Version " + p.version + ", kept today. Everyone you share it with gets the same codes." : "Each color on white, mid gray and black, the way the surface changes it. Keep a version, and everyone you share it with gets the same codes.";
+    return el("div", { class: "study" }, [back,
+      el("div", { class: "study-h" }, [nm, el("span", { class: "meta num", text: cs.length + " colors, " + (p.day === TODAY ? "today" : p.day) }), el("div", { class: "acts" }, [copyB, share, desk, keepV])]),
+      el("div", { class: "cols", style: "grid-template-columns:repeat(" + Math.max(1, cs.length) + ",minmax(0,1fr))" }, cs.map(function (c) {
+        var big = el("div", { class: "big", style: "background:" + c.hex + ";color:" + c.on }, [nameSpan(c)]);
+        big.addEventListener("click", function () { openCard(c, [{ label: "Palettes", go: function () { closeSheet(); st.study = null; render(); } }, { label: palName(p), go: closeSheet }]); });
+        big.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e), p); });
+        return el("div", { class: "col" }, [big,
+          el("div", { class: "grounds", title: "On white, mid gray and black" }, ["#ffffff", "#7f7f7f", "#111111"].map(function (g) { return el("div", { style: "background:" + g }, [el("i", { style: "background:" + c.hex })]); })),
+          el("div", { class: "meta" }, [source(c, 30), el("div", null, [el("span", { text: whereOf(c) }), el("br"), el("span", { class: "v", text: viaOf(c) })])]),
+          el("p", { class: "codes num" }, [el("b", { text: c.hex }), "  " + PC.displayRgb(c.hex)])]);
+      })),
+      el("p", { class: "ver", text: ver })
+    ]);
+  }
+
+  /* ---------- Table: try colors together (A74, A84, A85). What's on it stays while you look elsewhere. ---------- */
+  var placed = [], tableNames = false;
+  function freeSpot() { var k = placed.length; return { x: 70 + (k * 131) % 760, y: 70 + (Math.floor(k * 131 / 760) * 124) % 420 }; }
+  function takeToTable(list) {
+    var fresh = list.filter(function (c) { return !placed.some(function (x) { return x.n === c.number; }); });
+    fresh.forEach(function (c) { var f = freeSpot(); placed.push({ n: c.number, x: f.x, y: f.y }); });
+    toast(fresh.length ? (fresh.length > 1 ? "Taken to table: " + fresh.length + " colors" : "Taken to table") : "Already on the table", list);
+    if (st.view === "table" && !$("pw").hidden) render(true);
+  }
+  function tableView() {
+    var t = el("div", { class: "table" + (tableNames ? " named" : "") });
+    var names = el("button", { type: "button", class: "tbtn", "aria-pressed": String(tableNames), text: "Show names" });
+    names.addEventListener("click", function () { tableNames = !tableNames; t.classList.toggle("named", tableNames); names.setAttribute("aria-pressed", String(tableNames)); });
+    var clear = el("button", { type: "button", class: "tbtn", text: "Clear the table" });
+    clear.addEventListener("click", function () { placed = []; render(true); });
+    var keepP = el("button", { type: "button", class: "tbtn ink", text: "Keep as a palette" });
+    keepP.addEventListener("click", function () { var cs = placed.map(function (p) { return byNo(p.n); }).filter(Boolean); if (cs.length) newPalette(cs); });
+    keepP.disabled = !placed.length;
+    t.appendChild(el("div", { class: "acts" }, [names, clear, keepP]));
+    // Three grounds down the right: white, mid gray and black, to set a color on (Albers; deep dive 1)
+    [["#ffffff", "On white"], ["#7f7f7f", "On mid gray"], ["#111111", "On black"]].forEach(function (g, i) {
+      t.appendChild(el("div", { class: "ground", style: "left:900px;top:" + (56 + i * 196) + "px;background:" + g[0] + (i ? "" : ";box-shadow:inset 0 0 0 1px #e2e2e4") }, [el("p", { text: g[1] })]));
+    });
+    function toT(e) { var r = t.getBoundingClientRect(), k = r.width / t.offsetWidth; return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k }; }
+    function chip(p) {
+      var c = byNo(p.n); if (!c) return;
+      var d = el("div", { class: "chip", "data-n": String(c.number), style: vars(c) + ";background:" + c.hex + ";left:" + p.x + "px;top:" + p.y + "px", "aria-label": label(c) }, [nameSpan(c)]);
+      var off = null;
+      function move(e) { var q2 = toT(e); p.x = q2.x - off.x; p.y = q2.y - off.y; d.style.left = p.x + "px"; d.style.top = p.y + "px"; }
+      function up() { removeEventListener("pointermove", move); removeEventListener("pointerup", up); off = null; }
+      d.addEventListener("pointerdown", function (e) { if (e.button !== 0) return; e.preventDefault(); var q2 = toT(e); off = { x: q2.x - p.x, y: q2.y - p.y }; t.appendChild(d); addEventListener("pointermove", move); addEventListener("pointerup", up); });
+      d.addEventListener("dblclick", function () { openCard(c, [{ label: "Table", go: closeSheet }]); });
+      d.addEventListener("contextmenu", function (e) {
+        e.preventDefault(); e.stopPropagation();
+        openMenu([{ label: "Remove from table", act: function () { placed = placed.filter(function (x) { return x !== p; }); d.remove(); keepP.disabled = !placed.length; } }, "-",
+          { label: "Open", act: function () { openCard(c, [{ label: "Table", go: closeSheet }]); } },
+          { label: "Add to palette", sub: function () { return paletteItems([c]); } },
+          { label: "Copy hex", right: c.hex, act: function () { copy(c.hex); toast("Copied " + c.hex, [c]); } }], toStage(e), { label: title(c) });
+      });
+      t.appendChild(d);
+    }
+    placed.forEach(chip);
+    if (!placed.length) t.appendChild(el("p", { class: "hint", text: "An empty table. Bring a color here by its name, below, or right-click any color and take it to the table." }));
+    // The search at the bottom, instead of a bar of every color (A84)
+    var input = el("input", { type: "search", placeholder: "Bring a color here by its name", "aria-label": "Find a color by its name to bring to the table", spellcheck: "false", autocomplete: "off" });
+    var results = el("ul", { class: "tres", role: "listbox", "aria-label": "Colors that match" });
+    var hits = [], hi = 0;
+    function add(c) {
+      if (!placed.some(function (x) { return x.n === c.number; })) { var f = freeSpot(), p = { n: c.number, x: f.x, y: f.y }; placed.push(p); chip(p); var h = t.querySelector(".hint"); if (h) h.remove(); keepP.disabled = false; }
+      toast("On the table", [c]); input.value = ""; update(); input.focus();
+    }
+    function update() {
+      var qq = input.value.trim().toLowerCase(); results.textContent = ""; hits = []; hi = 0;
+      if (!qq) return;
+      hits = colors.filter(function (c) { return (title(c) + " " + whereOf(c)).toLowerCase().indexOf(qq) >= 0; }).sort(function (a, b) { return (a.name ? 0 : 1) - (b.name ? 0 : 1) || b.number - a.number; }).slice(0, 6);
+      if (!hits.length) { results.appendChild(el("li", { class: "none", text: "No color by that name. Name one from its card, or go find it." })); return; }
+      hits.forEach(function (c, i) {
+        var li = el("li", { class: i === hi ? "hi" : null, role: "option" }, [sw(c), el("div", { style: "min-width:0" }, [el("b", { class: c.name ? null : "ph", text: title(c) }), el("span", { text: whereOf(c) + ", " + dayLabel(c) + (placed.some(function (x) { return x.n === c.number; }) ? ". On the table" : "") })])]);
+        li.addEventListener("pointerdown", function (e) { e.preventDefault(); add(c); });
+        results.appendChild(li);
+      });
+    }
+    input.addEventListener("input", update);
+    input.addEventListener("keydown", function (e) {
+      e.stopPropagation();
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!hits.length) return; hi = (hi + (e.key === "ArrowDown" ? 1 : hits.length - 1)) % hits.length; Array.prototype.forEach.call(results.children, function (li, i) { li.classList.toggle("hi", i === hi); }); }
+      if (e.key === "Enter" && hits[hi]) { e.preventDefault(); add(hits[hi]); }
+      if (e.key === "Escape") { input.value = ""; update(); input.blur(); }
+    });
+    t.appendChild(el("div", { class: "tsearch" }, [results, el("label", { class: "tfield" }, [input])]));
+    return t;
+  }
+
+  /* ---------- Search: find it again (A76) ---------- */
+  function searchView() {
+    var qq = st.q.trim().toLowerCase();
+    var hits = colors.filter(function (c) { return (title(c) + " " + whereOf(c) + " " + viaOf(c) + " " + c.hex + " " + (c.note || "")).toLowerCase().indexOf(qq) >= 0; }).sort(function (a, b) { return b.number - a.number; });
+    function mark(t2) { var i = t2.toLowerCase().indexOf(qq); return i < 0 || !qq ? [t2] : [t2.slice(0, i), el("mark", { text: t2.slice(i, i + qq.length) }), t2.slice(i + qq.length)]; }
+    return el("div", { class: "res" }, [el("p", { class: "q num", text: hits.length ? hits.length + (hits.length === 1 ? " color matches" : " colors match") + " “" + st.q.trim() + "”, by your name for it, the place, its code or your note" : "Nothing matches “" + st.q.trim() + "”. Every color here is one you found, so if it isn't here, it's still out there." }),
+      el("ul", null, hits.map(function (c) {
+        var li = el("li", null, [el("div", { class: "t", style: vars(c) }, [nameSpan(c)]), source(c, 72), el("div", null, [el("p", { class: "w" + (c.name ? "" : " ph") }, mark(title(c))), el("p", { class: "v" }, mark(whereOf(c) + ", " + viaOf(c) + ", " + dayLabel(c)))])]);
+        li.addEventListener("click", function () { openCard(c, [{ label: "Search: “" + st.q.trim() + "”", go: closeSheet }]); });
+        li.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); colorMenu(c, toStage(e)); });
+        return li;
+      }))]);
+  }
+
+  /* ---------- First open: the opinion as the empty window (A71, A75), then the first hunt ---------- */
+  function firstView() {
+    var keys = el("button", { type: "button", class: "keys", "aria-label": "Press Option Shift C" }, [el("span", { class: "kc", text: "⌥" }), el("span", { class: "kc", text: "⇧" }), el("span", { class: "kc", text: "C" })]);
+    keys.addEventListener("click", function (e) { e.stopPropagation(); startPicking(); });
+    return el("div", { class: "first" }, [el("div", null, [
+      el("p", { class: "big", text: "Every color in Palit is one you found." }),
+      el("p", { class: "small" }, ["Press", keys, "then click any color on your screen."]),
+      el("p", { class: "tiny", text: "There's no way to type or make one. Your first becomes No. 001." })
+    ])]);
   }
 
   /* ---------- Palettes: a color can sit in as many as you like (entry 116) ---------- */
@@ -823,13 +1188,13 @@
     st.selected = [];
     if (st.deskPal) drawStrips();
     if (sheetRefresh) sheetRefresh();
-    if (st.view === "collections" && st.sub === "palettes") render(); else syncSel();
+    if (!$("pw").hidden && (st.view === "palettes" || st.view === "table")) render(true); else syncSel();
     toast(verb + palName(p), p.members.map(byNo).filter(Boolean));
   }
   function setPinned(list, on) {
     list.forEach(function (c) { c.pinned = on; });
     if (sheetRefresh) sheetRefresh();
-    if (st.view === "collections" && st.sub === "pins") { render(); return; }
+    if (!$("pw").hidden && st.view === "palettes") { render(true); return; }
     stage.querySelectorAll("#body .t[data-n]").forEach(function (t) {
       var c = byNo(Number(t.getAttribute("data-n"))), dot = t.querySelector(".pin");
       if (c.pinned && !dot) t.appendChild(el("span", { class: "pin", "aria-hidden": "true" }));
@@ -912,6 +1277,8 @@
     var many = list.length > 1, allPinned = list.every(function (x) { return x.pinned; });
     var items = [];
     if (many) items.push({ head: el("div", { class: "mh" }, [el("span", { class: "ms", "aria-hidden": "true" }, list.slice(0, 14).map(sw)), el("span", { class: "num", text: list.length + " colors" })]) });
+    var allOn = list.every(function (x) { return placed.some(function (p) { return p.n === x.number; }); });
+    items.push({ label: allOn ? "On the table" : many ? "Take " + list.length + " to table" : "Take to table", act: function () { takeToTable(list); clearSel(); } });
     items.push({ label: "Add to palette", sub: function () { return paletteItems(list); } });
     items.push({ label: allPinned ? "Unpin" : "Pin", act: function () { setPinned(list, !allPinned); } });
     if (inPal) items.push({ label: "Remove from this palette", act: function () { removeFrom(inPal, list); } });
@@ -975,8 +1342,10 @@
   /* ---------- The specimen card ---------- */
   var sheet = null;
   function closeSheet() { closeMenus(); sheetRefresh = null; if (sheet) { sheet.remove(); sheet = null; } }
-  function openCard(c) {
+  function openCard(c, trail) {
     closeSheet();
+    trail = trail || defaultTrail(c);
+    var nextTrail = trail.concat([{ label: title(c), go: function () { openCard(c, trail); } }]);
     var src = c.crop ? el("img", { class: "crop", src: c.crop, alt: "" }) : el("div", { class: "nb", "aria-hidden": "true" }, (c.neighbors ? [c.neighbors[0], c.neighbors[1], c.neighbors[2], c.neighbors[3], c.hex, c.neighbors[4], c.neighbors[5], c.neighbors[6], c.neighbors[7]] : [c.hex]).map(function (h) { return el("i", { style: "background:" + h }); }));
     var name = el("p", { class: "sp-nm", contenteditable: "true", role: "textbox", "aria-label": "Name this color", "data-placeholder": c.placeholder, spellcheck: "false" });
     name.textContent = c.name || "";
@@ -1003,8 +1372,10 @@
     var sims = colors.filter(function (o) { return o !== c && PC.deltaE(o.hex, c.hex) < 7; }).sort(function (a, b) { return PC.deltaE(a.hex, c.hex) - PC.deltaE(b.hex, c.hex); }).slice(0, 3);
     var simBox = el("span", { class: "sim" });
     if (!sims.length) simBox.appendChild(el("span", { text: "Nothing close yet. This one is new to your collection." }));
-    sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: o.place + ", " + o.day })]); b.addEventListener("click", function () { openCard(o); }); simBox.appendChild(b); });
+    sims.forEach(function (o) { var b = el("button", { type: "button" }, [el("i", { style: "background:" + o.hex }), el("span", { text: title(o) + ", " + whereOf(o) + ", " + dayLabel(o) })]); b.addEventListener("click", function () { openCard(o, nextTrail); }); simBox.appendChild(b); });
     row("Similar", simBox);
+    var sameHere = colors.filter(function (o) { return o !== c && keyOf(o) === keyOf(c); });
+    if (sameHere.length) row("Also from here", el("span", { class: "here" }, sameHere.map(function (o) { var b = el("button", { type: "button", style: "--c:" + o.hex, title: title(o), "aria-label": label(o) }); b.addEventListener("click", function () { openCard(o, nextTrail); }); return b; })));
     // Every palette it's in, each with its colors (entry 116); the row hides until there's one.
     var palDt = el("dt"), palDd = el("dd");
     dl.appendChild(palDt); dl.appendChild(palDd);
@@ -1036,7 +1407,7 @@
         el("div", { class: "sp-chip" }, [el("div", { class: "sw", style: "background:" + c.hex }), el("p", { class: "lb num" }, [el("span", { text: no(c.number) }), el("span", { text: c.hex })])]),
         el("p", { class: "sp-cap", text: c.crop ? "Where you found it" : "The eight samples around it" })]),
       el("div", { class: "sp-form" }, [
-        el("p", { class: "sp-top num" }, [el("span", { text: no(c.number) }), x]),
+        el("div", { class: "sp-top" }, [trailRow(trail, c), x]),
         name,
         el("p", { class: "sp-hint", text: c.name ? "Your name for it." : "Click the name to give it yours." }),
         dl,
@@ -1048,6 +1419,12 @@
     sheet.addEventListener("click", function (e) { if (e.target === sheet) closeSheet(); });
     $("pw").appendChild(sheet);
     sheetRefresh = refresh;
+  }
+  function trailRow(trail, c) {
+    var tr = el("p", { class: "trail" });
+    trail.forEach(function (t) { var b = el("button", { type: "button", text: t.label }); b.addEventListener("click", t.go); tr.appendChild(b); tr.appendChild(el("span", { class: "sep", "aria-hidden": "true", text: "›" })); });
+    tr.appendChild(el("span", { class: "here-now num", text: no(c.number) }));
+    return tr;
   }
   function goToSource(c) {
     closeWindow();
@@ -1109,12 +1486,12 @@
     if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); runPlay(); return; }
     if ((e.key === "k" || e.key === "K") && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleKeys(); return; }
     if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
-    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else if (st.selected.length) clearSel(); else closeWindow(); return; }
+    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(); else if (wmenu) closeWeeks(); else if (st.selected.length) clearSel(); else if (st.study) { st.study = null; render(); } else closeWindow(); return; }
     if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
-    // ⌘− and ⌘+ zoom Days, ⌘0 goes back to the middle (entry 117). While the window is open they're Palit's, not the browser's.
+    // ⌘− and ⌘+ step through the four stops, ⌘0 goes back to your names (A87). While the window is open they're Palit's, not the browser's.
     if ((e.metaKey || e.ctrlKey) && !e.altKey && !$("pw").hidden) {
       var zk = e.key === "-" || e.key === "_" ? -1 : e.key === "=" || e.key === "+" ? 1 : e.key === "0" ? 0 : null;
-      if (zk !== null) { e.preventDefault(); if (st.view === "days" && !sheet) zoomKey(zk); return; }
+      if (zk !== null) { e.preventDefault(); if (st.view === "days" && !st.all && !st.q.trim() && !st.fresh && !sheet) zoomKey(zk); return; }
     }
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === "h" || e.key === "H") { document.body.classList.toggle("clean"); fit(); }
@@ -1129,14 +1506,15 @@
   function start(done) {
     closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
     strips.classList.remove("open");
-    st.view = "days"; st.band = null; st.zoom = ZOOM_MID; st.sub = "pins"; st.deskPal = null; st.selected = []; fanPos = null;
+    st.view = "days"; st.band = null; st.all = false; st.zoom = ZOOM_HOME; st.open = {}; st.q = ""; st.study = null; st.week = null; st.fresh = false; st.deskPal = null; st.selected = []; fanPos = null; curDay = null;
+    placed = []; tableNames = false; $("q").value = ""; hideHuntPill();
     if (toastEl) { toastEl.remove(); toastEl = null; }
     seedSample();
     seedToday(function () { renumber(); drawStrips(); if (q.has("scene")) scene(q.get("scene")); if (typeof done === "function") done(); });
   }
-  /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, days, zoom-out, zoom-in,
-     spectrum, pins, menu, palettes, shared, card, share; add &band=R (or O Y G B I V) to filter by a letter,
-     and &menu=1 with card to open its Add to palette. */
+  /* Scenes, for the dashboard's Work page and the storyboards: ?scene=picking, landed, naming, desk, first, days, compact,
+     where, hunt, zoom-out, zoom-in, all (or spectrum), palettes (or pins, shared, collections), study, table, search, menu,
+     card (&n=), share; add &band=R (or O Y G B I V) to filter by a letter, and &menu=1 with card to open its Add to palette. */
   function scene(name) {
     var sd = screen().seeds[0];
     if (/^[ROYGBIV]$/.test(q.get("band") || "")) st.band = q.get("band");
@@ -1144,23 +1522,38 @@
     if (name === "picking") { pointer = { x: sd.x, y: sd.y }; startPicking(); return; }
     if (name === "landed") { pick(sd.x, sd.y, {}); strips.classList.add("open"); return; }
     if (name === "desk") { st.deskPal = palettes[0].id; drawStrips(); strips.classList.add("open"); return; }
-    if (name === "zoom-out" || name === "zoom-in") { st.zoom = name === "zoom-out" ? 0 : ZOOM.length - 1; st.view = "days"; openWindow(); return; }
-    if (name === "pins" || name === "palettes" || name === "shared") { st.view = "collections"; st.sub = name; openWindow(); return; }
-    if (name === "menu") {   // two pins gathered with ⇧-click, right-clicked, Add to palette open
-      st.view = "collections"; st.sub = "pins"; openWindow();
-      st.selected = [29, 4].filter(function (n) { return byNo(n) && byNo(n).pinned; }); syncSel();
-      var t4 = stage.querySelector('#body .t[data-n="4"]');
-      if (t4) { var r4 = rectIn(t4); colorMenu(byNo(4), { x: r4.x + r4.w * 0.56, y: r4.y + r4.h * 0.42 }); var sub = menus[0] && menus[0].node.querySelector(".mi[aria-haspopup]"); if (sub) sub._open(false); }
+    if (name === "first") { goFresh(); return; }
+    var stops = { "days": ZOOM_HOME, "compact": 0, "zoom-out": 0, "where": 2, "hunt": 3, "zoom-in": 3 };
+    if (name in stops) { st.view = "days"; st.zoom = stops[name]; openWindow(); return; }
+    if (name === "all" || name === "spectrum") { st.view = "days"; st.all = true; openWindow(); return; }
+    if (name === "palettes" || name === "pins" || name === "shared" || name === "collections") { st.view = "palettes"; openWindow(); return; }
+    if (name === "study") { st.view = "palettes"; st.study = palettes[0].id; openWindow(); return; }
+    if (name === "table") { takeToTableQuiet([29, 31, 32, 4, 24, 12]); st.view = "table"; openWindow(); return; }
+    if (name === "search") { st.q = "brick"; $("q").value = "brick"; openWindow(); return; }
+    if (name === "menu") {   // two colors gathered with ⇧-click, right-clicked: Take 2 to table first, then Add to palette
+      st.view = "days"; st.zoom = ZOOM_HOME; openWindow();
+      st.selected = [29, 33].filter(byNo); syncSel();
+      var t3 = stage.querySelector('#body .t[data-n="33"]');
+      if (t3) { var r3 = rectIn(t3); colorMenu(byNo(33), { x: r3.x + r3.w * 0.5, y: r3.y + r3.h * 0.5 }); }
       return;
     }
     if (name === "card") {
-      st.view = "days"; openWindow(); openCard(byNo(Number(q.get("n")) || 29));
-      if (q.get("menu") === "1") { var ab = sheet.querySelector('.sp-acts [aria-haspopup]'); if (ab) paletteMenu([byNo(Number(q.get("n")) || 29)], ab); }
+      st.view = "days"; openWindow(); var cc = byNo(Number(q.get("n")) || 29); openCard(cc, defaultTrail(cc));
+      if (q.get("menu") === "1") { var ab = sheet.querySelector('.sp-acts [aria-haspopup]'); if (ab) paletteMenu([cc], ab); }
       return;
     }
-    if (name === "share") { st.view = "collections"; st.sub = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
-    if (name === "days" || name === "spectrum" || name === "collections") { st.view = name; openWindow(); }
+    if (name === "share") { st.view = "palettes"; openWindow(); var p = palettes[0]; openShare(palName(p), p.members.map(byNo).map(function (c) { return { hex: c.hex, name: title(c) }; })); return; }
   }
+  // Put colors on the table without a toast, for a scene
+  function takeToTableQuiet(nums) { nums.forEach(function (n) { if (byNo(n) && !placed.some(function (x) { return x.n === n; })) { var f = freeSpot(); placed.push({ n: n, x: f.x, y: f.y }); } }); }
+  // The first open (A71, A75): an empty archive and one line; ⌥⇧C starts the first hunt, and the first color is No. 001
+  var huntPill = null;
+  function goFresh() {
+    colors = []; palettes = []; next = 1; placed = []; st.deskPal = null; drawStrips();
+    st.fresh = true; st.view = "days"; openWindow();
+  }
+  function showHuntPill() { hideHuntPill(); huntPill = el("div", { class: "huntpill" }, ["Pick a color from anything on your screen.", el("span", { text: "It becomes No. " + pad(next) + "." })]); stage.appendChild(huntPill); }
+  function hideHuntPill() { if (huntPill) { huntPill.remove(); huntPill = null; } }
 
   /* ---------- Playback (entry 112): the demo storyboard, shot by shot, for recording hands-free.
      P or ?play starts it, Esc or P stops it, K hides the keystrokes. Times are the storyboard's (entry 111). ---------- */
@@ -1172,10 +1565,13 @@
   if (q.get("keys") === "0") toggleKeys();
   function closeShare() { closeSheet(); }
   function stopped(tok) { return tok !== play.token; }
-  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms)); }); }
-  function until(sec, tok) { return sleep(play.t0 + sec * 1000 - performance.now(), tok); }
+  // ?speed=10 plays it ten times faster, with glides as jumps: for checking the whole run quickly, not for recording
+  var SPEED = Math.max(1, Number(q.get("speed")) || 1);
+  function sleep(ms, tok) { return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, ms / SPEED)); }); }
+  function until(sec, tok) { return sleep((play.t0 + sec * 1000 / SPEED - performance.now()) * SPEED, tok); }
   function setCur(x, y) { play.pos = { x: x, y: y }; pcur.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; if (st.picking) moveLoupe(x, y); }
   function glide(x, y, ms, tok) {
+    if (SPEED > 1) return sleep(ms, tok).then(function () { setCur(x, y); });
     var from = play.pos, t0 = performance.now();
     return new Promise(function (res, rej) {
       function step(now) {
@@ -1257,74 +1653,79 @@
       await glide(700, 300, 600, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
       await sleep(500, tok); showKeys([]); pcur.hidden = false;
 
-      // 5. Days, today first (0:28 to 0:38)
+      if (SPEED > 1) console.log("palit-play: shot 5");
+      // 5. Days, each with its places (0:28 to 0:38): the window opens on today, and opening the day out shows where you were (A72)
       await until(28, tok);
       await clickOn($("mbi"), 1100, tok);
-      await sleep(1700, tok);
-      var tile = byLabel(".days .t", no(named.number));
-      await goTo(tile, 1100, tok); if (tile) tile.classList.add("phover");
-      await sleep(3400, tok); if (tile) tile.classList.remove("phover");
-
-      // 6. Zoom out, zoom in (0:38 to 0:46): ⌘− down the stops to only color, then ⌘+ up to the full names (entry 117)
-      await until(38, tok);
-      await glide(1150, 170, 700, tok);
-      showKeys(["⌘", "−"]);
-      for (var zs = 0; zs < 3; zs++) { zoomKey(-1); await sleep(430, tok); }
+      await sleep(1400, tok);
+      var tile = byLabel("#body .t", no(named.number));
+      await goTo(tile, 1000, tok); if (tile) tile.classList.add("phover");
+      await sleep(1700, tok); if (tile) tile.classList.remove("phover");
+      await clickOn(q1("#body .dh"), 900, tok);   // Today opens out: each place, what it looked like, the colors kept there
       await sleep(1500, tok);
-      showKeys(["⌘", "+"]);
-      for (zs = 0; zs < 6; zs++) { zoomKey(1); await sleep(390, tok); }
-      await sleep(600, tok); showKeys([]);
 
-      // 7. Seven letters (0:46 to 0:52)
+      // 6. The zoom, four stops (0:38 to 0:46): ⌘− to only color, then ⌘+ through your names and where to the whole hunt (A87)
+      await until(38, tok);
+      st.open = {};
+      await glide(1150, 170, 700, tok);
+      showKeys(["⌘", "−"]); zoomKey(-1); await sleep(1700, tok);
+      showKeys(["⌘", "+"]); zoomKey(1); await sleep(1200, tok);
+      zoomKey(1); await sleep(1300, tok);
+      zoomKey(1); await sleep(1300, tok); showKeys([]);
+
+      // 7. Seven letters, underlined in ink (0:46 to 0:52)
       await until(46, tok);
       await clickOn(byLabel(".letters button", "Orange"), 900, tok);
-      await sleep(3200, tok);
-      await clickOn(byLabel(".letters button", "Orange"), 300, tok);
+      await sleep(3000, tok);
+      await clickOn(byLabel(".letters button", "Orange"), 400, tok);
 
-      // 8. Spectrum (0:52 to 1:01)
+      // 8. All colors, by hue (0:52 to 1:01): the ring turns Days into the fan (A74)
       await until(52, tok);
-      await clickOn($("views").children[2], 900, tok);
+      await clickOn($("wheel"), 900, tok);
       await sleep(900, tok);
-      var fanEl = q1(".fan"), list = colors.slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      var fanEl = q1(".fan"), list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
       var target = list.indexOf(croc), steps = target - (fanPos || 0);
       await glide(720, 620, 700, tok); showKeys(["Scroll"]);
       for (var i = 0; i < Math.abs(steps); i++) { fanEl.dispatchEvent(new WheelEvent("wheel", { deltaY: steps > 0 ? 40 : -40, bubbles: true, cancelable: true })); await sleep(Math.max(140, 2600 / Math.max(1, Math.abs(steps))), tok); }
       await sleep(500, tok); showKeys([]);
 
-      // 9. The specimen card (1:01 to 1:16)
+      // 9. The specimen card, and the trail that led to it (1:01 to 1:16)
       await until(61, tok);
       await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 1000, tok);
-      await sleep(2600, tok);
+      await sleep(2400, tok);
       var padEl = q1(".pad textarea");
       await goTo(padEl, 1000, tok); await sleep(300, tok);
       await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
-      await sleep(900, tok);
-      await goTo(q1(".sim button") || padEl, 1200, tok);
+      await sleep(800, tok);
+      await goTo(q1(".sim button") || padEl, 1100, tok);
 
-      // 10. Pins into a palette (1:16 to 1:24): ⇧-click two pins, right-click, Add to palette, New palette (entry 116)
+      // 10. Take to table, and keep what works (1:16 to 1:24): right-click two colors, Take to table, then Keep as a palette (A84, A85)
       await until(76, tok);
       await clickOn(q1(".sp-x"), 600, tok);
-      await clickOn($("views").children[1], 700, tok);   // Collections opens on Pinned
       await sleep(300, tok);
-      var pinA = byLabel(".pins .t", "No. 029"), pinB = byLabel(".pins .t", "No. 004");
-      showKeys(["⇧", "Click"]);
-      await shiftClickOn(pinA, 550, tok);
-      await shiftClickOn(pinB, 450, tok);
-      await sleep(250, tok);
       showKeys(["Right-click"]);
-      await rightClickOn(pinB, 200, tok);
-      await sleep(300, tok); showKeys([]);
-      await menuPick(q1(".menu .mi[aria-haspopup]"), 450, tok);   // Add to palette: the palettes open beside it
-      await sleep(250, tok);
-      await menuPick(menus[1] ? menus[1].node.querySelector(".mi") : null, 450, tok);   // New palette
-      await sleep(1100, tok);
-      await clickOn(byText(".subnav button", "Palettes"), 600, tok);
+      await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 450, tok);
+      await menuPick(q1(".menu .mi"), 400, tok);   // Take to table
+      await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos + 1], 450, tok);
+      await menuPick(q1(".menu .mi"), 400, tok);
+      showKeys([]);
+      await clickOn(byText(".tabs button", "Table"), 700, tok);
+      await sleep(500, tok);
+      await clickOn(byText(".table .acts .tbtn", "Show names"), 600, tok);
+      await sleep(500, tok);
+      await clickOn(byText(".table .acts .tbtn", "Keep as a palette"), 600, tok);
 
-      // 11. A share card (1:24 to 1:35)
+      if (SPEED > 1) console.log("palit-play: shot 11, " + palettes.length + " palettes, " + placed.length + " on the table");
+      // 11. The palette as a study, and a share card (1:24 to 1:35)
       await until(84, tok);
-      await clickOn(q1(".pal .acts .tbtn"), 900, tok);
-      await sleep(3200, tok);
-      await clickOn(q1(".share .acts .tbtn.ink"), 1100, tok);
+      await clickOn(byText(".tabs button", "Palettes"), 800, tok);
+      await sleep(700, tok);
+      await clickOn(q1(".pal.open-able"), 800, tok);
+      await sleep(1800, tok);
+      await clickOn(byText(".study-h .acts .tbtn", "Share"), 900, tok);
+      await sleep(2200, tok);
+      await clickOn(q1(".share .acts .tbtn.ink"), 900, tok);
+      if (SPEED > 1) console.log("palit-play: done, share card for " + ((q1(".share .sc-foot .tt") || {}).textContent || "nothing"));
       await until(95, tok);
     } catch (err) {
       if (err !== "stopped") throw err;

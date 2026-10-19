@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit v3 workshop</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The v3 workshop, October 18, late evening (entry 156). Same frame as the story, look and feature workshops,
+     with one difference: the window is the real prototype, live, and every switch changes it as you pick. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 96px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, h4, figure, dl, dd, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+
+  .intro { padding: 48px 0 8px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: end; }
+  .intro h1 { font-size: clamp(44px, 6vw, 72px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 60ch; }
+  blockquote { margin: 0 0 12px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 17px; line-height: 1.35; }
+  blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+
+  .part { margin-top: 64px; }
+  .part-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  .part-head h2 { font-size: clamp(30px, 4vw, 44px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 400; }
+  .part-head p { color: var(--ink-2); font-size: 15px; max-width: 58ch; }
+
+  /* What changed: the counts, then the two windows */
+  .then { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; padding-top: 28px; align-items: start; }
+  .then h3 { font-size: 22px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 400; }
+  .then .sub { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .mx { width: 100%; margin-top: 16px; border-collapse: collapse; font-size: 13px; background: var(--paper); }
+  .mx th, .mx td { border: 1px solid var(--rule-soft); padding: 7px 9px; text-align: left; font-weight: 400; }
+  .mx thead th { font-size: 12px; color: var(--ink-2); }
+  .mx td { text-align: right; width: 18%; }
+  .mx td.up { color: var(--ink); }
+  .mx td b { font-weight: 400; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .pair figure img { display: block; width: 100%; height: auto; border-radius: 9px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.22); }
+  .pair figcaption { margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .pair figcaption b { font-weight: 400; color: var(--ink); }
+  .read { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
+  .read h3 { font-size: 13px; font-weight: 400; color: var(--ink-2); }
+  .read p { font-size: 15px; max-width: 70ch; }
+  .read p + p { margin-top: 10px; }
+
+  /* Take away: the live window on the left, the switches on the right */
+  .board { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); gap: 28px; padding-top: 24px; align-items: start; }
+  .live { position: sticky; top: 14px; }
+  .presets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px; }
+  .presets span { color: var(--ink-2); margin-right: 4px; }
+  .chipbtn { border: 1px solid var(--rule-soft); background: var(--paper); padding: 3px 10px; font: 13px var(--font); color: var(--ink); cursor: pointer; }
+  .chipbtn:hover { border-color: var(--ink); }
+  .chipbtn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .frame { position: relative; aspect-ratio: 1440 / 900; background: #1c1c1e; border-radius: 10px; overflow: hidden; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.25); }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .scenes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; }
+  .scenes span { color: var(--ink-2); margin-right: 4px; }
+  .meter { margin-top: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+  .meter div { padding: 8px 10px 0 0; }
+  .meter b { display: block; font-weight: 400; font-size: 24px; letter-spacing: -0.02em; line-height: 1.1; }
+  .meter span { display: block; font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .meter i { font-style: normal; color: var(--ink-2); font-size: 13px; }
+  .meter-note { font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+  .live-hint { font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+
+  .group + .group { margin-top: 26px; }
+  .group > h3 { font-size: 13px; font-weight: 400; color: var(--ink-2); padding-bottom: 6px; border-bottom: 1px solid var(--ink); }
+  .sw-row { padding: 14px 0 16px; border-bottom: 1px solid var(--rule-soft); }
+  .sw-row h4 { font-size: 18px; line-height: 1.2; letter-spacing: -0.012em; font-weight: 400; }
+  .sw-opts { display: grid; gap: 4px; margin-top: 9px; }
+  .sw-opt { position: relative; display: block; padding: 7px 10px 8px; background: var(--paper); border: 1px solid var(--rule-soft); cursor: pointer; }
+  .sw-opt:hover { border-color: var(--ink); }
+  .sw-opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .sw-opt .l { font-size: 14px; line-height: 1.3; }
+  .sw-opt .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .sw-opt .tags span { font-size: 11px; color: var(--ink-2); border: 1px solid var(--rule-soft); padding: 0 5px; }
+  .sw-opt .tags span.rec { color: var(--ink); border-color: var(--rule); }
+  .sw-opt.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .sw-opt.on .tags span { color: #D6D6D9; border-color: rgba(255, 255, 255, 0.3); }
+  .sw-opt.on .tags span.rec { color: var(--paper); border-color: var(--paper); }
+  .sw-opt:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .sw-from { margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .sw-from q { quotes: "“" "”"; color: var(--ink); }
+  .sw-why { margin-top: 5px; font-size: 12px; color: var(--ink-2); }
+  .sw-why b { font-weight: 400; color: var(--ink); }
+
+  /* Then polish */
+  .polish { margin-top: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule-soft); background: var(--paper); }
+  .po { position: relative; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 14px 16px 16px; border-right: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft); cursor: pointer; }
+  .po:hover { background: var(--chrome); }
+  .po input { margin: 3px 0 0; width: 15px; height: 15px; accent-color: #1d1d1f; }
+  .po h4 { font-size: 17px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 400; }
+  .po p { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
+  .po .rec { display: inline-block; margin-top: 6px; font-size: 11px; border: 1px solid var(--rule); padding: 0 5px; }
+  .po.on { background: #f3f3f5; }
+
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
+  .note label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
+  .note textarea { width: 100%; min-height: 76px; resize: vertical; padding: 8px 10px; border: 1px solid var(--rule-soft); background: var(--paper); font: 14px/1.45 var(--font); box-sizing: border-box; }
+  .note textarea:focus { border-color: var(--ink); outline: none; }
+
+  .next { margin-top: 22px; font-size: 13px; color: var(--ink-2); max-width: 80ch; }
+
+  /* The bar at the bottom */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 400; background: var(--paper); border-top: 1px solid var(--rule); }
+  .bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding-top: 12px; padding-bottom: 12px; }
+  .bar .count { font-size: 13px; }
+  .bar .status { font-size: 13px; color: var(--ink-2); }
+  .bar .btn.primary { background: var(--ink); color: var(--paper); }
+  .bar .grow { flex: 1; }
+  .btn { font-family: var(--font); }
+
+  @media (max-width: 1060px) {
+    .board { grid-template-columns: 1fr; }
+    .live { position: relative; top: 0; }
+  }
+  @media (max-width: 960px) {
+    .intro, .part-head, .then, .read { grid-template-columns: 1fr; gap: 16px; }
+    .polish, .notes { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    .pair { grid-template-columns: 1fr; }
+    .meter { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .top .links { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html">Palit</a>
+    <span class="where">v3 workshop. October 18, 2026, late evening.</span>
+    <span class="links"><a href="../v3/index.html">Prototype v3</a><a href="../v2/index.html">v2, merged</a><a href="../v2/frozen-oct18.html">v2, this afternoon</a><a href="story.html">Story and look workshop</a><a href="../history/index.html#plan">Dashboard</a></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>v3 workshop</h1>
+    <div>
+      <blockquote>I'm not sure. Now we're slightly losing the authenticity and charm of the original app. Can we potentially revisit with another workshop? Then establish our final, v3? Too much is going on<cite>Noah, October 18</cite></blockquote>
+      <blockquote>I really want to make this app more polished - and a little more presentable<cite>Noah, October 18</cite></blockquote>
+      <p>Two passes, in order. First take away: every piece added since this afternoon has a switch, and the window beside the switches is the prototype itself, live, so you see each choice before you make it. Then polish: a short list of finishing moves for the build. Pick, add a note, press “I'm done” and tell me in chat. v3 is built from what you leave on.</p>
+    </div>
+  </section>
+
+  <section class="part" id="changed" aria-labelledby="changed-h">
+    <div class="part-head">
+      <h2 id="changed-h">What changed since this afternoon</h2>
+      <p>The same window, the same 34 colors, on Days, before and after this evening's merge. Measured in the window, not judged by eye.</p>
+    </div>
+    <div class="then">
+      <div>
+        <h3>Twice the controls, and three times the words</h3>
+        <p class="sub">Counted on Days at the default zoom, with nothing open.</p>
+        <table class="mx num">
+          <thead><tr><th scope="col"></th><th scope="col">Afternoon</th><th scope="col">Now</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Controls around the colors</th><td>15</td><td class="up">29</td></tr>
+            <tr><th scope="row">Controls among the colors</th><td>0</td><td class="up">5</td></tr>
+            <tr><th scope="row">Type sizes</th><td>5</td><td class="up">8</td></tr>
+            <tr><th scope="row">Lines of gray text</th><td>13</td><td class="up">18</td></tr>
+            <tr><th scope="row">Words outside the colors</th><td>23</td><td class="up">61</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pair">
+        <figure><img src="shots/v3-was-days.jpg" alt="Prototype v2 this afternoon: Days, Collections and Spectrum in a Mac segmented control, the seven letters under it, and the days of colors with small dates" width="1120" height="776"><figcaption><b>This afternoon.</b> One control in the bar, the letters under it, and color.</figcaption></figure>
+        <figure><img src="shots/v3-now-days.jpg" alt="Prototype v2 now: letters, a ring, three word tabs, a search field and a zoom with dots in the bar, a column of weekdays, and large dates with counts" width="1120" height="776"><figcaption><b>Now.</b> Letters, ring, tabs, search and zoom dots in the bar, the weekdays down the left, and a count beside every date.</figcaption></figure>
+      </div>
+    </div>
+    <div class="read">
+      <h3>Claude's read, for you to check</h3>
+      <div>
+        <p>Each piece added this evening was a good idea on its own, and most were yours. But each one brought a control, a size or a line of words, and together they compete with the colors. This afternoon's window was almost all color, and that may be the charm you're missing.</p>
+        <p>So for each piece, the question isn't whether it's good but whether it has to be on screen all the time. Most can stay in Palit and still leave the window: behind a tab, a key, a right-click or a zoom stop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="part" id="away" aria-labelledby="away-h">
+    <div class="part-head">
+      <h2 id="away-h">First, take away</h2>
+      <p>Twelve switches, one for each piece. They start at now. Flip them and the window changes; click around in it too. The tags say what each option was this afternoon, what it is now, and what Claude recommends.</p>
+    </div>
+    <div class="board">
+      <div class="live">
+        <div class="presets" role="group" aria-label="Set every switch at once"><span>Set all to</span></div>
+        <div class="frame"><iframe id="win" title="Palit prototype v3, live" src="about:blank"></iframe></div>
+        <div class="scenes" role="group" aria-label="What the window shows"><span>Show</span></div>
+        <div class="meter num" id="meter" aria-live="polite"></div>
+        <p class="meter-note" id="meter-note">Counted in the window above, the same way as the table.</p>
+      </div>
+      <div id="switches"></div>
+    </div>
+  </section>
+
+  <section class="part" id="polish" aria-labelledby="polish-h">
+    <div class="part-head">
+      <h2 id="polish-h">Then, polish</h2>
+      <p>What makes it look finished and presentable once there's less of it. These are build work for Claude, not new features. Tick the ones you want; all are recommended.</p>
+    </div>
+    <div class="polish" id="polish-list"></div>
+    <div class="notes">
+      <div class="note"><label for="note-away">Anything about the switches</label><textarea id="note-away" placeholder="Something none of the options gets right, or a piece to cut that isn't here"></textarea></div>
+      <div class="note"><label for="note-else">Anything else that's too much, or missing</label><textarea id="note-else" placeholder="Anything to add, change or ask"></textarea></div>
+    </div>
+    <p class="next">After you press “I'm done”: v3 takes your switches as its own, the polish goes in, the playback and the dashboard's frames move to v3, and v2 stays as it is for the process story.</p>
+  </section>
+</main>
+
+<div class="bar" role="region" aria-label="Your picks">
+  <div class="wrap">
+    <span class="count num" id="count"></span>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="reset">Back to now</button>
+    <button type="button" class="btn" id="copy">Copy my picks</button>
+    <button type="button" class="btn primary" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script>
+(function () {
+  "use strict";
+  var U = window.PalitUI, el = U.el;
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------- The switches. Values match design/v3's CFG_KEYS; the first of each is now. ---------- */
+  var GROUPS = [
+    { name: "The bar", items: [
+      { k: "shell", title: "The bar's look", opts: [
+          { v: "words", l: "Words, in Palit's own look", tags: ["now"] },
+          { v: "native", l: "A Mac segmented control", tags: ["this afternoon", "rec"] }],
+        from: ["Entry 132, your words: ", "lets being to move away from the macos look, and make it uniquely ours"],
+        why: "A26 set the look as a native shell around a raw, archival heart. The shell can stay plain so the colors, your names and the fan are what's Palit's own." },
+      { k: "letters", title: "ROYGBIV", opts: [
+          { v: "bar", l: "In the top bar", tags: ["now"] },
+          { v: "row", l: "In their own row, under the bar", tags: ["this afternoon", "rec"] }],
+        from: ["Entry 132, your words: ", "roygbiv should always be on top"],
+        why: "Still on top, and still the first thing you see. The bar keeps one job." },
+      { k: "spectrum", title: "All colors, by hue", opts: [
+          { v: "ring", l: "The ring, inside Days", tags: ["now"] },
+          { v: "tab", l: "Its own tab, Spectrum", tags: ["this afternoon", "rec"] }],
+        from: ["Entry 128, your words: ", "Maybe its a small, subtle spectral circle icon somewhere in the nav?"],
+        why: "The fan is the most striking thing Palit shows, and the brief asks for it to be visible. Behind a small ring it's the easiest thing to miss." },
+      { k: "table", title: "The table", opts: [
+          { v: "tab", l: "Its own tab", tags: ["now"] },
+          { v: "palette", l: "Inside Palettes: Try on the table from any palette, or right-click any color", tags: ["rec"] },
+          { v: "off", l: "Not in v3", tags: ["this afternoon"] }],
+        from: ["Entry 128, your words: ", "I want to workshop the table idea so bad"],
+        why: "The table is where palettes get made, so it can live where palettes are. Three tabs instead of four, and the table stays." },
+      { k: "search", title: "Search", opts: [
+          { v: "field", l: "A field in the bar", tags: ["now"] },
+          { v: "icon", l: "A magnifier that opens into the field, or ⌘F", tags: ["rec"] }],
+        from: ["Entry 131, your words: ", "search bar seems inevitably required - lets use it to find things again"],
+        why: "This afternoon had no search. This keeps it one click or ⌘F away, and takes the only gray shape out of the bar." },
+      { k: "zoom", title: "The zoom", opts: [
+          { v: "dots", l: "− and +, with a dot for each stop", tags: ["now"] },
+          { v: "plain", l: "− and +; the stop's name shows for a moment as you turn it", tags: ["rec"] }],
+        from: ["Entries 144 and 145, your words: ", "separate the zoom in/out into 3-4 clean concepts"],
+        why: "The four stops are yours; the dots were Claude's. A stop's name (only color, your names, and where, the hunt) says more than a dot, and only when you turn the dial." }
+    ] },
+    { name: "Days", items: [
+      { k: "rail", title: "The days of the week", opts: [
+          { v: "on", l: "A column down the left", tags: ["now"] },
+          { v: "off", l: "Not in v3: the dates are the way through", tags: ["this afternoon", "rec"] }],
+        from: ["Your note on the preview: ", "can we reduce it to a days of the week nav? M T W TH F S, and a downward arrow for more options"],
+        why: "It's a second way through time beside the scroll, and a second left edge. With weeks of colors, not years, the dates are enough; a calendar can come later for longtime users (entry 131)." },
+      { k: "days", title: "Each day's label", opts: [
+          { v: "full", l: "Large, with its count of colors and places, and an arrow", tags: ["now"] },
+          { v: "date", l: "Large, the date only", tags: ["rec"] },
+          { v: "small", l: "Small, the date only", tags: ["this afternoon"] }],
+        from: ["Entry 126, your words: ", "Loving C due to the storytelling nature, but am wondering how we can make it just as compact as the top roygbiv bar"],
+        why: "The dates read like a diary, so they can stay large. The counts repeat what the colors already show, and they're most of the extra words. A day still opens with a click, and the hunt stop opens them all." },
+      { k: "names", title: "Colors you haven't named", opts: [
+          { v: "one", l: "One line, cut off at the edge", tags: ["now", "this afternoon"] },
+          { v: "two", l: "Two lines: the color, then where it's from", tags: ["rec"] },
+          { v: "word", l: "The color only", tags: [] }],
+        from: ["Entry 133, your words: ", "Why not have slightly dimmed names for colors you haven't named yet?"],
+        why: "Nothing cut off, still dimmed, and the placeholder still says where it was found, the way A24 names it." },
+      { k: "count", title: "The count", opts: [
+          { v: "full", l: "With the zoom's stop, over the colors", tags: ["now"] },
+          { v: "plain", l: "Just the count, beside the letters", tags: ["rec"] },
+          { v: "off", l: "None", tags: [] }],
+        from: ["From Claude: ", "the stop's name was added to the count in the merge"],
+        why: "It stops sitting on top of the colors. With the letters in their own row, it sits at the end of it; otherwise it stays in the corner." }
+    ] },
+    { name: "The card", items: [
+      { k: "similar", title: "Similar", opts: [
+          { v: "long", l: "Each color's name, where and when", tags: ["now"] },
+          { v: "short", l: "Where and when", tags: ["this afternoon", "rec"] }],
+        from: ["A53: ", "Similar rows say where and when"],
+        why: "The swatch already shows the color, so the line can be the story." },
+      { k: "also", title: "Also from here", opts: [
+          { v: "on", l: "A strip of the other colors you kept from the same place", tags: ["now", "rec"] },
+          { v: "off", l: "Not in the card", tags: ["this afternoon"] }],
+        from: ["Entry 124, your words: ", "a way to keep on following the trail"],
+        why: "It's one strip, and it's the trail you asked for." }
+    ] }
+  ];
+  var ALL = []; GROUPS.forEach(function (g) { g.items.forEach(function (it) { ALL.push(it); }); });
+  function optOf(it, v) { return it.opts.filter(function (o) { return o.v === v; })[0]; }
+  function tagged(it, tag) { var o = it.opts.filter(function (o) { return o.tags.indexOf(tag) >= 0; })[0]; return o ? o.v : it.opts[0].v; }
+  var PRESETS = [
+    ["now", "Now", function (it) { return it.opts[0].v; }],
+    ["afternoon", "This afternoon", function (it) { return it.k === "search" ? "icon" : it.k === "zoom" ? "plain" : it.k === "count" ? "plain" : tagged(it, "this afternoon"); }],
+    ["rec", "Claude's pick", function (it) { return tagged(it, "rec"); }]
+  ];
+  var POLISH = [
+    { k: "type", t: "One type scale", d: "Four sizes across the window, 11, 13, 17 and 26, instead of eight. Today's names stay the largest." },
+    { k: "gray", t: "One gray", d: "Everything secondary in the same gray, and unnamed names dimmed the same way everywhere (entry 133)." },
+    { k: "edge", t: "One left edge", d: "The letters, the dates and the colors all start on the same line." },
+    { k: "clear", t: "Nothing on the colors", d: "Only a color's name and its pin sit on it. No counts, labels or bars over a color." },
+    { k: "motion", t: "One motion", d: "Every open, close and zoom moves with the same timing and ease, so Palit moves like one thing." },
+    { k: "whole", t: "Nothing cut off", d: "Names, places and file names wrap or shorten on purpose, in the card, the palettes and the fan too." },
+    { k: "play", t: "The playback on v3", d: "The hands-free demo rebuilt on the window you pick, so the video records it." },
+    { k: "docs", t: "The dashboard and the design system on v3", d: "The Work page's frames and the system's components move to v3; v2 and this afternoon's copy stay for the process story." }
+  ];
+
+  /* ---------- State: in this browser until you're done ---------- */
+  var KEY = "palit-v3-workshop", HANDOFF = "v3-workshop";
+  var st = { cfg: {}, polish: {}, notes: {} };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) st = { cfg: saved.cfg || {}, polish: saved.polish || {}, notes: saved.notes || {} }; } catch (e) {}
+  ALL.forEach(function (it) { if (!optOf(it, st.cfg[it.k])) st.cfg[it.k] = it.opts[0].v; });
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} handoff(); }
+  function handoff() { if (!window.PalitHandoff) return; PalitHandoff.put(HANDOFF, { title: "v3 workshop", text: picksText() }); doneState(); }
+  function doneState() {
+    var rec = window.PalitHandoff ? PalitHandoff.get(HANDOFF) : null, b = $("done");
+    b.textContent = rec && rec.done ? "Done" : "I'm done";
+    b.setAttribute("aria-pressed", String(!!(rec && rec.done)));
+  }
+
+  /* ---------- The live window ---------- */
+  var win = $("win"), scene = "days";
+  // polish:off: v3 is polished now (entry 159), and the workshop shows each option the way it was when Noah picked
+  function cfgParam() { return ALL.map(function (it) { return it.k + ":" + st.cfg[it.k]; }).join(",") + ",polish:off"; }
+  function api() { try { return win.contentWindow && win.contentWindow.PalitV3; } catch (e) { return null; } }
+  function load() { win.src = "../v3/index.html?clean&keys=0&scene=" + scene + "&cfg=" + cfgParam(); }
+  function push() { var a = api(); if (a) { a.set(st.cfg); setTimeout(measure, 120); } else load(); }
+  win.addEventListener("load", function () { [400, 1200, 2500].forEach(function (t) { setTimeout(measure, t); }); });
+
+  // The same counts as the table above, taken from the live window
+  function measure() {
+    var doc; try { doc = win.contentDocument; } catch (e) { doc = null; }
+    var m = $("meter"); m.textContent = "";
+    if (!doc || !doc.getElementById("pw")) { $("meter-note").textContent = "The counts show when the window is served from the same place as this page."; return; }
+    var w = doc.defaultView, pw = doc.getElementById("pw"), body = doc.getElementById("body");
+    if (pw.hidden) return;
+    // On screen: not hidden, and inside the window's visible area (a day scrolled out of view doesn't count)
+    function shown(n) {
+      for (var x = n; x && x !== doc.body; x = x.parentElement) { var cs = w.getComputedStyle(x); if (cs.display === "none" || cs.visibility === "hidden" || x.hidden) return false; }
+      var r = n.getBoundingClientRect(), b = (body.contains(n) ? body : pw).getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.bottom > b.top + 1 && r.top < b.bottom - 1 && r.right > b.left && r.left < b.right;
+    }
+    var skip = ".sheet, .menu, .toast, .selpill, .zname, .wmenu";
+    var ctl = 0, among = 0;
+    pw.querySelectorAll("button, input, label.search").forEach(function (b) {
+      if (b.closest(skip)) return;
+      if (b.tagName === "LABEL") { var inp = b.querySelector("input"); if (inp && shown(inp)) return; }
+      if (!shown(b)) return;
+      if (body.contains(b)) { if (!b.closest(".t, .fan-card, .chip, .big, .fan")) among++; }
+      else ctl++;
+    });
+    var sizes = {}, gray = 0, words = 0;
+    var tw = doc.createTreeWalker(pw, NodeFilter.SHOW_TEXT);
+    for (var t = tw.nextNode(); t; t = tw.nextNode()) {
+      var s = t.nodeValue.trim(), p = t.parentElement;
+      if (!s || !p || p.closest(skip) || !shown(p)) continue;
+      var cs = w.getComputedStyle(p);
+      sizes[cs.fontSize] = 1;
+      if (p.closest(".t, .fan-card, .chip, .big")) continue;
+      words += s.split(/\s+/).length;
+      if (/^rgba?\((107, 107, 112|156, 156, 161)/.test(cs.color)) gray++;
+    }
+    [[ctl, "controls around the colors", 15, 29], [among, "among the colors", 0, 5], [Object.keys(sizes).length, "type sizes", 5, 8], [words, "words outside the colors", 23, 61]].forEach(function (x) {
+      m.appendChild(el("div", null, [el("b", { text: String(x[0]) }), el("span", { text: x[1] }), scene === "days" ? el("i", { text: "Afternoon " + x[2] + ", now " + x[3] }) : null]));
+    });
+    $("meter-note").textContent = scene === "days" ? "Counted in the window above, the same way as the table." : "Counted on this screen. The table's numbers are for Days.";
+  }
+
+  /* ---------- Build the page ---------- */
+  var presetBox = document.querySelector(".presets");
+  var presetBtns = PRESETS.map(function (p) {
+    var b = el("button", { type: "button", class: "chipbtn", text: p[1], "aria-pressed": "false" });
+    b.addEventListener("click", function () { ALL.forEach(function (it) { st.cfg[it.k] = p[2](it); }); save(); syncSwitches(); push(); });
+    presetBox.appendChild(b); return { p: p, b: b };
+  });
+  function syncPresets() { presetBtns.forEach(function (x) { x.b.setAttribute("aria-pressed", String(ALL.every(function (it) { return st.cfg[it.k] === x.p[2](it); }))); }); }
+  var SCENES = [["days", "Days"], ["where", "And where"], ["hunt", "The hunt"], ["spectrum", "All by hue"], ["palettes", "Palettes"], ["study", "A palette"], ["table", "The table"], ["card", "A card"], ["search", "Search"]];
+  var sceneBox = document.querySelector(".scenes"), sceneBtns = [];
+  SCENES.forEach(function (s) {
+    var b = el("button", { type: "button", class: "chipbtn", text: s[1], "aria-pressed": String(s[0] === scene) });
+    b.addEventListener("click", function () {
+      scene = s[0];
+      sceneBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var a = api();
+      if (a) { a.set(st.cfg); a.scene(scene === "table" && st.cfg.table === "off" ? "palettes" : scene); setTimeout(measure, 250); } else load();
+    });
+    sceneBox.appendChild(b); sceneBtns.push(b);
+  });
+
+  var box = $("switches"), rows = {};
+  GROUPS.forEach(function (g) {
+    var gr = el("div", { class: "group" }, [el("h3", { text: g.name })]);
+    g.items.forEach(function (it) {
+      var opts = el("div", { class: "sw-opts", role: "radiogroup", "aria-label": it.title });
+      var labels = it.opts.map(function (o) {
+        var input = el("input", { type: "radio", name: "sw-" + it.k, value: o.v });
+        var lab = el("label", { class: "sw-opt" }, [input, el("span", { class: "l", text: o.l }),
+          o.tags.length ? el("span", { class: "tags" }, o.tags.map(function (t) { return el("span", { class: t === "rec" ? "rec" : null, text: t === "rec" ? "Recommended" : t === "now" ? "Now" : "This afternoon" }); })) : null]);
+        input.addEventListener("change", function () { st.cfg[it.k] = o.v; save(); syncSwitches(); var a = api(); if (a) { a.set((function () { var x = {}; x[it.k] = o.v; return x; })()); setTimeout(measure, 120); } else load(); });
+        opts.appendChild(lab);
+        return { o: o, lab: lab, input: input };
+      });
+      rows[it.k] = labels;
+      gr.appendChild(el("div", { class: "sw-row", id: "sw-" + it.k }, [
+        el("h4", { text: it.title }), opts,
+        el("p", { class: "sw-from" }, [it.from[0], el("q", { text: it.from[1] })]),
+        el("p", { class: "sw-why" }, [el("b", { text: "Why the recommendation. " }), it.why])
+      ]));
+    });
+    box.appendChild(gr);
+  });
+  function syncSwitches() {
+    ALL.forEach(function (it) { rows[it.k].forEach(function (x) { var on = st.cfg[it.k] === x.o.v; x.input.checked = on; x.lab.classList.toggle("on", on); }); });
+    syncPresets(); count();
+  }
+
+  var pl = $("polish-list");
+  POLISH.forEach(function (p) {
+    var input = el("input", { type: "checkbox", "aria-label": p.t });
+    input.checked = !!st.polish[p.k];
+    var lab = el("label", { class: "po" + (input.checked ? " on" : "") }, [input, el("div", null, [el("h4", { text: p.t }), el("p", { text: p.d }), el("span", { class: "rec", text: "Recommended" })])]);
+    input.addEventListener("change", function () { st.polish[p.k] = input.checked; lab.classList.toggle("on", input.checked); save(); count(); });
+    pl.appendChild(lab);
+  });
+  ["away", "else"].forEach(function (k) {
+    var t = $("note-" + k); t.value = st.notes[k] || "";
+    t.addEventListener("input", function () { st.notes[k] = t.value; save(); });
+  });
+
+  /* ---------- Your picks, for Claude ---------- */
+  function count() {
+    var changed = ALL.filter(function (it) { return st.cfg[it.k] !== it.opts[0].v; }).length;
+    var pol = POLISH.filter(function (p) { return st.polish[p.k]; }).length;
+    $("count").textContent = changed + " of " + ALL.length + " switches changed from now, " + pol + " of " + POLISH.length + " polish moves ticked";
+  }
+  function picksText() {
+    var lines = ["v3 workshop, October 18. My switches:"];
+    var which = presetBtns.filter(function (x) { return ALL.every(function (it) { return st.cfg[it.k] === x.p[2](it); }); })[0];
+    if (which) lines.push("(All set to: " + which.p[1] + ".)");
+    GROUPS.forEach(function (g) {
+      lines.push(g.name + ":");
+      g.items.forEach(function (it) {
+        var o = optOf(it, st.cfg[it.k]);
+        var tags = o.tags.map(function (t) { return t === "rec" ? "recommended" : t; });
+        lines.push("- " + it.title + ": " + o.l + (tags.length ? " (" + tags.join(", ") + ")" : "") + ". [" + it.k + ":" + o.v + "]");
+      });
+    });
+    lines.push("Polish:");
+    POLISH.forEach(function (p) { lines.push("- " + (st.polish[p.k] ? "Yes" : "No") + ": " + p.t + "."); });
+    if ((st.notes.away || "").trim()) lines.push("Note on the switches: " + st.notes.away.trim());
+    if ((st.notes.else || "").trim()) lines.push("Anything else: " + st.notes.else.trim());
+    return lines.join("\n");
+  }
+  $("copy").addEventListener("click", function () {
+    var text = picksText(), status = $("status");
+    function fallback() {
+      var t = el("textarea", { readonly: "" });
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      t.remove();
+      status.textContent = ok ? "Copied. Paste it into chat." : "Couldn't copy. Press “I'm done” instead, and Claude reads it from this page.";
+    }
+    try { navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied. Paste it into chat."; }, fallback); } catch (e) { fallback(); }
+  });
+  $("reset").addEventListener("click", function () {
+    ALL.forEach(function (it) { st.cfg[it.k] = it.opts[0].v; }); save(); syncSwitches(); push();
+    $("status").textContent = "Every switch is back to now. Your polish ticks and notes are kept.";
+  });
+  $("done").addEventListener("click", function () {
+    handoff();
+    PalitHandoff.done(HANDOFF);
+    doneState();
+    $("status").textContent = "Marked done. Tell Claude in chat, and Claude reads your picks from this page.";
+  });
+
+  syncSwitches();
+  load();
+  doneState();
+  window.PalitV3Workshop = { picksText: picksText, measure: measure, state: st };
+})();
+</script>
+</body>
+</html>

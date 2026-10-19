@@ -18,9 +18,15 @@ window.PALIT.video = {
     date: "2026-10-18", by: "Noah",
     text: "I also want to be able to show our workshop and dashboard - which is why I want to really clean it up for show and tell. If possible, I think it'd be fun to use our basic design system for the dashboard"
   },
+  users: { date: "2026-10-18", by: "Noah", text: "For the video itself, though, we'll definitely have different scrolls of edge cases:\nThe first-time user's edge case, where it tells them what they have to do: it tells them to start picking colors.\nA mid-journey user's edge case, where we're shown a similar thing to today, actually quite similar, maybe with a little bit more colors just from the weeks they've used the palette.\nI think the final edge case would be a long-time user, someone who has vast, vast libraries of color they've collected: a really, really lengthy spectrum scroll wheel.\nI think that's definitely the direction we're heading in right now." },
   speakers: {
     date: "2026-10-18", people: ["Noah", "Daeun"],
-    note: "there will be many moments where our screen recordings/motion animations for our features will take the entire screen, yet we will be speaking and narrating whats happening, the process, and reasoning. To symbolize who is who, i have this idea for small chips in the corners that shows who is speaking - Me, Noah, or my teammate, Daeun."
+    note: "there will be many moments where our screen recordings/motion animations for our features will take the entire screen, yet we will be speaking and narrating whats happening, the process, and reasoning. To symbolize who is who, i have this idea for small chips in the corners that shows who is speaking - Me, Noah, or my teammate, Daeun.",
+    // Turquoise for Daeun, red for Noah (A101, entry 164). The hexes are Claude's draft until they pick the exact ones.
+    colors: { Noah: "#d23c2a", Daeun: "#2fb3ad" },
+    colorsNote: "Turquoise for Daeun and red for Noah, from your meeting with Daeun (entry 164). The hexes are Claude's draft until you two pick the exact ones.",
+    // Who records what (A102, entry 165): Daeun's voiceover arrives as audio files, from Noah's script.
+    recording: "Daeun records her voiceover sections separately, from a script Noah sends her, and sends them as audio files. The intro and outro are filmed together in the library or archive room on October 19, and Noah edits everything with subtitles (entry 165)."
   },
 
   // Deep dives: Noah wants 2–3, co-decided once the final prototype works. Claude keeps
@@ -55,10 +61,10 @@ window.PALIT.video = {
         id: "visible", title: "Functional, yet visible and accessible",
         q: "How do we present our tool to be as functional, yet visible and accessible as possible?",
         noah: { text: "Lets also list this as one of the key challenges of our project process - how do we present our tool to be as functional, yet visible and accessible as possible?", why: "v2 looks so much better, but still feels quite boring. Whats going on? And, it feels a little detached from our goal for the audience and the research we're doing - why do I feel this way? Why does the dashboard feel so empty?" },
-        arc: [[93, "v1 felt stagnant"], [94, "It read like a document"], [95, "Nothing on it but color"], [100, "A zoom: only color, then names"], [103, "Clean, functional, considered"], [113, "Spectrum's cards are just the color"], [117, "No slider, just − and +"], [120, "Still boring: the story is one click deep"], [123, "The opinion, in Noah's words"]],
+        arc: [[93, "v1 felt stagnant"], [94, "It read like a document"], [95, "Nothing on it but color"], [100, "A zoom: only color, then names"], [103, "Clean, functional, considered"], [113, "Spectrum's cards are just the color"], [117, "No slider, just − and +"], [120, "Still boring: the story is one click deep"], [123, "The opinion, in Noah's words"], [155, "Everything in one window"], [156, "Too much: take away, then polish"], [157, "Claude's picks, with Palit's own bar"], [159, "v3: back to 16 controls and 23 words"]],
         show: "v1 the document, v2 the wall, then the audit: Days shows 2 of the 9 parts of a color's story, Pinned is 11% color, and the brief's one constraint is storytelling. Then the precedents (Werner's Nomenclature, which Darwin took on the Beagle; Vanderpoel; Wada; Pantone), the options from the story workshop, and the one Noah lands on.",
         research: [{ from: "evidence", find: "by where they came from" }, { from: "evidence", find: "Cues people write themselves" }, { from: "precedent", find: "Werner's Nomenclature" }],
-        open: "The story and look workshop's picks. It's also the brief's first criterion: recognizing which deeper problems are worth solving."
+        open: "The arc has its numbers: on Days, the afternoon's v2 had 15 controls around the colors and 23 words outside them; the merge took that to 29 and 61; v3 is back to 16 and 23, with four type sizes instead of eight, and keeps the story pieces (the four stops, the table, search, the trail). The v3 workshop's live counts can show each switch taking a piece away. It's also the brief's first criterion: recognizing which deeper problems are worth solving."
       },
       {
         id: "capture", title: "How little the capture moment can be",
@@ -108,6 +114,13 @@ window.PALIT.video = {
         show: "Naheel's format in one decision: three ways side by side (hold ⇧ and click; drag a rectangle, the way ColorZilla, Pastel, Coolors and Adobe Capture build palettes; a second shortcut, ⌥⇧P), the one we landed on, and Noah's reason. Then the ⇧ run in the prototype, and ⇧-click in the archive, where the same key gathers colors you already kept into a palette.",
         research: [{ from: "evidence", find: "freely chose what to photograph" }, { from: "evidence", find: "Photographing whole objects" }],
         open: "Quote “train you visual eye” as the project's intent, not a finding: the research hasn't shown that capturing colors trains your eye."
+      },
+      {
+        id: "mark", title: "A mark that's the last color you kept",
+        q: "What should Palit's mark be, for a tool whose only color is the one you found?",
+        arc: [[107, "No logo anywhere, not even a placeholder"], [160, "A square of the last color you kept"], [162, "Daeun is filled in"], [163, "The brief: bold, filling its space, the last color you picked"]],
+        show: "Naheel's format again: Daeun's options side by side with Sip's icon, the one you two land on, and why. Then the mark changing in the menu bar as you keep colors.",
+        open: "Daeun's options arrive the morning of October 19, and the reason for a mark that changes is still to ask (entry 163). Claude's note: it could also fold into deep dive 1, a tool for color that brings no color of its own, down to its mark."
       }
     ]
   },
@@ -149,7 +162,7 @@ window.PALIT.video = {
         "Open on Noah's own boards: of 8 saved references, only 2 still point to where the work came from. The problem, in our own collection.",
         "Or open on The Dress (2015): the same pixels seen as two different colors, depending on what people assumed about the light. Context is part of the color."
       ],
-      needs: ["A short scene, filmed or animated: a screenshot pile, a hex with no source"],
+      needs: ["A short scene, filmed or animated: a screenshot pile, a hex with no source", "The intro, filmed with Daeun in the library or archive room on October 19 (entry 165)"],
       tags: ["open"],
       status: "idea"
     },
@@ -200,23 +213,23 @@ window.PALIT.video = {
         "Prototype v1 on the drawn desk is the before: a few seconds of it, side by side with v2, could open deep dive 1."
       ],
       needs: ["Your sound pick (Q22)", "Screen recordings of v2", "The real screens' credits on screen or in the description"],
-      links: [{ label: "Prototype v2", href: "../v2/index.html" }, { label: "Clean, for recording", href: "../v2/index.html?clean" }, { label: "Its steps", href: "#work/v2" }, { label: "Storyboard", href: "#video/storyboards" }],
+      links: [{ label: "Prototype v3", href: "../v3/index.html" }, { label: "Clean, for recording", href: "../v3/index.html?clean" }, { label: "Its steps", href: "#work/v3" }, { label: "Storyboard", href: "#video/storyboards" }],
       tags: ["demo"],
       status: "storyboarded",
       storyboard: {
         note: "On prototype v2, real pages and a real Mac wallpaper. The shots follow one click path through v2, so it can be recorded in one take with ?clean. It replaces the storyboard on the first prototype (entry 111); that version stays in the site's Git history.",
         shots: [
-          { at: 0, to: 6, title: "A real desktop", frame: { page: "../v2/index.html?clean", focus: [72, 0, 1296] }, shows: "A Mac with a Wikipedia article in Safari and a crocoite specimen open in Preview. Palit is a word in the menu bar and a few slim strips at the right edge.", says: "This is Palit: a word in the menu bar, and a few strips of color.", refs: [105, 107] },
-          { at: 6, to: 13, title: "One keystroke, real pixels", frame: { page: "../v2/index.html?clean&scene=picking", focus: [576, 176, 684] }, keys: "⌥⇧C", shows: "⌥⇧C, and the loupe reads the real pixels under it: the crystal's orange, with its hex beneath.", framing: "Push in on the loupe as it crosses the crystals.", says: "One keystroke, and the loupe reads the color under it, from anything on screen.", refs: [101, 105] },
-          { at: 13, to: 20, title: "It lands", frame: { page: "../v2/index.html?clean&scene=landed", focus: [756, 176, 612] }, keys: "Click", shows: "A click keeps it: a small ring, one of the duller sounds, and the color lands at the top of the strips, which open as you point at them.", says: "Click to keep it. A small ring, a soft sound, and it's in the strips.", refs: [101, 102] },
-          { at: 20, to: 28, title: "Name it, or keep a palette", frame: { page: "../v2/index.html?clean&scene=naming", focus: [612, 270, 630] }, keys: "Right-click, or ⇧-click", shows: "Right-click keeps it and opens a name field beside the cursor, with “Crocoite” typed in. Holding ⇧ keeps several colors as one palette.", says: "Right-click to name it as you keep it, or hold Shift to keep a whole palette.", refs: [84, 67] },
-          { at: 28, to: 38, title: "Days, today first", frame: { page: "../v2/index.html?clean&scene=days", focus: [207, 56, 1008] }, shows: "A click on Palit in the menu bar opens Days on today: today's colors large with their names set on them, earlier days below, nothing else on the first view.", framing: "Hold on the wall for a beat before anything moves.", says: "Click Palit, and Days opens on today: the colors you just kept, large, with their names set on them.", refs: [95, 97] },
-          { at: 38, to: 46, title: "Zoom out, zoom in", frame: { page: "../v2/index.html?clean&scene=zoom-out", focus: [207, 56, 1008] }, keys: "⌘− and ⌘+", shows: "⌘− steps down through the zoom's seven stops until there's no text, only color; ⌘+ steps up until each color carries its full name.", says: "Zoom out to see only color. Zoom in for the full names.", refs: [100, 117] },
-          { at: 46, to: 52, title: "Seven letters", frame: { page: "../v2/index.html?clean&scene=days&band=O", focus: [207, 56, 1008] }, shows: "O picked in the ROYGBIV letters: only the oranges stay, and the count in the corner says how many.", says: "Seven letters, R O Y G B I V, narrow it to a hue.", refs: [95, 96] },
-          { at: 52, to: 61, title: "Spectrum", frame: { page: "../v2/index.html?clean&scene=spectrum", focus: [207, 56, 1008] }, keys: "Scroll", shows: "Spectrum: every color fanned by hue; scrolling turns the fan, and the top card's name sits large above it.", says: "Spectrum fans out every color you've ever found, by hue, in one long scroll.", refs: [96] },
-          { at: 61, to: 76, title: "The specimen card", frame: { page: "../v2/index.html?clean&scene=card", focus: [207, 56, 1008] }, shows: "Hyacinth red opens as a specimen card: the color as a chip over a real crop of the crystals, the name large, where it came from with a way back, Similar, its palette, Pin and Share, and the scratch pad.", framing: "Push in on the chip over the crop, then pull back to the whole card.", says: "Open one, and it becomes a specimen card: the color over the place you found it, your name for it, where it came from, and a scratch pad for what you saw.", refs: [98, 99] },
-          { at: 76, to: 84, title: "Pins into palettes", frame: { page: "../v2/index.html?clean&scene=menu", focus: [207, 56, 1008] }, keys: "⇧ Click, then right-click", shows: "Collections, Pinned: two pins gathered with ⇧-click, a right-click, Add to palette, New palette. A quiet line confirms it, and Palettes shows the new one.", says: "Pin the colors that matter most, and group them into a palette.", refs: [96, 116] },
-          { at: 84, to: 95, title: "A share card", frame: { page: "../v2/index.html?clean&scene=share", focus: [207, 56, 1008] }, shows: "A palette as a share card: the colors large, each name and hex code under it, and a button that copies the codes.", says: "And when your team needs the same colors, send a card with the codes on it.", source: "The team angle comes from Noah's interview with a civil engineer (entry 110): one interview, so a possibility, not a finding.", refs: [109, 110] }
+          { at: 0, to: 6, title: "A real desktop", frame: { page: "../v3/index.html?clean", focus: [72, 0, 1296] }, shows: "A Mac with a Wikipedia article in Safari and a crocoite specimen open in Preview. Palit is a word in the menu bar and a few slim strips at the right edge.", says: "This is Palit: a word in the menu bar, and a few strips of color.", refs: [105, 107] },
+          { at: 6, to: 13, title: "One keystroke, real pixels", frame: { page: "../v3/index.html?clean&scene=picking", focus: [576, 176, 684] }, keys: "⌥⇧C", shows: "⌥⇧C, and the loupe reads the real pixels under it: the crystal's orange, with its hex beneath.", framing: "Push in on the loupe as it crosses the crystals.", says: "One keystroke, and the loupe reads the color under it, from anything on screen.", refs: [101, 105] },
+          { at: 13, to: 20, title: "It lands", frame: { page: "../v3/index.html?clean&scene=landed", focus: [756, 176, 612] }, keys: "Click", shows: "A click keeps it: a small ring, one of the duller sounds, and the color lands at the top of the strips, which open as you point at them.", says: "Click to keep it. A small ring, a soft sound, and it's in the strips.", refs: [101, 102] },
+          { at: 20, to: 28, title: "Name it, or keep a palette", frame: { page: "../v3/index.html?clean&scene=naming", focus: [612, 270, 630] }, keys: "Right-click, or ⇧-click", shows: "Right-click keeps it and opens a name field beside the cursor, with “Crocoite” typed in. Holding ⇧ keeps several colors as one palette.", says: "Right-click to name it as you keep it, or hold Shift to keep a whole palette.", refs: [84, 67] },
+          { at: 28, to: 38, title: "Days, each with its places", frame: { page: "../v3/index.html?clean&scene=hunt", focus: [207, 56, 1008] }, shows: "A click on Palit in the menu bar opens Days on today. A click on Today opens the day out: each place you found color in, what it looked like, and the colors you kept there.", framing: "Hold on today for a beat, then let the day open out.", says: "Click Palit, and Days opens on today. Open the day, and you see where your eye went.", refs: [126, 97] },
+          { at: 38, to: 46, title: "Four stops", frame: { page: "../v3/index.html?clean&scene=zoom-out", focus: [207, 56, 1008] }, keys: "⌘− and ⌘+", shows: "⌘− down to only color, each day a slim strip; then ⌘+ through your names and where, to the whole hunt. Each stop's name shows for a moment at the end of the letters' row.", says: "Zoom out for only color. Zoom in, and the story comes back.", refs: [127, 145] },
+          { at: 46, to: 52, title: "Seven letters", frame: { page: "../v3/index.html?clean&scene=days&band=O", focus: [207, 56, 1008] }, shows: "O picked in the ROYGBIV letters, underlined in ink: only the oranges stay, and the count at the end of the row says how many.", says: "Seven letters, R O Y G B I V, narrow it to a hue.", refs: [95, 140] },
+          { at: 52, to: 61, title: "All colors, by hue", frame: { page: "../v3/index.html?clean&scene=spectrum", focus: [207, 56, 1008] }, keys: "Scroll", shows: "Spectrum, its own tab again: every color you've found, fanned out by hue. Scrolling turns it; the chosen card rises, its name large above, and a click on the name renames it right there.", says: "Every color you've ever found, fanned out by hue.", refs: [157, 158, 149, 154] },
+          { at: 61, to: 76, title: "The specimen card, and its trail", frame: { page: "../v3/index.html?clean&scene=card", focus: [207, 56, 1008] }, shows: "Hyacinth red opens as a specimen card: the trail that led to it on top, the color as a chip over a real crop of the crystals, the name large, Similar and Also from here to keep going, and the scratch pad, where a note gets typed.", framing: "Push in on the chip over the crop, then pull back to the whole card.", says: "Open one, and it becomes a specimen card: where you found it, your name for it, and a scratch pad for what you saw.", refs: [98, 99, 124] },
+          { at: 76, to: 84, title: "Take to table", frame: { page: "../v3/index.html?clean&scene=table", focus: [207, 56, 1008] }, keys: "⇧-click, then right-click", shows: "⇧-click two colors in the fan, then right-click: Take 2 to table, and the table opens inside Palettes. Show names, then Keep as a palette.", says: "Bring colors to the table, try them together, and keep what works as a palette.", refs: [142, 143, 157] },
+          { at: 84, to: 95, title: "The palette as a study, and a share card", frame: { page: "../v3/index.html?clean&scene=study", focus: [207, 56, 1008] }, shows: "The new palette opens as a study: each color on white, mid gray and black, with where it came from and its codes. Share sends a card with the codes on it.", says: "And when your team needs the same colors, send a card with the codes on it.", source: "The team angle comes from Noah's interview with a civil engineer (entry 110): one interview, so a possibility, not a finding.", refs: [128, 109, 110] }
         ]
       }
     },
@@ -262,7 +275,7 @@ window.PALIT.video = {
       storyboard: {
         note: "In Naheel's format: the question, the ways we tried, where we landed and why, and what didn't make the cut. The shot where it lands still needs your reason for pure white, in your words.",
         shots: [
-          { at: 0, to: 8, title: "The question", frame: { page: "../v2/index.html?clean&scene=zoom-out", focus: [207, 56, 1008], label: "Prototype v2, Days zoomed out" },
+          { at: 0, to: 8, title: "The question", frame: { page: "../v3/index.html?clean&scene=zoom-out", focus: [207, 56, 1008], label: "Prototype v3, Days zoomed out" },
             shows: "Days zoomed all the way out: a wall of colors kept from everywhere, nothing but color, with the question over it.",
             says: "How do we build a color palette and a design system for a tool that collects color?", source: "Noah's own question (entry 79)", refs: [79] },
           { at: 8, to: 20, title: "The closest competitor", frame: { img: "../references/competitors/sip/01-docs-color-formats.webp", href: "#inspiration/sip", label: "Sip" },
@@ -280,13 +293,13 @@ window.PALIT.video = {
           { at: 51, to: 63, title: "No surface is neutral", frame: { img: "shots/dive1-twin.jpg", href: "../workshop/features.html", label: "Feature workshop" },
             shows: "The same Pool tile teal on white and on black, and the research underneath.",
             says: "No surface is neutral for every color. With only the gray behind them changed, the visible difference between the same two colors changed by up to eight times (Xin, Lam and Luo, 2004).", refs: [80] },
-          { at: 63, to: 73, title: "Where we landed, and why", frame: { page: "../v2/index.html?clean&scene=spectrum", focus: [207, 56, 1008], label: "Prototype v2, Spectrum" },
+          { at: 63, to: 73, title: "Where we landed, and why", frame: { page: "../v3/index.html?clean&scene=all", focus: [207, 56, 1008], label: "Prototype v3, all colors by hue" },
             shows: "Spectrum on pure white paper: every color fanned by hue, the only color on screen.",
             says: "We kept pure white.", needs: "Your reason for white over the grays, in your words. The standard for judging prints rules out surrounds this light (ISO 3664), so your reason carries this shot.", refs: [87] },
           { at: 73, to: 84, title: "What we cut", frame: { img: "../workshop/shots/archive-now.jpg", href: "../journey/index.html#/archive", label: "The v1 archive" },
             shows: "The v1 archive: the same tile for every color, the label under each, two rows of filter chips, an inspector full of small gray text.",
             says: "Then we cut. Numbers off the tiles, two rows of filters down to seven letters, and the names onto the colors.", source: "Noah called v1 “very stagnant and boring” (entry 93); the cuts are from his look workshop picks (entries 94 and 95)", refs: [93, 94, 95] },
-          { at: 84, to: 95, title: "Nothing distracts from the color", frame: { page: "../v2/index.html?clean&scene=days", focus: [207, 56, 684], label: "Prototype v2, Days" },
+          { at: 84, to: 95, title: "Nothing distracts from the color", frame: { page: "../v3/index.html?clean&scene=days", focus: [207, 56, 684], label: "Prototype v3, Days" },
             shows: "Prototype v2: the seven ROYGBIV letters above a wall of today's colors, names set on the colors, nothing else on the first view.", framing: "Push in on the letters, then pull back to the wall.",
             says: "Seven letters for a nav. A ring for a capture. A strip for a palette. The colors themselves tell the stories, not how we present them.", source: "The last line is Noah's (entry 102); what stays out of the color's way is his direction for this deep dive (entry 104)", refs: [104, 95, 102, 103] }
         ]
@@ -327,7 +340,7 @@ window.PALIT.video = {
       purpose: "The vision: colors moving into the tools you use, and the real build.",
       line: "",
       ideas: ["From Noah's interview with a civil engineer (entry 110): teams that build slide decks, presentations and projects keep separate color codes. Palit is built for visual designers, but engineers, general creatives and team leads could use it too.", "Sharing, with Shared with you and share cards (entries 108 and 109), if Noah signs off on the network."],
-      needs: ["One forward-looking visual"],
+      needs: ["One forward-looking visual", "The outro, filmed with the intro in the library or archive room (entry 165)"],
       tags: ["next"],
       status: "idea"
     }

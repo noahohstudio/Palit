@@ -63,6 +63,30 @@ window.PALIT.compass = {
 
   notes: [
     {
+      date: "2026-10-18",
+      title: "Why the square, and why a longer archive",
+      text: `To answer your two quick questions:
+
+1. Why "square of your last color" instead of the word "palette"? I think it's just more useful. Sip does a similar thing with its icon on the top bar of the desktop. You don't really need the chip on the side to show you which color you've recently picked, especially if you've already pinned a color palette or something important to the side. I also just think it's a fun, reactive feature to the app. It makes it a little bit more friendly, having an icon there rather than just the word "palette". That's the reasoning for the first question.
+   2. Why reach further back to show a long-time user's archive in the video or something else? I think for now, just for the sake of showing my teammate the progress we've made, having a bigger, lengthier archive is a little bit prettier to look at. It shows that it's lived in or built up, and I like that fact. For the video itself, though, we'll definitely have different scrolls of edge cases:
+      * The first-time user's edge case, where it tells them what they have to do: it tells them to start picking colors.
+      * A mid-journey user's edge case, where we're shown a similar thing to today, actually quite similar, maybe with a little bit more colors just from the weeks they've used the palette.
+      * I think the final edge case would be a long-time user, someone who has vast, vast libraries of color they've collected: a really, really lengthy spectrum scroll wheel.
+ I think that's definitely the direction we're heading in right now. I think it could be fun if the scroll wheel was an infinite scroll ball. Just a quick change to make, especially when it makes a full circle. This doesn't have to be forced. Just when the scroll becomes a full circle off the screen, I think it could be fun to make it an infinite scroll.`
+    },
+    {
+      date: "2026-10-18",
+      title: "After filling Daeun in",
+      text: `Filled my teammate Daeun in regarding palit and its direction - receiving logo options for tomorrow`
+    },
+    {
+      date: "2026-10-18",
+      title: "After playing with v2, merged",
+      text: `I'm not sure. Now we're slightly losing the authenticity and charm of the original app. Can we potentially revisit with another workshop? Then establish our final, v3? Too much is going on
+I really want to make this app more polished - and a little more presentable
+how can we do that?`
+    },
+    {
       date: "2026-10-16",
       title: "After the SVSD brief",
       text: `I also sat in on a brief today about the competition, the guidelines, and the boundaries. It contained a lot of Q&A and the host giving us information about what successful projects look like.
@@ -170,7 +194,8 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
     { date: "2026-10-18", title: "After the look workshop: the v2 direction", text: "I'm loving this minimal direction we're following, with extreme detail to what we keep and cut. The ROYGBIV nav is so stunning to me - totally something we need to integrate into deep dive #1 - how we choose elements that don't distract our eyes from the color itself\n\nFeeling so good about this tool - it is really oozing the professional specimen and collection vibe i wanted to achieve, and it feels so elevated\n\nnow, I think its less about the are.na brutalist-ness, and more about the cleanly, functional aspect, one that is extremely built and considered\n\nLets still generate a simple prototype mockup with real desktop sample screens (instead of our generated ones) to show the growth and breakthrough we had\n\nI think this is where the problem solving for the pin feature comes into play - you pin a few colors, then have the option to group as a palette? Maybe thats one of the navs, Days, Collections, Spectrum\n\nLog the prototype mockups and flows on the work page, then lets begin revamping the page to fully account for the v2, new designs, along with their respective reasoning and research" },
     { date: "2026-10-18", title: "Sharing, share cards, and a civil engineer", text: "A sharing mechanism for grouped palettes might be good too, potentially a sub-nav under palettes - \"shared with you\"?\n\nand an edge case for sharing your palettes and colors to others really quickly - potentially designing cards for that?\n\nI've just done a quick interview with a Civil Engineer, and she said that lots of teams who build slide decks, presentations, and projects all use separate color codes - an issue that could be solved if palit was involved. This is just an addition to the \"possibilities\" area, subjects and audiences who lay outside of our target audience, but may very well have a strong use for the product\n\nThat may be a fun insight to explore - how our tool, although built for designers who are exploratory with color on the screen, can still benefit those who don't exactly fit into that box - engineers, general creatives, team leads" },
     { date: "2026-10-18", title: "Figma, the logo, and GitHub Pages", text: "In the figma file, can we begin to import our v1 design system and screens, then our newly built v2 system and screens?\n\nWrite what changed, why, and what could be tweaked.\n\nI need this to be presentable for my teammate, Daeun, who will give us an opinion, and a logo. No logo anywhere yet though, not even a placeholder\n\nAlso, push the dashboard to main on pages, and make it public for sharing to my teammate" },
-    { date: "2026-10-18", title: "Still boring and detached: the story, the brief, and the opinion", text: "v2 looks so much better,\n\nbut still feels quite boring. Whats going on? And, it feels a little detached from our goal for the audience and the research we're doing - why do I feel this way? Why does the dashboard feel so empty? And how can we solve it?\n\nWith edge cases for new users, experienced longtime users, and for users in between. It needs to be strikingly clear that this app is for exploration and ideation, and for keeping consistent palettes. What is the opinion behind this product, that may divide people?\n\nCan we begin really drilling down on the look of the product, and making sure it is exactly corresponding with the concept we've built thus far?\n\nThis could be a lengthy workshop\n\nHeres the brief itself, once again\n\nLets also list this as one of the key challenges of our project process - how do we present our tool to be as functional, yet visible and accessible as possible?\n\nJust a quick tidbit - There is no palette generation feature, much like other products. You sift through your own collection for the colors you own and love, and if it doesn't already exist, you go out of your way to discover and find it. There is no AI assistance - you learn to truly value and appreciate the colors you have found through time" }
+    { date: "2026-10-18", title: "Still boring and detached: the story, the brief, and the opinion", text: "v2 looks so much better,\n\nbut still feels quite boring. Whats going on? And, it feels a little detached from our goal for the audience and the research we're doing - why do I feel this way? Why does the dashboard feel so empty? And how can we solve it?\n\nWith edge cases for new users, experienced longtime users, and for users in between. It needs to be strikingly clear that this app is for exploration and ideation, and for keeping consistent palettes. What is the opinion behind this product, that may divide people?\n\nCan we begin really drilling down on the look of the product, and making sure it is exactly corresponding with the concept we've built thus far?\n\nThis could be a lengthy workshop\n\nHeres the brief itself, once again\n\nLets also list this as one of the key challenges of our project process - how do we present our tool to be as functional, yet visible and accessible as possible?\n\nJust a quick tidbit - There is no palette generation feature, much like other products. You sift through your own collection for the colors you own and love, and if it doesn't already exist, you go out of your way to discover and find it. There is no AI assistance - you learn to truly value and appreciate the colors you have found through time" },
+    { date: "2026-10-18", title: "Story and look workshop picks", text: "Story and look workshop, October 18. My picks:\n1. Which of these is it? Not picked yet.\n   Note: I would have to agree with claude - the story is one click deep, and there isn't a way to go further - a way to keep on following the trail. Users need to first explore before the story is told - how do we connect our audience to this tool before they even begin?\n2. How does the opinion show on screen? A, Found, never made (the recommendation).\n   Note: Such a beautiful screen, and points exactly to those who want to discover, share, and truly use the colors they own. Very opinionizing, but extremely rewarding too - optimization only exists when you earn it.\n3. What does the archive center on? C, Days, each with its places (the recommendation).\n   Note: Loving C due to the storytelling nature, but am wondering how we can make it just as compact as the top roygbiv bar, and expand it when users want? Truly a good change to the dashboard\n4. How much shows before you click? C, The zoom tells the story (the recommendation).\n   Note: Amazing - the zoom itself now becomes a dial for the tools usage. Truly an interesting way to view it\n5. How does it show both jobs? B, A palette opens as a study (recommended).\n   Note: B - study is such a great way to view palettes as you click on them. But, I want to workshop the table idea so bad - it's such an interesting one that may truly reflect how the design process works. Maybe it takes the spectrums spot, and the spectrum merges with the days, as an \"view all\" option? Of course, the filtration stays. Maybe its a small, subtle spectral circle icon somewhere in the nav?\n6. A new user: the first time Palit opens: A, Empty, with one line.\n   Note: As much as I like B, the messaging with A is so powerful, that I think its important to follow it as the opener. B will come with the instructions of A.\n7. In between: dozens to a few hundred colors: C, A look back, when you ask (recommended).\n   Note: A look back/calendar feature is very cool, but I'm curious to know where it could go. Possibly nestled in a visualization feature in the settings? I'm scared that the app may become more than what it is, but interesting concept that ties into the next question.\n8. A longtime user: thousands of colors: C, Find it again (recommended).\n   Note: search bar seems inevitably required - lets use it to find things again. I am also loving B though - maybe its a feature within the calendar system, if we build it. Sift through days, weeks, months, and years? Thats an if.\n9. The window's structure: A, A switch at the top, as now.\n   Note: the top nav, but lets being to move away from the macos look, and make it uniquely ours. A slim column on the lefthand side for potentially days? Refer to my earlier decisions to workshop the left. roygbiv should always be on top.\n10. What makes it feel built: B, One label at every size (recommended); C, Your names in New York (recommended).\n   Note: I'm interested in this concept, but i think we need to see how it looks on the prototype before anything. Why not have slightly dimmed names for colors you haven't named yet?\n\nFinished, but no need to rebuild v2 entirely yet. We need to visualize, and run it through my eyes once more, just on the local browser.\n\nWe need to work quick and finish the product, as the animations, ideation for the video, and the script itself will take time." }
   ],
 
   // The seven questions from the SVSD brief's working project brief guidelines.
@@ -292,14 +317,19 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
         "Run the quick A/B tests",
         "Co-decide 2–3 deep dives once the final prototype works; candidates are on the Video page",
         "Watch the past SVSD crit, then office hours",
-        "Draft the script"
+        "Walk Daeun through v3 and brief the logo (entries 162–165)",
+        "Draft the script, and send Daeun her voiceover lines",
+        "Tonight: a placeholder cut of the video, with subtitles"
       ]
     },
     {
       date: "2026-10-19",
       focus: "Tell the story",
       items: [
-        "Script, record and edit the video (aim for 7 minutes)",
+        "Morning: Daeun's logo options (entry 163)",
+        "Film the intro and outro together in the library or archive room",
+        "Daeun records her voiceover from Noah's script and sends the audio",
+        "1 to 5 PM: Noah edits, with Daeun's voiceover and subtitles (aim for 7 minutes)",
         "Polish only what the story needs",
         "Submit (check the competition site for the exact deadline)"
       ]
@@ -392,7 +422,7 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
   questions: [
     { id: "Q10", q: "Does AI get any role at all?", note: "The opinion pushes back on AI deciding color. Still open: a narrow role, like a read-only MCP over your archive, or none. Your workshop note: “The MCP concept will be able to just go into your archives and pull from what you want”.", link: "#e41" },
     { id: "Q11", q: "Pantone chips or an Are.na-style grid?", note: "Leaning Are.na: raw, brutalist, archival (A26). Pantone stays in for its consistency. Test T1 can check the lean.", link: "#inspiration" },
-    { id: "Q12", q: "When exactly is the deadline?", note: "Monday, October 19 is the working assumption. The team is Noah and Daeun. From Naheel's workshop: the submission form will be emailed out once it's live on the website." },
+    { id: "Q12", q: "When exactly is the deadline?", note: "Monday, October 19 is the working assumption. The team is Noah and Daeun. From Naheel's workshop: the submission form will be emailed out once it's live on the website. The notes from the meeting with Daeun say about 300 teams, and only 3 or 4 finalists. Noah edits from 1 to 5 PM on October 19." },
     { id: "Q13", q: "What will the prototype be made in?", note: "An HTML prototype built from the design system (October 18), moving to real macOS screenshots. Whether motion software adds to it is still open." },
     { id: "Q22", q: "Which capture sound?", note: "The chime is too pitchy (A63). Prototype v2 has three duller ones to try by ear: Felt, Wood and Stamp. Claude can't hear them, so the pick is yours.", link: "../v2/index.html" },
     { id: "Q23", q: "Sharing: sign off on the network?", note: "Shared with you (entry 108) means Palit talks to the network, which principle 5, local and private, rules out without your sign-off. The other way: share cards you send yourself (entry 109).", link: "#e108" },
@@ -400,14 +430,15 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
 
   // What's waiting on Noah right now, most useful first. Shown at the top of the Plan page.
   todo: [
-    { text: "Run the story and look workshop", link: "../workshop/story.html", note: "Why v2 still feels boring and detached, measured against the brief's one constraint (storytelling): ten questions, eight edge cases and five precedents. Pick, add notes, press “I'm done” and say so in chat." },
+    { text: "Send Daeun her voiceover script", link: "#video/storyboards", note: "She records her sections separately and sends them as audio files (entry 165). Which shots are hers is still open in the storyboards, and every line there is a draft for you to rewrite." },
+    { text: "Build the placeholder cut tonight, with subtitles", link: "../v3/index.html?clean&play", note: "P plays v3's demo for screen recording; ?clean hides the controls, and ?speed=10 checks it quickly. Swap in Daeun's voiceover when it arrives." },
+    { text: "Pick a logo from Daeun's options, tomorrow morning", link: "#e163", note: "The brief: bold, filling its space, the last color you picked. Say why when you pick; the mark then replaces the square in v3's menu bar (A99)." },
+    { text: "Look over v3, the final prototype", link: "../v3/index.html", note: "Days, Palettes and Spectrum in a bar of Palit's own; click a color's name in Spectrum to rename it there. P plays the demo for recording. Leave feedback on any screen under Prototype v3 on the Work page." },
     { text: "Pick the capture sound in prototype v2 (Q22)", link: "../v2/index.html", note: "Sound, at the bottom: Felt, Wood or Stamp. Keep a color with ⌥⇧C to hear each one." },
     { text: "Sharing: sign off on the network, or keep share cards (Q23)", link: "#e108" },
     { text: "Say why pure white beat the grays", link: "#video/storyboards", note: "Deep dive 1 lands on pure white, and the research says a print-judging standard rules out surrounds that light. The video needs your reason, in your words, for the shot where it lands." },
-    { text: "Read the storyboards for the demo and deep dive 1", link: "#video/storyboards", note: "Every line is a draft for you to rewrite, and who speaks each shot is yours and Daeun's to pick." },
     { text: "Add the questions you asked in Naheel's workshop", note: "They aren't in the notes. They go next to the notes, word for word, and into the decisions they inform." },
     { text: "Take real macOS screenshots for the prototype", note: "Full screen with ⌘⇧3, PNG, on a clean desktop with the menu bar showing and a browser on a page with color you'd really pick from. Put them in design/journey/shots/ and say what's in each." },
-    { text: "Record the demo", link: "../journey/index.html?clean", note: "After the look workshop: the prototype gets rebuilt in the new look first (D12). Then press P in it for the whole journey; ?clean hides the controls." },
     { text: "Look over the dashboard before showing Daeun", link: "#work" }
   ],
   earlierQuestions: [
@@ -420,7 +451,7 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
     { id: "Q15", q: "Contend with Sip on its macOS look?", note: "Answered October 17: a Mac-native shell with a raw, archival heart (A26)." },
     { id: "Q14", q: "Who names a color: you, or the tool?", note: "Answered October 16: human-first, with a generic placeholder from where you found it (A24)." },
     { id: "Q9", q: "Who is Palit for?", note: "Answered October 16: visual designers who work on the desktop, in the ideation phase (A23)." },
-    { id: "Q1", q: "Name and identity", note: "Answered: the name is Palit (A18). The visual identity is still open." },
+    { id: "Q1", q: "Name and identity", note: "Answered: the name is Palit (A18). The visual identity is still open; Daeun brings logo options on October 19 (A100, entry 163)." },
     { id: "Q2", q: "Is the archive ever shared?" },
     { id: "Q3", q: "Projects vs. palettes", note: "ED4 (swatch rings) would answer this. Proposed only." },
     { id: "Q4", q: "Crops: on, off, or ask the first time?", note: "Now part of big rock C." },
