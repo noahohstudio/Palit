@@ -90,6 +90,48 @@ For the voiceover:
   - Use the best format the phone offers.
   - Make one file per section, or per line.
 
+## The voiceover (October 21, entry 280)
+
+Noah's 31 takes came in as Voice Memos (AAC, mono, 44.1 kHz), one take per file, each on a quiet floor of about -62 dB, between -31 and -39 LUFS. He heard some as "slightly louder than others, or sound furhter". `design/video/audio/voice/lines.py` makes them one voice:
+
+1. **Clean:** each take goes through `clean.py` (above): only the voice, every word even.
+2. **One tone:** each take's spectrum, in seven octave bands from 125 Hz to 8 kHz, is compared with the median of the speaker's takes. A gentle EQ moves it 80% of the way there, at most 4 dB in a band. A take recorded further from the mic is duller and roomier, and one recorded closer has more low end. His were close already: most moves are under 1.5 dB, and the biggest are +2.8 and +2.2 dB at 8 kHz on demo-3 and demo-4.
+3. **One loudness:** two-pass normalization to -16 LUFS, true peak -1.5 dB. A take under about three seconds (splash-1) gets its measured gain and a limiter instead, since the normalizer can't settle on so short a file. Every line now sits between -15.9 and -16.7 LUFS.
+4. **Trimmed to the line:** 60 ms before the first word and 180 ms after the last, with 10 ms fades.
+
+Each line's real length goes into script.js (`PALIT_TAKES`), and the script's timing follows it: every moment still lands on its line, and the picture waits where a line runs long. The player plays each take from its line's start, and `export.mjs` mixes the takes in at the dialogue level.
+
+## The voiceover, locked (October 21, entry 289)
+
+Noah heard Daeun's lines as muffled and his own as "a little tiny", from "a lot of background removal". The one cleaning had been strong for both. Now `lines.py` cleans each voice its own way (`CLEAN`, through `clean.py`'s `--nr`, `--nr2`, `--pause`, `--hp` and `--eq`).
+
+| | Noah | Daeun |
+|---|---|---|
+| Denoising | gentler: 9 and 3, not 16 and 6 | the same |
+| Pauses | down 15 dB, not 25 | the same |
+| Low cut | 70 Hz | 90 Hz |
+| EQ | +2 dB of warmth at 160 Hz, presence at 3.2 kHz, air from 9 kHz, no 250 Hz cut | −4 dB at 320 Hz, +4 dB at 2.5 and 5 kHz, a +6 dB shelf from 8 kHz, a light de-esser |
+| Against 1 kHz, after (2 / 4 / 8 kHz) | −2.6 / −5.2 / −2.6, with 125 Hz back to +2.4 | −2.9 / −2.9 / −4.4 |
+
+Daeun's EQ was picked from three tried on three of her takes, and her loudest "s" sounds stay at or under his. Every line is −15.7 to −16.4 LUFS.
+
+Two more changes:
+- **A room tone under the voiceover:** soft pink noise (`sfx/ambience/room-tone.wav`), looping 28 dB down from the splash to the end of the horizon, so the gentler pauses never drop to dead air.
+- **The intro:** its sound is silent until 0.42 s and fades in by 0.48, just before the first word (`footage/grade/dethump.sh`).
+
+## The mix and the effects, as built (October 21, entry 285)
+
+- **The dips hold through a breath.** Lines less than 1.5 s apart share one dip. It eases down over half a second before a line and back over 1.2 s after (smootherstep), so the music no longer swells in every gap. This is Noah's note above. A sidechain keyed by the voice would pump on every pause, so the dips follow the real takes' lengths instead.
+- **About 15 dB under the voice,** a touch louder than the usual 20, as Noah asked. Each track's dip comes from its own loudness and level: the house track 0.36, the demo's 0.46, Jungle Voices 0.38, Atoms in Peace 0.39.
+- **The music gets out of the voice's way:** in the exported film, a 4 dB dip at 3 kHz fades in and out with the same envelope.
+- **The effects** come from `design/video/sound.js`, the cue sheet that the player and `export.mjs` both read:
+  - The picture reports its own moments as it plays. v3 reports a cursor press, a key coming up and a keep. viz.html reports its presses through `cue()`. The player reports a statement's highlight press, a section leaving on its slide up, and a camera move that zooms 2.5 times or more.
+  - The exporter logs each moment at the film's time while it records, then places each sound so its peak lands on that frame.
+  - The keep is v3's own Wood, rebuilt sample for sample (`audio/sfx/keep/wood.py`).
+  - The splash's riser peaks on the snap and its hit lands there, at both splashes.
+  - The walk-in has its plaza, its brass doors and its stairs. The sofa takes have a faint room tone under them.
+  - The levels (clicks and keys at -18 dB, the keep at -12, whooshes at -22 and -24) are first guesses, for Noah's notes.
+
 ## The mix plan, for the editing phase
 
 When the voiceover is in, `export.mjs` grows from music plus two takes into a full mix:

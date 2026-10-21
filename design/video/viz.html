@@ -155,6 +155,11 @@
      (m007, m008): the name rises and fades in whole, like every other header, and the lockup leaves on the player's quick slide up.
      ---------- */
   SCENES.splash = { seconds: 4, build: function () {
+    // The splash is the wall since October 21, Noah's pick from the splash workshop, with the lockup a third bigger (below).
+    // ?splash=now plays the splash as round three left it (this scene's own code, from here on), ?splash=archive, fan,
+    // mosaic or giants the other concepts, and ?lockup=small a concept with the lockup at round three's size
+    var C0 = SCENES.splash.concepts, id0 = SCENES.splash.pick("splash") || "wall";
+    if (Object.prototype.hasOwnProperty.call(C0, id0)) return C0[id0](SCENES.splash.pick("lockup") !== "small");
     var B = window.PALIT_BRAND || {}, SPK = B.speakers || { Noah: "#d23c2a", Daeun: "#2fb3ad" }, INK = "#1d1d1f";
     var NS = "http://www.w3.org/2000/svg", LOGO = 340, k = LOGO / 114, SQ = 82 * k, OFF = 32 * k, GAP = 74, FS = 214;
     var svg = document.createElementNS(NS, "svg"); svg.setAttribute("width", "1920"); svg.setAttribute("height", "1080"); svg.setAttribute("viewBox", "0 0 1920 1080");
@@ -195,6 +200,246 @@
       riseLine(name, t, 0.84);
     };
   } };
+  /* ---------- The splash, one last look (October 21). Noah: “right now it feels kind of small. It feels very unimportant. ... I
+     want the palette to be kind of like a whole library, a whole world almost. Maybe like cards all over the screen, then 2 kind
+     of stand out and then come together to make the palette, the palette logo, and then the word kind of pops up.” Five concepts
+     for him to pick from, each as long as the splash (4 s) and each made of the longtime archive's own colors (all 1,802). Each
+     ends on the same lockup: Noah's red and Daeun's turquoise lock into the mark on the beat at 2 s (HIT: the house track's beat
+     at both ends of the film), drain to the logo's own black, and the name rises in beside it. ?splash=wall, archive, fan,
+     mosaic or giants picks one, on this page or on the player's (the splash workshop's links). They draw on one canvas, so a
+     thousand colors stay smooth. Noah picked the wall, with the lockup a third bigger (entry 287): “Love the wall. ... This is
+     good. Let's use this.” It's the film's splash at both ends now; the rest stay here for the record. ---------- */
+  SCENES.splash.pick = function (n) {
+    var v = q.get(n);
+    if (v === null) { try { if (window.parent !== window) v = new URLSearchParams(window.parent.location.search).get(n); } catch (e) {} }
+    return v;
+  };
+  SCENES.splash.concepts = (function () {
+    var INK = "#1d1d1f", LAB = {}, HIT = 2.0, SNAP = 0.7, SNAP0 = HIT - 0.8407 * SNAP;
+    // Björn Ottosson's sRGB to OKLab, for warm and cool, and for the fan's hue order
+    function lab(hex) {
+      if (LAB[hex]) return LAB[hex];
+      var c = [1, 3, 5].map(function (i) { var v = parseInt(hex.slice(i, i + 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      var l = Math.cbrt(0.4122214708 * c[0] + 0.5363325363 * c[1] + 0.0514459929 * c[2]), m = Math.cbrt(0.2119034982 * c[0] + 0.6806995451 * c[1] + 0.1073969566 * c[2]), s = Math.cbrt(0.0883024619 * c[0] + 0.2817188376 * c[1] + 0.6299787005 * c[2]);
+      return (LAB[hex] = [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s]);
+    }
+    function hueOf(hex) { var o = lab(hex); return (Math.atan2(o[2], o[1]) * 180 / Math.PI + 360) % 360; }
+    function chromaOf(hex) { var o = lab(hex); return Math.sqrt(o[1] * o[1] + o[2] * o[2]); }
+    // The longtime archive (v3's, made up on purpose), in the order it was kept
+    function archive() { var L = []; ((window.PALIT_LONGTIME || {}).months || []).forEach(function (m) { L = L.concat(m.hexes); }); return L; }
+    function lerp(a, b, x) { return a + (b - a) * x; }
+    function smoother(x) { x = clamp01(x); return x * x * x * (x * (x * 6 - 15) + 10); }
+    // The snap the two squares come together on: a 3% wind-up, then 3% past the mark at 84% of the way (the hit), then settled
+    function snap(x) { x = clamp01(x); var c2 = 0.6 * 1.525; return x < 0.5 ? (Math.pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2 : (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2; }
+    // The stage every concept shares: one canvas for the colors, the name in its mask over it, and the lockup they end on
+    function stage(big) {
+      var B = window.PALIT_BRAND || {}, SPK = B.speakers || { Noah: "#d23c2a", Daeun: "#2fb3ad" };
+      // the mark in whole pixels (342 or 456 across), so its edges are crisp at rest
+      var u = big ? 4 : 3, LOGO = 114 * u, SQ = 82 * u, OFF = 32 * u, GAP = Math.round(74 * LOGO / 340), FS = Math.round(214 * LOGO / 340);
+      var cv = document.createElement("canvas"); cv.width = 1920; cv.height = 1080; cv.style.cssText = "position:absolute;left:0;top:0;width:1920px;height:1080px"; F.appendChild(cv);
+      var g = cv.getContext("2d");
+      var mask = el("div", null, null, { position: "absolute", left: 0, top: 0, overflow: "hidden", padding: "0.04em 0.06em 0.14em 0", margin: "-0.04em 0 -0.14em", fontSize: FS + "px", lineHeight: "1", zIndex: 1, opacity: 1 });
+      var name = el("div", null, B.name || "Palit", { position: "relative", letterSpacing: "-0.05em", color: INK, whiteSpace: "nowrap", opacity: 0 }, mask);
+      var NW = name.offsetWidth || 330, X0 = (1920 - LOGO) / 2, Y0 = (1080 - LOGO) / 2, XL = Math.round((1920 - (LOGO + GAP + NW)) / 2);
+      // a square ({ x, y, s }) or a card ({ x, y, w, h }) around its center, turned r degrees, added to the path
+      function path(c) { var w = c.w || c.s, h = c.h || c.s; g.save(); g.translate(c.x, c.y); if (c.r) g.rotate(c.r * Math.PI / 180); g.rect(-w / 2, -h / 2, w, h); g.restore(); }
+      var S = { g: g, path: path, RED: SPK.Noah || "#d23c2a", TQ: SPK.Daeun || "#2fb3ad", LOGO: LOGO, SQ: SQ, OFF: OFF };
+      S.clear = function () { g.globalAlpha = 1; g.clearRect(0, 0, 1920, 1080); };
+      // where the mark's box is: alone in the middle, then making room for the name just after the hit
+      S.x = function (t) { return X0 + (XL - X0) * expoK(k01(t, HIT + 0.22, 0.62)); };
+      S.a = function (x) { return { x: x + OFF + SQ / 2, y: Y0 + SQ / 2, s: SQ }; };   // Noah's square, top right
+      S.b = function (x) { return { x: x + SQ / 2, y: Y0 + OFF + SQ / 2, s: SQ }; };   // Daeun's, bottom left
+      // the two squares with their overlap open, the way the logo's is (each is drawn only where the other isn't), and a soft
+      // shadow while they're lifted (only while they're apart)
+      S.pair = function (a, b, ca, cb, shadow, alpha) {
+        g.globalAlpha = alpha === undefined ? 1 : alpha;
+        if (shadow > 0.002) [[b, cb], [a, ca]].forEach(function (p) { g.save(); g.shadowColor = "rgba(0,0,0," + (0.2 * shadow).toFixed(3) + ")"; g.shadowBlur = 50; g.shadowOffsetY = 20; g.fillStyle = p[1]; g.beginPath(); path(p[0]); g.fill(); g.restore(); });
+        g.save(); g.beginPath(); path(a); path(b); g.clip("evenodd");
+        g.fillStyle = cb; g.beginPath(); path(b); g.fill();
+        g.fillStyle = ca; g.beginPath(); path(a); g.fill();
+        g.restore(); g.globalAlpha = 1;
+      };
+      // after the hit the colors drain to the logo's own black as the name rises in whole beside the mark (rules 9 and 13)
+      S.colors = function (t) { var k = soft(k01(t, HIT + 0.28, 0.42)); return [mixHex(S.RED, INK, k), mixHex(S.TQ, INK, k)]; };
+      S.name = function (t, x) {
+        mask.style.left = (x + LOGO + GAP).toFixed(1) + "px"; mask.style.top = (Y0 + (LOGO - FS) / 2 + FS * 0.02).toFixed(1) + "px";
+        riseLine(name, t, HIT + 0.32);
+      };
+      S.rest = function (t) { var x = S.x(t), col = S.colors(t); S.pair(S.a(x), S.b(x), col[0], col[1]); S.name(t, x); };
+      return S;
+    }
+
+    // The wall (Noah's own idea, and his pick): the archive fills the screen, two colors step out of it, and they become the
+    // mark. Noah, in the splash workshop: “the wall itself could be a little bit smaller, like we have so many colors on the
+    // screen. It's a little bit overwhelming. If we just dial down and zoom in a little bit more”, and then: “the grid could be
+    // even simpler - too much going on currently”. So it's 84 colors (it was 322, then 170), each card twice the workshop's
+    // size, taken evenly from across the four years; Noah's red and Daeun's turquoise sit opposite each other about the
+    // middle, up and to the right and down and to the left, where their squares are in the mark
+    function wall(big) {
+      var S = stage(big), g = S.g, A = archive(), P = 180, C = 155, COLS = 12, ROWS = 7, cells = [], pa, pb, MD = Math.sqrt(960 * 960 + 540 * 540);
+      var every = Math.max(1, Math.floor(A.length / (COLS * ROWS)));
+      for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
+        var x = (1920 - COLS * P) / 2 + P / 2 + c * P, y = (1080 - ROWS * P) / 2 + P / 2 + r * P;
+        var cl = { x: x, y: y, hex: A[((r * COLS + c) * every) % A.length], d: Math.sqrt((x - 960) * (x - 960) + (y - 540) * (y - 540)) / MD };
+        if (c === 7 && r === 2) pa = cl; else if (c === 4 && r === 4) pb = cl; else cells.push(cl);
+      }
+      return function (t) {
+        S.clear();
+        if (t >= SNAP0 + SNAP) { S.rest(t); return; }
+        // the wall comes up from the middle out, each card rising into place (rule 1), and settles back a touch as it does
+        var cam = 1 + 0.06 * (1 - expoK(k01(t, 0, 1.4))), dim = soft(k01(t, 1.1, 0.3)), s = C * cam;
+        function pos(cl) { var t0 = 0.42 * cl.d; return { x: 960 + (cl.x - 960) * cam, y: 540 + (cl.y - 540) * cam + (1 - expoK(k01(t, t0, 0.5))) * 22, o: soft(k01(t, t0, 0.3)) }; }
+        cells.forEach(function (cl) {
+          // once two have stepped out, the rest dims, then leaves, up and quicker, from the middle out
+          var p = pos(cl), out = inK(k01(t, 1.3 + 0.35 * cl.d, 0.34)), al = p.o * (1 - 0.88 * dim) * (1 - out);
+          if (al < 0.003) return;
+          g.globalAlpha = al; g.fillStyle = cl.hex; g.fillRect(p.x - s / 2, p.y - out * 24 - s / 2, s, s);
+        });
+        g.globalAlpha = 1;
+        var lift = springK(k01(t, 1.1, 0.6)), e = snap(k01(t, SNAP0, SNAP)), x = S.x(t), col = S.colors(t);
+        function step(cl, rest) {
+          var p = pos(cl), q2 = arcAt([p.x, p.y], [rest.x, rest.y], e, 0.16);
+          return { x: q2[0], y: q2[1], s: lerp(s * (1 + 0.4 * lift), rest.s, e), o: p.o };
+        }
+        var a = step(pa, S.a(x)), b = step(pb, S.b(x));
+        S.pair(a, b, col[0], col[1], lift * (1 - soft(k01(t, 1.55, 0.28))), a.o);
+        S.name(t, x);
+      };
+    }
+
+    // Into the archive: from inside Noah's red, the camera pulls back through all 1,802 colors, then pushes in on two of them as
+    // they come together (a log-space zoom, anchored on what it's looking at: rule 6)
+    function archiveIn(big) {
+      var S = stage(big), g = S.g, A = archive(), COLS = 60, ROWS = 30, P = 32, C = 28, cells = [], pa, pb;
+      var gx = (1920 - COLS * P) / 2 + P / 2, gy = (1080 - ROWS * P) / 2 + P / 2;
+      for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
+        var cl = { x: gx + c * P, y: gy + r * P, hex: A[(r * COLS + c) % A.length] };
+        if (c === 30 && r === 14) pa = cl; else if (c === 29 && r === 15) pb = cl; else cells.push(cl);
+      }
+      // the pair sit side by side on a diagonal at the archive's middle; at the end they're 82/28 of the camera's zoom apart
+      var cx = (pa.x + pb.x) / 2, cy = (pa.y + pb.y) / 2, Z0 = 72, Z1 = S.SQ / C, D0 = pa.x - cx, D1 = (S.OFF / 2) / Z1, IN = 1.42;
+      return function (t) {
+        S.clear();
+        if (t >= SNAP0 + SNAP) { S.rest(t); return; }
+        var x = S.x(t), col = S.colors(t), z, fx, fy;
+        // the camera: z, and the point of the archive in the middle of the frame
+        if (t < IN) { var o = smoother(k01(t, 0, 1.25)); z = Math.exp(Math.log(Z0) * (1 - o)); fx = pa.x - (lerp(960, pa.x, o) - 960) / z; fy = pa.y - (lerp(540, pa.y, o) - 540) / z; }
+        else { z = Math.exp(Math.log(Z1) * smoother(k01(t, IN, SNAP0 + SNAP - IN))); fx = cx; fy = cy; }
+        var fade = 1 - soft(k01(t, 1.6, 0.4)), s = C * z;
+        if (fade > 0.003) {
+          g.globalAlpha = fade;
+          cells.forEach(function (cl) {
+            var sx = 960 + (cl.x - fx) * z, sy = 540 + (cl.y - fy) * z;
+            if (sx + s / 2 < 0 || sx - s / 2 > 1920 || sy + s / 2 < 0 || sy - s / 2 > 1080) return;
+            g.fillStyle = cl.hex; g.fillRect(sx - s / 2, sy - s / 2, s, s);
+          });
+          g.globalAlpha = 1;
+        }
+        // the pair lift a little while the whole archive is in view, then slide together as the camera arrives
+        var e = snap(k01(t, SNAP0, SNAP)), lf = 1 + 0.3 * soft(k01(t, 1.18, 0.25)) * (1 - soft(k01(t, 1.5, 0.5))), d = lerp(D0, D1, e);
+        function sq(dx, dy) { return { x: 960 + (cx + dx - fx) * z, y: 540 + (cy + dy - fy) * z, s: s * lf }; }
+        S.pair(sq(d, -d), sq(-d, d), col[0], col[1], 0);
+        S.name(t, x);
+      };
+    }
+
+    // The fan: the archive fans open across the screen in hue order, the way v3's Spectrum fans it, each card above the one on
+    // its left; two cards are pulled from the deck, and the rest of it shuts and drops away
+    function fan(big) {
+      var S = stage(big), g = S.g, PV = [960, 1150], R0 = 280, R1 = 1040, CW = 220, N = 48, SPREAD = 70, red = hueOf(S.RED);
+      // from just past red all the way round to red, so Noah's red is the deck's top card, on the right
+      function key(h) { return (hueOf(h) - red + 360) % 360; }
+      var A = archive().filter(function (h) { return chromaOf(h) > 0.07; }).sort(function (p, q2) { return key(q2) - key(p); }), deck = [];
+      for (var i = 0; i < N - 2; i++) deck.push({ hex: A[Math.floor((i + 0.5) * A.length / (N - 2))] });
+      var kt = key(S.TQ), ti = deck.findIndex(function (c) { return key(c.hex) < kt; }), cb = { hex: S.TQ, pulled: true }, ca = { hex: S.RED, pulled: true };
+      deck.splice(ti < 0 ? deck.length : ti, 0, cb); deck.push(ca);
+      deck.forEach(function (c, j) { c.th = -SPREAD + 2 * SPREAD * j / (deck.length - 1); });
+      function card(th, out) { var a = th * Math.PI / 180, rm = (R0 + R1) / 2 + out; return { x: PV[0] + Math.sin(a) * rm, y: PV[1] - Math.cos(a) * rm, w: CW, h: R1 - R0, r: th }; }
+      return function (t) {
+        S.clear();
+        if (t >= SNAP0 + SNAP) { S.rest(t); return; }
+        var x = S.x(t), col = S.colors(t), lifted = t >= 1.05;
+        var open = expoK(k01(t, 0.06, 0.95)), o = soft(k01(t, 0, 0.18)), rise = (1 - expoK(k01(t, 0, 0.55))) * 80;
+        // once two are pulled, the rest of the deck folds a little as it sinks away
+        var dim = soft(k01(t, 1.05, 0.3)), shut = smoother(k01(t, 1.25, 0.42)), drop = inK(k01(t, 1.25, 0.42));
+        g.save(); g.shadowColor = "rgba(0,0,0,0.12)"; g.shadowBlur = 18;
+        deck.forEach(function (c) {
+          if (c.pulled && lifted) return;
+          var al = o * (c.pulled ? 1 : (1 - 0.7 * dim) * (1 - drop)); if (al < 0.003) return;
+          var q2 = card(c.th * open * (c.pulled ? 1 : 1 - 0.35 * shut), 0); q2.y += rise + (c.pulled ? 0 : drop * 420);
+          g.globalAlpha = al; g.fillStyle = c.hex; g.beginPath(); S.path(q2); g.fill();
+        });
+        g.restore(); g.globalAlpha = 1;
+        if (lifted) {
+          // the two, pulled out along their own line, then on to the mark, turning square as they go
+          var pull = expoK(k01(t, 1.05, 0.45)), e = snap(k01(t, SNAP0, SNAP)), sh = smoother(k01(t, 1.42, 0.5));
+          var step = function (c, rest) {
+            var f = card(c.th * open, 150 * pull), q2 = arcAt([f.x, f.y], [rest.x, rest.y], e, 0.12);
+            return { x: q2[0], y: q2[1], w: lerp(f.w, rest.s, sh), h: lerp(f.h, rest.s, sh), r: lerp(f.r, 0, e) };
+          };
+          S.pair(step(ca, S.a(x)), step(cb, S.b(x)), col[0], col[1], pull * (1 - soft(k01(t, 1.6, 0.25))));
+        }
+        S.name(t, x);
+      };
+    }
+
+    // Warm to cool: every color in a wall, warm toward the top right and cool toward the bottom left (Palit's own way of
+    // describing a color), folds into two squares, the warm one Noah's and the cool one Daeun's, and they come together
+    function mosaic(big) {
+      var S = stage(big), g = S.g, A = archive(), COLS = 40, ROWS = 20, P = 48, C = 40, N = 20, SB = 520, PB = SB / N, CB = PB - 4;
+      var BIG = [{ x: 1255, y: 335 }, { x: 665, y: 745 }], MD = Math.sqrt(960 * 960 + 540 * 540), slots = [], tiles = [];
+      var ranked = A.map(function (h) { var o = lab(h); return { hex: h, w: o[1] + o[2] }; }).sort(function (p, q2) { return q2.w - p.w; });
+      for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
+        var x = (1920 - COLS * P) / 2 + P / 2 + c * P, y = (1080 - ROWS * P) / 2 + P / 2 + r * P;
+        slots.push({ x: x, y: y, s: x / 1920 - y / 1080, d: Math.sqrt((x - 960) * (x - 960) + (y - 540) * (y - 540)) / MD });
+      }
+      slots.sort(function (p, q2) { return q2.s - p.s; });
+      [0, 1].forEach(function (k2) {
+        // the warmest colors in the top right corner, the coolest in the bottom left
+        var mine = k2 === 0 ? slots.slice(0, N * N) : slots.slice(N * N).reverse();
+        mine.forEach(function (sl, j) { sl.hex = (k2 === 0 ? ranked[j] : ranked[ranked.length - 1 - j]).hex; sl.k = k2; });
+        // each square takes its half of the wall in reading order, so the wall folds in without crossing itself
+        mine.slice().sort(function (p, q2) { return p.y - q2.y || p.x - q2.x; }).forEach(function (sl, j) { sl.i = j % N; sl.j = Math.floor(j / N); tiles.push(sl); });
+      });
+      return function (t) {
+        S.clear();
+        if (t >= SNAP0 + SNAP) { S.rest(t); return; }
+        var x = S.x(t), col = S.colors(t), e = snap(k01(t, SNAP0, SNAP)), rest = [S.a(x), S.b(x)], fuse = soft(k01(t, 1.5, 0.42));
+        var sqs = [0, 1].map(function (k2) { var sc = lerp(1, rest[k2].s / SB, e), q2 = arcAt([BIG[k2].x, BIG[k2].y], [rest[k2].x, rest[k2].y], e, 0.1); return { x: q2[0], y: q2[1], s: SB * sc, sc: sc }; });
+        // once the wall has folded in, the squares' overlap stays open as they meet, and each fills in under its tiles
+        var clip = t > 1.66;
+        if (clip) { g.save(); g.beginPath(); S.path(sqs[0]); S.path(sqs[1]); g.clip("evenodd"); }
+        if (fuse > 0) { g.globalAlpha = fuse; g.fillStyle = col[1]; g.beginPath(); S.path(sqs[1]); g.fill(); g.fillStyle = col[0]; g.beginPath(); S.path(sqs[0]); g.fill(); g.globalAlpha = 1; }
+        tiles.forEach(function (sl) {
+          var t0 = 0.42 * sl.d, o = soft(k01(t, t0, 0.3)), dy = (1 - expoK(k01(t, t0, 0.5))) * 22;
+          var f = easeIO(k01(t, 0.72 + 0.22 * sl.d, 0.7)), Q = sqs[sl.k], pb = PB * Q.sc;
+          var tx = Q.x + (sl.i - (N - 1) / 2) * pb, ty = Q.y + (sl.j - (N - 1) / 2) * pb, s = lerp(C, lerp(CB, PB, fuse) * Q.sc, f);
+          g.globalAlpha = o; g.fillStyle = fuse > 0 ? mixHex(sl.hex, col[sl.k], fuse) : sl.hex;
+          g.fillRect(lerp(sl.x, tx, f) - s / 2, lerp(sl.y + dy, ty, f) - s / 2, s, s);
+        });
+        g.globalAlpha = 1;
+        if (clip) g.restore();
+        S.name(t, x);
+      };
+    }
+
+    // Two giants: Noah's red and Daeun's turquoise, five times the mark's size, sweep in from their corners and fill the screen,
+    // their overlap open; then the camera pulls back to find the mark, landing a touch past it on the hit
+    function giants(big) {
+      var S = stage(big), Z0 = 5, PULL = 1.2, P0 = HIT - 0.8407 * PULL;
+      return function (t) {
+        S.clear();
+        var x = S.x(t), col = S.colors(t), a = S.a(x), b = S.b(x), cx = x + S.LOGO / 2, cy = 540;
+        // (while they hold the screen, the camera eases back a little, so the frame never sits still)
+        var zd = Z0 * (1.12 - 0.12 * smoother(k01(t, 0.1, 1.2)));
+        var z = Math.exp(Math.log(zd) * (1 - snap(k01(t, P0, PULL)))), ia = expoK(k01(t, 0, 0.6)), ib = expoK(k01(t, 0.12, 0.6));
+        function huge(c, dx, dy, i) { return { x: cx + (c.x - cx) * z + dx * (1 - i), y: cy + (c.y - cy) * z + dy * (1 - i), s: c.s * z }; }
+        S.pair(huge(a, 1500, -1500, ia), huge(b, -1500, 1500, ib), col[0], col[1], 0);
+        S.name(t, x);
+      };
+    }
+    return { wall: wall, archive: archiveIn, fan: fan, mosaic: mosaic, giants: giants };
+  })();
   function k01(t, t0, d) { return Math.max(0, Math.min(1, (t - t0) / (d || 0.4))); }
 
   /* ---------- The motion kit (entries 225 to 229), for the scenes Noah has reviewed: words and lines rise from behind their
@@ -256,6 +501,13 @@
   // directions so we keep it new every single time”): in turn bottom right, top left, bottom left, top right. The player says
   // where this scene's first highlight comes from (?hl=, counting the statements before it), and each one after takes the next.
   var HLDIR = q.get("hl") !== null && isFinite(Number(q.get("hl"))) ? Number(q.get("hl")) : 1;
+  // The film's sounds (entry 285): a press is reported to the player as the playback crosses it, going forward frame by frame
+  // (not on a jump); t is the caller's own time, at the press's
+  var PREV = -1, SAID = {};
+  function cue(kind, at, t) {
+    var dt = T - PREV; if (PREV < 0 || !(dt > 0) || dt > 0.25 || SAID[kind + at]) return;
+    if (t - dt < at && at <= t) { SAID[kind + at] = 1; try { if (window.parent !== window && window.parent.PalitSfx) window.parent.PalitSfx(kind, at - t); } catch (e) {} }
+  }
   function selector(word, color) {
     var dir = (HLDIR++) % 4, up = dir === 1 || dir === 3, left = dir === 1 || dir === 2;
     word.style.position = "relative"; word.style.display = "inline-block"; word.style.isolation = "isolate";
@@ -269,6 +521,7 @@
       var wx = (r.left - fr.left) / sc, wy = (r.top - fr.top) / sc, ww = r.width / sc, wh = r.height / sc;
       var A = [left ? wx - 320 : wx + ww + 300, up ? wy - 220 : wy + wh + 160], B = [wx - 6, wy + wh * 0.56], C = [wx + ww + 4, wy + wh * 0.56], D = [wx + ww + 200, up ? wy - 160 : wy + wh + 150];
       var pos = A, op = 0, drag = 0;
+      cue("click", t0 + 0.6, t);   // the press, as the drag begins (the sound kit's rule 1)
       if (t < t0) { op = 0; }
       else if (t < t0 + 0.46) { pos = arcAt(A, B, easeIO((t - t0) / 0.46), 0.15); op = soft((t - t0) / 0.18); }
       else if (t < t0 + 0.6) { pos = B; op = 1; }   // a beat before the press
@@ -1014,7 +1267,7 @@
       }
       ptr.style.opacity = String(soft((t - tin) / 0.22) * (1 - soft((t - tout) / 0.35)));
       ptr.style.transform = "translate(" + (pos[0] - 6).toFixed(1) + "px," + (pos[1] - 6).toFixed(1) + "px)";
-      var ck = null; P.forEach(function (p) { if (p[3] && t >= p[0] + 0.12 && t < p[0] + 0.62) ck = p; });
+      var ck = null; P.forEach(function (p) { if (p[3]) cue("click", p[0] + 0.12, t); if (p[3] && t >= p[0] + 0.12 && t < p[0] + 0.62) ck = p; });
       if (ck) { var x = clamp01((t - ck[0] - 0.12) / 0.5); ring.style.opacity = String(0.85 * (1 - x)); ring.style.transform = "translate(" + ck[1].toFixed(1) + "px," + ck[2].toFixed(1) + "px) scale(" + (0.45 + 0.75 * x).toFixed(3) + ")"; }
       else ring.style.opacity = "0";
       return true;
@@ -1513,7 +1766,7 @@
     }
     function ring(color) { return el("div", "a", null, { left: 0, top: 0, width: 60, height: 60, borderRadius: "50%", boxShadow: "0 0 0 3px " + color, zIndex: 8 }); }
     function press(r, t, list) {
-      var at = null; list.forEach(function (p) { if (t >= p[0]) at = p; });
+      var at = null; list.forEach(function (p) { cue("click", p[0], t); if (t >= p[0]) at = p; });
       var u = at ? clamp01((t - at[0]) / 0.45) : 1;
       r.style.opacity = u < 1 ? String(1 - u) : "0";
       if (at) r.style.transform = "translate(" + (at[1] - 30).toFixed(1) + "px," + (at[2] - 30).toFixed(1) + "px) scale(" + (0.4 + u).toFixed(3) + ")";
@@ -2247,7 +2500,7 @@
   addEventListener("resize", fit); fit();
   var T = Number(q.get("t")) || 0;
   update(T);
-  window.PalitViz = { render: function (t) { T = t; update(t); }, seconds: S.seconds, scenes: Object.keys(SCENES) };
+  window.PalitViz = { render: function (t) { PREV = T; T = t; SAID = {}; update(t); }, seconds: S.seconds, scenes: Object.keys(SCENES) };
   if (q.has("play")) { var t0 = performance.now() - T * 1000; (function loop(now) { update((now - t0) / 1000); if ((now - t0) / 1000 < S.seconds + 1) requestAnimationFrame(loop); })(performance.now()); }
 })();
 </script>

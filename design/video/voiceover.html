@@ -55,7 +55,7 @@
     <li>Hold the phone a hand's width from your mouth, a little to one side, and keep it there.</li>
     <li>Start each recording with three seconds of silence. The cleaner learns the room from it.</li>
     <li>Say each line two or three times, with a breath between takes.</li>
-    <li>Save one file per line, named by its id (for example, brief-1), and send them to Noah.</li>
+    <li id="send">Save one file per line, named by its id (for example, brief-1), and send them to Noah.</li>
     <li>Play the guide as you read: it shows each line under the picture as it plays in the film. Say it at your own pace. The picture is re-timed to your takes.</li>
   </ol>
   <div id="lines"></div>
@@ -89,6 +89,7 @@
   all.forEach(function (k) { var key = k.filmed ? "filmed" : k.who; tally[key] = tally[key] || { lines: 0, words: 0 }; tally[key].lines++; tally[key].words += words(k.text); });
   var when = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   if (WHO) $("guide").href = "player.html?prompter&who=" + encodeURIComponent(WHO);
+  if (WHO === "Noah") $("send").textContent = "Save one file per line, named by its id (for example, brief-2), in design/video/audio/voice/takes/.";
   if (WHO) {
     $("title").textContent = WHO + "'s lines";
     document.title = "Palit voiceover, " + WHO;

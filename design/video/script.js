@@ -44,7 +44,7 @@ window.PALIT_SCRIPT = {
     { k: "Music", v: ["“Miami Vice” by JVD", "“Can't Get You Off My Mind” by Michael Ramir C., via Mixkit", "“Jungle Voices” by Diego Nava, via Mixkit", "“Atoms in Peace” by Alejandro Magaña (A. M.), via Mixkit"] },
     { k: "Pictures", v: ["Wikipedia, “Crocoite” (CC BY-SA 4.0)", "“Crocoite from the Dundas extended mine, Dundas, Tasmania, Australia” by JJ Harrison, CC BY-SA 2.5, via Wikimedia Commons", "Wikipedia, “Brownstone” (CC BY-SA 4.0)", "“Harlem, New York brownstones” by Paul Lowry, CC BY 4.0, via Wikimedia Commons", "Wallpaper: macOS iMac Silver", "Eight references from our boards, as we saved them; two still credit their source: francofrontera.com, on SOUND, and The Dieline, on Ravex", "Sip's home page (sipapp.io), captured October 19, 2026, © Sip"] },
     { k: "Research", v: ["Koch et al., DRS 2018", "Doshi & Hauser, Science Advances, 2024", "Stoner, Loken & Stadler Blank, Journal of Consumer Psychology, 2018", "Bertsch et al., 2007", "Carroll & Rosson, 1987", "Whittaker et al., 2011", "Bae et al., Journal of Experimental Psychology: General, 2015", "Xin, Lam & Luo, Color Research & Application, 2004"] },
-    { k: "Thanks", v: ["Naheel and SVSD", "Kaya Sasaki", "Ricky Yurewitch", "Carmelle Safdie", "Mike Essl", "The Cooper Union"] }
+    { k: "Thanks", v: ["Naheel and SVSD", "Kaya Sasaki", "Ricky Yurewitch", "Carmelle Safdie", "Mike Essl", "Ishaan Kansal, DoorDash", "Johanna Pendley, Clay", "The Cooper Union"] }
   ],
   // Noah's thanks, word for word, on white before the credits roll (entry 191)
   thanks: "Thanks to supporters and the people involved in the planning and build of this project.",
@@ -55,7 +55,7 @@ window.PALIT_SCRIPT = {
   // just before the downbeat, where the phrase repeats most alike): 1:45.2 long, fading out 2.4 s before deep dive 2's statement.
   // The original is kept beside it (audio/jungle-voices.mp3). From deep dive 2's statement to the outro plays the track after it
   // (after, below). Morning Garden, the calm track before it (entries 194 and 212), is kept as audio/calm.mp3.
-  calm: { src: "audio/jungle-voices-extended.mp3", title: "Jungle Voices", by: "Diego Nava", source: "https://assets.mixkit.co/music/517/517.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.3, duck: 0.5, length: 105.21,
+  calm: { src: "audio/jungle-voices-extended.mp3", title: "Jungle Voices", by: "Diego Nava", source: "https://assets.mixkit.co/music/517/517.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.3, duck: 0.38, length: 105.21,
     plan: [{ from: "dive1", to: "dive2" }] },
   // The track after Jungle Voices, from deep dive 2's statement to the outro (3:13, under deep dives 2 and 3 and the horizon).
   // Noah, October 21: “I hope that Jungle Voices can kind of stretch that far. If it can't, please let me know, and then we can
@@ -63,16 +63,16 @@ window.PALIT_SCRIPT = {
   // by Alejandro Magaña (A. M.), from Mixkit (3:47, about 96 BPM, -11.1 LUFS, so 0.26 plays it as loud as Jungle Voices at 0.3).
   // Then: “I've gone back and watched form where jungle voices kicks in, and I'm feeling slightly off about it. Lets revisit
   // music after we have our audio files in”. So all of the music here stands until the voiceover is in.
-  after: { src: "audio/atoms-in-peace.mp3", title: "Atoms in Peace", by: "Alejandro Magaña (A. M.)", source: "https://assets.mixkit.co/music/107/107.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.26, duck: 0.5, length: 226.85,
+  after: { src: "audio/atoms-in-peace.mp3", title: "Atoms in Peace", by: "Alejandro Magaña (A. M.)", source: "https://assets.mixkit.co/music/107/107.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.26, duck: 0.39, length: 226.85,
     plan: [{ from: "dive2", to: "outro" }] },
   // The demo's track (the music workshop, October 21, entry 274): Noah's pick, “Can't Get You Off My Mind” by Michael Ramir C.,
   // from Mixkit (1:31, -13.7 LUFS), from the demo's statement for the length of the track: its soft start sits under “What does
   // Palit look like?” and the first keeps, the beat drops 25 s in, and it ends on its own 0.7 s into How we worked. It takes the
   // place of A. G. Cook's “Idyll” (Noah: “I actually think we might have to abandon Idol by A.G. Cook for the other songs, because
   // they go very well with what we're looking for.”). His note on how it dips under the lines is for the mix (docs/12).
-  lift: { src: "audio/cant-get-you-off-my-mind.mp3", title: "Can't Get You Off My Mind", by: "Michael Ramir C.", source: "https://assets.mixkit.co/music/1210/1210.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.3, duck: 0.3, length: 90.65,
+  lift: { src: "audio/cant-get-you-off-my-mind.mp3", title: "Can't Get You Off My Mind", by: "Michael Ramir C.", source: "https://assets.mixkit.co/music/1210/1210.mp3", license: "Mixkit Stock Music Free License, no attribution required, credited anyway", level: 0.3, duck: 0.46, length: 90.65,
     plan: [{ from: "demo", length: "track" }] },
-  music: { src: "audio/miami-vice-jvd.mp3", title: "Miami Vice", by: "JVD", source: "https://prodbyjvd.beatstars.com/beat/miami-vice-24161567", license: "Free for non-profit use, credited at the end (Noah)", level: 0.3, duck: 0.3, length: 132.05,
+  music: { src: "audio/miami-vice-jvd.mp3", title: "Miami Vice", by: "JVD", source: "https://prodbyjvd.beatstars.com/beat/miami-vice-24161567", license: "Free for non-profit use, credited at the end (Noah)", level: 0.3, duck: 0.36, length: 132.05,
     // From the top to the track's own end (2:12), and from the outro to the end, starting the beat again
     // fadeOut: the music fades over the last seconds of the run, as the credits go to black (Noah, October 19)
     plan: [{ from: "start", length: "track" }, { from: "outro", to: "end", fadeOut: 1.8 }] },
@@ -150,16 +150,18 @@ window.PALIT_SCRIPT = {
       // fading in as whole squares, then have a subtraction effect as they begin to touch and merge? After all, the logo is supposed
       // to be two color cards coming together. ... Maybe it slides out from the icon? ... the splash should be fun and witty. The logo
       // itself could be bigger compared to the text.” (entry 226)
+      // Noah, October 21, in the splash workshop: “Love the wall. ... This is good. Let's use this.” (entry 287): the wall, with
+      // fewer colors, a closer zoom and the lockup a third bigger, locking on the beat at 2 s; the same 4 s, so the line stays
       id: "splash", viz: "splash", part: "motion", title: "Palit", seconds: 4, motion: "kit",
-      scene: { status: "ready", href: "viz.html?scene=splash&play", label: "Palit's splash: two color cards come together, their overlap cut away, and the name slides out of the mark" },
-      screen: "Pure white. Two squares, Noah's red and Daeun's turquoise, pop in whole and snap together; where they overlap, the white cuts through, the way the logo's does. As they lock, their colors drain to the logo's own black, and the name is dealt out of the mark a letter at a time, farthest first, each one straightening as it lands. The mark is bigger than the name (round two, entry 235).",
+      scene: { status: "ready", href: "viz.html?scene=splash&play", label: "Palit's splash: the archive fills the screen, two colors step out of it, and they become the mark" },
+      screen: "The archive fills the screen, 84 of its colors rising in from the middle out. Noah's red and Daeun's turquoise step out of the wall, the rest dims and leaves from the middle out, and the two come together as the mark, their overlap open, locking on the beat at 2 seconds. Their colors drain to the logo's own black as the name rises in beside the mark, the lockup a third bigger than before (entry 287).",
       text: ["Palit"],
       note: "Noah, October 19: “There should be a splash screen for Palit when I say \"Palit\" to introduce it”. It lands right after “this is Palit.” The line under the name is Claude's draft, and the mark is brand.js's, so Daeun's logo drops in. The line below is from Noah's note on the script page: “I'll say something like \"Let's begin with the premise\".”",
-      beats: [{ at: 0, label: "Two cards come together" }, { at: 1.25, label: "The name" }],
+      beats: [{ at: 0, label: "The wall" }, { at: 1.1, label: "Two step out" }, { at: 2.0, label: "The mark and the name" }],
       lines: [
         { id: "splash-1", at: 2.6, who: "Noah", text: "Let's begin with the premise." }
       ],
-      refs: [203]
+      refs: [203, 287]
     },
     {
       id: "brief", motion: "kit", statement: { text: "Naheel's Brief", word: "Brief", color: "#2e6b6f", seconds: 3 }, viz: "brief", part: "motion", title: "The brief", start: 20, seconds: 15,
@@ -187,17 +189,17 @@ window.PALIT_SCRIPT = {
       text: ["33 of 51 designers save inspiration; designers distrust sources that are poorly documented (Koch et al., DRS 2018)", "Only 2 of 8 references on our boards led back to the work", "With AI suggestions, stories got more creative, but more alike (Doshi & Hauser, Science Advances, 2024)", "From our boards: what Palit's cards borrow (Pantone's chips, specimen cards)", "Pantone sells consistency. Palit sells ownership.", "You find every color before you use it."],
       beats: [{ at: 0, label: "33 of 51 designers" }, { at: 12, label: "2 of 8 references" }, { at: 22, label: "More creative, but more alike" }, { at: 32, label: "Our references, Pantone and Palit" }],
       lines: [
-        { id: "problem-1", at: 0, who: "Noah", text: "Designers collect color. Its a known fact. But, in one survey, 33 of 51 designers saved inspiration, yet distrusted sources that were poorly documented. Designer peers of mine have told me that they rely on screenshots for palettes, of which they lose all the time." },
+        { id: "problem-1", at: 0, who: "Noah", text: "Designers collect color. It's a known fact. But, in one survey, 33 of 51 designers saved inspiration, yet distrusted sources that were poorly documented. Designer peers of mine have told me that they rely on screenshots for palettes, which they lose all the time.", was: ["Designers collect color. Its a known fact. But, in one survey, 33 of 51 designers saved inspiration, yet distrusted sources that were poorly documented. Designer peers of mine have told me that they rely on screenshots for palettes, of which they lose all the time."] },
         // Claude's draft, round two (m014, Noah: “What does it mean that the two lead back to the work? Can we simplify the language,
         // and make sure the messaging values authenticity and ties directly to our goal?”): what the two have that the six lost is
         // credit, where each came from; that's the story Palit keeps. was: the texts this replaces, so an edit saved with one of
         // them gives way to the draft (palitFresh)
-        { id: "problem-2", at: 12, who: "Noah", text: "We traced the eight references on our own boards. Only two still credit where they came from. The other six had lost their story.", was: ["Of eight references on our own boards, only two point to a page about the work. The rest are image files, a repost, or nothing at all.", "We traced eight references from our own mood boards back to their source. Only two led to the original work. The other six were dead ends."] },
-        { id: "problem-3", at: 22, who: "Daeun", text: "And, tools now pick colors for you. In one study, AI suggestions made people's stories a little more creative, but much more alike." },
+        { id: "problem-2", at: 12, who: "Noah", text: "We traced the eight references on our own mood boards. Only two still credit where they came from. The other six had lost their story.", was: ["We traced the eight references on our own boards. Only two still credit where they came from. The other six had lost their story.", "Of eight references on our own boards, only two point to a page about the work. The rest are image files, a repost, or nothing at all.", "We traced eight references from our own mood boards back to their source. Only two led to the original work. The other six were dead ends."] },
+        { id: "problem-3", at: 22, who: "Noah", text: "And, tools now pick colors for you. In one study, AI suggestions made people's stories a little more creative, but much more alike." },
         // Claude's draft (m016, Noah: “We need to acknowledge our references, such as pantone, specimen cards, and why.”), from
         // Noah's own reason for the cards (entry 12, October 16: “charming, collectible, touchable. The paper should set off the color.”)
         { id: "problem-refs", at: 32, who: "Daeun", text: "Our cards borrow from two references on our boards: Pantone's chips, and mineral specimen cards. Collectible, touchable, with the paper setting off the color." },
-        { id: "problem-4", at: 38, who: "Noah", text: "Just as Pantone sells consistency. Palit sells ownership over the journey: there is no palette generator. You find every color before you use it, and it's yours in your own way." }
+        { id: "problem-4", at: 38, who: "Noah", text: "Just as Pantone sells consistency. Palit sells ownership over the journey: there is no palette generator. You find every color before you use it, and it's yours in your own unique way.", was: ["Just as Pantone sells consistency. Palit sells ownership over the journey: there is no palette generator. You find every color before you use it, and it's yours in your own way."] }
       ],
       research: [{ kind: "study", label: "Koch et al., DRS 2018: 33 of 51 designers save inspiration" }, { kind: "ours", label: "Noah's 8 references, traced: 2 point to a page about the work" }, { kind: "study", label: "Doshi & Hauser, Science Advances, 2024: more creative, and more alike" }],
       refs: [123, 125, 177]
@@ -242,8 +244,8 @@ window.PALIT_SCRIPT = {
         { id: "demo-3", at: 22, who: "Noah", text: "You can right click to name it as you keep, or hold Shift to keep a collection." },
         { id: "demo-4", at: 32, who: "Noah", text: "When you open the dashboard, you are met with your picks of that day, every place you looked, and what you kept from there." },
         { id: "demo-5", at: 42, who: "Noah", text: "Zoom out for only color. Zoom in, and the story comes back." },
-        { id: "demo-6", at: 49, who: "Daeun", text: "The spectrum presents everything you've ever found, by hue. You can click a name to change it." },
-        { id: "demo-7", at: 58, who: "Daeun", text: "Open a color, and its a specimen: where it came from, your name for it, and a scratch pad to write down anything that offers context." },
+        { id: "demo-6", at: 49, who: "Daeun", text: "The spectrum presents everything you've ever found, by hue. You can click on a name to change it.", was: ["The spectrum presents everything you've ever found, by hue. You can click a name to change it."] },
+        { id: "demo-7", at: 58, who: "Daeun", text: "Open a color, and it's a specimen: where it came from, your name for it, and a scratch pad to write down anything that offers context.", was: ["Open a color, and its a specimen: where it came from, your name for it, and a scratch pad to write down anything that offers context."] },
         { id: "demo-8", at: 68, who: "Noah", text: "You can bring colors to the table, try them together, and keep what works as a palette." },
         { id: "demo-9", at: 76, who: "Noah", text: "Share it with codes, or float your palette pinned right beside your work." }
       ],
@@ -257,7 +259,7 @@ window.PALIT_SCRIPT = {
       text: ["6 workshops", "23 competitors", "67 research findings", "Over 170 decisions, each with its reason"],
       beats: [{ at: 0, label: "Every decision, day by day" }],
       lines: [
-        { id: "process-1", who: "Noah", text: "Every step was a decision we can trace, hosted on a dashboard designed by us: six workshops, 23 competitors, 67 research findings, and over 170 decisions, big and small, logged as we went, with the reasoning for each. Filed. We wanted to design exactly the same way we'd use palette - collecting our journey to inform our choices." }
+        { id: "process-1", who: "Noah", text: "Every step was a decision we can trace, hosted on a dashboard designed by us: six workshops, 23 competitors, 67 research findings, and over 170 decisions, big and small, logged as we went, with reasoning for each. We wanted to design exactly the same way we'd use palette - collecting our journey to inform our choices.", was: ["Every step was a decision we can trace, hosted on a dashboard designed by us: six workshops, 23 competitors, 67 research findings, and over 170 decisions, big and small, logged as we went, with the reasoning for each. Filed. We wanted to design exactly the same way we'd use palette - collecting our journey to inform our choices."] }
       ],
       research: [{ kind: "ours", label: "The decision log, every entry with its reason" }, { kind: "tools", label: "23 competitors, reviewed" }, { kind: "ours", label: "67 research findings, each with its source" }],
       refs: [74]
@@ -275,21 +277,21 @@ window.PALIT_SCRIPT = {
       beats: [{ at: 0, label: "The question, over our lo-fi sheets" }, { at: 5.45, label: "Twelve sheets, and the expressive pass" }, { at: 15.19, label: "Flow by flow, idea by idea" }, { at: 24.92, label: "From the ground up" }, { at: 31.44, label: "Sip asks for a format" }, { at: 39.04, label: "1 of 11 pickers" }, { at: 45.56, label: "Neutral everywhere" }, { at: 51.72, label: "The hardest question, up to 8 times" }, { at: 63.96, label: "Pure white, and a place to judge" }, { at: 71.91, label: "Why pure white" }, { at: 78.36, label: "Then we cut: v1 to v3" }, { at: 90.59, label: "What we lost" }],
       lines: [
         { id: "dive1-1", at: 0, who: "Daeun", text: "How do you design a palette for a tool whose whole job is color?" },
-        { id: "dive1-g1", at: 5.45, who: "Daeun", text: "We started lo-fi: twelve sheets on the first day. None of them caught our eye, but the cards that let the color take the room did." },
+        { id: "dive1-g1", at: 5.45, who: "Daeun", text: "We started lo-fi with twelve sheets on the first day. None of them caught our eye, but the cards that let the color take the room did.", was: ["We started lo-fi: twelve sheets on the first day. None of them caught our eye, but the cards that let the color take the room did."] },
         // “on our boards” stays (Noah, October 21: “let's keep on our boards, even if the Albers Lab came from the Albers' book, because
         // it was an executive decision we made after reviewing kind of what features we could kind of fix”)
-        { id: "dive1-g2", at: 15.19, who: "Noah", text: "So we went flow by flow, then idea by idea: a specimen card, a fan deck, an Albers lab, each from a reference on our boards." },
-        { id: "dive1-g3", at: 24.92, who: "Noah", text: "Then we started again from the ground up, so there's strong research and reasoning behind every step." },
-        { id: "dive1-2", at: 31.44, who: "Daeun", text: "Sip, the closest tool, is built for handoff: it asks which format you need. Palit asks where you found it." },
+        { id: "dive1-g2", at: 15.19, who: "Noah", text: "So we went flow by flow, then idea by idea: a specimen card, a fan deck, an Albers lab, each from a reference on our mood boards.", was: ["So we went flow by flow, then idea by idea: a specimen card, a fan deck, an Albers lab, each from a reference on our boards."] },
+        { id: "dive1-g3", at: 24.92, who: "Noah", text: "Then we started again from the ground up, so there is strong research and reasoning behind every step.", was: ["Then we started again from the ground up, so there's strong research and reasoning behind every step."] },
+        { id: "dive1-2", at: 31.44, who: "Daeun", text: "Sip, the closest tool, is built for handoff, and asks which format you need. Palit asks where you found it.", was: ["Sip, the closest tool, is built for handoff: it asks which format you need. Palit asks where you found it."] },
         { id: "dive1-3", at: 39.04, who: "Daeun", text: "Of eleven color pickers we studied, only one keeps any trace of where a color came from." },
-        { id: "dive1-4", at: 45.56, who: "Noah", text: "We went neutral everywhere, with no accent color. The colors you keep are the only color." },
-        { id: "dive1-5", at: 51.72, who: "Noah", text: "Then the hardest question: what surface shows a color as it is? None does. Change only the gray behind two colors, and how different they look can change by up to eight times." },
+        { id: "dive1-4", at: 45.56, who: "Noah", text: "We went neutral everywhere, with no accent color. The colors you keep are the only color visible.", was: ["We went neutral everywhere, with no accent color. The colors you keep are the only color."] },
+        { id: "dive1-5", at: 51.72, who: "Noah", text: "Then the hardest question we tackled: what surface shows a color as it is? That's a trick question, as none does. Change only the gray behind two colors, and how different they look can change by up to eight times.", was: ["Then the hardest question: what surface shows a color as it is? None does. Change only the gray behind two colors, and how different they look can change by up to eight times."] },
         { id: "dive1-6", at: 63.96, who: "Daeun", text: "We kept pure white, and gave judging its own place: every palette shows each color on white, mid gray and black." },
         // No line here (Noah, October 21: “going with pure white, I think it's self-explanatory. It's just standard. We don't have to
         // change anything there. Looks fine.”): the scene holds six seconds on the palette study, and nothing in brackets shows on screen
         { id: "dive1-7", at: 71.91, who: "Noah", text: "[No line: the palette study holds, and pure white speaks for itself]", was: ["[Noah: why pure white beat the grays, in your words]"] },
         { id: "dive1-8", at: 78.36, who: "Noah", text: "Then we cut: numbers off the tiles, filters down to seven letters, names onto the colors. When the window crowded again, we took away almost half its controls. Nothing distracts from the color." },
-        { id: "dive1-9", at: 90.59, who: "Noah", text: "Along the way we lost the chip, the capture card and a serif for your names. A sound says a color is kept, cards live in the archive, and the serif didn't feel like the same tool." }
+        { id: "dive1-9", at: 90.59, who: "Noah", text: "So, along the way, we lost the chip, the capture card and a serif for your names. Instead, a sound says a color is kept, cards live in the archive, and the serif didn't feel like the same tool, so we replaced it with the original font.", was: ["Along the way we lost the chip, the capture card and a serif for your names. A sound says a color is kept, cards live in the archive, and the serif didn't feel like the same tool."] }
       ],
       research: [{ kind: "tools", label: "11 color pickers: only Pick keeps any trace of where a color came from" }, { kind: "study", label: "Xin, Lam & Luo, Color Research & Application, 2004: up to 8 times, for 38 gray pairs" }, { kind: "ours", label: "Measured on Days, the v3 workshop's way, on the real screens: 29 to 16 controls, 61 to 23 words" }, { kind: "ours", label: "v3's chrome, from its own styles: white, ink, one gray and a lighter gray" }],
       refs: [9, 11, 15, 16, 27, 47, 58, 79, 80, 84, 87, 88, 95, 135, 155, 156, 157, 159, 206, 216, 217]
@@ -315,9 +317,9 @@ window.PALIT_SCRIPT = {
         { id: "users-d1", ins: 0, at: 16, who: "Daeun", text: "Our first archive opened on a single line: “Nothing under this letter yet.” It felt empty, and it didn't say why." },
         { id: "users-2", at: 0.1, who: "Noah", text: "New users skip the manual and start working. So day one is an empty window that says why, and one keystroke starts the first hunt. Your first color becomes number one." },
         { id: "users-w1", ins: 1, at: 1.8, who: "Daeun", text: "Naming started as a form: a stack of colors to name one at a time. Then we drew three cards, and your name became the hero." },
-        { id: "users-3", at: 11.7, who: "Noah", text: "A few weeks in, the colors become yours. You name them, and in three studies, people who named something valued it more; what you come up with yourself, you remember better. Pin a palette to your desktop, and a project stays consistent." },
+        { id: "users-3", at: 11.7, who: "Noah", text: "A few weeks in, and the colors become yours. You name them, and in three studies, users who named belongings valued them more; what you come up with yourself, you remember better. Pin a palette to your desktop, and a project stays consistent.", was: ["A few weeks in, the colors become yours. You name them, and in three studies, people who named something valued it more; what you come up with yourself, you remember better. Pin a palette to your desktop, and a project stays consistent."] },
         { id: "users-y1", ins: 2, at: 1.8, who: "Daeun", text: "For years of colors, we first tried a list, newest last, and a wall of everything. Both only get longer." },
-        { id: "users-4", at: 27.2, who: "Noah", text: "Years in, it's about finding them again. People find things by searching and by time, not folders, so Palit keeps days, and searches by name, place or code. And once your colors fill a full circle, Spectrum never ends." }
+        { id: "users-4", at: 27.2, who: "Noah", text: "Years in, it's about finding them all over again. People find things by searching and by time, not folders, so Palit keeps days, and searches by name, place or code. And once your colors fill a full circle, the spectrum never ends.", was: ["Years in, it's about finding them again. People find things by searching and by time, not folders, so Palit keeps days, and searches by name, place or code. And once your colors fill a full circle, Spectrum never ends."] }
       ],
       research: [{ kind: "study", label: "Carroll & Rosson, 1987: new users skip the manual" }, { kind: "study", label: "Stoner, Loken & Stadler Blank, 2018: naming something makes it feel more yours" }, { kind: "study", label: "Bertsch et al., 2007: what you come up with, you remember better (86 studies)" }, { kind: "study", label: "Whittaker et al., 2011: search and time beat folders (345 people)" }, { kind: "ours", label: "Three users: day one, a few weeks in, years in (D25)" }],
       refs: [15, 16, 96, 97, 99, 120, 129, 166, 85, 81, 131, 167, 206, 255]
@@ -338,8 +340,8 @@ window.PALIT_SCRIPT = {
       lines: [
         { id: "dive3-1", at: 0, who: "Daeun", text: "Memory alone can't hold a color: a color you remember drifts toward the middle of its category. So Palit keeps the exact color, and its story." },
         { id: "dive3-2", at: 9.74, who: "Noah", text: "The brief asked for storytelling, and our first archive hid the story one click deep. Before you clicked, you saw two of the nine things Palit keeps about a color." },
-        { id: "dive3-c1", at: 20.9, who: "Noah", text: "A designer friend told us it was visually cluttered. Why were we adding so many clicks? Why couldn't you see what matters as it appears?" },
-        { id: "dive3-c2", at: 30.28, who: "Noah", text: "So we went back to our redesign from the ground up: our roughest lo-fi sheets, then the research behind them." },
+        { id: "dive3-c1", at: 20.9, who: "Noah", text: "A designer colleague told us that it was visually cluttered. Why were we adding so many clicks? Why couldn't we see what mattered as they appeared?", was: ["A designer friend told us it was visually cluttered. Why were we adding so many clicks? Why couldn't you see what matters as it appears?"] },
+        { id: "dive3-c2", at: 30.28, who: "Noah", text: "So we engineered a solution. We went back to our redesign from the ground up: our roughest lo-fi sheets, then the research behind them.", was: ["So we went back to our redesign from the ground up: our roughest lo-fi sheets, then the research behind them."] },
         { id: "dive3-3", at: 37.87, who: "Daeun", text: "We tried three ways to bring it forward: an archive of places, a ruled catalogue after a color book from 1821, and days, each with its places." },
         { id: "dive3-4", at: 47.96, who: "Noah", text: "We chose days with their places. It reads like a diary of where your eye went." },
         { id: "dive3-5", at: 54.13, who: "Noah", text: "And the zoom became a dial for the story: only color, then your names, then where, then the whole hunt. From any color, you can keep following the trail." }
@@ -362,8 +364,8 @@ window.PALIT_SCRIPT = {
       beats: [{ at: 0, label: "A Palit MCP" }, { at: 5.9, label: "It reads your palette" }, { at: 12.6, label: "The palette, in the tools you use" }, { at: 17.6, label: "Even this film" }, { at: 23.75, label: "You still find every color" }],
       lines: [
         { id: "horizon-1", at: 0, who: "Daeun", text: "On the horizon: a Palit MCP. An assistant could read your archive and bring the colors you found into your design system. It never makes a color; it only uses the ones you kept." },
-        { id: "horizon-2", at: 12.6, who: "Noah", text: "The possibilities for Palit are endless - design workflows, creative projects, integration into software, even the color grading of the footage we use in this video was done with Palit" },
-        { id: "horizon-3", at: 23.75, who: "Noah", text: "Whatever comes next keeps one rule: you go out and find every color." }
+        { id: "horizon-2", at: 12.6, who: "Noah", text: "The possibilities for Palit are endless - design workflows, creative projects, integration into software, even the color grading of the footage we use in this video was done with the help of Palit", was: ["The possibilities for Palit are endless - design workflows, creative projects, integration into software, even the color grading of the footage we use in this video was done with Palit"] },
+        { id: "horizon-3", at: 23.75, who: "Noah", text: "But whatever comes next follows one rule: you go out and find every color yourself.", was: ["Whatever comes next keeps one rule: you go out and find every color."] }
       ],
       // Claude's suggestions for the horizon, each with what keeps it true to Palit; Noah picks
       suggestions: [
@@ -396,14 +398,14 @@ window.PALIT_SCRIPT = {
       refs: [163, 108]
     },
     {
-      // The opening's splash scene, as round three left it (the hub's; entries 226 and 235): the same splash at both ends of the film
+      // The opening's splash scene: the same splash at both ends of the film, the wall since October 21 (entry 287)
       id: "splash-end", motion: "kit", viz: "splash", part: "motion", title: "Palit, once more", seconds: 4,
       scene: { status: "ready", href: "viz.html?scene=splash&play", label: "The splash again, to close" },
-      screen: "The splash once more, cut in on the house track's kick after the thank you: the two cards, Noah's red and Daeun's turquoise, snap together and drain to the logo's black, and the name rises in beside the mark; the lockup leaves on a quick slide up.",
+      screen: "The splash once more, cut in on the house track's kick after the thank you: the archive's wall fills the screen, Noah's red and Daeun's turquoise step out of it and lock into the mark on the beat, the colors drain to the logo's black, and the name rises in beside the mark; the lockup leaves on a quick slide up.",
       text: ["Palit"],
       note: "Noah, October 19: “I also think we could just play the splash one more time at the very end to really drill the message home.”",
       lines: [],
-      refs: [203]
+      refs: [203, 287]
     },
     {
       // Noah, October 19: “after they appear for about 2 seconds, we can fade them out just as quickly and then fade out the music.
@@ -412,7 +414,7 @@ window.PALIT_SCRIPT = {
       // The closing's block, round three: the kit's entrance and exit, then the white drains to black as the music fades out
       scene: { status: "ready", href: "viz.html?scene=credits&play", label: "The credits on one screen, for two seconds, then black" },
       screen: "One screen on white, on the kick: Noah's thanks at the top, then four columns on the one left edge (who made it and thanks, the music, the pictures, the research we quote), rising in one after another. About two seconds; anyone curious can pause. Then they rise out, the white drains to black and the music fades with it.",
-      text: ["Thanks to supporters and the people involved in the planning and build of this project.", "Made by Noah Oh and Daeun Chung", "Music", "Pictures, with their licenses", "The research we quote", "Thanks: Naheel and SVSD, Kaya Sasaki, Ricky Yurewitch, Carmelle Safdie, Mike Essl and The Cooper Union"],
+      text: ["Thanks to supporters and the people involved in the planning and build of this project.", "Made by Noah Oh and Daeun Chung", "Music", "Pictures, with their licenses", "The research we quote", "Thanks: Naheel and SVSD, Kaya Sasaki, Ricky Yurewitch, Carmelle Safdie, Mike Essl, Ishaan Kansal (DoorDash), Johanna Pendley (Clay) and The Cooper Union"],
       note: "Noah, October 19: “Credits do not need to be 12 seconds. It could be 2 seconds, really quickly, on one screen. People who are interested can pause just to see it.”",
       lines: [],
       refs: [190]
@@ -445,6 +447,14 @@ window.palitMusicWindows = function (S, edits, layer) {
 // moment lands on its line however the lines change; floor keeps a moment that's said from being squeezed to less than that
 // share of its length. Pages read start, seconds, statementAt, cut, each line's beat, start and end, and warp.
 // minLine: no line is on screen for less than this, so a short one (“I'm Daeun.”) can be read (Noah, October 19, entry 219)
+// The voiceover takes (entry 280): each line's take, cleaned and made alike (audio/voice/lines/<id>.wav, and .m4a for the
+// player), and how long it really is, written by design/video/audio/voice/lines.py. A line with a take lasts as long as its
+// take, so the picture waits for the real line and every moment still lands on its line; a line without one (Daeun's, until
+// her takes are in) still takes as long as its words at the pace below.
+// Each track's dip under a voice (duck) puts it about 15 dB under the dialogue, a touch louder than the usual 20 (Noah, October
+// 21: "I also think that the music could be just a teeny bit louder when we have our voiceovers"), from its own loudness and
+// level: the house track 0.36, the demo's 0.46, Jungle Voices 0.38, Atoms in Peace 0.39 (entry 285).
+window.PALIT_TAKES = {"brief-1": {"seconds": 6.5, "who": "Daeun"}, "brief-2": {"seconds": 9.02, "who": "Noah", "cuts": [3.82]}, "demo-1": {"seconds": 5.66, "who": "Daeun"}, "demo-2": {"seconds": 8.26, "who": "Noah", "cuts": [4.36]}, "demo-3": {"seconds": 4.56, "who": "Noah"}, "demo-4": {"seconds": 6.44, "who": "Noah"}, "demo-5": {"seconds": 3.92, "who": "Noah", "cuts": [1.6]}, "demo-6": {"seconds": 5.58, "who": "Daeun", "cuts": [3.16]}, "demo-7": {"seconds": 7.48, "who": "Daeun"}, "demo-8": {"seconds": 5.02, "who": "Noah"}, "demo-9": {"seconds": 3.96, "who": "Noah"}, "dive1-1": {"seconds": 4.08, "who": "Daeun"}, "dive1-2": {"seconds": 8.32, "who": "Daeun", "cuts": [5.56]}, "dive1-3": {"seconds": 6.14, "who": "Daeun"}, "dive1-4": {"seconds": 5.96, "who": "Noah", "cuts": [2.74]}, "dive1-5": {"seconds": 12.6, "who": "Noah", "cuts": [4.36, 6.94]}, "dive1-6": {"seconds": 7.42, "who": "Daeun"}, "dive1-8": {"seconds": 12.4, "who": "Noah", "cuts": [6.1, 10.12]}, "dive1-9": {"seconds": 14.06, "who": "Noah", "cuts": [4.9]}, "dive1-g1": {"seconds": 8.6, "who": "Daeun", "cuts": [3.88]}, "dive1-g2": {"seconds": 9.32, "who": "Noah"}, "dive1-g3": {"seconds": 5.62, "who": "Noah"}, "dive3-1": {"seconds": 9.2, "who": "Daeun", "cuts": [5.5]}, "dive3-2": {"seconds": 9.6, "who": "Noah", "cuts": [5.38]}, "dive3-3": {"seconds": 10.36, "who": "Daeun"}, "dive3-4": {"seconds": 4.68, "who": "Noah", "cuts": [1.84]}, "dive3-5": {"seconds": 9.5, "who": "Noah", "cuts": [6.4]}, "dive3-c1": {"seconds": 7.6, "who": "Noah", "cuts": [2.62, 4.54]}, "dive3-c2": {"seconds": 8.12, "who": "Noah", "cuts": [2.08]}, "horizon-1": {"seconds": 11.18, "who": "Daeun", "cuts": [2.38, 7.72]}, "horizon-2": {"seconds": 12.12, "who": "Noah"}, "horizon-3": {"seconds": 6.36, "who": "Noah"}, "people-1": {"seconds": 8.74, "who": "Daeun", "cuts": [4.42]}, "people-2": {"seconds": 6.32, "who": "Noah", "cuts": [4.0]}, "people-3": {"seconds": 9.54, "who": "Noah", "cuts": [2.08, 6.34]}, "problem-1": {"seconds": 15.68, "who": "Noah", "cuts": [1.54, 2.62, 9.82]}, "problem-2": {"seconds": 7.86, "who": "Noah", "cuts": [2.86, 5.08]}, "problem-3": {"seconds": 7.56, "who": "Noah", "cuts": [2.14]}, "problem-4": {"seconds": 10.58, "who": "Noah", "cuts": [1.96, 6.34]}, "problem-refs": {"seconds": 10.16, "who": "Daeun", "cuts": [6.22]}, "process-1": {"seconds": 20.1, "who": "Noah", "cuts": [13.6]}, "splash-1": {"seconds": 1.76, "who": "Noah"}, "users-1": {"seconds": 11.34, "who": "Noah", "cuts": [2.8]}, "users-2": {"seconds": 10.62, "who": "Noah", "cuts": [3.04, 8.26]}, "users-3": {"seconds": 13.68, "who": "Noah", "cuts": [2.44, 9.76]}, "users-4": {"seconds": 14.24, "who": "Noah", "cuts": [2.8, 10.0]}, "users-d1": {"seconds": 8.14, "who": "Daeun", "cuts": [4.84]}, "users-w1": {"seconds": 8.52, "who": "Daeun", "cuts": [4.24]}, "users-y1": {"seconds": 8.18, "who": "Daeun", "cuts": [6.28]}};
 window.PALIT_PACE = { wordsPerSecond: 2.8, gap: 0.45, tail: 0.8, ask: 6, skip: 0.34, minLine: 1.2, floor: { motion: 0.5, desktop: 0.75, filmed: 0 } };
 // An edit saved with a line's old text gives way once Claude redrafts that line (entry 225): a line's was lists the texts it
 // replaced (Noah's edits were folded into the script on October 19, entry 221, so his saved copy of a line matches the old
@@ -490,7 +500,8 @@ window.palitRetime = function (S, edits) {
   var P = window.PALIT_PACE, e = edits || window.palitEdits(), txt = e.text || {}, picks = e.beats || {};
   function words(s) { s = (s || "").trim(); return s ? s.split(/\s+/).length : 0; }
   var wps = P.wordsPerSecond;
-  function say(s) { return /^\[/.test((s || "").trim()) ? P.ask : Math.max(P.minLine || 0, words(s) / wps); }
+  // A line with a take (PALIT_TAKES) lasts as long as the take; one without, as long as its words take to say
+  function say(s, id) { var tk = (window.PALIT_TAKES || {})[id]; if (tk && tk.seconds && (s || "").trim()) return tk.seconds; return /^\[/.test((s || "").trim()) ? P.ask : Math.max(P.minLine || 0, words(s) / wps); }
   var t = 0;
   S.sections.forEach(function (x) {
     wps = x.pace || P.wordsPerSecond;   // a section can be said a little faster (the intro)
@@ -520,9 +531,9 @@ window.palitRetime = function (S, edits) {
       var b = pb + (a - pa) * pace;
       if (on) b = said ? Math.max(pEnd + P.gap, b) : Math.max(pEnd, b);
       else b = Math.max(pEnd, b);
-      l.beat = a; l.start = on ? Math.round(b * 100) / 100 : undefined; l.end = on ? Math.round((b + say(text)) * 100) / 100 : undefined;
+      l.beat = a; l.start = on ? Math.round(b * 100) / 100 : undefined; l.end = on ? Math.round((b + say(text, l.id)) * 100) / 100 : undefined;
       if (b > 0 || a > 0) warp.push([Math.round(b * 1000) / 1000, a]);
-      if (on) { pEnd = b + say(text); said++; }
+      if (on) { pEnd = b + say(text, l.id); said++; }
       pa = a; pb = b; pace = on ? floor : skip;
     });
     x.cut = all.length > 0 && !said;

@@ -66,7 +66,7 @@ Noah's second round of notes (October 20, the walk-in to deep dive 1's statement
 6. **The camera is calm.** Every move is a tween that starts and stops softly (smootherstep), zooms in log space, anchored on what you're looking at, with a hold before and after. Quick pans are still eased. (m022: "Buffer it just slightly"; m030: "lets be smooth/elegant when we can".)
 7. **The desktop is a window on the page.** At its widest the demo's desktop is rounded and sits on white with room around it; zoomed in, it fills the frame. (m024.)
 8. **The demo behaves like the app.** Hover states answer the cursor, views fade and rise into place, scrolls have momentum, and typing is human, with the odd typo and correction. (m026, m028, m029.)
-9. **The brand resolves to black.** Two color cards snap together, their overlap cut white; as the name comes out, dealt from the mark letter by letter, they drain to the logo's own black. (m007: "the colors could turn black as the word comes out".)
+9. **The brand resolves to black.** Two colors snap together into the mark, their overlap cut white, and as the name rises in, they drain to the logo's own black. (m007: "the colors could turn black as the word comes out".) Since entry 287 the two come out of the archive itself, at both splashes: a wall of the archive's colors rises from the middle out, Noah's red and Daeun's turquoise step out of it as the rest leaves, and they lock into the mark on the house track's beat, 2.0 s in, with a riser into the lock and a soft hit on it (docs/12, rule 4).
 10. **The film is warm and a little filmic.** A subtle, friendly, warmer grade, light grain and halation, and a slight fisheye on the walk-in only, in the spirit of heyclicky's reel. (m001, m002.)
 
 ## Round three: what it adds

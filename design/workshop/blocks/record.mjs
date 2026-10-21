@@ -9,7 +9,7 @@
 // stutters or drops a frame, and the footage is on its exact frame every time.
 //
 // Usage: node design/workshop/blocks/record.mjs http://localhost:8790 [what]
-//   what: nothing for the whole cut, a section (dive1), a block (start, dive1, dive2, dive3, closing), or several, comma
+//   what: nothing for the whole cut, a section (dive1), a block (start, dive1, dive2, dive3, closing, splash), or several, comma
 //   separated. FPS=30 in the environment records at 30 frames a second; STATEMENTS=1 records only the statements (a few
 //   seconds each) and leaves every other loop as it is. Needs headless Chrome and ffmpeg.
 import { spawn, execFileSync } from "node:child_process";
@@ -25,7 +25,8 @@ const BASE = (process.argv[2] || "http://localhost:8790").replace(/\/$/, "");
 const FPS = Number(process.env.FPS) || 60, PAR = 3, MIN = 1.6, ONLY_STATEMENTS = process.env.STATEMENTS === "1";
 const VCLOCK = readFileSync(join(HERE, "vclock.js"), "utf8");
 // The blocks Noah reviews side by side, each in its own workshop (blocks.html?block=...)
-const BLOCKS = { start: ["opening", "intro", "splash", "brief", "problem", "people", "demo", "process"], dive1: ["dive1"], dive2: ["dive2"], dive3: ["dive3"], closing: ["horizon", "outro", "splash-end", "credits"] };
+// (splash: the splash at both ends, on its own for one last look, October 21)
+const BLOCKS = { start: ["opening", "intro", "splash", "brief", "problem", "people", "demo", "process"], dive1: ["dive1"], dive2: ["dive2"], dive3: ["dive3"], closing: ["horizon", "outro", "splash-end", "credits"], splash: ["splash", "splash-end"] };
 const WANT = process.argv[3] ? [].concat(...process.argv[3].split(",").map(w => BLOCKS[w] || [w])) : null;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const TMP = mkdtempSync(join(tmpdir(), "palit-blocks-"));

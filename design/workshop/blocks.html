@@ -152,8 +152,8 @@
   // 3, and the subsequent sections? Then, open them as separate chats, and have me be able to critique them and edit them at
   // the same time?”): ?block=dive1 shows only that block's moments, numbered on their own, with its own notes and its own
   // handoff ("blocks-workshop:dive1"), so a block keeps its notes when another block gains or loses a moment
-  var BLOCKS = B.blocks || { start: ["opening", "intro", "splash", "brief", "problem", "people", "demo", "process"], dive1: ["dive1"], dive2: ["dive2"], dive3: ["dive3"], closing: ["horizon", "outro", "splash-end", "credits"] };
-  var BLOCK = new URLSearchParams(location.search).get("block"), NAMES = { start: "The walk-in to How we worked", dive1: "Deep dive 1", dive2: "Deep dive 2", dive3: "Deep dive 3", closing: "The closing: the horizon, the outro and the credits" };
+  var BLOCKS = B.blocks || { start: ["opening", "intro", "splash", "brief", "problem", "people", "demo", "process"], dive1: ["dive1"], dive2: ["dive2"], dive3: ["dive3"], closing: ["horizon", "outro", "splash-end", "credits"], splash: ["splash", "splash-end"] };
+  var BLOCK = new URLSearchParams(location.search).get("block"), NAMES = { start: "The walk-in to How we worked", dive1: "Deep dive 1", dive2: "Deep dive 2", dive3: "Deep dive 3", closing: "The closing: the horizon, the outro and the credits", splash: "The splash, at the start and the end" };
   if (BLOCK && BLOCKS[BLOCK]) {
     M = M.filter(function (m) { return BLOCKS[BLOCK].indexOf(m.section) >= 0 && m.key; }).map(function (m, i) { return Object.assign({}, m, { id: m.key, n: i + 1 }); });
     KEY += ":" + BLOCK; HANDOFF += ":" + BLOCK;

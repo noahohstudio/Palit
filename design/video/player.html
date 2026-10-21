@@ -127,7 +127,7 @@
   #chip.dark { color: #fff; text-shadow: 0 0 10px rgba(0, 0, 0, 0.6); }
 
   /* The subtitle bar, at the very bottom, until the voiceover is in */
-  #subs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 22; min-height: 104px; display: grid; place-items: center; padding: 18px 200px 22px; box-sizing: border-box; background: rgba(255, 255, 255, 0.95); border-top: 1px solid rgba(0, 0, 0, 0.08); font-size: 34px; line-height: 1.3; letter-spacing: -0.01em; text-align: center; color: #1d1d1f; transition: opacity 200ms; }
+  #subs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 22; min-height: 104px; display: grid; place-items: center; padding: 18px 200px 22px; box-sizing: border-box; background: rgba(255, 255, 255, 0.95); border-top: 1px solid rgba(0, 0, 0, 0.08); font-size: 34px; line-height: 1.3; letter-spacing: -0.01em; text-align: center; text-wrap: balance; color: #1d1d1f; transition: opacity 200ms; }
   #subs.dark { background: rgba(17, 17, 19, 0.88); border-top: 0; color: #fff; }
   #subs.off, #subs.quiet { opacity: 0; }
   /* The voiceover guide (?prompter, October 21): the picture with the line being said, who says it and the file to save it as,
@@ -250,6 +250,7 @@
 <audio id="after" preload="auto"></audio>
 <script src="../brand/brand.js"></script>
 <script src="script.js"></script>
+<script src="sound.js"></script>
 <script>
 (function () {
   "use strict";
@@ -297,7 +298,7 @@
     (x.lines || []).forEach(function (l) {
       var text = (edits.text[l.id] !== undefined ? edits.text[l.id] : l.text).trim();
       if (!text || /^\[/.test(text) || typeof l.start !== "number") return;
-      cues.push({ start: x.start + l.start, end: x.start + l.end, who: edits.who[l.id] || l.who, text: text, sec: x.id });
+      cues.push({ start: x.start + l.start, end: x.start + l.end, who: edits.who[l.id] || l.who, text: text, sec: x.id, id: l.id });
     });
   });
 
@@ -339,7 +340,12 @@
   // Where in the track we are: the run playing now (or just fading), from where it starts in the track
   function runAt(L, t) { for (var i = 0; i < L.windows.length; i++) { var w = L.windows[i]; if (t >= w[0] && t <= w[1] + L.release) return w; } return null; }
   // Under a line it dips a quarter second early and comes back over 0.6 seconds after
-  function under(t) { var d = 0; cues.forEach(function (k) { if (t >= k.start - 0.25 && t <= k.end) d = Math.max(d, clamp((t - (k.start - 0.25)) / 0.25)); else if (t > k.end && t < k.end + 0.6) d = Math.max(d, clamp(1 - (t - k.end) / 0.6)); }); return d; }
+  // Under the voice (entry 285): lines less than 1.5 s apart share one dip, so the music holds through a breath, easing down
+  // over half a second before a line and back over 1.2 after it (Noah's note on the demo's track; the same as export.mjs)
+  var HOLD = 1.5, DOWN = 0.5, UP = 1.2, dips = [];
+  cues.slice().sort(function (a, b) { return a.start - b.start; }).forEach(function (k) { var l = dips[dips.length - 1]; if (l && k.start - l[1] < HOLD) l[1] = Math.max(l[1], k.end); else dips.push([k.start, k.end]); });
+  function ease(x) { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); }
+  function under(t) { var d = 0; dips.forEach(function (w) { if (t >= w[0] - DOWN && t <= w[1]) d = Math.max(d, ease((t - (w[0] - DOWN)) / DOWN)); else if (t > w[1] && t < w[1] + UP) d = Math.max(d, ease(1 - (t - w[1]) / UP)); }); return d; }
   // Where a looping track is, and a short fade each time it comes round again (entry 212)
   function loopPos(L, want, dur) {
     var c = L.cfg; if (!c.loop) return want;
@@ -366,7 +372,81 @@
     if (Math.abs(a.currentTime - want) > 0.3) { try { a.currentTime = want; } catch (e) {} }
     if (a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () {}); }
   }
-  function syncMusic(t) { syncLayer(HOUSE, t); syncLayer(CALM, t); syncLayer(TRY, t); syncLayer(LIFT, t); syncLayer(AFTER, t); }
+  function syncMusic(t) { syncLayer(HOUSE, t); syncLayer(CALM, t); syncLayer(TRY, t); syncLayer(LIFT, t); syncLayer(AFTER, t); syncVoice(t); syncSfx(t); }
+
+  /* ---------- The voiceover (entry 280): each line's own take, from the moment its line is said ---------- */
+  // The cleaned takes (audio/voice/lines/<id>.m4a, from lines.py), loaded whole like the music. A line without a take (or a
+  // page without the files, like the public site) stays silent; the guide (?prompter) never plays them, and ?voice=0 mutes them
+  var TAKES = window.PALIT_TAKES || {}, VOICE = !q.has("prompter") && q.get("voice") !== "0";
+  var voices = !VOICE ? [] : cues.filter(function (k) { return TAKES[k.id]; }).map(function (k) {
+    var v = { k: k, el: new Audio(), len: TAKES[k.id].seconds };
+    fetch("audio/voice/lines/" + encodeURIComponent(k.id) + ".m4a").then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.blob(); }).then(function (b) { v.el.src = URL.createObjectURL(b); }).catch(function () {});
+    return v;
+  });
+  /* ---------- The sound effects (entry 285): sound.js's cue sheet, the five rules of docs/12's sound kit ---------- */
+  // The picture reports its moments as it plays (v3's presses, keys and keeps, viz.html's presses; and from here, the
+  // statements' highlight presses, a section leaving and the camera's big moves). Each is logged at the film's time, for
+  // export.mjs to mix in, and sounded while it plays here. The room (beds), the one-offs (cues) and the splash's reveal sit on
+  // the timeline. The guide (?prompter) and ?sfx=0 stay silent.
+  var SND = window.PALIT_SOUND || { kinds: {}, beds: [], cues: [] }, SFX = !q.has("prompter") && q.get("sfx") !== "0", SFXLOG = [], seekedAt = -1e9, NOW = -1, PREVT = -1;
+  var sctx = null, sbuf = {}, beds = [];
+  function sfxCtx() { if (!sctx) { try { sctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } return sctx; }
+  function sfxLoad(file) {
+    if (!file || sbuf[file] !== undefined || !SFX || (window.__VT && window.__VT.frames)) return; sbuf[file] = null;
+    fetch("audio/sfx/" + file).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); }).then(function (b) { return sfxCtx().decodeAudioData(b); }).then(function (d) { sbuf[file] = d; }).catch(function () {});
+  }
+  // A sound now, lead seconds from now (or that far into it, if lead is negative), from offset into its file, for dur
+  function sfxPlay(o, lead, offset, dur) {
+    var c = sfxCtx(), b = c && sbuf[o.file]; if (!b) return null;
+    if (c.state === "suspended") c.resume();
+    var src = c.createBufferSource(), g = c.createGain(); src.buffer = b; g.gain.value = Math.pow(10, (o.db || 0) / 20); src.connect(g); g.connect(c.destination);
+    var skip = Math.max(0, -lead); src.start(c.currentTime + Math.max(0, lead), (offset || 0) + skip, dur !== undefined ? Math.max(0.01, dur - skip) : undefined);
+    return { src: src, g: g };
+  }
+  // A bed that goes round its file (the room tone), for dur seconds from offset into it
+  function sfxLoop(o, offset, dur) {
+    var c = sfxCtx(), b = c && sbuf[o.file]; if (!b) return null;
+    var src = c.createBufferSource(), g = c.createGain(); src.buffer = b; src.loop = true; g.gain.value = Math.pow(10, (o.db || 0) / 20); src.connect(g); g.connect(c.destination);
+    src.start(c.currentTime, offset || 0); src.stop(c.currentTime + dur); return { src: src, g: g };
+  }
+  window.PalitSfx = function (kind, delay) {
+    SFXLOG.push([Math.round((T + (delay || 0)) * 1000) / 1000, kind]);
+    if (!SFX || FRAMES || !playing || performance.now() - seekedAt < 400) return;
+    var o = SND.kinds[kind]; if (o) sfxPlay(o, (delay || 0) - (o.at || 0));
+  };
+  // A moment the playback crosses, going forward frame by frame (not a jump)
+  function cross(kind, at) { if (PREVT >= 0 && NOW - PREVT > 0 && NOW - PREVT < 0.25 && PREVT < at && at <= NOW) window.PalitSfx(kind, at - NOW); }
+  Object.keys(SND.kinds).forEach(function (k) { sfxLoad(SND.kinds[k].file); });
+  function secById(id) { return S.sections.filter(function (x) { return x.id === id && !x.cut; })[0]; }
+  // The timeline's own sounds, in the film's time: [start, sound, offset into its file]
+  var TIMED = [];
+  (SND.cues || []).forEach(function (c) { var x = secById(c.section); if (x) { TIMED.push([x.start + c.at - (c.peak || 0), c, 0]); sfxLoad(c.file); } });
+  if (SND.reveal) (SND.reveal.sections || []).forEach(function (id) { var x = secById(id); if (!x) return; var at = x.start + SND.reveal.snap; [SND.reveal.riser, SND.reveal.hit].forEach(function (o) { if (!o) return; TIMED.push([at - (o.at || 0) + (o.from || 0), o, o.from || 0]); sfxLoad(o.file); }); });
+  var BEDS = (SND.beds || []).map(function (b) {
+    var x = secById(b.span ? b.span[0] : b.section), x1 = b.span ? secById(b.span[1]) : x; if (!x || !x1) return null; sfxLoad(b.file);
+    return { a: b.span ? (x.statement ? x.statementAt : x.start) : x.start + b.from, z: b.span ? x1.start + x1.seconds : x.start + (b.to === "end" ? x.seconds : b.to), b: b, on: null };
+  }).filter(Boolean);
+  function stopBeds() { BEDS.forEach(function (d) { if (d.on) { try { d.on.src.stop(); } catch (e) {} d.on = null; } }); }
+  function syncSfx(t) {
+    if (!SFX || FRAMES || !playing) { stopBeds(); return; }
+    if (PREVT >= 0 && t - PREVT > 0 && t - PREVT < 0.25) TIMED.forEach(function (e) { if (PREVT < e[0] && e[0] <= t) sfxPlay(e[1], e[0] - t, e[2]); });
+    var c = sfxCtx();
+    BEDS.forEach(function (d) {
+      var inside = t >= d.a && t < d.z;
+      if (inside && !d.on && c && sbuf[d.b.file]) {
+        d.on = d.b.loop ? sfxLoop(d.b, (t - d.a) % (sbuf[d.b.file].duration || 60), d.z - t) : sfxPlay(d.b, 0, t - d.a, d.z - t);
+        if (d.on) { var g = d.on.g.gain, v = Math.pow(10, (d.b.db || 0) / 20), f = d.b.fade || 0.2, now = c.currentTime, left = d.z - t; g.setValueAtTime(t - d.a < f ? 0.0001 : v, now); if (t - d.a < f) g.linearRampToValueAtTime(v, now + f - (t - d.a)); g.setValueAtTime(v, now + Math.max(0, left - f)); g.linearRampToValueAtTime(0.0001, now + left); d.on.src.onended = function () { d.on = null; }; }
+      } else if (!inside && d.on) { try { d.on.src.stop(); } catch (e) {} d.on = null; }
+    });
+  }
+  function syncVoice(t) {
+    voices.forEach(function (v) {
+      var into = t - v.k.start, a = v.el;
+      if (!playing || into < 0 || into >= v.len || !a.src) { if (!a.paused) a.pause(); return; }
+      if (Math.abs(a.currentTime - into) > 0.12) { try { a.currentTime = into; } catch (e) {} }
+      if (a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () {}); }
+    });
+  }
 
   /* ---------- The scenes ---------- */
   var cur = null, deskLoaded = false;
@@ -520,7 +600,8 @@
       // directions so we keep it new every single time”): in turn bottom right, top left, bottom left, top right, counting the
       // highlights in the charts between the statements (hlDir)
       var dir = hlDir(x, 0), up = dir === 1 || dir === 3, left = dir === 1 || dir === 2;
-      var C0 = 0.08 + n * 0.065 + 0.32, A0 = [left ? L - 300 : L + Wd + 260, up ? T - 230 : T + Hd + 190], B0 = [L - 2, T + Hd * 0.55], D0 = [L + Wd - 4, T + Hd * 0.55], E0 = [L + Wd + 200, up ? T - 170 : T + Hd + 150];
+      var C0 = 0.08 + n * 0.065 + 0.32; cross("click", x.statementAt + C0 + 0.54);   // the press (the sound kit's rule 1)
+      var A0 = [left ? L - 300 : L + Wd + 260, up ? T - 230 : T + Hd + 190], B0 = [L - 2, T + Hd * 0.55], D0 = [L + Wd - 4, T + Hd * 0.55], E0 = [L + Wd + 200, up ? T - 170 : T + Hd + 150];
       var pos = A0, op = 0, drag = 0;
       if (u < C0) { pos = A0; op = 0; }
       else if (u < C0 + 0.42) { pos = arcPt(A0, B0, easeIO3((u - C0) / 0.42), 0.14); op = soft((u - C0) / 0.18); }
@@ -707,6 +788,7 @@
         lastKey = I.key;
         var to = { x: I.x, y: I.y, z: I.z };
         tween = jump || I.ms <= 0 ? null : { x0: view.x, y0: view.y, z0: view.z, x1: I.x, y1: I.y, z1: I.z, t0: t, d: Math.max(0.12, I.ms / 1000) };
+        if (tween && tween.d >= 0.4 && Math.max(tween.z1 / tween.z0, tween.z0 / tween.z1) >= 2.5) window.PalitSfx("whoosh", tween.d / 2);   // a big move (rule 2)
         if (tween) {
           // Round three (Noah, m024: “There's this weird jitter with the top kind of bar”): the edges are met at both ends of the
           // move and eased between, so the picture never stops dead at the desk's top edge and then hops into the room above it
@@ -815,6 +897,7 @@
     }
   }
   function render(t) {
+    NOW = t;
     var x = sectionAt(t);
     if (!cur || cur.id !== x.id) { var prev = cur; cur = x; enter(x, t, prev); }
     var into = t - x.start;
@@ -840,6 +923,7 @@
     if (x.part === "filmed") { sc.style.opacity = ""; sc.style.transform = ""; }
     else {
       var EXIT = 0.42, lv = x.exit === false || x === LAST ? 0 : clamp01((into - (x.seconds - EXIT)) / EXIT), kl = lv * lv * lv, ent = x.statement && x.enter !== false;
+      if (!(x.exit === false || x === LAST)) cross("leave", x.start + x.seconds - 0.08);   // the sound kit's rule 2
       var cin = ent ? (into < 0 ? 0 : soft(into / 0.42)) : 1, rin = ent ? (1 - expo(clamp01(into / 0.62))) * 22 : 0;
       sc.style.opacity = String(cin * (1 - soft(lv * 1.15)));
       sc.style.transform = rin > 0.05 || kl > 0 ? "translateY(" + (rin - 64 * kl).toFixed(1) + "px)" : "";
@@ -872,11 +956,16 @@
     var subs = $("subs");
     subs.classList.toggle("off", PROMPTER || !kit.showSubs);
     subs.classList.toggle("dark", kit.subs === "dark");
-    subs.classList.toggle("quiet", !c);
-    if (c && subs.textContent !== c.text) subs.textContent = c.text;
+    // Through a short breath between two lines (under a second) the last sentence stays up, so the bar doesn't blink
+    var sc = c || cues.filter(function (k) { return t >= k.end && t < k.end + 1; }).filter(function (k) { return cues.some(function (n) { return n.start > t && n.start - k.end < 1; }); })[0];
+    subs.classList.toggle("quiet", !sc);
+    var part = sc ? sentenceAt(sc, Math.min(t, sc.end - 0.01)) : "";
+    if (sc && subs.textContent !== part) subs.textContent = part;
+    if (sc) subs.style.color = kit.subs === "dark" ? speakerColor(sc.who) : ((B.subtitles || {})[sc.who] || "#1d1d1f");
     $("frame").style.setProperty("--bg", kit.bg);
     if (PROMPTER) prompter(t, c);
     syncMusic(t);
+    PREVT = t;
     // The controls
     $("time").textContent = mmss(t) + " / " + mmss(TOTAL);
     if (document.activeElement !== $("scrub")) $("scrub").value = String(t);
@@ -920,10 +1009,20 @@
     else { for (i = at.length - 1; i >= 0 && at[i] >= T - 0.5; i--); }
     if (i >= 0 && i < at.length) { cur = null; seek(at[i]); }
   }
+  // The subtitles, a sentence at a time (Noah, October 21, entry 284): split as sentences.py splits them, each up from the
+  // moment its first word is said (the take's cuts); a line without them shares its time out by the sentences' lengths
+  function sentencesOf(k) { return k.parts || (k.parts = k.text.replace(/\s+/g, " ").trim().split(/(?<=[.?!\u201d])\s+(?=[A-Z\u201c])/)); }
+  function sentenceAt(k, t) {
+    var ps = sentencesOf(k); if (ps.length < 2) return ps[0] || "";
+    var tk = (window.PALIT_TAKES || {})[k.id], into = t - k.start, cuts = tk && tk.cuts && tk.cuts.length === ps.length - 1 ? tk.cuts : null;
+    if (!cuts) { var n = ps.map(function (s) { return s.length; }), all = n.reduce(function (a, b) { return a + b; }, 0), acc = 0; cuts = n.slice(0, -1).map(function (v) { acc += v; return (k.end - k.start) * acc / all; }); }
+    var i = 0; while (i < cuts.length && into >= cuts[i]) i++;
+    return ps[i];
+  }
   var CHIPS = false;
   /* ---------- The clock ---------- */
   var T = 0, playing = false, last = 0;
-  function seek(t) { T = Math.max(0, Math.min(TOTAL - 0.01, t)); var x = sectionAt(T); if (cur && cur.id === x.id && x.part === "desktop") { cur = null; } render(T); }
+  function seek(t) { PREVT = -1; seekedAt = performance.now(); stopBeds(); T = Math.max(0, Math.min(TOTAL - 0.01, t)); var x = sectionAt(T); if (cur && cur.id === x.id && x.part === "desktop") { cur = null; } render(T); }
   function tick(now) {
     if (playing) { T += (now - last) / 1000; if (T >= TOTAL) { T = TOTAL - 0.01; setPlaying(false); } render(T); }
     last = now; requestAnimationFrame(tick);
@@ -1046,7 +1145,7 @@
     });
     return ok;
   }
-  window.PalitPlayer = { seek: seek, play: function () { setPlaying(true); }, pause: function () { setPlaying(false); }, time: function () { return T; }, ready: ready, cues: cues, kit: kit, music:{ windows: WINDOWS, volume: musicVolume, el: music, calm: { windows: CALM.windows, volume: function (t) { return layerVolume(CALM, t); }, el: CALM.el }, lift: { windows: LIFT.windows, volume: function (t) { return layerVolume(LIFT, t); } }, after: { windows: AFTER.windows, volume: function (t) { return layerVolume(AFTER, t); } } } };
+  window.PalitPlayer = { seek: seek, play: function () { setPlaying(true); }, pause: function () { setPlaying(false); }, time: function () { return T; }, ready: ready, cues: cues, kit: kit, music:{ windows: WINDOWS, volume: musicVolume, el: music, calm: { windows: CALM.windows, volume: function (t) { return layerVolume(CALM, t); }, el: CALM.el }, lift: { windows: LIFT.windows, volume: function (t) { return layerVolume(LIFT, t); } }, after: { windows: AFTER.windows, volume: function (t) { return layerVolume(AFTER, t); } } }, sfx: function () { return SFXLOG.slice(); }, voices: function () { return voices.map(function (v) { return { id: v.k.id, start: v.k.start, len: v.len, el: v.el }; }); } };
 })();
 </script>
 </body>

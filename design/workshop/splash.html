@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit splash workshop</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The splash, one last look (October 21). Noah asked for 4 or 5 concepts that take the same time as the splash, so one can
+     replace it at the start and the end of the film. Each concept loops as it plays in the real player at both ends (recorded
+     frame by frame by design/workshop/splash/record.mjs), or live on its own. Noah picks one, writes notes, and sends them to
+     Claude (handoff "splash-workshop"). The concepts themselves are viz.html's SCENES.splash.concepts. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 84px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+  .intro { padding: 20px 0 14px; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: end; }
+  .intro h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 72ch; font-size: 14px; }
+  .intro p + p { margin-top: 8px; }
+  blockquote { margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 14px; line-height: 1.45; }
+  blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+
+  /* The concepts, one tab each */
+  .tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; margin-top: 6px; }
+  .tabs button { font: 14px/1.25 var(--font); text-align: left; padding: 10px 12px 11px; background: var(--paper); color: var(--ink); border: 1px solid var(--rule-soft); cursor: pointer; min-width: 0; }
+  .tabs button:hover { border-color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .tabs button .n { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 2px; }
+  .tabs button[aria-selected="true"] .n { color: #c7c7cc; }
+  .tabs button .pk { display: inline-block; margin-left: 6px; font-size: 11px; padding: 0 5px; border: 1px solid currentColor; }
+  .tabs button:focus-visible, .views button:focus-visible, .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* One concept: its loop, then everything about it underneath */
+  .concept { margin-top: 12px; background: var(--paper); border: 1px solid var(--rule-soft); }
+  .stage { position: relative; background: #1c1c1e; display: grid; place-items: center; }
+  .screen { position: relative; width: 100%; max-width: calc(56vh * 16 / 9); aspect-ratio: 16 / 9; background: #fff; overflow: hidden; }
+  .screen video { display: block; width: 100%; height: 100%; background: #000; }
+  .screen iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; background: #fff; }
+  .screen .missing { position: absolute; inset: 0; display: grid; place-content: center; padding: 20px; text-align: center; color: #d6d6d9; background: #1c1c1e; font-size: 14px; }
+  .views { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 14px; width: 100%; box-sizing: border-box; justify-content: center; }
+  .views button { font: 13px var(--font); padding: 6px 12px; background: transparent; color: #d6d6d9; border: 1px solid #48484a; cursor: pointer; }
+  .views button:hover { border-color: #d6d6d9; }
+  .views button[aria-pressed="true"] { background: #f5f5f7; color: var(--ink); border-color: #f5f5f7; }
+  .views .when { color: #9c9ca1; font-size: 12px; align-self: center; margin-left: 8px; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 14px 18px 12px; border-bottom: 1px solid var(--rule-soft); }
+  .head h2 { font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 400; }
+  .head .line { font-size: 14px; color: var(--ink-2); }
+  .body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .body > div { padding: 14px 18px 18px; min-width: 0; display: grid; gap: 12px; align-content: start; }
+  .body > div + div { border-left: 1px solid var(--rule-soft); }
+  .k { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .what { font-size: 15px; max-width: 62ch; }
+  .beats li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; font-size: 14px; padding: 5px 0; border-top: 1px solid var(--rule-soft); }
+  .beats li:first-child { border-top: 0; }
+  .beats .t { color: var(--ink-2); }
+  .open { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+  textarea { width: 100%; box-sizing: border-box; font: 16px/1.45 var(--font); color: var(--ink); background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 0; padding: 8px 10px; resize: vertical; min-height: 120px; }
+  textarea:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .btn { font: 14px var(--font); padding: 7px 14px; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); cursor: pointer; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary, .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .seg { display: flex; gap: 4px; }
+  .seg .btn { flex: 1; border-color: var(--rule-soft); }
+  .seg .btn[aria-pressed="true"] { border-color: var(--ink); }
+  .note { font-size: 13px; color: var(--ink-2); }
+  .general { margin-top: 16px; background: var(--paper); border: 1px solid var(--rule-soft); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .general > div { padding: 14px 18px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .general > div + div { border-left: 1px solid var(--rule-soft); }
+  .status { font-size: 13px; color: var(--ink-2); }
+  .grow { flex: 1; }
+  .foot { position: fixed; left: 0; right: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule); z-index: 5; }
+  .foot .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+  @media (max-width: 980px) { .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 860px) { .intro, .body, .general { grid-template-columns: 1fr; } .body > div + div, .general > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); } .wrap { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html#video">Palit</a>
+    <span class="where">The splash, one last look: October 21, 2026</span>
+    <span class="links"><a href="../video/player.html#splash">The player</a><a href="blocks.html?block=splash">The splash as it is, block by block</a><a href="../video/index.html">The script</a></span>
+  </div>
+</header>
+<main class="wrap">
+  <section class="intro">
+    <h1>The splash</h1>
+    <div>
+      <blockquote>I want the splash to be a little bit more, kind of. Like right now it feels kind of small. It feels very unimportant. … I want the palette to be kind of like a whole library, a whole world almost. Maybe like cards all over the screen, then 2 kind of stand out and then come together to make the palette, the palette logo, and then the word kind of pops up. … for the front and the back, when we start the video and end the video, I want the splash to be a predominant thing.<cite>Noah, October 21</cite></blockquote>
+      <p>Five concepts beside the splash as it is. Each one is 4 seconds, like the splash it would replace, so the film's timing stays the same. Each is made of the longtime archive's own colors, and each ends on the same lockup: your red and Daeun's turquoise lock into the mark on the beat at 2 seconds, drain to black, and the name rises in. Daeun sits on the left and you on the right in the intro, so her turquoise always comes from the left and your red from the right.</p>
+      <p>Watch each one where it plays: at the start of the film, out of the intro, and at the end, before the credits. Pick one, or tell me what to mix, write what you'd change, and send it to Claude. ← and → move between concepts.</p>
+      <p>Picked: the wall, with fewer colors, a closer zoom and the lockup a third bigger. It's the film's splash at both ends now (entry 287); the loops here are the concepts as they were shown.</p>
+    </div>
+  </section>
+  <div class="tabs" id="tabs" role="tablist" aria-label="The concepts"></div>
+  <section class="concept" id="concept" role="tabpanel" aria-live="polite">
+    <div class="stage">
+      <div class="screen" id="screen"></div>
+      <div class="views" role="group" aria-label="Where to watch it">
+        <button type="button" data-view="start" aria-pressed="true">At the start</button>
+        <button type="button" data-view="end" aria-pressed="false">At the end</button>
+        <button type="button" data-view="live" aria-pressed="false">On its own, live</button>
+        <span class="when num" id="when"></span>
+      </div>
+    </div>
+    <div class="head" id="head"></div>
+    <div class="body">
+      <div>
+        <p class="what" id="what"></p>
+        <div><span class="k">When things happen</span><ul class="beats num" id="beats"></ul></div>
+        <div class="open" id="open"></div>
+      </div>
+      <div>
+        <div><span class="k">Your call</span><button type="button" class="btn" id="pick" aria-pressed="false">Pick this one</button></div>
+        <label class="k" for="fb">Your notes on this one</label>
+        <textarea id="fb" placeholder="What works, what doesn't, what to take from it…"></textarea>
+      </div>
+    </div>
+  </section>
+  <section class="general">
+    <div>
+      <label class="k" for="gen">Anything else</label>
+      <textarea id="gen" placeholder="Mixing two concepts, the timing, the music, what the name does…"></textarea>
+    </div>
+    <div>
+      <span class="k">The lockup's size</span>
+      <div class="seg" role="group" aria-label="The lockup's size">
+        <button type="button" class="btn" data-lockup="now" aria-pressed="true">As now</button>
+        <button type="button" class="btn" data-lockup="big" aria-pressed="false">A third bigger</button>
+      </div>
+      <p class="note" id="lockupnote">The mark at 342 px across, as now. A third bigger is 456 px: see it live, or in the player.</p>
+    </div>
+  </section>
+</main>
+<div class="foot" role="region" aria-label="The workshop">
+  <div class="wrap">
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="copy">Copy</button>
+    <button type="button" class="btn primary" id="send">Send to Claude</button>
+    <button type="button" class="btn" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script src="../video/script.js"></script>
+<script>
+(function () {
+  "use strict";
+  var el = window.PalitUI.el, S = window.PALIT_SCRIPT;
+  function $(id) { return document.getElementById(id); }
+  var KEY = "palit-splash-workshop", HANDOFF = "splash-workshop";
+  function sec(id) { return S.sections.filter(function (x) { return x.id === id; })[0] || { start: 0, seconds: 4 }; }
+  function mmss(t) { var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
+  // The concepts (viz.html's SCENES.splash.concepts; "now" is the splash as round three left it). Names and lines are drafts.
+  var CONCEPTS = [
+    { id: "now", n: "As it is", title: "As it is", line: "Round three's splash, to compare against",
+      what: "The two cards snap together right on the cut, their overlap cut white, then drain to black as the name rises in beside the mark.",
+      beats: [["0 to 0.2 s", "The two cards fade in apart"], ["0.5 s", "They snap together"], ["0.8 s", "They drain to black and the name rises in"], ["1.5 s on", "The lockup holds"]] },
+    { id: "wall", n: "1", title: "The wall", line: "Your idea, built the way you described it",
+      what: "The archive fills the screen, card by card from the middle out. Two colors step out of the wall, the rest dims and falls away, and the two come together as the mark.",
+      beats: [["0 to 0.8 s", "The wall fills the screen, 322 colors"], ["1.1 s", "Two step out: your red and Daeun's turquoise"], ["1.3 to 1.9 s", "The rest leaves, from the middle out"], ["2.0 s", "They lock into the mark, on the beat"], ["2.3 s", "The name rises in"]] },
+    { id: "archive", n: "2", title: "Into the archive", line: "A whole world, by pulling back",
+      what: "We start inside one color, your red, filling the screen. The camera pulls back through all 1,802 colors of the four-year archive, then pushes back in as your red and Daeun's turquoise come together.",
+      beats: [["0 to 0.2 s", "The screen is your red"], ["0.2 to 1.0 s", "The camera pulls back to the whole archive"], ["1.2 s", "The two lift a little"], ["1.4 to 2.0 s", "The camera pushes in as they come together"], ["2.0 s", "They lock into the mark, on the beat"]] },
+    { id: "fan", n: "3", title: "The fan", line: "The archive as a deck of color cards",
+      what: "The archive fans open across the whole screen in hue order, the way v3's Spectrum does. Two cards are pulled from the deck, the rest sinks away, and the two turn square and become the mark.",
+      beats: [["0 to 0.6 s", "The fan opens across the screen, 48 cards"], ["1.05 s", "Two cards are pulled out of it"], ["1.25 to 1.7 s", "The rest of the deck sinks away"], ["2.0 s", "They lock into the mark, on the beat"], ["2.3 s", "The name rises in"]] },
+    { id: "mosaic", n: "4", title: "Warm to cool", line: "The mark made of every color",
+      what: "Every color in one wall, warm toward the top right and cool toward the bottom left, the way Palit describes a color. The wall folds into two squares, the warm one your red and the cool one Daeun's turquoise, and they come together.",
+      beats: [["0 to 0.8 s", "The wall fills the screen, 800 colors, warm to cool"], ["0.7 to 1.6 s", "It folds into two squares"], ["1.5 to 1.9 s", "Each square turns into its one color"], ["2.0 s", "They lock into the mark, on the beat"]] },
+    { id: "giants", n: "5", title: "Two giants", line: "Big, with almost nothing on screen",
+      what: "Your red and Daeun's turquoise sweep in from their corners at five times the mark's size and fill the screen, their overlap open in the middle. Then the camera pulls back to find the mark.",
+      beats: [["0 to 0.7 s", "The two sweep in and fill the screen"], ["0.7 to 1.2 s", "They hold, the camera easing back a little"], ["1.2 to 2.0 s", "The camera pulls back to the mark"], ["2.0 s", "It lands on the beat"], ["2.3 s", "The name rises in"]] }
+  ];
+  var st = { cur: 1, view: "start", pick: null, notes: {}, general: "", lockup: "now", sent: null };
+  try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv) Object.keys(st).forEach(function (k) { if (sv[k] !== undefined) st[k] = sv[k]; }); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+  // The tabs
+  CONCEPTS.forEach(function (c, i) {
+    var b = el("button", { type: "button", role: "tab", id: "tab-" + c.id, "aria-controls": "concept", "aria-selected": "false" }, [el("span", { class: "n", text: c.n === "As it is" ? "Now" : "Concept " + c.n }), c.title]);
+    b.addEventListener("click", function () { show(i); });
+    $("tabs").appendChild(b);
+  });
+  function paintTabs() {
+    Array.prototype.forEach.call($("tabs").children, function (b, i) {
+      var c = CONCEPTS[i], on = i === st.cur;
+      b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
+      var pk = b.querySelector(".pk"); if (pk) pk.remove();
+      if (st.pick === c.id) b.appendChild(el("span", { class: "pk", text: "Picked" }));
+    });
+  }
+
+  // The screen: a recorded loop from the player, or the concept live on its own
+  var live = null, raf = 0;
+  function stopLive() { cancelAnimationFrame(raf); raf = 0; live = null; }
+  function fitLive() { if (!live) return; var w = $("screen").clientWidth; live.style.transform = "scale(" + (w / 1920) + ")"; }
+  addEventListener("resize", fitLive);
+  function paintScreen() {
+    var c = CONCEPTS[st.cur], box = $("screen"), big = st.lockup === "big" && c.id !== "now";
+    stopLive(); box.textContent = "";
+    Array.prototype.forEach.call(document.querySelectorAll(".views button"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === st.view)); });
+    if (st.view === "live") {
+      // drawn here on this page's own clock: the 4 seconds, then a short beat on the lockup, then again
+      var f = el("iframe", { title: c.title + ", live", tabindex: "-1", src: "../video/viz.html?scene=splash&splash=" + c.id + "&lockup=" + (big ? "big" : "small") });
+      box.appendChild(f); live = f; fitLive();
+      var t0 = performance.now();
+      (function loop(now) {
+        var t = ((now - t0) / 1000) % 4.6;
+        try { var V = f.contentWindow && f.contentWindow.PalitViz; if (V) V.render(Math.min(t, 4)); } catch (e) {}
+        raf = requestAnimationFrame(loop);
+      })(t0);
+      $("when").textContent = "4 seconds, on its own" + (big ? ", the bigger lockup" : "");
+      return;
+    }
+    var x = sec(st.view === "start" ? "splash" : "splash-end"), from = Math.max(0, x.start - 1.2);
+    var v = document.createElement("video"); v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+    v.src = "splash/" + c.id + "-" + st.view + ".mp4"; v.setAttribute("aria-label", c.title + ", " + (st.view === "start" ? "at the start of the film" : "at the end of the film") + ", on a loop");
+    v.onerror = function () { box.textContent = ""; box.appendChild(el("p", { class: "missing", text: "This loop isn't recorded yet. Claude records them with design/workshop/splash/record.mjs." })); };
+    box.appendChild(v); var p = v.play(); if (p && p.catch) p.catch(function () {});
+    $("when").textContent = (st.view === "start" ? "Out of the intro, " : "After the outro, ") + mmss(from) + " to " + mmss(x.start + x.seconds + 0.9) + ". No sound" + (big ? "; recorded at the lockup's size as now" : "");
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".views button"), function (b) {
+    b.addEventListener("click", function () { st.view = b.getAttribute("data-view"); save(); paintScreen(); });
+  });
+
+  // One concept
+  function show(i) {
+    st.cur = (i + CONCEPTS.length) % CONCEPTS.length; save();
+    var c = CONCEPTS[st.cur], big = st.lockup === "big" && c.id !== "now";
+    paintTabs(); paintScreen();
+    $("head").textContent = "";
+    $("head").appendChild(el("h2", { text: c.title })); $("head").appendChild(el("span", { class: "line", text: c.line }));
+    $("what").textContent = c.what;
+    $("beats").textContent = "";
+    c.beats.forEach(function (b) { $("beats").appendChild(el("li", {}, [el("span", { class: "t", text: b[0] }), el("span", { text: b[1] })])); });
+    $("open").textContent = "";
+    // (the film's splash is the wall now, entry 287, so even the splash as it was needs its name in the link)
+    var q = "splash=" + c.id + (c.id === "now" ? "" : "&lockup=" + (big ? "big" : "small"));
+    [["In the player, at the start", "../video/player.html" + (q ? "?" + q : "") + "#splash"], ["In the player, at the end", "../video/player.html" + (q ? "?" + q : "") + "#splash-end"], ["On its own", "../video/viz.html?scene=splash&play" + (q ? "&" + q : "")]].forEach(function (l) {
+      $("open").appendChild(el("a", { href: l[1], target: "_blank", rel: "noopener", text: l[0] }));
+    });
+    $("pick").setAttribute("aria-pressed", String(st.pick === c.id)); $("pick").textContent = st.pick === c.id ? "Picked" : "Pick this one";
+    $("fb").value = st.notes[c.id] || "";
+  }
+  $("pick").addEventListener("click", function () { var id = CONCEPTS[st.cur].id; st.pick = st.pick === id ? null : id; save(); show(st.cur); });
+  $("fb").addEventListener("input", function () { var id = CONCEPTS[st.cur].id; if ($("fb").value.trim()) st.notes[id] = $("fb").value; else delete st.notes[id]; save(); });
+  $("gen").value = st.general || "";
+  $("gen").addEventListener("input", function () { st.general = $("gen").value; save(); });
+  function paintLockup() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-lockup]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lockup") === st.lockup)); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-lockup]"), function (b) {
+    b.addEventListener("click", function () { st.lockup = b.getAttribute("data-lockup"); save(); paintLockup(); show(st.cur); });
+  });
+
+  // Sending and copying
+  function text() {
+    var out = ["The splash workshop, October 21"];
+    out.push("Pick: " + (st.pick ? CONCEPTS.filter(function (c) { return c.id === st.pick; })[0].title : "none yet"));
+    out.push("The lockup's size: " + (st.lockup === "big" ? "a third bigger" : "as now"));
+    CONCEPTS.forEach(function (c) { if ((st.notes[c.id] || "").trim()) out.push("", c.title + " (" + c.id + "): " + st.notes[c.id].trim()); });
+    if ((st.general || "").trim()) out.push("", "Anything else: " + st.general.trim());
+    return out.join("\n");
+  }
+  function put() { if (window.PalitHandoff) PalitHandoff.put(HANDOFF, { title: "The splash workshop", text: text(), pick: st.pick, lockup: st.lockup }); }
+  $("send").addEventListener("click", function () {
+    if (!st.pick && !Object.keys(st.notes).length && !(st.general || "").trim()) { $("status").textContent = "Nothing to send yet: pick one or write a note."; return; }
+    st.sent = new Date().toISOString(); save(); put();
+    $("status").textContent = "Sent. Tell Claude in chat, and Claude reads it from this page.";
+  });
+  $("copy").addEventListener("click", function () {
+    var t = text();
+    function fb() { var a = el("textarea", { readonly: "" }); a.value = t; a.style.position = "fixed"; a.style.opacity = "0"; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} a.remove(); $("status").textContent = ok ? "Copied." : "Couldn't copy. Select the text and copy it yourself."; }
+    try { navigator.clipboard.writeText(t).then(function () { $("status").textContent = "Copied. Paste it to Claude in chat."; }, fb); } catch (e) { fb(); }
+  });
+  $("done").addEventListener("click", function () { put(); if (window.PalitHandoff) PalitHandoff.done(HANDOFF); $("done").setAttribute("aria-pressed", "true"); $("status").textContent = "Marked done. Tell Claude in chat."; });
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("textarea, input, select, [contenteditable]")) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); show(st.cur + 1); $("tab-" + CONCEPTS[st.cur].id).focus(); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); show(st.cur - 1); $("tab-" + CONCEPTS[st.cur].id).focus(); }
+  });
+  paintLockup();
+  var hash = location.hash.slice(1), at = CONCEPTS.map(function (c) { return c.id; }).indexOf(hash);
+  show(at >= 0 ? at : st.cur);
+  window.PalitSplash = { state: st, text: text, show: show };
+})();
+</script>
+</body>
+</html>

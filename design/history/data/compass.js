@@ -64,6 +64,21 @@ window.PALIT.compass = {
   notes: [
     {
       date: "2026-10-21",
+      title: "The splash: one last tweak, then done (in chat)",
+      text: `One last tweak, the the grid could be even simpler - too much going on currently. Afterwards, its done. Lets fully lock down the voiceover audio, then submit`
+    },
+    {
+      date: "2026-10-21",
+      title: "The splash workshop: the wall (anything else; he left the lockup's size at a third bigger)",
+      text: `Love the wall. I think the wall itself could be a little bit smaller, like we have so many colors on the screen. It's a little bit overwhelming. If we just dial down and zoom in a little bit more. Yeah, that would be so good. I think we're ready to go. This looks great. I love the very subtle splash effect. Or, yeah, the splash effect of the colors in the background when we kind of move away from them. This is good. Let's use this.`
+    },
+    {
+      date: "2026-10-21",
+      title: "The splash, one last look: options (in chat)",
+      text: `Show me options. I want the splash to be a little bit more, kind of. Like right now it feels kind of small. It feels very unimportant. I don't know. I feel like a lot of company splashes. They're very professional and they're sleek and they're kind of small with a fun moment, but I want the palette to be kind of like a whole library, a whole world almost. Maybe like cards all over the screen, then 2 kind of stand out and then come together to make the palette, the palette logo, and then the word kind of pops up. I'm not sure. Could you draft like maybe 4 or 5 different concepts we could go with the palette splash? That takes just the same amount of time as the prior one, so we can just kind of replace it. But yeah, for the front and the back, when we start the video and end the video, I want the splash to be a predominant thing.`
+    },
+    {
+      date: "2026-10-21",
       title: "Deep dive 1: pure white, “on our boards”, and the line at the end of the wipes (in chat)",
       text: `For dive one slide 7, I actually like the reasoning that says that we kind of explained already of how a neutral canvas makes it easier to see the colors. Um, going with pure white, I think it's self-explanatory. It's just standard. We don't have to change anything there. Looks fine. Um, yeah, let's keep on our boards, even if the Albers Lab came from the Albers' book, because it was an executive decision we made after reviewing kind of what features we could kind of fix. I'm looking at slide 12 of the 13 in Dive One. Uh, the kind of slim white line that appears at the very end of our wipes still exists. Uh, I'm trying to see if you can fix that. I don't know why that's happening. It's not that big of an issue, but I definitely want to fix it just for kind of cleanliness sake.`
     },

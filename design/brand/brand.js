@@ -10,7 +10,10 @@ window.PALIT_BRAND = {
   mark: "mark.svg",
   markMode: "fill",
   // The speaker chips' colors: Claude's draft until Noah and Daeun pick theirs (entry 164)
-  speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" }
+  speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" },
+  // The subtitles: each speaker's own hue, darkened in OKLCH (hue kept) to 7:1 on white (Noah, October 21, entry 284: "in the
+  // hue of our colors, but still dark enough to be legible")
+  subtitles: { Noah: "#b11403", Daeun: "#006460" }
 };
 (function () {
   // Paths here are from design/brand/, so pages elsewhere get the mark resolved from this script's own address

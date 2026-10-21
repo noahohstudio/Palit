@@ -725,7 +725,7 @@
     } },
     off: { label: "Off", play: null }
   };
-  function sound() { var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
+  function sound() { if (cueSound("keep")) return; var s = SOUNDS[st.sound]; if (!s || !s.play) return; try { var ctx = audio(), out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination); s.play(ctx, ctx.currentTime + 0.01, out); } catch (e) {} }
 
   /* ---------- The real screens ---------- */
   var stage = $("stage"), desk = $("desk"), canvases = {}, loading = {};
@@ -1339,7 +1339,7 @@
     if (cap) Array.prototype.forEach.call(cap.children, function (n, i) { n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 540 * K, delay: (lead + 60 + i * 80) * K, easing: DEMO_IN, fill: "backwards" }); });
     Array.prototype.forEach.call(root.querySelectorAll(".fan-card"), function (c) {
       if (c.style.display === "none") return;
-      var rank = Math.round((290 - Number(c.style.zIndex || 290)) / 20);   // 0 for the chosen card, 1 for those beside it, and so on
+      var rank = c._rank || 0;   // 0 for the chosen card, 1 for those beside it, and so on
       // From there to wherever the fan has it (offset 0, and nothing after it: the card's own place is where it ends)
       c.animate([{ opacity: 0, transform: c.style.transform + " translateY(20px)", offset: 0 }], { duration: 640 * K, delay: (lead + rank * 36) * K, easing: DEMO_IN, fill: "backwards" });
     });
@@ -1733,7 +1733,10 @@
         s.display = "";
         s.transform = "rotate(" + a.toFixed(3) + "deg) translateY(" + (-up).toFixed(2) + "px)";
         s.opacity = String(clamp((86 - Math.abs(a)) / 10, 0, 1));
-        s.zIndex = String(290 - Math.round(Math.abs(d) * 20));
+        // Each card sits above the one on its left and under the one on its right, always (Noah, October 21, entry 279): the
+        // order never changes as the fan turns, so no card slides through another; the chosen one only lifts out of the pile
+        s.zIndex = String(150 + Math.round((d + 7) * 10));
+        cards[i]._rank = Math.round(Math.abs(d));
       });
       lit = now;
       var p = bound(wrap(c0));
@@ -2563,7 +2566,10 @@
   }
   function centerOf(node) { var r = node.getBoundingClientRect(), sr = stage.getBoundingClientRect(), k = sr.width / W; return { x: (r.left - sr.left + r.width / 2) / k, y: (r.top - sr.top + r.height / 2) / k }; }
   function showKeys(list) { pkeys.textContent = ""; (list || []).forEach(function (k) { pkeys.appendChild(el("kbd", { text: k })); }); pkeys.classList.toggle("on", !!(list && list.length)); }
-  function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); }
+  // Tells the video's player what just happened, so the film can sound it (entry 285): a press, a key coming up, a color kept.
+  // Only while v3 plays inside the player; on its own, v3 keeps its own keep sound
+  function cueSound(kind) { try { if (window.parent !== window && window.parent.PalitSfx) { window.parent.PalitSfx(kind); return true; } } catch (e) {} return false; }
+  function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); cueSound("click"); }
   function byText(sel, text) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return n.textContent === text; })[0]; }
   function q1(sel) { return stage.querySelector(sel); }
   function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
@@ -2622,7 +2628,8 @@
     return new Promise(function (res) {
       (function one() {
         if (gen !== keysGen || stopped(tok)) { res(gen); return; }
-        pkeys.appendChild(el("kbd", { text: list[i++] })); pkeys.classList.add("on");
+        var k = list[i++]; pkeys.appendChild(el("kbd", { text: k })); pkeys.classList.add("on");
+        if (!/click|scroll|drag/i.test(k)) cueSound("key");   // a key; a click or a scroll sounds as itself
         if (i < list.length) setTimeout(one, (gap || 140) * LOCAL / SPEED); else res(gen);
       })();
     });
@@ -2717,13 +2724,13 @@
       strips.appendChild(gb);
       gb.animate([{ height: "26px", marginTop: "0px", opacity: 1 }, { height: "0px", marginTop: "-3px", opacity: 0 }], { duration: ms, easing: ease, fill: "forwards" }).onfinish = function () { gb.remove(); };
     }
-    setTimeout(function () { if (play.on) bump(strips, 820); }, 140 * K);
+    setTimeout(function () { if (play.on) { bump(strips, 820); cueSound("chip"); } }, 140 * K);   // the chip's bump has a soft sound (entry 288)
   }
   // Then the menu bar's square takes the color, with a bump of its own, the same care, the new color coming in over the swell
   function bumpMark() {
     var mk = $("mark"), K = LOCAL / SPEED;
     mk.style.transitionDuration = Math.round(520 * K) + "ms";
-    deskHold.mark = deskHold.ink = false; drawMark(); bump(mk, 820);
+    deskHold.mark = deskHold.ink = false; drawMark(); bump(mk, 820); cueSound("mark");
     setTimeout(function () { mk.style.transitionDuration = ""; }, 900 * K);
   }
   function bump(node, ms) {

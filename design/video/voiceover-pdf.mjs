@@ -1,4 +1,4 @@
-// voiceover-pdf.mjs <base url>: prints the voiceover script (voiceover.html) to PDF, the whole script and Daeun's lines, into
+// voiceover-pdf.mjs <base url>: prints the voiceover script (voiceover.html) to PDF, the whole script, Daeun's lines and Noah's, into
 // design/video/footage/exports/, beside the silent guide (October 21, entry 273).
 //   node design/video/voiceover-pdf.mjs http://localhost:8790
 import { spawn } from "node:child_process";
@@ -25,7 +25,7 @@ const send = (method, params = {}) => new Promise(r => { const k = ++id; pending
 const ev = async e => { const r = await send("Runtime.evaluate", { expression: e, returnByValue: true }); return r.result && r.result.result ? r.result.result.value : null; };
 await send("Page.enable"); await send("Runtime.enable");
 const foot = label => `<div style="font: 8px -apple-system, system-ui, sans-serif; color: #6b6b70; width: 100%; padding: 0 14mm; display: flex; justify-content: space-between;"><span>${label}, ${when}</span><span><span class="pageNumber"></span> of <span class="totalPages"></span></span></div>`;
-for (const [q, name, label] of [["", "palit-voiceover-script", "Palit voiceover script"], ["?who=Daeun", "palit-voiceover-daeun", "Palit voiceover, Daeun's lines"]]) {
+for (const [q, name, label] of [["", "palit-voiceover-script", "Palit voiceover script"], ["?who=Daeun", "palit-voiceover-daeun", "Palit voiceover, Daeun's lines"], ["?who=Noah", "palit-voiceover-noah", "Palit voiceover, Noah's lines"]]) {
   await send("Page.navigate", { url: BASE + "/design/video/voiceover.html" + q + (q ? "&" : "?") + "x=" + Date.now() });
   for (let i = 0; i < 100; i++) { await sleep(100); if (await ev("document.readyState === 'complete' && !!window.PalitVoiceover")) break; }
   await sleep(300);
