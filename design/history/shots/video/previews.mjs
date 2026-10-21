@@ -18,7 +18,8 @@ const BASE = (process.argv[2] || "http://localhost:8790").replace(/\/$/, "");
 const FPS = 12, SECONDS = 3, LEAD = 2.4;   // a preview runs from 2.4 seconds before its still to 0.6 seconds after
 // Where each of v3's stills sits in its playback, in seconds of the playback's clock: the demo (?play) or deep dive 2 (?play=users)
 const DESK = {
-  picking: ["demo", 6.4], landed: ["demo", 13.2], days: ["demo", 27.4], spectrum: ["demo", 42.6], card: ["demo", 49.8], desk: ["demo", 70.5],
+  // the demo's beats moved on October 20 (entry 230): the loupe 6, the keep 14, Days 32, Spectrum 49, the card 58, sharing 76
+  picking: ["demo", 9.4], landed: ["demo", 15.8], days: ["demo", 35.6], spectrum: ["demo", 51.6], card: ["demo", 60.6], desk: ["demo", 84.6],
   first: ["users", 14.4], naming: ["users", 35], longtime: ["users", 63]
 };
 const sleep = ms => new Promise(r => setTimeout(r, ms));

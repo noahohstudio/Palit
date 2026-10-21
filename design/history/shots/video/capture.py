@@ -20,15 +20,17 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 # Each clip's stills: ("viz", scene, seconds into it, label), ("reel", set, seconds into it, label) for the deep dives'
 # reels of our own screens (design/video/reels.js, entry 206), or ("v3", scene, label). Filmed clips have none yet.
 SHOTS = {
-    "splash": [("viz", "splash", 0.5, "The mark, turning color"), ("viz", "splash", 2.6, "Palit")],
-    "brief": [("viz", "brief", 3, "The brief, word for word"), ("viz", "brief", 9, "Our answer to it")],
-    "problem": [("viz", "problem", 9, "33 of 51 designers"), ("viz", "problem", 20, "2 of 8 references"), ("viz", "problem", 30, "More creative, more alike"), ("viz", "problem", 42, "Pantone and Palit")],
+    "splash": [("viz", "splash", 0.62, "Two cards, coming together"), ("viz", "splash", 2.6, "Palit")],
+    "brief": [("viz", "brief", 6.4, "The brief, and “storytelling” selected"), ("viz", "brief", 9, "Our answer to it")],
+    "problem": [("viz", "problem", 9, "33 of 51 designers"), ("viz", "problem", 21, "2 of 8 references"), ("viz", "problem", 30, "More creative, but more alike"), ("viz", "problem", 35, "Our references"), ("viz", "problem", 42, "Pantone and Palit")],
     "people": [("viz", "people", 16, "Who loves it, who won't"), ("viz", "people", 28, "You have to earn it")],
     "demo": [("v3", "picking", "The loupe"), ("v3", "landed", "Kept, at the edge"), ("v3", "days", "Days"), ("v3", "spectrum", "Spectrum"), ("v3", "card&n=106", "The specimen card"), ("v3", "desk", "The palette beside the work")],
     "process": [("viz", "decisions", 14, "Every decision since the brief")],
     "dive1": [("reel", "ground", 2, "Our lo-fi sheets"), ("reel", "ground", 16, "The ideations"), ("reel", "ground", 22, "From the ground up"), ("viz", "look", 10, "Built for handoff, or for the story"), ("viz", "look", 22, "1 of 11 pickers"), ("viz", "look", 46, "Up to 8 times"), ("viz", "look", 56, "Pure white"), ("reel", "cut", 2, "v1"), ("reel", "cut", 12, "v2, merged"), ("reel", "cut", 25, "What we cut")],
-    "dive2": [("reel", "day1", 2.4, "Persona 1, before: v2's first open"), ("v3", "first", "Day one"), ("reel", "weeks", 7, "Before: three specimen cards"), ("v3", "naming", "A few weeks in: naming"), ("reel", "years", 9, "Before: v2's Spectrum"), ("v3", "longtime", "Years in")],
-    "dive3": [("viz", "story", 10, "Memory drifts"), ("viz", "story", 30, "Before a click: 2 of 9"), ("reel", "clutter", 3, "A friend: visually cluttered"), ("reel", "clutter", 9, "Back to the roughest lo-fi sheets"), ("reel", "clutter", 19, "The story workshop"), ("reel", "clutter", 27, "The preview"), ("reel", "dial", 2, "Only color"), ("reel", "dial", 12, "The hunt")],
+    # Deep dive 2's inserts are its own scenes since October 21 (viz.html's users1, users2 and users3)
+    "dive2": [("viz", "users1", 12.8, "Three personas, built from our research"), ("viz", "users1", 19.7, "Persona 1, before: v2's first open"), ("v3", "first", "Day one"), ("viz", "users2", 8.4, "Persona 2, before: three specimen cards"), ("v3", "card&n=107", "A few weeks in: your name"), ("viz", "users3", 8.3, "Persona 3, before: a list and a wall"), ("v3", "longtime", "Years in")],
+    # Deep dive 3 tells it all in its own scene since October 21 (no inserts); one still per beat
+    "dive3": [("viz", "story", 4, "Memory drifts"), ("viz", "story", 15, "Before a click: 2 of 9"), ("viz", "story", 25, "A friend: visually cluttered"), ("viz", "story", 34, "Our roughest lo-fi sheets"), ("viz", "story", 43, "Three ways to bring it forward"), ("viz", "story", 51, "Days with their places"), ("viz", "story", 60, "The zoom, a dial for the story"), ("viz", "story", 64, "Following the trail")],
     "horizon": [("viz", "horizon", 10, "A Palit MCP"), ("viz", "horizon", 19, "Inside the tools you use"), ("viz", "horizon", 28, "You still find every color")],
     "splash-end": [("viz", "splash", 2.6, "Palit, once more")],
     "credits": [("viz", "credits", 1.9, "The credits, on one screen")],

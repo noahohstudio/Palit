@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit voiceover script</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The voiceover script (October 21, entry 273): every line in the order it plays, with who says it, when, and the name to
+     save it under, to read beside the silent guide (node design/video/export.mjs <url> --guide). ?who=Daeun shows one
+     person's lines, each with the line before it as the cue. node design/video/voiceover-pdf.mjs <url> prints both to PDF. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+  p, h1, h2, ol { margin: 0; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 32px 64px; }
+  .num { font-variant-numeric: tabular-nums; }
+  h1 { font-size: 40px; line-height: 1.05; letter-spacing: -0.03em; font-weight: 400; }
+  .sub { color: var(--ink-2); margin-top: 10px; max-width: 66ch; }
+  .go { margin-top: 14px; }
+  .go a { color: var(--ink); text-underline-offset: 3px; }
+  .sum { display: flex; flex-wrap: wrap; gap: 6px 28px; margin-top: 22px; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule-soft); }
+  .sum span { display: inline-flex; align-items: center; gap: 8px; }
+  .chip { width: 10px; height: 10px; flex: none; display: inline-block; }
+  .how-h { font-size: 13px; color: var(--ink-2); margin-top: 18px; }
+  .how { margin-top: 6px; padding-left: 20px; }
+  .how li { margin: 3px 0; max-width: 72ch; }
+  section { margin-top: 30px; }
+  h2 { font-size: 20px; font-weight: 400; letter-spacing: -0.015em; padding-bottom: 6px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 16px; align-items: baseline; break-after: avoid; }
+  h2 .t { font-size: 12px; color: var(--ink-2); letter-spacing: 0; white-space: nowrap; }
+  .line { display: grid; grid-template-columns: 58px 86px minmax(0, 1fr) 76px; gap: 14px; align-items: start; padding: 10px 0 10px 12px; border-bottom: 1px solid var(--rule-soft); border-left: 3px solid transparent; break-inside: avoid; }
+  .line .at, .line .id { font-size: 12px; color: var(--ink-2); padding-top: 3px; }
+  .line .id { text-align: right; }
+  .line .who { display: flex; align-items: center; gap: 7px; font-size: 13px; padding-top: 2px; }
+  .line .txt { font-size: 16px; line-height: 1.45; }
+  .line .cue { display: block; font-size: 12px; line-height: 1.4; color: var(--ink-2); margin-bottom: 5px; }
+  .line.filmed .txt, .line.filmed .who { color: var(--ink-3); }
+  @page { size: letter; margin: 14mm 14mm 18mm; }
+  @media print { main { padding: 0; max-width: none; } .go { display: none; } }
+  @media (max-width: 640px) {
+    main { padding: 24px 16px 48px; }
+    .line { grid-template-columns: 52px minmax(0, 1fr) auto; gap: 4px 12px; }
+    .line .txt { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Voiceover script</h1>
+  <p class="sub" id="sub"></p>
+  <p class="go"><a id="guide" href="player.html?prompter">Play the guide</a>: the film with no sound, and each line under the picture as it plays.</p>
+  <div class="sum num" id="sum"></div>
+  <p class="how-h">How to record</p>
+  <ol class="how">
+    <li>Find a quiet room with soft things around you. A closet full of clothes works well.</li>
+    <li>Hold the phone a hand's width from your mouth, a little to one side, and keep it there.</li>
+    <li>Start each recording with three seconds of silence. The cleaner learns the room from it.</li>
+    <li>Say each line two or three times, with a breath between takes.</li>
+    <li>Save one file per line, named by its id (for example, brief-1), and send them to Noah.</li>
+    <li>Play the guide as you read: it shows each line under the picture as it plays in the film. Say it at your own pace. The picture is re-timed to your takes.</li>
+  </ol>
+  <div id="lines"></div>
+</main>
+<script src="../brand/brand.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.PALIT_SCRIPT, B = window.PALIT_BRAND || { speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
+  var q = new URLSearchParams(location.search), WHO = q.get("who");
+  // The same timing and lines as the guide (Noah's saved edits, where there are any, as in the player)
+  var E = window.palitEdits ? window.palitEdits() : { text: {}, who: {} };
+  window.palitRetime(S, E);
+  function $(id) { return document.getElementById(id); }
+  function tc(t) { var m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); }
+  function color(w) { return (B.speakers || {})[w] || "#1d1d1f"; }
+  function words(s) { return s.trim() ? s.trim().split(/\s+/).length : 0; }
+  function node(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+  // Every line said, in order
+  var all = [];
+  S.sections.forEach(function (x) {
+    if (x.cut) return;
+    (x.lines || []).forEach(function (l) {
+      var text = ((E.text || {})[l.id] !== undefined ? E.text[l.id] : l.text).trim();
+      if (!text || /^\[/.test(text) || typeof l.start !== "number") return;
+      all.push({ x: x, id: l.id, who: (E.who || {})[l.id] || l.who, text: text, at: x.start + l.start, filmed: x.part === "filmed" });
+    });
+  });
+  var tally = {};
+  all.forEach(function (k) { var key = k.filmed ? "filmed" : k.who; tally[key] = tally[key] || { lines: 0, words: 0 }; tally[key].lines++; tally[key].words += words(k.text); });
+  var when = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  if (WHO) $("guide").href = "player.html?prompter&who=" + encodeURIComponent(WHO);
+  if (WHO) {
+    $("title").textContent = WHO + "'s lines";
+    document.title = "Palit voiceover, " + WHO;
+    $("sub").textContent = "Your lines in the order they play, each with the line said just before it as your cue. " + when + ".";
+  } else $("sub").textContent = "Every line in the order it plays, with when it plays in the film and the name to save it under. Read it beside the silent guide, which plays the film with each line under the picture. " + when + ".";
+  Object.keys(B.speakers || {}).filter(function (w) { return !WHO || w === WHO; }).forEach(function (w) {
+    var t = tally[w] || { lines: 0, words: 0 }, s = node("span");
+    var c = node("i", "chip"); c.style.background = color(w); s.appendChild(c);
+    s.appendChild(document.createTextNode(w + ", " + t.lines + " lines to record (" + t.words + " words)"));
+    $("sum").appendChild(s);
+  });
+  if (!WHO && tally.filmed) $("sum").appendChild(node("span", "", tally.filmed.lines + " filmed lines, already recorded"));
+  // The lines, section by section
+  var root = $("lines"), sec = null, list = null;
+  all.forEach(function (k, i) {
+    if (WHO && (k.who !== WHO || k.filmed)) return;
+    if (sec !== k.x) {
+      sec = k.x; var s = node("section"), h = node("h2");
+      h.appendChild(node("span", "", k.x.title));
+      h.appendChild(node("span", "t num", tc(k.x.start) + " to " + tc(k.x.start + k.x.seconds)));
+      s.appendChild(h); root.appendChild(s); list = s;
+    }
+    var row = node("div", "line" + (k.filmed ? " filmed" : ""));
+    if (!k.filmed) row.style.borderLeftColor = color(k.who);
+    row.appendChild(node("span", "at num", tc(k.at)));
+    var w = node("span", "who"), c = node("i", "chip"); c.style.background = k.filmed ? "var(--ink-3)" : color(k.who); w.appendChild(c); w.appendChild(document.createTextNode(k.who)); row.appendChild(w);
+    var p = node("p", "txt");
+    if (WHO && all[i - 1]) {
+      var prev = all[i - 1], ws = prev.text.split(/\s+/);
+      p.appendChild(node("span", "cue", "After " + prev.who + ": “" + (ws.length > 12 ? "… " + ws.slice(-12).join(" ") : prev.text) + "”"));
+    }
+    p.appendChild(document.createTextNode(k.text)); row.appendChild(p);
+    row.appendChild(node("span", "id num", k.filmed ? "Filmed" : k.id));
+    list.appendChild(row);
+  });
+  window.PalitVoiceover = { lines: all, tally: tally };
+})();
+</script>
+</body>
+</html>

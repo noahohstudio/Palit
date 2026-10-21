@@ -257,6 +257,7 @@
   var KEY = "palit-video-script", HANDOFF = "video-script";
   var st = { text: {}, who: {}, notes: {}, statements: {}, music: {}, calm: {}, musicStatements: undefined, beats: {}, headers: {} };
   try { var saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved) st = { text: saved.text || {}, who: saved.who || {}, notes: saved.notes || {}, statements: saved.statements || {}, music: saved.music || {}, calm: saved.calm || {}, musicStatements: saved.musicStatements, beats: saved.beats || {}, headers: saved.headers || {} }; } catch (e) {}
+  if (window.palitFresh) window.palitFresh(S, st);   // a line Claude redrafted shows its draft, not an old saved copy (entry 225)
   function stmtOf(x) { var b = x.statement, e = st.statements[x.id] || {}; return { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds }; }
   function setStmt(x, k, v) {
     var e = st.statements[x.id] = st.statements[x.id] || {};

@@ -1,0 +1,5 @@
+{
+ "about": "Deep dive 1's workshop board (blocks.html?block=dive1), round one, as Noah left it on October 21, 2026, read from deep dive 1's session's browser pane (localhost:8790, localStorage palit-blocks-workshop:dive1). Saved before anything changed; the board itself isn't cleared. His notes are word for word in compass.js.",
+ "round": 1,
+ "board": {"add":{},"call":{"dive1/01":"keep","dive1/02":"keep","dive1/03":"keep","dive1/04":"keep","dive1/05":"keep","dive1/06":"keep","dive1/07":"keep","dive1/08":"keep","dive1/09":"keep","dive1/10":"keep","dive1/11":"keep","dive1/12":"keep","dive1/13":"keep"},"cur":12,"notes":{"dive1/05":"we could lose the lines between the captions","dive1/12":"theres an odd white line that appears when we wipe the versions - lets fix that. Otherwise, amazing."},"sent":{}}
+}

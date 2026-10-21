@@ -63,6 +63,372 @@ window.PALIT.compass = {
 
   notes: [
     {
+      date: "2026-10-21",
+      title: "Deep dive 1: pure white, “on our boards”, and the line at the end of the wipes (in chat)",
+      text: `For dive one slide 7, I actually like the reasoning that says that we kind of explained already of how a neutral canvas makes it easier to see the colors. Um, going with pure white, I think it's self-explanatory. It's just standard. We don't have to change anything there. Looks fine. Um, yeah, let's keep on our boards, even if the Albers Lab came from the Albers' book, because it was an executive decision we made after reviewing kind of what features we could kind of fix. I'm looking at slide 12 of the 13 in Dive One. Uh, the kind of slim white line that appears at the very end of our wipes still exists. Uh, I'm trying to see if you can fix that. I don't know why that's happening. It's not that big of an issue, but I definitely want to fix it just for kind of cleanliness sake.`
+    },
+    {
+      date: "2026-10-21",
+      title: "Deep dive 1, in its own workshop (dive1/01 to dive1/13), then complete",
+      text: `this is looking AMAZING, i've left a quick note, but afterwards, deep dive 1 can be marked complete
+
+Statement (dive1/01, keep)
+
+The question, over our lo-fi sheets (dive1/02, keep)
+
+Twelve sheets, and the expressive pass (dive1/03, keep)
+
+Flow by flow, idea by idea (dive1/04, keep)
+
+From the ground up (dive1/05, keep): we could lose the lines between the captions
+
+Sip asks for a format (dive1/06, keep)
+
+1 of 11 pickers (dive1/07, keep)
+
+Neutral everywhere (dive1/08, keep)
+
+The hardest question, up to 8 times (dive1/09, keep)
+
+Pure white, and a place to judge (dive1/10, keep)
+
+Why pure white (dive1/11, keep)
+
+Then we cut: v1 to v3 (dive1/12, keep): theres an odd white line that appears when we wipe the versions - lets fix that. Otherwise, amazing.
+
+What we lost (dive1/13, keep)`
+    },
+    {
+      date: "2026-10-21",
+      title: "The speaker chips go",
+      text: `I'm now thinking that we just lose the speaker chips at the bottom left, and we add subtitles in our colors later, after the final video is pretty much complete, and our audio files are all in.`
+    },
+    {
+      date: "2026-10-21",
+      title: "Deep dive 2: should day one's mark open black, like the demo's? (Claude asked in chat)",
+      text: `yes, it should`
+    },
+    {
+      date: "2026-10-21",
+      title: "Deep dive 3, round 2: the statement's box (dive3/01)",
+      text: `wrote a quick note - after that fix, we are completely ready to go for this deep dive
+
+Statement (dive3/01), Round 2: The box should follow the word up as well, as it fades`
+    },
+    {
+      date: "2026-10-21",
+      title: "Deep dive 2, block by block: the rebuild (dive2/01 to dive2/12), then ready to go",
+      text: `this is extremely well done. I've left some feedback for the final build, we should be good to go afterwards
+
+Statement (dive2/01, keep): lets have the highlighted box fade with the word its highlighting. Could we also have the color a little lighter?
+
+Three personas, built from our research (dive2/02, keep): looks SO good! wow
+
+Persona 1: day one (dive2/03, keep)
+
+Before: v2's first open (dive2/04, keep): beautifully animated
+
+Day one: one keystroke, and No. 001 (dive2/05, keep): so good
+
+Before: naming as a form (dive2/07, keep): so so good
+
+Before: three specimen cards (dive2/08, keep): so good
+
+A few weeks in: your name, and a palette on the desktop (dive2/09, keep): Loving the intentional typo + correction, but im noticing that the card snaps smaller due to the extra line of text stemming from the word "photo". Could we perhaps remove "photo" so that its already the same size? Less friction. Otherwise, so so good. Similar thing with when you click "pin to desktop" with the palette - the palette snaps to fill the empty space - could it subtly just grow to fit the remainder?
+
+Persona 3: years in (dive2/10, keep)
+
+Before: a list, and a wall of everything (dive2/11, keep): amazing showing of our process
+
+Years in: days, a search, and Spectrum (dive2/12, keep): so good`
+    },
+    {
+      date: "2026-10-21",
+      title: "The closing, round two: the statement's box, then ready to go",
+      text: `made a quick note or two, but afterwards, we are completely ready to go
+
+Statement (horizon/01, keep): round 2: the box should still move with the word as well`
+    },
+    {
+      date: "2026-10-21",
+      title: "The closing, in its own workshop (horizon/01 to credits/01)",
+      text: `notes are in, very well done, just some subtle changes.
+
+Statement (horizon/01, keep): good, but the highlighted box should fade with the word its highlighting, at the same time.
+
+A Palit MCP (horizon/02, keep): looks great!
+
+It reads your palette (horizon/03, keep): Can we subtly fade the terminal and whatever isn't needed for the next section the colors carry onto? Right now, it just disappears oddly
+
+The palette, in the tools you use (horizon/04, keep): Looks good, but lets make sure the colors are actually filled on the samples they're for before we load the next one. Lets also fade out the sample subtly before the next section.
+
+Even this film (horizon/05, keep): amazing!
+
+You still find every color (horizon/06, keep): wow! what a great moment. The logo could be slightly bigger though
+
+Filmed: line 1 (outro/01, keep)
+
+Filmed: line 2 (outro/02, keep)
+
+Filmed: line 3 (outro/03, keep)
+
+Palit, once more (splash-end/01, keep)
+
+Credits (credits/01, keep): kaia is actually spelt Kaya.
+
+For our names, lets do Noah Oh and Daeun Chung. I'd also like to thank Ricky Yurewitch, Carmelle Safdie, Mike Essl, and The Cooper Union
+
+Keep in mind that we may tweak and add more music, just in case.`
+    },
+    {
+      date: "2026-10-21",
+      title: "Deep dive 3, in its own workshop (dive3/01 to dive3/09)",
+      text: `notes in, great work, minimal changes. Lets quickly create those, then mark deep dive 3 as completed
+
+Statement (dive3/01, keep): the "y" in story gets slightly cut by the box - a small fix to make.
+
+Memory drifts (dive3/02, keep): great visualization, lets just move palits icon to where the darker green box originally was, and size up so that it is the same size. Also, why doesn't it start as the green color that the box was?
+
+Before a click: 2 of 9 (dive3/03, keep): beautiful visualization, could we potentially centre is slightly more?
+
+A friend: visually cluttered (dive3/04, keep): Some of the text clashes when moved up, before fading out. Lets make sure this doesn't happen.
+
+Our roughest lo-fi sheets (dive3/05, change): Cool way to show, but can we have slightly more time between the cards stacking, just so the viewer can see the process work? Also, it could be fun if they slide in from different directions subtly
+
+Three ways to bring it forward (dive3/06, keep): great visualization
+
+Days with their places (dive3/07, keep): great, lets make sure though that the caption follows the window
+
+The zoom, a dial for the story (dive3/08, keep): beautiful
+
+Following the trail (dive3/09, keep): amazing`
+    },
+    {
+      date: "2026-10-21",
+      title: "Work in blocks, side by side (round three)",
+      text: `Hey Claude, I just added some very minor feedback to the 1st couple sections. Everything we've rebuilt. I'm noticing that the Deep Dive one, though, and the Deep Dive 2. All of it has kind of stayed the same. And I'm not seeing much of the changes being done to the different sections after kind of how we worked. Is this intentional? Please let me know. If they are, I can't really see them. Um, the video playback seems to be glitching on Deep Dive one to, or just one, and I'm a little confused. Um, I think our intro to the kind of end of how we worked is okay. We can keep it the way it is now after we make the changes I've put in the notes. They're very small ones, so don't really worry about them. Let's work in blocks now. Like, let's just tackle one thing at a time, make it look good, and then we kind of publish after we're done with everything.
+
+If at all possible, I'd like to work faster, and more efficiently. Is there any way we can build separate workshops for deep dive 1, 2, 3, and the subsequent sections? Then, open them as separate chats, and have me be able to critique them and edit them at the same time?`
+    },
+    {
+      date: "2026-10-21",
+      title: "Block by block, round three: the walk-in to the demo (m001 to m027)",
+      text: `Walking in (m001): Great, but the door opening and the intro seem to have kind of low frame rates. I'm not sure why. Maybe it's just a screen recording issue, or maybe you purposefully slowed down the footage. I'd ask you not to do that. I want the highest frame rate possible.
+
+The intro: line 1 (m002): You could cut it even earlier, just slightly, so that we start on the motion of us coming down, right in the motion.
+
+The intro: line 2 (m003): I'm seeing a little bit of lag on the screen. That might be a screen recording issue, but again, I want our recordings to be perfectly clear and the framerate they came in
+
+The splash: two cards come together (m007): Not liking how the letters kind of jump out. I think we should just stick to the fade/slide in of the other headers
+
+The splash: the name (m008): When the word mark kind of disappears from the screen, right now it just fades and moves a little up. I think that could be a little bit accentuated. We could have it just slide up a little quicker and fade out in that process. It should be kind of subtle but also kind of animated. Keep that in mind for just all future, scenes and sections, things that kind of lead to other things, should always end with some sort of fleeting motion, even if it's subtle and it fades out quickly, it should lead with motion.
+
+The brief's statement (m009): Amazing. Exactly what we need. I think just for future reference, whenever an overlay is shown, I think it would be awesome, if we could have the box slide up with the text, when it fades, and I think the cursor could come from different directions to the highlighted word. So for instance, right now it's coming from the bottom right to the word brief, maybe on the next one it comes from the top left, then bottom left, top right, just different directions so we keep it new every single time. But other than that, really good.
+
+The brief (m010): Great. Just. Refer to the feedback about the cursor coming from different directions. Looks amazing.
+
+Our answer (m011): Loving the context, it's awesome. Really, really awesome.
+
+The problem: 33 of 51 designers (m013): I'm not liking the expansion effect of the grid before, we could zoom out. I think we could lose that or make it much, much more subtle. But yeah, other than that, really great work.
+
+The problem: 2 of 8 references (m014): Great changes look so clean.
+
+The problem: more creative, but more alike (m015): For some reason, the screen recording's a little bit laggy again, but I think that's just an issue with the screen recording. Looks good.
+
+The problem: our references, Pantone and Palit (m016): Amazing. Looks great.
+
+Who it's for: the statement (m017): Refer to the cursor change.
+
+Who it's for: who'll love it (m018): So  good.
+
+Who it's for: who won't (m019): good
+
+Who it's for: you have to earn it (m020): Again, a little bit laggy with the screen recording, but I trust that this looks good.
+
+The demo's statement (m021): I'm seeing kind of a pixel glitch, or sorry, just a screen glitch of seeing the next section at the very end of this recording. Maybe that's just because it fades out, and the screen recording is a little bit faulty, but let's just make sure that there isn't any glitching going on throughout the video. Looks really good. Again, just refer to the cursor feedback and how the block follows the word out.
+
+The demo: the menu bar (m022): I think we could keep the icon black, but for now, looks amazing.
+
+The demo: kept, at the edge (m024): There's this weird jitter with the top kind of bar. I don't want that to happen.
+
+The demo: the zoom (m027): The keybines don't seem to fade out subtly, like we discussed. I'm hoping we can fix that.`
+    },
+    {
+      date: "2026-10-20",
+      title: "A direction to stick to (round two)",
+      text: `hey, I just filled it out for another rendition, this time up until the first deep dive's statement/overlay.
+
+Make changes according to my notes, and be mindful of what we've already improved on - try to find a direction and stick to it, so we don't backtrack.
+
+Be mindful of my feedback not just specific to the section its written for, but holistically, so that we can build a visual language/taste regarding how the video feels.
+
+After you rebuild the sections I've critiqued, I actually want you to attempt to see how the next few sections could be improved on by related feedback from prior ones, then present it to me. Again, I encourage you to completely rebuild some of the sections, ones i've directly feedbacked and ones i haven't, just so we can begin really building the final product of the video.
+
+File my responses, then clear the boards one more time for me to give quick crit.
+
+Great work, I'm hoping this is close to our final pass`
+    },
+    {
+      date: "2026-10-20",
+      title: "Block by block, round two: the walk-in to deep dive 1's statement (m001 to m033)",
+      text: `Walking in (m001): lets add a heyclicky styled, subtle color grading that makes our footage feel fresh and friendly - warmer. I also want a slight film look, similar to heyclicky's videos. I also want a subtle fisheye lens just to the walk-in, it'll really add to the atmosphere. Make Cooper Union a little bigger, and rethink the specific moment of the clip you chose for us going up the stairs. Apply this to our interview/outro footage as well.
+
+The intro: line 1 (m002): we shouldn't see the moment we stand before we sit, when this clip plays, we should already be on the way down, making it a quick transition from the walk-in. Refer to the walk-in notes for the coloring and effects.
+
+The splash: two cards come together (m007): Still not liking our splash - I want it to be snappier, and a little more creative with how the word appears? Just more profesional and fluid - check out how other big companies do a splash. The concept of the squares coming together is nice though - the colors could turn black as the word comes out
+
+The splash: the name (m008): refer to prior notes
+
+The brief's statement (m009): lets instead of the droplet, adopt the cursor quickly dragging a box around the highlighted word - feels more on-theme and professional. can we have a subtle fade with the slide up? Both in and out, making it feel more fluid and pro
+
+The brief (m010): nice, lets make the dragged box a little bit bigger to cover the entire "storytelling". area. Also, period should come after the quotation marks.
+
+Again, for the text that slides, lets add a subtle fade that makes it feel more pro and fluid.
+
+Our answer (m011): Can we instead, drop the brief, then raise the cards, left then right? They should float/recoil into place, elegantly. I'm not sure what the colors on each card do for this section - lets make sure they actually do something meaningful, without taking too much of the focus
+
+The problem's statement (m012): refer to initial notes
+
+33 of 51 designers (m013): so good
+
+2 of 8 references (m014): This is a great moment, but I'm a little unsure of what this means. What does it mean that the two lead back to the work? Can we simplify the language, and make sure the messaging values authenticity and ties directly to our goal?
+
+More creative, but more alike (m015): looks good
+
+Our references, Pantone and Palit (m016): The cards look good, can we name the specimen cards "Specimen card 1" and "Specimen card 2"? Also, when the palit line pushes Pantone up, pantone goes a little far. It should be closer to palit. This line can also be bigger, and be centred.
+
+Who is Palit for: the statement (m017): refer initial notes
+
+Who'll love it (m018): not loving how the colored words shrink then go into where the boxes are - can we just drop/fade them and have them re-appear as the boxes? Will be cleaner.
+
+All these instances of components either just fading in, or having a slide in is not what I want - I want a consistent way they appear with a mix of both, being elegant and pro looking.
+
+Loving how it times with the scrip - we may have to slightly tune the timing with the audio recordings.
+
+Who won't (m019): great
+
+You have to earn it (m020): refer to initial overlay notes, and the appearance notes - fade in/slide in, both with elegance
+
+The demo's statement (m021): refer to initial overlay
+
+The menu bar (m022): The zoom out is so janky. Lets make it smooth, and not too sudden. Buffer it just slightly, you know? I also don't know why we're working with a screenshot of the prior version - redo the demo recording if needed, to make it as crisp and clean as possible with these changes.
+
+The loupe (m023): This looks great, I think the keybinds could fade out a little smoother, in the order you click them in. They should bump slightly also in the order you use them in, not too harshly though.
+
+Looks great though. Lets keep this as we rebuild this demo section
+
+Kept, at the edge (m024): Good beats and timing, but the initial bump for the color coming into the side chip feels a little off? Can we make it more elegant, with a smoother animation? Feel free to take slightly more time animating the bumps.
+
+Also, just in general for this section, the desktop is like a square. Can it be rounded a little, and be windowed by the white background slightly? Just so it looks equal when we zoom out of the window.
+
+Naming, and a whole palette (m025): great, just refer to prior notes about movement, keybinds, bumps, and whatnot
+
+Days (m026): The demo doesn't act like the app - the blocks should be reactive whenever you hover over them, even slightly, which should be reflected. Make it subtle, but true to how our app works now. The transition to opening the today page looks pretty good, but I feel as though the animation could be just a little bit more fancy and slower
+
+The zoom (m027): So good, just refer to prior notes about keybind bumps and the slowing down/decorating of the appear animations - just slightly to make it feel more elevated and timed
+
+Spectrum (m028): specturm scroll still doesn't feel very human scroll like, lets make it more smooth, but authentic. The zoom for naming is awesome.
+
+The appear animation could again, be slightly more elevated, slowed, and decorated/timed.
+
+Refer to prior notes about keybind bumps too.
+
+The specimen card (m029): I think the color card could slightly slide up when it fades in, just to give it a more elevated look. Loving the zoom for the scratchpad, looks good. Can we make it reflect human typing just a little more? Maybe even a semi-typo, a quick delete, then correction? I'm talking maybe 2 or 3 letters.
+
+The table (m030): looks good, lets just be mindful of smoothing the camera movement and zooms, which goes for all sections of this video - lets be smooth/elegant when we can, especially when we need quick pans and movements.
+
+Sharing, and the palette beside the work (m031): Not sure what the animation is in the background when we close the palette window, something weird happens with the colors when you go to close the palette window. Good camera zooms that make the feature feel coherent we could even zoom in slightly more, before zooming out.
+
+How we worked: every decision, day by day (m032): we should load the blocks a little quicker, but have slight pauses between loading the different days. The counting up too for the stats, lets have them a little quicker, timing them alongside the blocks we load on the days. Lets also be mindful of the placement of the section - the header, blocks, stats, and legend at the bottom - they should be coherent and legible
+
+Deep dive 1's statement (m033): refer to initial overlay feedback`
+    },
+    {
+      date: "2026-10-20",
+      title: "heyclicky's reel, as a reference (https://www.youtube.com/watch?v=46t-mCH-AQw)",
+      text: `This is a heyclicky reel/demp, and although this style is far too rapid and techy for what our product is, take inspiration for how the camera moves, follows the mouse, how each feature is morphed and and smoothly  presented. Keep this as a reference for future notes - something be be inspired by`
+    },
+    {
+      date: "2026-10-20",
+      title: "Bold, but not reckless",
+      text: `Hey, I've documented changes I want up until the How we worked section, just to get a feel for how different the changes would be. Hopefully, we can build a more fun, professional way of showing our work, as right now, it seems a little amateurish. Before touching anything, do some research on how creative agencies, as well as bigger tech companies use motion within their reels and demos to really accentuate the product - thats exactly what I'm going for. This all feels a little too serious right now. Creative expression is absolutely welcome in this presentation, and the way we present is part of the proposal - lets really keep that in mind. Lets be bold, but not reckless. Lets be fun, but elegant. Super polished, and industry ready. I'm looking forward to the changes you make. As you do those, I will continue to give feedback on the sections from how we worked onwards - don't touch those just yet.`
+    },
+    {
+      date: "2026-10-20",
+      title: "Block by block, the walk-in to the demo (m001 to m031, in the block-by-block workshop)",
+      text: `Walking in (m001): For the initial walk in, lets have a fun, colorful, extremely bold way of showing our names and school. It should say "Cooper Union School of Art". Take away "Color palette". No fade in, and it should be pretty huge as we walk in, covering the screen. "Noah" should come first, then "Daeun", on the screen at the same time. Then they are replaced by a large "Cooper Union School of Art" text. Colors, you decide. Whatever looks great with our footage. Same font and spacing - looks beautiful.
+
+The intro: sitting down (m002): Daeun and I sit down, before I say my first line. I'd like to keep this, as almost a quick cut/transition into our interview-styled introductions.
+
+The intro (m003): This whole section where we offer the introduction should remain uncut
+
+The intro: the splash's cue (m006): The exact moment I say "Palit", that should cue the splash
+
+The splash (m007): Can the splash be a little more creative? Maybe the colored squares come together, starting and fading in as whole squares, then have a subtraction effect as they begin to touch and merge? After all, the logo is supposed to be two color cards coming together. The way the text appears isn't that subtle or interesting either. Maybe it slides out from the icon? Just a suggestion - but will follow your guidance. Refer to the motion graphics I did for the Kino brandmark if possible - the splash should be fun and witty. The logo itself could be bigger compared to the text.
+
+The brief's statement (every overlay) (m009): I'm wondering how we can be a little bolder, and a little more creative with these transitional overlays. Could we perhaps play with how the highlighted word appears or comes to be? Or, how the words even appear on the page in general? Right now, we have a fade in that doesn't feel very authentic or interesting - something with slightly more movement and speed may be the move. Keep this in mind for all future overlays.
+
+The brief (m010): Not loving the centred nature of the brief. And, not loving how each word fades in. Could we try line by line instead? And I'm curious to know how we can make the highlighting a little more authentic. Feels a little stale right now
+
+Our answer (m011): Could we integrate some color into this rep? for such an important moment, it feels a little matter of fact, or gray
+
+The problem's statement (m012): refer to first overlay notes
+
+33 of 51 (m013): Some colors are a little too close to gray or white to be able to be distinguished from the background. Just slightly. Could we make them a little more punchy? Not ugly though. I also don't like how the colors appear - they just randomly fade in, which seems to be a common theme through the video. Why don't we try this - the screen fills with a grid of these colors, then we zoom out to see the visualization and the header, then they fill in to resolve the statistic. Love the showing of the research citing
+
+2 of 8 references (m014): Firstly, the script makes it hard to understand what that means - can we simplify the language, and tune it so that its more research focused? The line is already doing a good job at that, but i think we could be clearer. And, the representation doesn't mean anything. Can we instead show the actual references on the screen, then drop the 6 that don't lead anywhere?
+
+More creative, more alike (m015): The header should frame alikeness as negative: "...stories got more creative, but more alike"
+
+This data viz does well for what it means. Maybe as we rebuild the video, we can get inspired by the new visual language being created, then change this specific line accordingly?
+
+Pantone and Palit (m016): We need to acknowledge our references, such as pantone, specimen cards, and why. What research and deliberate research led us in this direction? Is this the right place to put this information? In any case, we need to make that important, tying to what palit sells in this realm.
+
+I keep seeing this basic, static fade-in we use in this video. Why don't we put components like the Pantone line first, as a main header, then we push another line upwards, ie Palit sells ownership, and as the initial pantone line gets pushed upwards, it shrinks. That already is such an improvement from our stagnant showing of the text. Keep this method, as well as others in mind.
+
+Who it's for: the statement (m017): refer to first overlay notes
+
+Who'll love it (m018): Instead of the blocks slowly appearing, could we have the key words appear as colored words on the rightside, beside the card, then at the end, they fall, then the blocks appear much faster? To show how the value are what goes into a palette for a project. This will also pair nicely with the next slide
+
+You have to earn it (m020): the connecting line feels a little thin, and a little too dark. For the overlay, refer to the first overlay's notes.
+
+The demo's statement (m021): refer to first overlay notes
+
+The menu bar (m022): Why do we hover/click the icon at first? Why don't we start with the full screen zoomed into the icon at the icon at the top, then we zoom out into the desktop?
+
+The loupe (m023): This is nice, but the keybinds showing could be prettier. Like they appear in the order you click them in, and show for just a little longer for the viewers to see. Just a little. Also loving the following of the mouse - could we actually even zoom in a little more?
+
+Kept, at the edge (m024): After the user clicks the color that they want to keep, I think it would be nice if we had a very short pause and a beat. The camera quickly switches to the side chip, and then the side chip reacts as the color lands. I know the actual tool doesn't do that, but I wanted to animate it nicely just to accentuate the actual feature itself. We should also visit the chip first and see that change first before we see the top bar change as well. The chip bumps, and the mouse follows, to show that it was recorded, then, the we pan to the top bar, where we see that the icon bumps too, adopting the chosen color. Let's be extremely mindful of what's on our window and what we can immediately see when we're giving these demos. I think that's extremely important.
+
+Naming, and a whole palette (m025): This demo happens a little bit faster than I'd like it to. The mouse is very much all over the place really quickly. I think it could take just a little bit more time to be smoother. Maybe have rounder paths to get to where it's going, like how a real user would use a mouse, not just going in a straight line from point A to point B. More intentional framing of what we're following, like the mouse and whatnot. Maybe a little bit zoomed in, just a little bit more, and kind of more timing as we see what the features are and how they're using it in the demo
+
+Days (m026): This is great, showing how the dashboard looks when you first open it. Honestly, I think just making things a little slower, even if they're not that slow, in the actual app itself could be helpful. For example, when you click today, things fade into what it would look like in the hunt of that day.
+
+I also don't really like how the colors in today just jump to where they should be when the screen changes. Let's change that so they very elegantly and quickly fade out, but then quickly fade back into where they should be, with just a little bit of movement: not too much, not too quick or jagged, but taking time and being elegant.
+
+The zoom (m027): Same feedback for the previous section. When you open the zoom, it should be a little bit more elegant in how the animations play, how we see that happen, and the fade-in.
+
+Spectrum (m028): We could make the Spectrum's scroll a little bit more human. It still looks like a bot did it, or it's very linear in how it scrolls. Again, a little bit more time, or even just more distinction between what you're actually doing when you're exploring this area. Our beats and timing matter so much - please keep this in mind.
+
+The specimen card (m029): this is good, just refer to prior notes regarding timing
+
+The table (m030): refer to prior notes regarding timing - seems to be a bit of a pain point in this section
+
+Sharing (m031): refer to prior notes regarding timing`
+    },
+    {
+      date: "2026-10-19",
+      title: "The footage",
+      text: `I also took video footage for our intro and outro, including the b-roll that leads upto our intro. For now , just store it somewhere for editing later. I'll give you some inspiration, as well as a color palettet for color grading and simple eidiitng`
+    },
+    {
+      date: "2026-10-19",
+      title: "Block by block",
+      text: `Honestly, I think this is the wrong way to approach it. We need to just go block by block. Let's run a workshop, but here's the style I want to run it in: every single key point, frame, or screen becomes one moment. It's playing over and over again, and I get to add some feedback at the bottom.
+
+Change up the script a little bit and then send it into you one at a time. Let's just make it so that it's complete. It completely goes through the entire timeline. We cut what we need to cut, add what we need to add, and maybe refocus if we need to. Get that prepared for me inside the workshop.`
+    },
+    {
       date: "2026-10-19",
       title: "Who made the logo",
       text: `Logo was done by both of us, workshopped`
@@ -679,10 +1045,11 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
 
   // What's waiting on Noah right now, most useful first. Shown at the top of the Plan page.
   todo: [
+    { text: "Record the voiceover from the guide", link: "../video/voiceover.html", note: "The silent guide is design/video/footage/exports/palit-voiceover-guide-20261021-1336.mp4, with the whole script and Daeun's lines as PDFs beside it (entries 273, 276 and 277). One file per line, named by its id. Put the takes in design/video/audio/voice/takes/, and Claude cleans each one." },
+    { text: "Revisit the music once the voiceover is in", link: "../workshop/music.html", note: "“I've gone back and watched form where jungle voices kicks in, and I'm feeling slightly off about it. Lets revisit music after we have our audio files in” (entry 275). Until then every track stays as picked." },
     { text: "Read the video script, and rewrite any line", link: "../video/index.html", note: "Click a line to change it and a speaker to switch who says it, then press “I'm done”. Copy Daeun's lines gives her the script to record; Download subtitles gives tonight's cut a first pass." },
     { text: "Run the video workshop", link: "../workshop/video.html", note: "Seven calls beside the live player and charts, every section moment by moment with notes, and everything on screen in one place. Press “I'm done” and say so in chat." },
     { text: "Look over the cut, clip by clip", link: "#video/clips", note: "Every clip with its stills, the statement that opens it, the lines, the cards on screen, the research, the music, and what's left to edit. A notes box under each clip hands off when you press “I'm done”." },
-    { text: "Name your friends and supporters for the credits", link: "../video/index.html#credits", note: "The credits roll after your thanks line; the names are a placeholder until you write them." },
     { text: "Write the seven statements", link: "../video/index.html", note: "Each section opens on three seconds of white with one word in one of our colors. They're placeholders: write each line on the script page, click the word to color it, and pick its color." },
     { text: "Play the video so far", link: "../video/player.html", note: "The statements, the data visualizations and the animated desktop, all on one clock, with subtle speaker chips and a subtitle bar. Edit tries Daeun's logo, the chips' colors and the subtitles' look." },
     { text: "Send Daeun her voiceover script", link: "#video/storyboards", note: "She records her sections separately and sends them as audio files (entry 165). Which shots are hers is still open in the storyboards, and every line there is a draft for you to rewrite." },
@@ -691,7 +1058,6 @@ Lets have a feature on the dashboard workshops where I can just tell you when th
     { text: "Look over v3, the final prototype", link: "../v3/index.html", note: "Days, Palettes and Spectrum in a bar of Palit's own; click a color's name in Spectrum to rename it there. P plays the demo for recording. Leave feedback on any screen under Prototype v3 on the Work page." },
     { text: "Pick the capture sound in prototype v2 (Q22)", link: "../v2/index.html", note: "Sound, at the bottom: Felt, Wood or Stamp. Keep a color with ⌥⇧C to hear each one." },
     { text: "Sharing: sign off on the network, or keep share cards (Q23)", link: "#e108" },
-    { text: "Say why pure white beat the grays", link: "#video/storyboards", note: "Deep dive 1 lands on pure white, and the research says a print-judging standard rules out surrounds that light. The video needs your reason, in your words, for the shot where it lands." },
     { text: "Add the questions you asked in Naheel's workshop", note: "They aren't in the notes. They go next to the notes, word for word, and into the decisions they inform." },
     { text: "Take real macOS screenshots for the prototype", note: "Full screen with ⌘⇧3, PNG, on a clean desktop with the menu bar showing and a browser on a page with color you'd really pick from. Put them in design/journey/shots/ and say what's in each." },
     { text: "Look over the dashboard before showing Daeun", link: "#work" }

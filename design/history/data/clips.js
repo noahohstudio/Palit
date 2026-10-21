@@ -5,9 +5,9 @@ window.PALIT.clips = {
   "splash": [
    {
     "file": "shots/video/splash-1.jpg",
-    "label": "The mark, turning color",
+    "label": "Two cards, coming together",
     "kind": "viz",
-    "href": "video/viz.html?scene=splash&t=0.5",
+    "href": "video/viz.html?scene=splash&t=0.62",
     "preview": "shots/video/splash-1.mp4"
    },
    {
@@ -21,9 +21,9 @@ window.PALIT.clips = {
   "brief": [
    {
     "file": "shots/video/brief-1.jpg",
-    "label": "The brief, word for word",
+    "label": "The brief, and “storytelling” selected",
     "kind": "viz",
-    "href": "video/viz.html?scene=brief&t=3",
+    "href": "video/viz.html?scene=brief&t=6.4",
     "preview": "shots/video/brief-1.mp4"
    },
    {
@@ -46,22 +46,29 @@ window.PALIT.clips = {
     "file": "shots/video/problem-2.jpg",
     "label": "2 of 8 references",
     "kind": "viz",
-    "href": "video/viz.html?scene=problem&t=20",
+    "href": "video/viz.html?scene=problem&t=21",
     "preview": "shots/video/problem-2.mp4"
    },
    {
     "file": "shots/video/problem-3.jpg",
-    "label": "More creative, more alike",
+    "label": "More creative, but more alike",
     "kind": "viz",
     "href": "video/viz.html?scene=problem&t=30",
     "preview": "shots/video/problem-3.mp4"
    },
    {
     "file": "shots/video/problem-4.jpg",
+    "label": "Our references",
+    "kind": "viz",
+    "href": "video/viz.html?scene=problem&t=35",
+    "preview": "shots/video/problem-4.mp4"
+   },
+   {
+    "file": "shots/video/problem-5.jpg",
     "label": "Pantone and Palit",
     "kind": "viz",
     "href": "video/viz.html?scene=problem&t=42",
-    "preview": "shots/video/problem-4.mp4"
+    "preview": "shots/video/problem-5.mp4"
    }
   ],
   "people": [
@@ -208,45 +215,52 @@ window.PALIT.clips = {
   "dive2": [
    {
     "file": "shots/video/dive2-1.jpg",
-    "label": "Persona 1, before: v2's first open",
+    "label": "Three personas, built from our research",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=day1&t=2.4",
+    "href": "video/viz.html?scene=users1&t=12.8",
     "preview": "shots/video/dive2-1.mp4"
    },
    {
     "file": "shots/video/dive2-2.jpg",
-    "label": "Day one",
-    "kind": "v3",
-    "href": "v3/index.html?clean&scene=first",
+    "label": "Persona 1, before: v2's first open",
+    "kind": "viz",
+    "href": "video/viz.html?scene=users1&t=19.7",
     "preview": "shots/video/dive2-2.mp4"
    },
    {
     "file": "shots/video/dive2-3.jpg",
-    "label": "Before: three specimen cards",
-    "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=weeks&t=7",
+    "label": "Day one",
+    "kind": "v3",
+    "href": "v3/index.html?clean&scene=first",
     "preview": "shots/video/dive2-3.mp4"
    },
    {
     "file": "shots/video/dive2-4.jpg",
-    "label": "A few weeks in: naming",
-    "kind": "v3",
-    "href": "v3/index.html?clean&scene=naming",
+    "label": "Persona 2, before: three specimen cards",
+    "kind": "viz",
+    "href": "video/viz.html?scene=users2&t=8.4",
     "preview": "shots/video/dive2-4.mp4"
    },
    {
     "file": "shots/video/dive2-5.jpg",
-    "label": "Before: v2's Spectrum",
-    "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=years&t=9",
+    "label": "A few weeks in: your name",
+    "kind": "v3",
+    "href": "v3/index.html?clean&scene=card&n=107",
     "preview": "shots/video/dive2-5.mp4"
    },
    {
     "file": "shots/video/dive2-6.jpg",
+    "label": "Persona 3, before: a list and a wall",
+    "kind": "viz",
+    "href": "video/viz.html?scene=users3&t=8.3",
+    "preview": "shots/video/dive2-6.mp4"
+   },
+   {
+    "file": "shots/video/dive2-7.jpg",
     "label": "Years in",
     "kind": "v3",
     "href": "v3/index.html?clean&scene=longtime",
-    "preview": "shots/video/dive2-6.mp4"
+    "preview": "shots/video/dive2-7.mp4"
    }
   ],
   "dive3": [
@@ -254,56 +268,56 @@ window.PALIT.clips = {
     "file": "shots/video/dive3-1.jpg",
     "label": "Memory drifts",
     "kind": "viz",
-    "href": "video/viz.html?scene=story&t=10",
+    "href": "video/viz.html?scene=story&t=4",
     "preview": "shots/video/dive3-1.mp4"
    },
    {
     "file": "shots/video/dive3-2.jpg",
     "label": "Before a click: 2 of 9",
     "kind": "viz",
-    "href": "video/viz.html?scene=story&t=30",
+    "href": "video/viz.html?scene=story&t=15",
     "preview": "shots/video/dive3-2.mp4"
    },
    {
     "file": "shots/video/dive3-3.jpg",
     "label": "A friend: visually cluttered",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=clutter&t=3",
+    "href": "video/viz.html?scene=story&t=25",
     "preview": "shots/video/dive3-3.mp4"
    },
    {
     "file": "shots/video/dive3-4.jpg",
-    "label": "Back to the roughest lo-fi sheets",
+    "label": "Our roughest lo-fi sheets",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=clutter&t=9",
+    "href": "video/viz.html?scene=story&t=34",
     "preview": "shots/video/dive3-4.mp4"
    },
    {
     "file": "shots/video/dive3-5.jpg",
-    "label": "The story workshop",
+    "label": "Three ways to bring it forward",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=clutter&t=19",
+    "href": "video/viz.html?scene=story&t=43",
     "preview": "shots/video/dive3-5.mp4"
    },
    {
     "file": "shots/video/dive3-6.jpg",
-    "label": "The preview",
+    "label": "Days with their places",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=clutter&t=27",
+    "href": "video/viz.html?scene=story&t=51",
     "preview": "shots/video/dive3-6.mp4"
    },
    {
     "file": "shots/video/dive3-7.jpg",
-    "label": "Only color",
+    "label": "The zoom, a dial for the story",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=dial&t=2",
+    "href": "video/viz.html?scene=story&t=60",
     "preview": "shots/video/dive3-7.mp4"
    },
    {
     "file": "shots/video/dive3-8.jpg",
-    "label": "The hunt",
+    "label": "Following the trail",
     "kind": "viz",
-    "href": "video/viz.html?scene=reel&set=dial&t=12",
+    "href": "video/viz.html?scene=story&t=64",
     "preview": "shots/video/dive3-8.mp4"
    }
   ],

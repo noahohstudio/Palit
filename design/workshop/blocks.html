@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit block by block</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The block-by-block workshop, October 19 (entry 223). The whole cut, one moment at a time: each moment loops, its line is
+     editable (saved with the script page's edits), and Noah calls it, adds feedback at the bottom, and sends it to Claude
+     one at a time (handoff "blocks-workshop"). The loops come from design/workshop/blocks/record.mjs. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 84px; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  p, h1, h2, h3, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .top { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .top .mark { text-decoration: none; }
+  .top .where { color: var(--ink-2); font-size: 13px; }
+  .top .links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+  .intro { padding: 20px 0 10px; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: end; }
+  .intro h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 70ch; font-size: 14px; }
+  blockquote { margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 14px; line-height: 1.45; }
+  blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+
+  /* The whole cut as a strip: one segment per moment, its width its length; the section names above */
+  .strip { margin-top: 6px; }
+  .secs { display: flex; gap: 2px; font-size: 11px; color: var(--ink-2); }
+  .secs span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: clip; padding: 0 2px 3px; border-left: 1px solid var(--rule); }
+  .bar { display: flex; gap: 2px; height: 30px; }
+  .bar button { position: relative; flex: 1 1 0; min-width: 3px; border: 0; padding: 0; cursor: pointer; background: #c9c9ce; }
+  .bar button.k-statement { background: #e1e1e4; }
+  .bar button.p-desktop { background: #6b6b70; }
+  .bar button.p-filmed { background: #9c9ca1; }
+  .bar button.p-motion { background: #b4b4b9; }
+  .bar button.has::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 5px; height: 5px; margin-left: -2.5px; background: var(--ink); }
+  .bar button.sent::after { background: var(--paper); box-shadow: 0 0 0 1.5px var(--ink); }
+  .bar button.v-cut { opacity: 0.35; }
+  .bar button.on { background: var(--ink); }
+  .bar button.on::after { background: var(--paper); }
+  .bar button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* One moment: its loop, then everything about it underneath */
+  .moment { margin-top: 16px; background: var(--paper); border: 1px solid var(--rule); }
+  .stage { position: relative; background: #1c1c1e; display: grid; place-items: center; }
+  .stage video { display: block; width: 100%; max-width: calc(50vh * 16 / 9); aspect-ratio: 16 / 9; background: #000; }
+  .stage .count { position: absolute; left: 14px; top: 10px; font-size: 12px; color: #d6d6d9; }
+  .stage .missing { color: #d6d6d9; font-size: 14px; padding: 80px 20px; text-align: center; }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 14px 18px 12px; border-bottom: 1px solid var(--rule-soft); }
+  .head h2 { font-size: 24px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 400; }
+  .head .sec { font-size: 13px; color: var(--ink-2); }
+  .head .t { margin-left: auto; font-size: 13px; color: var(--ink-2); }
+  .head .kind { font-size: 11px; padding: 0 6px; border: 1px solid var(--rule-soft); color: var(--ink-2); }
+  .body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .body > div { padding: 14px 18px 18px; min-width: 0; display: grid; gap: 12px; align-content: start; }
+  .body > div + div { border-left: 1px solid var(--rule-soft); }
+  .k { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .line { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; align-items: start; }
+  .who { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding-top: 7px; }
+  .who i { width: 9px; height: 9px; display: inline-block; }
+  textarea, input[type=text] { width: 100%; box-sizing: border-box; font: 15px/1.45 var(--font); color: var(--ink); background: var(--paper); border: 1px solid var(--rule-soft); border-radius: 0; padding: 6px 8px; resize: vertical; }
+  textarea:focus-visible, input[type=text]:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+  textarea.edited { box-shadow: inset 2px 0 0 var(--ink); }
+  .none { font-size: 13px; color: var(--ink-2); }
+  .calls { display: flex; gap: 4px; }
+  .calls button { flex: 1; font: 14px var(--font); padding: 7px 10px; background: var(--paper); color: var(--ink); border: 1px solid var(--rule-soft); cursor: pointer; }
+  .calls button:hover { border-color: var(--ink); }
+  .calls button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .feedback { padding: 14px 18px 18px; border-top: 1px solid var(--rule-soft); }
+  .feedback textarea { min-height: 110px; font-size: 16px; }
+  .acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+  .btn { font: 14px var(--font); padding: 7px 14px; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); cursor: pointer; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .status { font-size: 13px; color: var(--ink-2); }
+  .grow { flex: 1; }
+  .foot { position: fixed; left: 0; right: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule); z-index: 5; }
+  .foot .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+  @media (max-width: 860px) { .intro, .body { grid-template-columns: 1fr; } .body > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); } .wrap { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="../history/index.html#video">Palit</a>
+    <span class="where">Block by block: the video's workshop, October 19, 2026</span>
+    <span class="links"><a href="../video/index.html">The script</a><a href="../video/player.html">The player</a><a href="../history/index.html#video/clips">The cut, clip by clip</a></span>
+  </div>
+</header>
+<main class="wrap">
+  <section class="intro">
+    <h1 id="title">Block by block</h1>
+    <div>
+      <p id="blockline" hidden></p>
+      <blockquote>We need to just go block by block. Let's run a workshop, but here's the style I want to run it in: every single key point, frame, or screen becomes one moment. It's playing over and over again, and I get to add some feedback at the bottom.<cite>Noah, October 19</cite></blockquote>
+      <p>The whole cut, start to end, one moment at a time. Each moment loops. Rewrite its line (it saves with the script page's edits), call it keep, cut or change, add a moment after it if one's missing, write your feedback at the bottom, and send it to Claude. ← and → move between moments.</p>
+    </div>
+  </section>
+  <div class="strip" aria-label="The cut, moment by moment">
+    <div class="secs" id="secs" aria-hidden="true"></div>
+    <div class="bar" id="bar" role="list"></div>
+  </div>
+  <section class="moment" id="moment" aria-live="polite">
+    <div class="stage" id="stage"></div>
+    <div class="head" id="head"></div>
+    <div class="body">
+      <div id="lines"></div>
+      <div id="calls"></div>
+    </div>
+    <div class="feedback">
+      <label class="k" for="fb">Your feedback on this moment</label>
+      <textarea id="fb" placeholder="What should change here: the picture, the words, the timing, the camera, the music…"></textarea>
+      <div class="acts">
+        <button type="button" class="btn" id="prev">← Previous</button>
+        <button type="button" class="btn" id="next">Next →</button>
+        <span class="grow"></span>
+        <span class="status" id="mstatus" aria-live="polite"></span>
+        <button type="button" class="btn" id="copy">Copy</button>
+        <button type="button" class="btn primary" id="send">Send to Claude</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="foot" role="region" aria-label="The workshop">
+  <div class="wrap">
+    <span class="status num" id="count"></span>
+    <span class="status" id="status" aria-live="polite"></span>
+    <span class="grow"></span>
+    <button type="button" class="btn" id="copyall">Copy everything sent</button>
+    <button type="button" class="btn primary" id="done" aria-pressed="false">I'm done</button>
+  </div>
+</div>
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script src="../brand/brand.js"></script>
+<script src="../video/script.js"></script>
+<script src="blocks/moments.js"></script>
+<script>
+(function () {
+  "use strict";
+  var el = window.PalitUI.el, S = window.PALIT_SCRIPT, B = window.PALIT_BLOCKS || { moments: [] }, M = B.moments, BR = window.PALIT_BRAND || { speakers: {} };
+  function $(id) { return document.getElementById(id); }
+  function mmss(t) { t = Math.max(0, Math.round(t)); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+  var KEY = "palit-blocks-workshop", SCRIPT = "palit-video-script", HANDOFF = "blocks-workshop";
+  // One block on its own (round three, October 21: Noah, “Is there any way we can build separate workshops for deep dive 1, 2,
+  // 3, and the subsequent sections? Then, open them as separate chats, and have me be able to critique them and edit them at
+  // the same time?”): ?block=dive1 shows only that block's moments, numbered on their own, with its own notes and its own
+  // handoff ("blocks-workshop:dive1"), so a block keeps its notes when another block gains or loses a moment
+  var BLOCKS = B.blocks || { start: ["opening", "intro", "splash", "brief", "problem", "people", "demo", "process"], dive1: ["dive1"], dive2: ["dive2"], dive3: ["dive3"], closing: ["horizon", "outro", "splash-end", "credits"] };
+  var BLOCK = new URLSearchParams(location.search).get("block"), NAMES = { start: "The walk-in to How we worked", dive1: "Deep dive 1", dive2: "Deep dive 2", dive3: "Deep dive 3", closing: "The closing: the horizon, the outro and the credits" };
+  if (BLOCK && BLOCKS[BLOCK]) {
+    M = M.filter(function (m) { return BLOCKS[BLOCK].indexOf(m.section) >= 0 && m.key; }).map(function (m, i) { return Object.assign({}, m, { id: m.key, n: i + 1 }); });
+    KEY += ":" + BLOCK; HANDOFF += ":" + BLOCK;
+    document.title = "Palit block by block: " + (NAMES[BLOCK] || BLOCK);
+    $("title").textContent = NAMES[BLOCK] || BLOCK;
+    $("blockline").hidden = false;
+    $("blockline").textContent = "This block on its own, with its own notes. Sending here goes to the chat working on this block.";
+  } else BLOCK = null;
+  var st = { notes: {}, call: {}, add: {}, sent: {}, cur: 0 };
+  try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv) Object.keys(st).forEach(function (k) { if (sv[k] !== undefined) st[k] = sv[k]; }); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} paintBar(); count(); }
+  // The script's edits are shared with the script page, so each change reads them fresh and writes one line back
+  // A line Claude redrafted shows its draft, not an old saved copy of the line (script.js, palitFresh, entry 225)
+  function edits() { var e; try { e = JSON.parse(localStorage.getItem(SCRIPT) || "null") || {}; } catch (er) { e = {}; } return window.palitFresh ? window.palitFresh(window.PALIT_SCRIPT, e) : e; }
+  function lineOf(id) { var l = null; S.sections.forEach(function (x) { (x.lines || []).forEach(function (y) { if (y.id === id) l = y; }); }); return l; }
+  function textOf(l) { var e = edits(); return e.text && e.text[l.id] !== undefined ? e.text[l.id] : l.text; }
+  function whoOf(l) { var e = edits(); return (e.who && e.who[l.id]) || l.who; }
+  function setText(l, v) {
+    var e = edits(); e.text = e.text || {};
+    if (v.trim() === l.text.trim()) delete e.text[l.id]; else e.text[l.id] = v;
+    try { localStorage.setItem(SCRIPT, JSON.stringify(e)); } catch (er) {}
+  }
+  function secOf(m) { return S.sections.filter(function (x) { return x.id === m.section; })[0] || { title: m.section, part: "motion" }; }
+
+  // The strip
+  (function () {
+    var bySec = [];
+    M.forEach(function (m) { var g = bySec[bySec.length - 1]; if (!g || g.id !== m.section) bySec.push(g = { id: m.section, d: 0 }); g.d += Math.max(0.6, m.end - m.start); });
+    bySec.forEach(function (g) { var x = secOf({ section: g.id }); $("secs").appendChild(el("span", { style: "flex:" + g.d + " 1 0", text: x.title.replace(/^Deep dive (\d):.*/, "Deep dive $1").replace(/^Demo:.*/, "Demo") })); });
+    M.forEach(function (m, i) {
+      var x = secOf(m), b = el("button", { type: "button", role: "listitem", class: "k-" + m.kind + " p-" + x.part, style: "flex:" + Math.max(0.6, m.end - m.start) + " 1 0", title: m.n + ". " + x.title + ": " + m.label + ", " + mmss(m.start) + " to " + mmss(m.end), "aria-label": "Moment " + m.n + ": " + x.title + ", " + m.label });
+      b.addEventListener("click", function () { show(i); });
+      $("bar").appendChild(b);
+    });
+  })();
+  function paintBar() {
+    Array.prototype.forEach.call($("bar").children, function (b, i) {
+      var id = M[i].id, has = !!((st.notes[id] || "").trim() || st.call[id] || (st.add[id] || "").trim());
+      b.classList.toggle("on", i === st.cur); b.classList.toggle("has", has); b.classList.toggle("sent", !!st.sent[id]); b.classList.toggle("v-cut", st.call[id] === "cut");
+      b.setAttribute("aria-current", i === st.cur ? "true" : "false");
+    });
+  }
+
+  // One moment
+  function show(i) {
+    st.cur = Math.max(0, Math.min(M.length - 1, i)); save();
+    var m = M[st.cur], x = secOf(m);
+    if (location.hash.slice(1) !== m.id) history.replaceState(null, "", "#" + m.id);
+    // the loop
+    var stage = $("stage"); stage.textContent = "";
+    var v = document.createElement("video"); v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.src = m.file; v.setAttribute("aria-label", "Moment " + m.n + ", on a loop");
+    v.onerror = function () { stage.textContent = ""; stage.appendChild(el("p", { class: "missing", text: "This moment's loop isn't recorded yet. Claude records them with design/workshop/blocks/record.mjs." })); };
+    stage.appendChild(v); stage.appendChild(el("span", { class: "count num", text: m.n + " of " + M.length }));
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+    // what it is
+    var head = $("head"); head.textContent = "";
+    head.appendChild(el("span", { class: "sec", text: x.title }));
+    head.appendChild(el("h2", { text: m.kind === "statement" ? "Statement" : m.label }));
+    head.appendChild(el("span", { class: "kind", text: { statement: "Statement", beat: x.part === "desktop" ? "Animated desktop" : "Motion graphic", line: "Filmed", whole: x.part === "filmed" ? "Filmed" : "Motion graphic" }[m.kind] || m.kind }));
+    head.appendChild(el("span", { class: "t num", text: mmss(m.start) + " to " + mmss(m.end) + ", " + Math.round((m.end - m.start) * 10) / 10 + " seconds" }));
+    // the lines said in it, to rewrite
+    var box = $("lines"); box.textContent = "";
+    box.appendChild(el("span", { class: "k", text: m.lines.length ? "What's said (your edits save with the script page's)" : "What's said" }));
+    if (m.kind === "statement" && x.statement) { var se = ((edits().statements || {})[x.id] || {}).text || x.statement.text; box.appendChild(el("p", { class: "none", text: "The statement on white: “" + se + "”. Edit it, and its colored word, on the script page." })); }
+    if (!m.lines.length) box.appendChild(el("p", { class: "none", text: "No voiceover in this moment." }));
+    m.lines.forEach(function (lid) {
+      var l = lineOf(lid); if (!l) return;
+      var w = whoOf(l), ta = el("textarea", { rows: "2", "aria-label": "Line said by " + w });
+      ta.value = textOf(l); ta.classList.toggle("edited", ta.value.trim() !== l.text.trim());
+      ta.addEventListener("input", function () { setText(l, ta.value); ta.classList.toggle("edited", ta.value.trim() !== l.text.trim()); });
+      box.appendChild(el("div", { class: "line" }, [el("span", { class: "who" }, [el("i", { style: "background:" + ((BR.speakers || {})[w] || "#1d1d1f") }), w]), ta]));
+    });
+    // the call, and what to add after it
+    var calls = $("calls"); calls.textContent = "";
+    calls.appendChild(el("span", { class: "k", text: "Your call" }));
+    var row = el("div", { class: "calls", role: "group", "aria-label": "Keep, cut or change this moment" });
+    [["keep", "Keep"], ["change", "Change"], ["cut", "Cut"]].forEach(function (c) {
+      var b = el("button", { type: "button", "data-call": c[0], "aria-pressed": String(st.call[m.id] === c[0]), text: c[1] });
+      b.addEventListener("click", function () { if (st.call[m.id] === c[0]) delete st.call[m.id]; else st.call[m.id] = c[0]; save(); Array.prototype.forEach.call(row.children, function (bb) { bb.setAttribute("aria-pressed", String(st.call[m.id] === bb.getAttribute("data-call"))); }); });
+      row.appendChild(b);
+    });
+    calls.appendChild(row);
+    calls.appendChild(el("label", { class: "k", for: "addafter", text: "Add a moment after this one" }));
+    var add = el("input", { type: "text", id: "addafter", placeholder: "What's missing here, if anything" });
+    add.value = st.add[m.id] || ""; add.addEventListener("input", function () { if (add.value.trim()) st.add[m.id] = add.value; else delete st.add[m.id]; save(); });
+    calls.appendChild(add);
+    // feedback at the bottom
+    $("fb").value = st.notes[m.id] || "";
+    paintStatus(); paintBar();
+  }
+  $("fb").addEventListener("input", function () { var id = M[st.cur].id; if ($("fb").value.trim()) st.notes[id] = $("fb").value; else delete st.notes[id]; save(); });
+  function paintStatus() { var id = M[st.cur].id; $("mstatus").textContent = st.sent[id] ? "Sent to Claude at " + new Date(st.sent[id]).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : ""; }
+
+  // Sending, one moment at a time, and copying
+  function blockText(m) {
+    var x = secOf(m), out = ["Moment " + m.n + " of " + M.length + ": " + x.title + ", " + (m.kind === "statement" ? "the statement" : m.label) + " (" + mmss(m.start) + " to " + mmss(m.end) + ")"];
+    m.lines.forEach(function (lid) { var l = lineOf(lid); if (l) out.push(whoOf(l) + ": " + textOf(l).trim() + (textOf(l).trim() !== l.text.trim() ? " (rewritten)" : "")); });
+    if (st.call[m.id]) out.push("Call: " + { keep: "Keep", change: "Change", cut: "Cut" }[st.call[m.id]]);
+    if ((st.add[m.id] || "").trim()) out.push("Add after: " + st.add[m.id].trim());
+    if ((st.notes[m.id] || "").trim()) out.push("Feedback: " + st.notes[m.id].trim());
+    return out.join("\n");
+  }
+  function sentText() { var out = ["Block by block" + (BLOCK ? ", " + (NAMES[BLOCK] || BLOCK) : "") + ": the moments sent to Claude"]; M.forEach(function (m) { if (st.sent[m.id]) out.push("", blockText(m)); }); return out.join("\n"); }
+  function handoff() { if (window.PalitHandoff) PalitHandoff.put(HANDOFF, { title: "Block by block" + (BLOCK ? ": " + (NAMES[BLOCK] || BLOCK) : ""), text: sentText(), sent: M.filter(function (m) { return st.sent[m.id]; }).map(function (m) { return m.id; }) }); }
+  function copy(text, what) {
+    function fb() { var t = el("textarea", { readonly: "" }); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} t.remove(); $("status").textContent = ok ? "Copied " + what + "." : "Couldn't copy. Select the text and copy it yourself."; }
+    try { navigator.clipboard.writeText(text).then(function () { $("status").textContent = "Copied " + what + ". Paste it to Claude in chat."; }, fb); } catch (e) { fb(); }
+  }
+  $("send").addEventListener("click", function () {
+    var m = M[st.cur];
+    if (!((st.notes[m.id] || "").trim() || st.call[m.id] || (st.add[m.id] || "").trim() || m.lines.some(function (lid) { var l = lineOf(lid); return l && textOf(l).trim() !== l.text.trim(); }))) { $("status").textContent = "Nothing to send for this moment yet."; return; }
+    st.sent[m.id] = new Date().toISOString(); save(); handoff(); paintStatus();
+    $("status").textContent = "Sent moment " + m.n + ". Tell Claude in chat, and Claude reads it from this page.";
+  });
+  $("copy").addEventListener("click", function () { copy(blockText(M[st.cur]), "moment " + M[st.cur].n); });
+  $("copyall").addEventListener("click", function () { if (!Object.keys(st.sent).length) { $("status").textContent = "Nothing sent yet."; return; } copy(sentText(), "everything sent"); });
+  $("done").addEventListener("click", function () { handoff(); if (window.PalitHandoff) PalitHandoff.done(HANDOFF); $("done").setAttribute("aria-pressed", "true"); $("status").textContent = "Marked done. Tell Claude in chat."; });
+  $("prev").addEventListener("click", function () { show(st.cur - 1); });
+  $("next").addEventListener("click", function () { show(st.cur + 1); });
+  addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("textarea, input, select, [contenteditable]")) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); show(st.cur + 1); } else if (e.key === "ArrowLeft") { e.preventDefault(); show(st.cur - 1); }
+  });
+  function count() {
+    var notes = M.filter(function (m) { return (st.notes[m.id] || "").trim() || st.call[m.id] || (st.add[m.id] || "").trim(); }).length, sent = Object.keys(st.sent).length;
+    var len = BLOCK ? M.reduce(function (a, m) { return a + Math.max(0, m.end - m.start); }, 0) : B.total || S.total || 0;
+    $("count").textContent = M.length + " moments, " + mmss(len) + ". " + notes + " with notes, " + sent + " sent.";
+  }
+  if (!M.length) { $("stage").appendChild(el("p", { class: "missing", text: "No moments yet: Claude records them with design/workshop/blocks/record.mjs." })); return; }
+  var start = M.map(function (m) { return m.id; }).indexOf(location.hash.slice(1));
+  show(start >= 0 ? start : st.cur || 0);
+  window.PalitBlocks = { show: show, state: st, text: sentText };
+})();
+</script>
+</body>
+</html>

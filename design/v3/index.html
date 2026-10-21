@@ -113,7 +113,9 @@
   .wmenu button .rt { margin-left: auto; padding-left: 14px; color: var(--ink-2); font-size: 12px; }
   .wmenu hr { border: 0; height: 1px; margin: 5px 9px; background: rgba(0, 0, 0, 0.1); }
   .pw-body { position: relative; overflow-y: auto; overflow-x: hidden; min-width: 0; }
-  .pw-body > * { animation: fadeIn 240ms ease-out both; }
+  /* Each view keeps what's inside it inside it (the fan's cards, the table's buttons), under the card and the menus. Its
+     fade-in used to do that by holding its opacity; the views now come in piece by piece, so it's said outright. */
+  .pw-body > * { animation: fadeIn 240ms ease-out both; isolation: isolate; }
   .pw-count { position: absolute; right: 18px; bottom: 12px; z-index: 30; font-size: 11px; color: var(--ink-2); pointer-events: none; background: rgba(255, 255, 255, 0.9); padding: 1px 6px; border-radius: 4px; }
   .tbtn { border: 0; background: rgba(0, 0, 0, 0.05); padding: 4px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; }
   .tbtn:hover { background: rgba(0, 0, 0, 0.09); }
@@ -281,9 +283,11 @@
   .pkeys.on { opacity: 1; }
   .pkeys kbd { min-width: 18px; padding: 7px 13px; border-radius: 9px; background: rgba(29, 29, 31, 0.84); color: #fff; font: 16px var(--font); text-align: center; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
   body.nokeys .pkeys { display: none; }
-  body.playing #stage { pointer-events: none; }
   body.playing #stage, body.playing #stage * { cursor: none !important; }
-  .t.phover { flex-grow: 2.4; z-index: 2; }
+  /* While it plays, a shield over the stage keeps a real mouse from pointing at anything. The drawn cursor does the pointing,
+     and what it points at answers the way it would a mouse (hoverTick, below). */
+  .pshield { position: absolute; inset: 0; z-index: 5; display: none; cursor: none; }
+  body.playing .pshield { display: block; }
 
   /* The menu (entry 116): right-click a color, or Add to palette. A Mac menu, kept neutral so only the colors have color. */
   .menu { position: absolute; z-index: 80; min-width: 216px; max-width: 300px; padding: 5px; box-sizing: border-box; background: rgba(248, 248, 250, 0.95); -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2); border-radius: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.26); font-size: 13px; animation: fadeIn 110ms ease-out both; }
@@ -567,6 +571,54 @@
   .plabel { position: absolute; left: 28px; top: 40px; z-index: 96; padding: 8px 18px; background: rgba(255, 255, 255, 0.96); border-radius: 9px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.18); font-size: 22px; letter-spacing: -0.01em; color: #1d1d1f; opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); pointer-events: none; }
   .plabel.on { opacity: 1; }
   .mbi.phover { background: rgba(0, 0, 0, 0.1); }
+
+  /* ---------- The demo, after Noah's notes on it (October 20) ---------- */
+  /* The keys come in one at a time, in the order they're pressed, and stay a little longer for the viewer */
+  .pkeys.seq kbd { animation: kin 220ms cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes kin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* The cursor fades in once the camera has pulled back from the menu bar */
+  .pcursor { transition: opacity 360ms cubic-bezier(.2, .8, .2, 1); }
+  .pcursor.ghost { opacity: 0; }
+  /* Kept, at the edge: the desktop palette bumps as the color lands, then the menu bar's square as it takes the color.
+     Round two (Noah, October 20: "the initial bump for the color coming into the side chip feels a little off? Can we make it
+     more elegant, with a smoother animation? Feel free to take slightly more time animating the bumps."): a bump is a slow
+     swell and a soft settle, 1 to 1.04 to 0.996 and back over about 800ms, each turn starting and stopping with no jolt, so
+     nothing snaps. The square, being so small, swells a little more. Docked, the palette is moved up by half its height, so a
+     scale about its top edge keeps it centered where it sits and against the edge. */
+  .strips.bump { animation: bump-strips 800ms both; transform-origin: 100% 0; }
+  .strips.left.bump { transform-origin: 0 0; }
+  .strips.float.bump { transform-origin: 50% 50%; }
+  @keyframes bump-strips { 0% { scale: 1; animation-timing-function: cubic-bezier(.33, 0, .2, 1); } 34% { scale: 1.04; animation-timing-function: cubic-bezier(.45, 0, .55, 1); } 70% { scale: 0.996; animation-timing-function: cubic-bezier(.45, 0, .55, 1); } 100% { scale: 1; } }
+  .mbi .mark.bump { animation: bump-mark 800ms both; }
+  @keyframes bump-mark { 0% { scale: 1; animation-timing-function: cubic-bezier(.33, 0, .2, 1); } 34% { scale: 1.18; animation-timing-function: cubic-bezier(.45, 0, .55, 1); } 70% { scale: 0.985; animation-timing-function: cubic-bezier(.45, 0, .55, 1); } 100% { scale: 1; } }
+
+  /* The menu bar's clock, drawn (Noah, October 20: "I also don't know why we're working with a screenshot of the prior
+     version - redo the demo recording if needed, to make it as crisp and clean as possible"). Close on the square, the desk's
+     own clock was a photo blown up about eight times. While a playback shows, a patch of the bar's own color (sampled from
+     the desk, drawClock) covers it, and the clock is set over it the way the Mac sets it, matched against the screenshot at
+     2x: SF Pro at 13, regular, 85% black, the time's colon raised ("case"), each part where the screenshot has it. */
+  /* It covers only the band the letters sit in, its left and bottom edges softened, so the bar's own edge stays the photo's */
+  .mbclock { position: absolute; left: 1291px; top: 0; width: 149px; height: 21px; z-index: 24; pointer-events: none; display: none;
+    -webkit-mask: linear-gradient(to right, transparent, #000 4px), linear-gradient(to bottom, #000 18px, transparent 21px); -webkit-mask-composite: source-in;
+    mask: linear-gradient(to right, transparent, #000 4px), linear-gradient(to bottom, #000 18px, transparent 21px); mask-composite: intersect; }
+  body.mbclock-on .mbclock { display: block; }
+  .mbclock[hidden] { display: none !important; }
+  .mbclock span { position: absolute; top: 4px; font: 400 13px/normal var(--font); letter-spacing: 0.001em; color: rgba(0, 0, 0, 0.85); white-space: pre; font-feature-settings: "case"; }
+
+  /* The specimen card and the share card rise a little as they come in (Noah, October 20: "I think the color card could
+     slightly slide up when it fades in, just to give it a more elevated look"), and rise out as they go */
+  @keyframes cardIn { from { transform: translateY(16px); } }
+  @keyframes cardOut { to { transform: translateY(-8px); } }
+  .pw.polished .sheet > .spec, .pw.polished .sheet > .share { animation: cardIn var(--move) var(--ease) both; }
+  .pw.polished .sheet.out > .spec, .pw.polished .sheet.out > .share { animation: cardOut var(--move) var(--ease) both; }
+  /* One way in and one way out for the playback (Noah: "try to find a direction and stick to it"): the same moves as the app,
+     slower and softer, on a long ease-out coming in and a quicker ease going. --k is the beat's pace (LOCAL). Only the times
+     change here, never the animations themselves, so starting or stopping the playback replays nothing. */
+  body.playing .pw.polished, body.playing .pw.polished .sheet, body.playing .pw.polished .sheet > .spec, body.playing .pw.polished .sheet > .share { animation-duration: calc(540ms * var(--k, 1)); animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  body.playing .pw.polished.out, body.playing .pw.polished .sheet.out, body.playing .pw.polished .sheet.out > .spec, body.playing .pw.polished .sheet.out > .share { animation-duration: calc(300ms * var(--k, 1)); animation-timing-function: cubic-bezier(.4, 0, 1, 1); }
+  body.playing .pw.polished .table.named .chip .nm { animation-duration: calc(480ms * var(--k, 1)); animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  /* Show names on the table: the names fade in, the way everything else comes in */
+  .pw.polished .table.named .chip .nm { animation: fadeIn var(--move) var(--ease) both; }
 </style>
 </head>
 <body>
@@ -741,7 +793,9 @@
   // selected: the colors gathered with ⇧-click, by number (entry 116).
   // view: days, palettes or table. all: Days shows every color by hue (the fan). zoom: one of four stops. open: days opened out.
   // q: search. study: the palette opened as a study. week: the week the weekday column shows. fresh: the first open, before any color.
+  // ?sound=0 keeps it silent, for the voiceover guide (entry 278); st.sound is set from it just below
   var st = { screen: 0, sound: "wood", view: "days", band: null, all: false, zoom: 1, open: {}, q: "", study: null, week: null, fresh: false, selected: [], picking: false, run: null, deskPal: null };
+  if (q.get("sound") === "0") st.sound = "none";
   /* v3's switches (entry 156). The first value of each is v2 as merged on October 18; v3's own settings are Noah's picks
      from the v3 workshop (entry 157), with the polish on (A97). ?cfg=shell:native,letters:bar (and so on) or
      PalitV3.set() still switches any piece, so the workshop and the process story can show what came before. */
@@ -886,20 +940,30 @@
     if (st.deskPal) { var p = palById(st.deskPal); if (p) return p.members.map(byNo).filter(Boolean); }
     return colors.slice().sort(function (a, b) { return b.number - a.number; }).slice(0, 8);
   }
+  /* The demo's keep (Noah, October 20): "I know the actual tool doesn't do that, but I wanted to animate it nicely just to
+     accentuate the actual feature itself." While the playback holds them, a new color waits to land in the desktop palette
+     until the camera gets there, and the menu bar's square keeps the color before it until the camera pans up to it.
+     Outside the playback they never wait. */
+  // ink: the demo opens with the mark in the logo's own black until its first keep lands (round three, Noah, m022: “I think we
+  // could keep the icon black”)
+  var deskHold = { strips: false, mark: false, ink: false };
+  function held(k) { return deskHold[k] && !!(play && play.on); }
   // The menu bar's square shows the last color you kept (entry 160)
   function drawMark() {
+    if (held("mark") && !held("ink")) return;
     var c = colors.reduce(function (a, b) { return !a || b.number > a.number ? b : a; }, null), m = $("mbi");
     // Daeun's logo, once it's in design/brand/brand.js (entry 173): a shape filled with the last color, or the logo as it is
     var B = window.PALIT_BRAND || {}, mk = $("mark");
     mk.classList.toggle("shaped", !!B.markUrl && B.markMode !== "image");
     mk.classList.toggle("image", !!B.markUrl && B.markMode === "image");
     if (B.markUrl) mk.style.setProperty("--mark-url", "url(\"" + B.markUrl + "\")");
-    $("mark").style.setProperty("--mk", c ? c.hex : B.markUrl && B.markMode !== "image" ? "#c7c7cc" : "transparent");
+    $("mark").style.setProperty("--mk", held("ink") ? "#1d1d1f" : c ? c.hex : B.markUrl && B.markMode !== "image" ? "#c7c7cc" : "transparent");
     m.setAttribute("aria-label", c ? "Palit. Last kept: " + label(c) : "Palit. Nothing kept yet");
     m.title = c ? "Palit: " + title(c) : "Palit";
   }
   function drawStrips(landed) {
     drawMark();
+    if (held("strips")) return;
     strips.textContent = "";
     strips.appendChild(el("div", { class: "grip", title: "Drag to move the palette; drop it at an edge to dock it", "aria-hidden": "true" }));
     if (st.deskPal) strips.appendChild(el("div", { class: "pinmark", title: "Pinned: " + palName(palById(st.deskPal)) }));
@@ -1079,13 +1143,38 @@
     if (CFG.search !== "icon") $("q").parentNode.classList.remove("open");
     if (CFG.table === "off" && st.view === "table") st.view = "palettes";
   }
-  var hideT = null;
-  function openWindow() { if (st.picking) stopPicking(); clearTimeout(hideT); $("pw").classList.remove("out"); $("pw").hidden = false; $("mbi").setAttribute("aria-expanded", "true"); render(); }
-  function closeWindow() {
-    closeMenus(); closeSheet(); closeWeeks(); st.selected = [];
-    var pw = $("pw");
-    if (CFG.polish === "on" && !pw.hidden && !play.on) { pw.classList.add("out"); clearTimeout(hideT); hideT = setTimeout(function () { pw.hidden = true; pw.classList.remove("out"); }, 240); }
-    else pw.hidden = true;
+  var hideT = null, goneSheet = null, pwMove = null;
+  // Opening the window, what's in it comes in the way a view does when the screen changes (entrance, below). In the playback
+  // the window itself rises 10px as it fades in, the way everything else comes in there.
+  function openWindow() {
+    if (st.picking) stopPicking(); clearTimeout(hideT);
+    var pw = $("pw"), opening = pw.hidden || pw.classList.contains("out");
+    if (goneSheet) { goneSheet.remove(); goneSheet = null; }
+    if (pwMove) { pwMove.cancel(); pwMove = null; }
+    pw.classList.remove("out"); pw.hidden = false; $("mbi").setAttribute("aria-expanded", "true");
+    if (opening && play.on && CFG.polish === "on" && SPEED === 1 && pw.animate) pwMove = pw.animate([{ transform: "translateY(10px)" }, { transform: "none" }], { duration: 560 * LOCAL, easing: "cubic-bezier(.22, 1, .36, 1)" });
+    renderMode = opening ? { kind: "enter" } : null; render(); renderMode = null;
+  }
+  // instant: for a reset (start), with nothing to watch. A close fades the way a person's does, in the playback too.
+  // A card open in the window goes with it, fading as one (Noah, October 20: "something weird happens with the colors when you
+  // go to close the palette window"): the card used to be taken away first, so for the moment the window took to fade, the
+  // palettes under its frosted glass showed sharp, every color at once. Now nothing in the window changes as it goes.
+  function closeWindow(instant) {
+    var pw = $("pw"), fade = CFG.polish === "on" && !pw.hidden && instant !== true;
+    closeMenus(); closeWeeks(); st.selected = [];
+    if (fade && sheet) { if (goneSheet) goneSheet.remove(); goneSheet = sheet; sheet = null; sheetRefresh = null; goneSheet.style.pointerEvents = "none"; }
+    else closeSheet();
+    if (fade) {
+      var ms = play.on ? 300 * LOCAL / SPEED : 240;
+      pw.classList.add("out"); clearTimeout(hideT);
+      if (pwMove) { pwMove.cancel(); pwMove = null; }
+      if (play.on && SPEED === 1 && pw.animate) pwMove = pw.animate([{ transform: "none" }, { transform: "translateY(-6px)" }], { duration: ms, easing: "cubic-bezier(.4, 0, 1, 1)", fill: "forwards" });
+      hideT = setTimeout(function () {
+        pw.hidden = true; pw.classList.remove("out");
+        if (pwMove) { pwMove.cancel(); pwMove = null; }
+        if (goneSheet) { goneSheet.remove(); goneSheet = null; }
+      }, ms);
+    } else { pw.hidden = true; if (goneSheet) { goneSheet.remove(); goneSheet = null; } }
     $("mbi").setAttribute("aria-expanded", "false");
   }
   $("mbi").addEventListener("click", function (e) { e.stopPropagation(); if ($("pw").hidden) openWindow(); else closeWindow(); });
@@ -1128,7 +1217,8 @@
   // One type scale (A97): 11, 13, 17 and 26, so a view's own sizes map onto it
   function ts(n) { return CFG.polish !== "on" ? n : n >= 14 ? 17 : 13; }
   function setZoom(z) {
-    z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return; st.zoom = z; morph(function () { render(true); });
+    z = clamp(z, 0, Z.length - 1); if (z === st.zoom) return;
+    var way = z > st.zoom ? 1 : -1; st.zoom = z; swap(function () { render(true); }, { zoom: way, anchor: true });
     if (CFG.zoom === "plain" && rowOn()) { rowSay([el("span", { text: Z[z].label })], 1300); return; }
     if (CFG.zoom === "plain") {
       if (znameEl) znameEl.remove();
@@ -1138,86 +1228,131 @@
       var mine = znameEl; setTimeout(function () { if (mine.parentNode) mine.remove(); }, 1400);
     }
   }
-  /* The zoom morphs (Noah, October 19): each color slides and grows from where it was to where it lands, the dates ease to
-     their new size, and what a stop adds (places, numbers, the photos you found them in) fades in as the colors settle.
-     It's FLIP: measure everything, draw the new stop, then play each piece back from its old box to its new one, on v3's
-     one ease. Opening a day out morphs the same way. Your place stays put: the first day in sight stays where it was. */
-  var MORPH_EASE = "cubic-bezier(.2, .8, .2, 1)";
-  function morph(change) {
-    var body = $("body"), playing = !!(play && play.on);
-    if (CFG.polish !== "on" || $("pw").hidden || !body.firstElementChild || calm() || (playing && SPEED > 1) || typeof body.animate !== "function") { change(); return; }
-    var ms = 460 * (playing ? LOCAL : 1), k = scaleK(), vr = body.getBoundingClientRect(), slack = 160 * k;
-    function seen(r) { return r.width > 0 && r.bottom > vr.top - slack && r.top < vr.bottom + slack; }
-    // What each piece is, so the same color, date or place can be found again after the redraw
-    function pieces(root) {
-      var out = {}, seenW = {};
-      root.querySelectorAll(".t[data-n]").forEach(function (t) { out["t" + t.getAttribute("data-n")] = { el: t, kind: "tile" }; });
-      root.querySelectorAll(".day").forEach(function (d) {
-        var day = d.getAttribute("data-day"), h = d.querySelector(".dh");
-        if (!h) return;
-        if (h.children[0]) out["b" + day] = { el: h.children[0], kind: "text" };
-        if (h.querySelector("span")) out["s" + day] = { el: h.querySelector("span"), kind: "move" };
-        d.querySelectorAll(".pg > .w, .hunt > .st, .hunt > .src").forEach(function (w) {
-          var src = w.classList.contains("src"), key = (src ? "p" : "w") + day + "|" + (src ? w.parentNode.querySelector(".st .w") : w.querySelector("b, .w") || w).textContent;
-          seenW[key] = (seenW[key] || 0) + 1;
-          out[key + "|" + seenW[key]] = { el: w, kind: src ? "photo" : "move" };
-        });
-      });
-      return out;
+  /* How the screen changes (Noah, October 20): "I also don't really like how the colors in today just jump to where they
+     should be when the screen changes. Let's change that so they very elegantly and quickly fade out, but then quickly fade
+     back into where they should be, with just a little bit of movement: not too much, not too quick or jagged, but taking
+     time and being elegant." And of the zoom: "it should be a little bit more elegant in how the animations play, how we see
+     that happen, and the fade-in." So a change of view, a day opening out or folding, each stop of the zoom, and the window
+     opening all go one way: what's on screen fades out in 180ms, then the new view comes in where it belongs, each piece
+     rising 8px over 380ms, a beat after the one before it, all of it in within 600ms. The zoom doesn't rise: it settles from
+     a little smaller going in, a little larger going out. Your place stays put: the first day in sight stays where it was.
+     Reduced motion: quick fades, and nothing moves. This replaces the FLIP morph of October 19. */
+  // What comes in, piece by piece, in reading order; none of these sits inside another
+  var PIECES = ".dh, .strip, .row > .t, .pg > .w, .pg .cs > div, .hunt > .st, .hunt > .src, .hunt .cs > .t, .days > .empty, .sub-h, .pals > .lbl, .pins > .t, .pal, .study > .back, .study-h, .col, .ver, .res .q, .res li";
+  var swapping = null, renderMode = null;
+  // The playback is timed to the voice, so its motion keeps its beat's pace (LOCAL)
+  function motionK() { return play && play.on ? LOCAL : 1; }
+  /* The playback's way in and out (Noah, October 20, on every section: "slowing down/decorating of the appear animations -
+     just slightly to make it feel more elevated and timed", and "try to find a direction and stick to it"). One way for
+     everything: a piece comes in rising 12px as it fades, over 540ms on a long ease-out, a beat after the piece before it,
+     every piece in by about 900ms; what goes rises 6px as it fades, quicker. The zoom keeps its settle, slower too. The app's
+     own pace, when no playback runs, stays as it was. */
+  var DEMO_IN = "cubic-bezier(.22, 1, .36, 1)", DEMO_OUT = "cubic-bezier(.4, 0, 1, 1)";
+  function demoMotion() { return !!(play && play.on) && !calm(); }
+  // Where the window is looking, as a transform-origin inside the view, so a scale settles around what you can see
+  function sightOrigin(root) { var b = $("body"); return "50% " + Math.round(b.scrollTop + b.clientHeight / 2 - root.offsetTop) + "px"; }
+  function swap(change, o) {
+    o = o || {};
+    var body = $("body"), old = body.firstElementChild, playing = !!(play && play.on);
+    if (swapping) { swapping.change = change; swapping.o = o; return; }   // still on its way out: the newest state comes in
+    if (CFG.polish !== "on" || $("pw").hidden || !old || (playing && SPEED > 1) || typeof old.animate !== "function") { change(); return; }
+    closeMenus(); renderBar();   // the bar answers at once, and the view follows it
+    var K = motionK(), still = calm(), z = o.zoom || 0, anchor = o.anchor ? sightAnchor() : null, demo = demoMotion();
+    old.style.pointerEvents = "none";
+    if (z && !still) old.style.transformOrigin = sightOrigin(old);
+    var to = still ? "none" : z ? "scale(" + (1 + 0.012 * z) + ")" : demo ? "translateY(-6px)" : "none";
+    var a = old.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: to }], { duration: (still ? 120 : demo ? 240 : 180) * K, easing: DEMO_OUT, fill: "forwards" });
+    swapping = { change: change, o: o, anim: a, anchor: anchor };
+    a.onfinish = function () {
+      var s = swapping; if (!s || s.anim !== a) return;
+      swapping = null;
+      renderMode = { kind: "swap", zoom: s.o.zoom || 0, anchor: s.o.anchor ? s.anchor : null, open: !!s.o.open };
+      try { s.change(); } finally { renderMode = null; }
+    };
+  }
+  // The first day in sight, and how far down the window it sits, so the redraw can keep it there
+  function sightAnchor() {
+    var body = $("body"), vr = body.getBoundingClientRect(), a = null;
+    if (!body.scrollTop) return null;
+    Array.prototype.some.call(body.querySelectorAll(".day"), function (d) { var r = d.getBoundingClientRect(); if (r.bottom > vr.top + 2) { a = { day: d.getAttribute("data-day"), y: r.top - vr.top }; return true; } return false; });
+    return a;
+  }
+  function keepAnchor(a) {
+    var body = $("body"), nd = body.querySelector('.day[data-day="' + a.day + '"]');
+    if (nd) body.scrollTop += (nd.getBoundingClientRect().top - body.getBoundingClientRect().top - a.y) / scaleK();
+  }
+  // The new view comes in: each piece in sight fades in and rises into place, a beat after the one before it. Pieces out of
+  // sight are simply there. A spectrum, a table or the first open comes in whole.
+  function entrance(root, mode) {
+    var body = $("body");
+    root.style.animation = "none";
+    root.querySelectorAll(".t").forEach(function (t) { t.style.animation = "none"; });
+    if (typeof root.animate !== "function") return;
+    var K = motionK(), still = calm(), z = mode.zoom || 0, demo = demoMotion(), lead = mode.kind === "enter" ? (demo ? 120 : 60) : 0;
+    if (demo && root.matches(".fan")) { fanEntrance(root, K, lead); return; }
+    if (demo && mode.open && dayEntrance(root, K)) return;
+    var vr = body.getBoundingClientRect(), slack = 40 * scaleK();
+    var list = root.matches(".fan, .table, .first") ? [root] : Array.prototype.filter.call(root.querySelectorAll(PIECES), function (n) { var r = n.getBoundingClientRect(); return r.width > 0 && r.bottom > vr.top - slack && r.top < vr.bottom + slack; });
+    if (z && !still && list[0] !== root) {
+      root.style.transformOrigin = sightOrigin(root);
+      root.animate([{ transform: "scale(" + (1 - 0.015 * z) + ")" }, { transform: "none" }], { duration: (demo ? 600 : 420) * K, easing: demo ? DEMO_IN : "cubic-bezier(.2, .8, .2, 1)" });
     }
-    var before = pieces(body), was = {};
-    Object.keys(before).forEach(function (key) { var r = before[key].el.getBoundingClientRect(); if (seen(r)) was[key] = r; });
-    // The first day in sight, and how far down the window it sits
-    var anchor = null;
-    Array.prototype.some.call(body.querySelectorAll(".day"), function (d) { var r = d.getBoundingClientRect(); if (r.bottom > vr.top + 2) { anchor = { day: d.getAttribute("data-day"), y: r.top - vr.top }; return true; } return false; });
-    // The photos that won't be there after: a copy stays where each was and fades away
-    var ghosts = [];
-    Object.keys(before).forEach(function (key) { if (before[key].kind === "photo" && was[key]) ghosts.push({ key: key, node: before[key].el.cloneNode(true), r: was[key] }); });
-    change();
-    if (anchor && body.scrollTop > 0) {
-      var nd = body.querySelector('.day[data-day="' + anchor.day + '"]');
-      if (nd) body.scrollTop += nd.getBoundingClientRect().top - vr.top - anchor.y;
-    }
-    var after = pieces(body), root = body.firstElementChild;
-    root.style.animation = "none";   // no fade for the whole view: the colors carry it
-    function late(node, at) {   // waits, then fades in as the colors land
-      var op = getComputedStyle(node).opacity;
-      node.animate([{ opacity: 0 }, { opacity: 0, offset: at }, { opacity: op }], { duration: ms, easing: "linear" });
-    }
-    Object.keys(after).forEach(function (key) {
-      var p = after[key], o = was[key], node = p.el, r = node.getBoundingClientRect();
-      if (!o && !seen(r)) return;
-      if (p.kind === "tile") node.style.animation = "none";
-      if (!o) {   // new at this stop
-        if (p.kind === "photo") node.animate([{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "none" }], { duration: ms, easing: MORPH_EASE, delay: ms * 0.25, fill: "backwards" });
-        else late(node, 0.45);
-        return;
-      }
-      var dx, dy, sx = 1, sy = 1, origin = "0 0";
-      if (p.kind === "tile") {
-        dx = (o.left + o.width / 2 - r.left - r.width / 2) / k; dy = (o.top + o.height / 2 - r.top - r.height / 2) / k;
-        sx = r.width ? o.width / r.width : 1; sy = r.height ? o.height / r.height : 1; origin = "50% 50%";
-      } else {
-        dx = (o.left - r.left) / k; dy = (o.top - r.top) / k;
-        if (p.kind === "text" && r.height) sx = sy = o.height / r.height;
-      }
-      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && Math.abs(sx - 1) < 0.005 && Math.abs(sy - 1) < 0.005) return;
-      node.animate([{ transform: "translate(" + dx.toFixed(2) + "px," + dy.toFixed(2) + "px) scale(" + sx.toFixed(4) + "," + sy.toFixed(4) + ")", transformOrigin: origin }, { transform: "none", transformOrigin: origin }], { duration: ms, easing: MORPH_EASE });
-      // A color's name and pin would stretch with it, so they wait and fade in as it lands
-      if (p.kind === "tile" && (Math.abs(sx - 1) > 0.02 || Math.abs(sy - 1) > 0.02)) node.querySelectorAll(".nm, .pin").forEach(function (x) { late(x, 0.6); });
-    });
-    // What else a stop adds: the numbers under the colors, the chevrons, what's said about a hunt
-    body.querySelectorAll(".pls .lbl, .dh i, .hunt .st .v, .empty").forEach(function (x) { if (seen(x.getBoundingClientRect())) late(x, 0.5); });
-    var br = body.getBoundingClientRect();
-    ghosts.forEach(function (g) {
-      if (after[g.key]) return;
-      var n = g.node;
-      n.style.cssText += ";position:absolute;margin:0;pointer-events:none;z-index:3;animation:none;left:" + ((g.r.left - br.left) / k) + "px;top:" + ((g.r.top - br.top) / k + body.scrollTop) + "px;width:" + (g.r.width / k) + "px;height:" + (g.r.height / k) + "px";
-      body.appendChild(n);
-      var a = n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms * 0.5, easing: MORPH_EASE, fill: "forwards" });
-      a.onfinish = function () { n.remove(); };
+    // 18ms apart, closer together when there are many, so the last of them is in by about 600ms; in the playback, about 30ms
+    // apart and in by about 900ms. A stop of the zoom is only a little slower there ("just slightly"), its pieces rising 6px,
+    // since the whole view is settling too, and in by about 750ms, so each stop has a moment in sight before the next.
+    var span = demo ? (z ? 270 : 330) : 200, step = still ? 0 : Math.max(demo ? 12 : 8, Math.min(demo ? 30 : 18, span / Math.max(1, list.length - 1)));
+    list.forEach(function (n, i) {
+      var from = still || (z && n !== root && !demo) ? "none" : "translateY(" + (demo ? (z ? 6 : 12) : 8) + "px)";
+      n.animate([{ opacity: 0, transform: from }, { opacity: 1, transform: "none" }], { duration: (still ? 160 : demo ? (z ? 480 : 540) : 380) * K, delay: (lead + Math.min(span, i * step)) * K, easing: demo ? DEMO_IN : "cubic-bezier(.2, .8, .2, 1)", fill: "backwards" });
     });
   }
+  /* A day opening out, in the playback (Noah, October 20: "The transition to opening the today page looks pretty good, but I
+     feel as though the animation could be just a little bit more fancy and slower"): the day's name first, then each place in
+     turn, its words, then its photo settling into its frame, then its colors one after another along the line; whatever else
+     is in sight follows. Each piece rises 14px over 620ms. False when no day in sight has opened, for the usual entrance. */
+  function dayEntrance(root, K) {
+    var body = $("body"), vr = body.getBoundingClientRect(), slack = 40 * scaleK();
+    function inSight(n) { var r = n.getBoundingClientRect(); return r.width > 0 && r.bottom > vr.top - slack && r.top < vr.bottom + slack; }
+    var opened = Array.prototype.filter.call(root.querySelectorAll(".day"), function (d) { return d.querySelector(".hunt") && inSight(d); })[0];
+    if (!opened) return false;
+    var seq = [[opened.querySelector(".dh"), 0, false]], last = 0;
+    Array.prototype.filter.call(opened.querySelectorAll(".hunt"), inSight).forEach(function (h, r) {
+      var t0 = 150 + r * 130;
+      seq.push([h.querySelector(".st"), t0, false], [h.querySelector(".src"), t0 + 70, true]);
+      Array.prototype.forEach.call(h.querySelectorAll(".cs > .t"), function (c, i) { var t = t0 + 150 + Math.min(i, 8) * 50; seq.push([c, t, false]); last = Math.max(last, t); });
+    });
+    Array.prototype.filter.call(root.querySelectorAll(PIECES), function (n) { return !opened.contains(n) && inSight(n); }).forEach(function (n, i) { seq.push([n, last + 90 + Math.min(240, i * 24), false]); });
+    seq.forEach(function (s) {
+      var n = s[0]; if (!n) return;
+      n.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 620 * K, delay: s[1] * K, easing: DEMO_IN, fill: "backwards" });
+      var img = s[2] && n.querySelector("img");
+      if (img) img.animate([{ transform: "scale(1.08)" }, { transform: "none" }], { duration: 1050 * K, delay: s[1] * K, easing: DEMO_IN, fill: "backwards" });
+    });
+    return true;
+  }
+  /* Spectrum coming in, in the playback (Noah, October 20: "The appear animation could again, be slightly more elevated,
+     slowed, and decorated/timed"): the name and where it's from rise into place, then the cards, the chosen one first and the
+     rest outward from it, each rising along its own line from the hub, so the hand of cards opens out from the middle */
+  function fanEntrance(root, K, lead) {
+    root.style.animation = "none";
+    var cap = root.querySelector(".fan-cap");
+    if (cap) Array.prototype.forEach.call(cap.children, function (n, i) { n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 540 * K, delay: (lead + 60 + i * 80) * K, easing: DEMO_IN, fill: "backwards" }); });
+    Array.prototype.forEach.call(root.querySelectorAll(".fan-card"), function (c) {
+      if (c.style.display === "none") return;
+      var rank = Math.round((290 - Number(c.style.zIndex || 290)) / 20);   // 0 for the chosen card, 1 for those beside it, and so on
+      // From there to wherever the fan has it (offset 0, and nothing after it: the card's own place is where it ends)
+      c.animate([{ opacity: 0, transform: c.style.transform + " translateY(20px)", offset: 0 }], { duration: 640 * K, delay: (lead + rank * 36) * K, easing: DEMO_IN, fill: "backwards" });
+    });
+  }
+  // The same view drawn again (a pin, a name, a palette kept): what was there stays put, and only a color that's new fades in
+  function settleSame(root, had) {
+    root.style.animation = "none";
+    root.querySelectorAll(".t").forEach(function (t) { var n = t.getAttribute("data-n"); if (n === null || had[n]) t.style.animation = "none"; });
+  }
+  // A view's state, to tell a real change of view from a click on the view you're already in
+  function viewKey() { return [st.fresh, st.q.trim() ? "q" : "", st.view, st.all, st.study, st.band].join("|"); }
+  // Change the state, then swap to the view it makes, or just draw it again when the view is the same
+  function goView(mutate) { var k0 = viewKey(); mutate(); if (viewKey() === k0) render(); else swap(function () { render(); }); }
   function zoomKey(d) {
     if (!d) { setZoom(ZOOM_HOME); return; }
     var b = $(d < 0 ? "z-out" : "z-in"); b.classList.add("flash"); setTimeout(function () { b.classList.remove("flash"); }, 170);
@@ -1225,7 +1360,7 @@
   }
   $("z-out").addEventListener("click", function () { setZoom(st.zoom - 1); });
   $("z-in").addEventListener("click", function () { setZoom(st.zoom + 1); });
-  $("wheel").addEventListener("click", function () { st.view = "days"; st.all = !st.all; st.study = null; st.q = ""; $("q").value = ""; render(); });
+  $("wheel").addEventListener("click", function () { goView(function () { st.view = "days"; st.all = !st.all; st.study = null; st.q = ""; $("q").value = ""; }); });
   $("q").addEventListener("input", function () { st.q = $("q").value; render(); });
   function openSearch() { var lab = $("q").parentNode; lab.classList.add("open"); setTimeout(function () { $("q").focus(); }, 0); }
   $("q").parentNode.addEventListener("click", function () { if (CFG.search === "icon") openSearch(); });
@@ -1233,9 +1368,15 @@
   $("q").addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Escape") { $("q").value = ""; st.q = ""; render(); $("q").blur(); } });
 
   function shown() { return colors.filter(function (c) { return st.band ? c.band === st.band : true; }).sort(function (a, b) { return b.number - a.number; }); }
+  // renderMode: set while swap() or openWindow() draws, so the new view comes in (entrance); otherwise the same view drawn
+  // again stays put (settleSame), and a different one fades in whole, as before
   function render(keepScroll) {
+    var mode = renderMode;
+    // Drawn straight away while a swap was on its way out: this draw is that change, so it comes in the same way
+    if (swapping && !mode) { var s0 = swapping; swapping = null; s0.anim.onfinish = null; s0.anim.cancel(); mode = { kind: "swap", zoom: 0, anchor: null }; }
     closeMenus(); closeWeeks(); applyCfg();
-    var body = $("body"), top = body.scrollTop;
+    var body = $("body"), top = body.scrollTop, was = body.firstElementChild, wasKind = was ? was.classList[0] : null, had = {};
+    if (was && !mode) was.querySelectorAll(".t[data-n]").forEach(function (t) { had[t.getAttribute("data-n")] = 1; });
     renderBar();
     body.textContent = "";
     var list = shown();
@@ -1247,6 +1388,12 @@
     renderRail(list);
     countLine();
     body.scrollTop = keepScroll ? top : 0;
+    if (mode && mode.anchor) keepAnchor(mode.anchor);
+    var root = body.firstElementChild;
+    if (CFG.polish === "on" && root) {
+      if (mode) entrance(root, mode);
+      else if (was && root.classList[0] === wasKind) settleSame(root, had);
+    }
     drawSelPill();
   }
 
@@ -1258,7 +1405,7 @@
       var has = scope.some(function (c) { return c.band === x[0]; }), on = st.band === x[0];
       var b = el("button", { type: "button", "aria-pressed": String(on), "aria-label": x[1], title: x[1], text: x[0] });
       b.disabled = st.fresh || (!has && !on);
-      b.addEventListener("click", function () { st.band = on ? null : x[0]; render(); });
+      b.addEventListener("click", function () { goView(function () { st.band = on ? null : x[0]; }); });
       L.appendChild(b);
     });
     $("wheel").setAttribute("aria-pressed", String(st.all && st.view === "days" && !st.q));
@@ -1268,8 +1415,10 @@
       var on = !st.q.trim() && (v[0] === "spectrum" ? st.view === "days" && st.all : v[0] === "days" ? st.view === "days" && !(CFG.spectrum === "tab" && st.all) : v[0] === "palettes" ? st.view === "palettes" || (st.view === "table" && CFG.table === "palette") : st.view === v[0]);
       var b = el("button", { type: "button", "aria-pressed": String(on), text: v[1] });
       b.addEventListener("click", function () {
-        if (v[0] === "spectrum") { st.view = "days"; st.all = true; } else { st.view = v[0]; if (v[0] === "days") st.all = false; }
-        st.study = null; st.q = ""; $("q").value = ""; render();
+        goView(function () {
+          if (v[0] === "spectrum") { st.view = "days"; st.all = true; } else { st.view = v[0]; if (v[0] === "days") st.all = false; }
+          st.study = null; st.q = ""; $("q").value = "";
+        });
       });
       T.appendChild(b);
     });
@@ -1495,7 +1644,8 @@
         compact ? null : el("span", { class: "num", text: g.list.length + (g.list.length === 1 ? " color" : " colors") + " from " + places.length + (places.length === 1 ? " place" : " places") }),
         el("i", { "aria-hidden": "true" })
       ]);
-      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; morph(function () { render(true); }); });
+      // Opening a day out fades into that day's hunt, and folding it fades back (Noah, October 20)
+      head.addEventListener("click", function () { if (z.mode === "hunt") return; st.open[g.day] = !open; swap(function () { render(true); }, { anchor: true, open: !open }); });
       var content, today = g.day === TODAY;
       if (open) {
         content = el("div", { style: "--hh:" + (today && z.mode === "hunt" ? 124 : (z.hh || 96)) + "px" }, places.map(function (p) {
@@ -1664,16 +1814,28 @@
   function paletteRow(p) {
     var cs = p.members.map(byNo).filter(Boolean);
     var onDesk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
-    onDesk.addEventListener("click", function (e) { e.stopPropagation(); st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
+    // The button's words change length, so the palette's strip gets more room or less. The button eases to its new width
+    // around its new words, and Share and the strip follow it, so the strip grows into the room, or gives way, instead of
+    // snapping (Noah, October 21: “the palette snaps to fill the empty space - could it subtly just grow to fit the remainder?”)
+    onDesk.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var was = onDesk.offsetWidth;
+      st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true);
+      var nb = $("body").querySelector('.pal[data-p="' + p.id + '"] .acts .tbtn:last-child'), now = nb ? nb.offsetWidth : was;
+      if (!nb || !nb.animate || CFG.polish !== "on" || calm() || Math.abs(now - was) <= 1) return;
+      nb.style.boxSizing = "border-box"; nb.style.whiteSpace = "nowrap"; nb.style.overflow = "hidden";
+      nb.animate([{ width: was + "px" }, { width: now + "px" }], { duration: 460 * motionK(), easing: demoMotion() ? DEMO_IN : "cubic-bezier(.2, .8, .2, 1)" })
+        .onfinish = function () { nb.style.boxSizing = nb.style.whiteSpace = nb.style.overflow = ""; };
+    });
     var share = el("button", { type: "button", class: "tbtn", text: "Share" });
     share.addEventListener("click", function (e) { e.stopPropagation(); openShare(palName(p), cs.map(function (c) { return { hex: c.hex, name: title(c) }; })); });
     share.disabled = !cs.length;
-    var row = el("div", { class: "pal open-able", role: "button", tabindex: "0", "aria-label": "Open " + palName(p) + " as a study" }, [
+    var row = el("div", { class: "pal open-able", role: "button", tabindex: "0", "data-p": p.id, "aria-label": "Open " + palName(p) + " as a study" }, [
       el("div", null, [el("p", { class: "pn" + (p.name ? "" : " ph"), text: palName(p) }), el("p", { class: "pm num", text: cs.length + (cs.length === 1 ? " color, " : " colors, ") + (p.day === TODAY ? "today" : p.day) })]),
       el("div", { class: "pstrip" }, cs.length ? cs.map(sw) : [el("i", { class: "none", text: "No colors yet. Right-click a color to add it." })]),
       el("div", { class: "acts" }, [share, onDesk])
     ]);
-    function open() { st.study = p.id; render(); }
+    function open() { goView(function () { st.study = p.id; }); }
     row.addEventListener("click", open);
     row.addEventListener("keydown", function (e) { if (e.key === "Enter") open(); });
     return row;
@@ -1697,7 +1859,7 @@
   function studyView(p) {
     var cs = p.members.map(byNo).filter(Boolean);
     var back = el("button", { type: "button", class: "back", text: "Palettes" });
-    back.addEventListener("click", function () { st.study = null; render(); });
+    back.addEventListener("click", function () { goView(function () { st.study = null; }); });
     // Until you name a palette it keeps a placeholder from where its colors came from (A24); click the name to give it yours.
     var nm = el("p", { class: "sn2", contenteditable: "true", role: "textbox", "aria-label": "Name this palette", "data-placeholder": p.placeholder || "Untitled palette", spellcheck: "false" });
     nm.textContent = p.name || "";
@@ -1710,7 +1872,7 @@
     var desk = el("button", { type: "button", class: "tbtn", "aria-pressed": String(st.deskPal === p.id), text: st.deskPal === p.id ? "On the desktop" : "Pin to the desktop" });
     desk.addEventListener("click", function () { st.deskPal = st.deskPal === p.id ? null : p.id; drawStrips(); render(true); });
     var onTable = CFG.table === "palette" ? el("button", { type: "button", class: "tbtn", text: "Try on the table" }) : null;
-    if (onTable) onTable.addEventListener("click", function () { placed = []; takeToTableQuiet(p.members); st.view = "table"; st.study = null; render(); });
+    if (onTable) onTable.addEventListener("click", function () { placed = []; takeToTableQuiet(p.members); goView(function () { st.view = "table"; st.study = null; }); });
     var keepV = el("button", { type: "button", class: "tbtn ink", text: "Keep this version" });
     keepV.addEventListener("click", function () { p.version = (p.version || 0) + 1; p.keptCodes = cs.map(function (c) { return c.hex; }); render(true); toast("Kept as version " + p.version + ". Everyone you share it with gets these codes.", cs); });
     var ver = p.version ? "Version " + p.version + ", kept today. Everyone you share it with gets the same codes." : "Each color on white, mid gray and black, the way the surface changes it. Keep a version, and everyone you share it with gets the same codes.";
@@ -1736,7 +1898,7 @@
     var fresh = list.filter(function (c) { return !placed.some(function (x) { return x.n === c.number; }); });
     fresh.forEach(function (c) { var f = freeSpot(); placed.push({ n: c.number, x: f.x, y: f.y }); });
     toast(fresh.length ? (fresh.length > 1 ? "Taken to table: " + fresh.length + " colors" : "Taken to table") : "Already on the table", list);
-    if (CFG.table === "palette" && !$("pw").hidden && st.view !== "table") { closeSheet(); st.view = "table"; st.study = null; st.all = false; render(); return; }
+    if (CFG.table === "palette" && !$("pw").hidden && st.view !== "table") { closeSheet(); goView(function () { st.view = "table"; st.study = null; st.all = false; }); return; }
     if (st.view === "table" && !$("pw").hidden) render(true);
   }
   function tableView() {
@@ -1749,7 +1911,7 @@
     keepP.addEventListener("click", function () { var cs = placed.map(function (p) { return byNo(p.n); }).filter(Boolean); if (cs.length) newPalette(cs); });
     keepP.disabled = !placed.length;
     t.appendChild(el("div", { class: "acts" }, [names, clear, keepP]));
-    if (CFG.table === "palette") { var tback = el("button", { type: "button", class: "back tback", text: "Palettes" }); tback.addEventListener("click", function () { st.view = "palettes"; render(); }); t.appendChild(tback); }
+    if (CFG.table === "palette") { var tback = el("button", { type: "button", class: "back tback", text: "Palettes" }); tback.addEventListener("click", function () { goView(function () { st.view = "palettes"; }); }); t.appendChild(tback); }
     // Three grounds down the right: white, mid gray and black, to set a color on (Albers; deep dive 1)
     [["#ffffff", "On white"], ["#7f7f7f", "On mid gray"], ["#111111", "On black"]].forEach(function (g, i) {
       t.appendChild(el("div", { class: "ground", style: "left:900px;top:" + (56 + i * 196) + "px;background:" + g[0] + (i ? "" : ";box-shadow:inset 0 0 0 1px #e2e2e4") }, [el("p", { text: g[1] })]));
@@ -2013,7 +2175,7 @@
     closeMenus(); sheetRefresh = null;
     if (!sheet) return;
     var s0 = sheet; sheet = null;
-    if (fade === true && CFG.polish === "on") { s0.classList.add("out"); s0.style.pointerEvents = "none"; setTimeout(function () { s0.remove(); }, 240); }
+    if (fade === true && CFG.polish === "on") { s0.classList.add("out"); s0.style.pointerEvents = "none"; setTimeout(function () { s0.remove(); }, play.on ? 300 * LOCAL / SPEED : 240); }
     else s0.remove();
   }
   function openCard(c, trail) {
@@ -2135,7 +2297,7 @@
   function showScreen(i) {
     st.screen = i; var sc = screen();
     desk.src = sc.data || "../v2/screens/" + sc.file;
-    canvasFor(sc, function () {});
+    canvasFor(sc, function () { if (screen() === sc) drawClock(); });
     var m = $("mbi"); m.style.left = (sc.icon[0] + 7) + "px"; m.style.top = sc.icon[1] + "px";
     $("c-credit").textContent = sc.credit || ""; $("c-credit").title = sc.credit || "";
     $("c-screen").value = String(i);
@@ -2160,7 +2322,7 @@
     if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); runPlay(); return; }
     if ((e.key === "k" || e.key === "K") && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleKeys(); return; }
     if (e.code === "KeyC" && e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (st.picking) stopPicking(); else startPicking(); return; }
-    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(true); else if (wmenu) closeWeeks(); else if (st.selected.length) clearSel(); else if (st.study) { st.study = null; render(); } else closeWindow(); return; }
+    if (e.key === "Escape") { if (st.picking) stopPicking(); else if (sheet) closeSheet(true); else if (wmenu) closeWeeks(); else if (st.selected.length) clearSel(); else if (st.study) { goView(function () { st.study = null; }); } else closeWindow(); return; }
     if (e.key === "Enter" && st.picking && st.run) { stopPicking(); return; }
     // ⌘− and ⌘+ step through the four stops, ⌘0 goes back to your names (A87). While the window is open they're Palit's, not the browser's.
     if ((e.metaKey || e.ctrlKey) && !e.altKey && !$("pw").hidden) {
@@ -2179,7 +2341,8 @@
   addEventListener("resize", fit);
 
   function start(done) {
-    closeWindow(); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
+    if (swapping) { swapping.anim.onfinish = null; swapping.anim.cancel(); swapping = null; }
+    closeWindow(true); closeShare(); if (st.picking) stopPicking(); if (namer) { namer.remove(); namer = null; }
     strips.classList.remove("open"); deskAt = { side: "right" }; placeStrips();
     st.view = "days"; st.band = null; st.all = false; st.zoom = ZOOM_HOME; st.open = {}; st.q = ""; st.study = null; st.week = null; st.fresh = false; st.deskPal = null; st.selected = []; fanPos = null; curDay = null;
     placed = []; tableNames = false; $("q").value = ""; hideHuntPill();
@@ -2234,14 +2397,72 @@
 
   /* ---------- Playback (entry 112): the demo storyboard, shot by shot, for recording hands-free.
      P or ?play starts it, Esc or P stops it, K hides the keystrokes. Times are the storyboard's (entry 111). ---------- */
-  var play = { on: false, token: 0, pos: { x: 1180, y: 700 }, t0: 0 };
+  var play = { on: false, demo: false, users: false, token: 0, pos: { x: 1180, y: 700 }, t0: 0, log: [] };
   var pcur = el("div", { class: "pcursor", "aria-hidden": "true", hidden: "" });
   pcur.innerHTML = '<svg width="22" height="30" viewBox="0 0 22 30"><path d="M3 3 L3 24 L8.4 18.6 L12.2 27.2 L15.9 25.6 L12.2 17.2 L19.4 17.2 Z" fill="#111" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
   var pkeys = el("div", { class: "pkeys", "aria-hidden": "true" });
   var plabel = el("div", { class: "plabel", "aria-hidden": "true" });
   stage.appendChild(pcur); stage.appendChild(pkeys); stage.appendChild(plabel);
+  $("viewport").appendChild(el("div", { class: "pshield", "aria-hidden": "true" }));
   function showLabel(t) { if (t) plabel.textContent = t; plabel.classList.toggle("on", !!t); }
   if (q.get("keys") === "0") toggleKeys();
+
+  /* The menu bar's clock, drawn for the playback (the CSS at .mbclock says why). The patch is a gradient of the bar's own
+     color, read from the desk at every 10 points across, above and below the clock's letters, so it meets the photo with no
+     seam. Every desk so far has the same clock in the same place. */
+  var clockEl = el("div", { class: "mbclock", "aria-hidden": "true" }, [el("span", { text: "Sun Oct 18", style: "left:4.25px" }), el("span", { text: "2:22 PM", style: "left:82.75px" })]);
+  stage.appendChild(clockEl);
+  var CLOCK_DESKS = ["crocoite", "brownstone", "wave", "yellowstone", "majorelle", "works", "arena", "sip"];
+  function drawClock() {
+    var sc = screen(), cv = canvases[sc.id];
+    clockEl.hidden = !cv || CLOCK_DESKS.indexOf(sc.id) < 0;
+    if (clockEl.hidden) return;
+    var d = cv.ctx.getImageData(1286, 0, 154, 24).data, stops = [];
+    for (var x = 1291; x <= 1440; x += 10) {
+      var cx = Math.min(1438, x), sum = [0, 0, 0], n = 0;
+      for (var xx = cx - 2; xx <= cx + 2; xx++) [1, 2, 3, 4, 5, 19, 20, 21, 22].forEach(function (y) { var i = (y * 154 + (Math.min(1439, xx) - 1286)) * 4; sum[0] += d[i]; sum[1] += d[i + 1]; sum[2] += d[i + 2]; n++; });
+      stops.push(toHex(Math.round(sum[0] / n), Math.round(sum[1] / n), Math.round(sum[2] / n)) + " " + (Math.min(149, x - 1291)) + "px");
+    }
+    clockEl.style.background = "linear-gradient(90deg, " + stops.join(", ") + ")";
+  }
+  // A page made for a playback (?play) shows the drawn clock from the start, since it waits close on the square
+  if (q.has("play")) document.body.classList.add("mbclock-on");
+
+  /* The drawn cursor points the way a mouse does (Noah, October 20: "The demo doesn't act like the app - the blocks should be
+     reactive whenever you hover over them, even slightly, which should be reflected. Make it subtle, but true to how our app
+     works now."). Every frame of the playback asks the page what's under the cursor's tip, the way the browser asks for a
+     mouse, and gives that and everything it sits in the hover a mouse would give it: each :hover rule has a .phover twin
+     (mirrorHover), and their own mouseenter and mouseleave run. So a color widens and shows its number, a button darkens, a
+     menu's row lights up, a day's name underlines and the desktop palette opens, each the way it does for a mouse, and only
+     as long as the cursor is on it. A hidden cursor, or one turned into the loupe, points at nothing. */
+  function mirrorHover() {
+    function walk(group) {
+      var rules = null; try { rules = group.cssRules; } catch (e) {}
+      if (!rules) return;
+      for (var i = rules.length - 1; i >= 0; i--) {
+        var r = rules[i], sel = r.selectorText;
+        if (sel === undefined) { if (r.cssRules) walk(r); continue; }
+        if (sel.indexOf(":hover") < 0 || sel.indexOf(".phover") >= 0) continue;
+        // A :not(:hover) holds already, so it's left as it is
+        var twins = sel.split(",").filter(function (p) { return p.indexOf(":hover") >= 0 && !/:not\([^)]*:hover/.test(p); }).map(function (p) { return p.replace(/:hover/g, ".phover"); });
+        if (twins.length) try { group.insertRule(twins.join(",") + " { " + r.style.cssText + " }", i + 1); } catch (e) {}
+      }
+    }
+    Array.prototype.forEach.call(document.styleSheets, walk);
+  }
+  mirrorHover();
+  var hoverOn = [];
+  function hoverTick() {
+    var chain = [];
+    if (play.on && !pcur.hidden && !st.picking) {
+      var s = stage.getBoundingClientRect(), k = s.width / W, hits = document.elementsFromPoint(s.left + (play.pos.x + 3) * k, s.top + (play.pos.y + 3) * k);
+      for (var i = 0; i < hits.length && hits[i] !== stage; i++) if (stage.contains(hits[i])) { for (var n = hits[i]; n && n !== stage; n = n.parentElement) chain.push(n); break; }
+    }
+    hoverOn.forEach(function (n) { if (chain.indexOf(n) < 0) { n.classList.remove("phover"); n.dispatchEvent(new MouseEvent("mouseleave")); } });
+    for (var j = chain.length - 1; j >= 0; j--) if (hoverOn.indexOf(chain[j]) < 0) { chain[j].classList.add("phover"); chain[j].dispatchEvent(new MouseEvent("mouseenter")); }
+    hoverOn = chain;
+  }
+  function hoverStart(tok) { (function frame() { if (stopped(tok) || !play.on) return; hoverTick(); requestAnimationFrame(frame); })(); }
   function closeShare() { closeSheet(); }
   function stopped(tok) { return tok !== play.token; }
   // ?speed=10 plays it ten times faster, with glides as jumps: for checking the whole run quickly, not for recording
@@ -2265,24 +2486,14 @@
       LOCAL = next ? Math.max(0.3, Math.min(2, (beatAt(next[0]) - beatAt(sec)) / (next[0] - sec))) : 1;
     }
     var wait = play.t0 + beatAt(sec) * 1000 / SPEED - performance.now();
-    return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else res(); }, Math.max(0, wait)); });
+    return new Promise(function (res, rej) { setTimeout(function () { if (stopped(tok)) rej("stopped"); else { paceCss(); res(); } }, Math.max(0, wait)); });
   }
+  // The CSS side of the playback's motion keeps the beat's pace too (--k, in the .pw and .sheet rules)
+  function paceCss() { document.body.style.setProperty("--k", String(Math.round(LOCAL / SPEED * 1000) / 1000)); }
   function setCur(x, y) { play.pos = { x: x, y: y }; pcur.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; if (st.picking) moveLoupe(x, y); }
-  function glide(x, y, ms, tok) {
-    if (SPEED > 1) return sleep(ms, tok).then(function () { setCur(x, y); });
-    var from = play.pos, t0 = performance.now(); ms = Math.max(1, ms * LOCAL);   // a glide keeps its beat's pace too
-    return new Promise(function (res, rej) {
-      function step(now) {
-        if (stopped(tok)) { rej("stopped"); return; }
-        var k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-        setCur(from.x + (x - from.x) * e, from.y + (y - from.y) * e);
-        if (k < 1) requestAnimationFrame(step); else res();
-      }
-      requestAnimationFrame(step);
-    });
-  }
   // How far along a hand's movement is at u (0 to 1) of its time: it speeds up over the first a, keeps its pace, and slows
-  // to a stop over the last b, with no jolt at either end. Used for the fan's turns and the window's scrolls (Noah, October 19).
+  // to a stop over the last b, with no jolt at either end. Used for the cursor's arcs and the palette's drag (Noah, October 19
+  // and 20); the scrolls have momentum now (below).
   function cruise(u, a, b) {
     if (a + b > 1) { var t = a + b; a /= t; b /= t; }
     if (u <= 0) return 0; if (u >= 1) return 1;
@@ -2292,13 +2503,34 @@
     else { var y = (u - (1 - b)) / b; s = a / 2 + (1 - a - b) + b * (y - (y * y * y - y * y * y * y / 2)); }
     return s / (1 - (a + b) / 2);
   }
-  // Turns the fan `by` cards over `ms` real milliseconds, the way a hand on a trackpad would, and rests it on a card.
-  // At ?speed=10 it jumps there when the time's up, the way glides do.
-  function fanTurn(by, ms, tok, a, b) {
+  /* A push on the trackpad, and the momentum after it (Noah, October 20: "specturm scroll still doesn't feel very human scroll
+     like, lets make it more smooth, but authentic"). What's scrolled moves like a body with friction: two fingers push it for
+     about a fifth of a second, its speed rising and falling with the push, and once they let go its speed falls away by e
+     every tau seconds, so it coasts and comes to rest. Another push can carry it on before it stops. The pushes are scaled
+     together so it comes to rest exactly `by` on; it hands over when only `cut` is left, which the fan's own settle onto its
+     card takes up. pushes: [{ at, len, k }] in seconds, k being each one's share. It's worked out step by step, 4ms apart,
+     exactly for a steady push over each step, then scaled so the rest lands on `by`. */
+  function momentum(by, pushes, tau, cut) {
+    var sum = pushes.reduce(function (a, p) { return a + p.k; }, 0) || 1, A = by / (tau * sum), dt = 0.004, e = Math.exp(-dt / tau);
+    var end = pushes.reduce(function (m, p) { return Math.max(m, p.at + p.len); }, 0), x = 0, v = 0, t = 0, xs = [0];
+    for (var guard = 0; guard < 8000; guard++) {
+      var F = 0, tm = t + dt / 2;
+      pushes.forEach(function (p) { var u = (tm - p.at) / p.len; if (u > 0 && u < 1) F += A * p.k * Math.PI / (2 * p.len) * Math.sin(Math.PI * u); });
+      var vt = F * tau; x += vt * dt + (v - vt) * tau * (1 - e); v = vt + (v - vt) * e; t += dt;
+      xs.push(x);
+      if (t >= end && Math.abs(v) * tau < Math.abs(cut)) break;
+    }
+    var s = by / (x + v * tau || 1);
+    return { xs: xs.map(function (p) { return p * s; }), dt: 4, ms: (xs.length - 1) * 4 };
+  }
+  // Turns the fan `by` cards that way (above), at the beat's pace or in exactly fitMs real milliseconds, and lets the fan settle
+  // onto the card itself. At ?speed=10 it jumps there when the time's up, the way glides do.
+  function fling(by, pushes, tok, tau, fitMs) {
+    var path = momentum(by, pushes, tau || 0.32, 0.02), per = fitMs ? fitMs / path.ms : LOCAL / SPEED;   // real ms to a model ms
     return new Promise(function (res, rej) {
       var F0 = fanCtl, t0 = performance.now(), from = F0 ? F0.at() : 0;
       if (!F0 || !F0.el.isConnected || !by || SPEED > 1) {
-        setTimeout(function () { if (stopped(tok)) { rej("stopped"); return; } var F = fanCtl; if (F0 && by && F && F.el.isConnected) F.set(from + by, 0, true); res(); }, Math.max(0, ms));
+        setTimeout(function () { if (stopped(tok)) { rej("stopped"); return; } var F = fanCtl; if (F0 && by && F && F.el.isConnected) F.set(from + by, 0, true); res(); }, Math.max(0, path.ms * per));
         return;
       }
       F0.hold(true);
@@ -2306,285 +2538,690 @@
         var F = fanCtl;
         if (F !== F0) { if (F) F.hold(true); F0 = F; }   // drawn again mid-turn: keep turning the new one
         if (stopped(tok)) { if (F) F.hold(false); rej("stopped"); return; }
-        var k = clamp((now - t0) / ms, 0, 1);
-        if (F && F.el.isConnected) F.set(from + by * cruise(k, a, b), now);
-        if (k < 1) requestAnimationFrame(frame); else { if (F) F.hold(false); res(); }
+        var i = (now - t0) / per / path.dt, i0 = Math.floor(i), done = i0 >= path.xs.length - 1;
+        if (F && F.el.isConnected) F.set(from + (done ? path.xs[path.xs.length - 1] : path.xs[i0] + (path.xs[i0 + 1] - path.xs[i0]) * (i - i0)), now);
+        if (!done) requestAnimationFrame(frame); else { if (F) F.hold(false); res(); }   // and it settles onto the card
       }
       requestAnimationFrame(frame);
     });
   }
-  // Scrolls the window by `by` pixels over `ms` at the beat's pace, like a trackpad: it gets going, glides, and slows to a stop
-  function scrollBody(by, ms, tok) {
-    var b = $("body"), from = b.scrollTop;
-    if (SPEED > 1) return sleep(ms, tok).then(function () { b.scrollTop = from + by; });
-    ms = Math.max(1, ms * LOCAL);
+  function flingMs(by, pushes, tau) { return momentum(by, pushes, tau || 0.32, 0.02).ms; }   // in the model's ms, like sleep()'s
+  // Scrolls the window by `by` pixels the same way, pushes and their coast, at the beat's pace
+  function flingBody(by, pushes, tok, tau) {
+    var b = $("body"), from = b.scrollTop, path = momentum(by, pushes, tau || 0.3, 1.5);
+    if (SPEED > 1) return sleep(path.ms, tok).then(function () { b.scrollTop = from + by; });
     var t0 = performance.now();
     return new Promise(function (res, rej) {
       function frame(now) {
         if (stopped(tok)) { rej("stopped"); return; }
-        var k = clamp((now - t0) / ms, 0, 1);
-        b.scrollTop = from + by * cruise(k, 0.25, 0.5);
-        if (k < 1) requestAnimationFrame(frame); else res();
+        var i = (now - t0) / LOCAL / path.dt, i0 = Math.floor(i), done = i0 >= path.xs.length - 1;
+        b.scrollTop = from + (done ? by : path.xs[i0] + (path.xs[i0 + 1] - path.xs[i0]) * (i - i0));
+        if (!done) requestAnimationFrame(frame); else res();
       }
       requestAnimationFrame(frame);
     });
   }
   function centerOf(node) { var r = node.getBoundingClientRect(), sr = stage.getBoundingClientRect(), k = sr.width / W; return { x: (r.left - sr.left + r.width / 2) / k, y: (r.top - sr.top + r.height / 2) / k }; }
-  async function goTo(node, ms, tok) { if (!node) return; var c = centerOf(node); await glide(c.x, c.y, ms, tok); }
   function showKeys(list) { pkeys.textContent = ""; (list || []).forEach(function (k) { pkeys.appendChild(el("kbd", { text: k })); }); pkeys.classList.toggle("on", !!(list && list.length)); }
   function press() { pcur.classList.add("down"); setTimeout(function () { pcur.classList.remove("down"); }, 150); }
-  async function clickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.click(); }
-  async function typeInto(set, text, tok) { for (var i = 1; i <= text.length; i++) { set(text.slice(0, i)); await sleep(70 + Math.random() * 50, tok); } }
-  async function shiftClickOn(node, ms, tok) { await goTo(node, ms, tok); await sleep(160, tok); press(); if (node) node.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, shiftKey: true })); }
-  async function rightClickOn(node, ms, tok) {
-    await goTo(node, ms, tok); await sleep(160, tok); press();
-    if (!node) return;
-    var s = stage.getBoundingClientRect(), k = s.width / W;
-    node.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: s.left + play.pos.x * k, clientY: s.top + play.pos.y * k }));
-  }
-  async function menuPick(node, ms, tok) { await goTo(node, ms, tok); if (node) node.classList.add("phover"); await sleep(200, tok); press(); if (node) node.click(); }
-  // Drags the desktop palette off the edge with the drawn cursor, as a pointer would (A105)
-  async function dragStrips(x, y, ms, tok) {
-    var r0 = rectIn(strips), from = { x: play.pos.x, y: play.pos.y }, dx = from.x - r0.x, dy = from.y - r0.y, t0 = performance.now();
-    press(); strips.classList.add("dragging");
-    while (true) {
-      var k = Math.min(1, (performance.now() - t0) / (ms * LOCAL / SPEED)), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      var px = from.x + (x - from.x) * e, py = from.y + (y - from.y) * e;
-      setCur(px, py);
-      deskAt = { x: Math.round(px - dx), y: Math.round(py - dy) }; placeStrips();
-      if (k >= 1) break;
-      await sleep(16, tok);
-    }
-    strips.classList.remove("dragging");
-  }
   function byText(sel, text) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return n.textContent === text; })[0]; }
   function q1(sel) { return stage.querySelector(sel); }
   function byLabel(sel, prefix) { return Array.prototype.filter.call(stage.querySelectorAll(sel), function (n) { return (n.getAttribute("aria-label") || "").indexOf(prefix) === 0; })[0]; }
+
+  /* ---------- The demo, after Noah's notes on it (October 20) ----------
+     "The mouse is very much all over the place really quickly. I think it could take just a little bit more time to be
+     smoother. Maybe have rounder paths to get to where it's going, like how a real user would use a mouse, not just going in
+     a straight line from point A to point B." So the demo's cursor travels on a slight arc, bowed 10 to 18% of the way to
+     one side or the other, taking longer the farther it goes; it speeds up gently and slows to its target over the second
+     half, with no jolt at either end; and it settles for about 220ms before each click. The camera moves on intent (cam),
+     the keys come in the order they're pressed (showKeysSeq), and every pause keeps its beat's pace (LOCAL). Round two
+     (October 20) gives deep dive 2's playback, runUsers(), the same hand. */
+  var arcRng = rng(2026);
+  function arcMs(d) { return 300 + 140 * Math.log(1 + d / 24) / Math.LN2; }   // farther takes longer, but not much longer
+  function arc(x, y, tok, o) {
+    o = o || {};
+    var from = play.pos, dx = x - from.x, dy = y - from.y, d = Math.sqrt(dx * dx + dy * dy), ms = o.ms || arcMs(d);
+    // The same arcs every run (a fixed seed), so a take can be retaken
+    var side = o.side || (arcRng() < 0.5 ? -1 : 1), bow = (o.bow !== undefined ? o.bow : 0.10 + arcRng() * 0.08) * side;
+    if (camF && d >= 0.5) followTo(x, y, ms, tok);   // the camera goes along (follow)
+    if (SPEED > 1) return sleep(ms, tok).then(function () { setCur(x, y); });
+    if (d < 0.5) return sleep(ms * 0.3, tok);
+    // A quadratic curve whose middle sits `bow` of the distance off the straight line
+    var cx = from.x + dx / 2 - dy * bow * 2, cy = from.y + dy / 2 + dx * bow * 2, t0 = performance.now();
+    ms = Math.max(1, ms * LOCAL);
+    return new Promise(function (res, rej) {
+      function step(now) {
+        if (stopped(tok)) { rej("stopped"); return; }
+        var k = Math.min(1, (now - t0) / ms), s = cruise(k, 0.32, 0.55), u = 1 - s;
+        setCur(u * u * from.x + 2 * u * s * cx + s * s * x, u * u * from.y + 2 * u * s * cy + s * s * y);
+        if (k < 1) requestAnimationFrame(step); else res();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  // Where to point on a node: its center, or another node's (o.at), moved by o.dx and o.dy
+  function aimAt(node, o) { o = o || {}; var c = centerOf(o.at || node); return { x: c.x + (o.dx || 0), y: c.y + (o.dy || 0) }; }
+  async function arcTo(node, tok, o) { if (!node) return; var p = aimAt(node, o); await arc(p.x, p.y, tok, o); }
+  // Goes there, settles (the anticipation before a press), and clicks
+  async function tap(node, tok, o) { await arcTo(node, tok, o); await sleep((o && o.settle) || 220, tok); press(); if (node) node.click(); }
+  async function shiftTap(node, tok, o) {
+    await arcTo(node, tok, o); flashKeys(["⇧", "Click"], 1100, tok, 220); await sleep(220, tok); press();
+    if (node) node.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, shiftKey: true }));
+  }
+  function rightClick(node) {
+    if (!node) return;
+    var s = stage.getBoundingClientRect(), k = s.width / W;
+    press(); node.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2, clientX: s.left + play.pos.x * k, clientY: s.top + play.pos.y * k }));
+  }
+  // The keys come in one at a time, in the order they're pressed (Noah: "Like they appear in the order you click them in,
+  // and show for just a little longer for the viewers to see. Just a little."). flashKeys takes them away `hold` after the
+  // last of them, unless other keys came in since; gap is the time between two keys.
+  var keysGen = 0;
+  function showKeysSeq(list, gap, tok) {
+    var gen = ++keysGen, i = 0; pkeys.textContent = ""; pkeys.classList.add("seq");
+    return new Promise(function (res) {
+      (function one() {
+        if (gen !== keysGen || stopped(tok)) { res(gen); return; }
+        pkeys.appendChild(el("kbd", { text: list[i++] })); pkeys.classList.add("on");
+        if (i < list.length) setTimeout(one, (gap || 140) * LOCAL / SPEED); else res(gen);
+      })();
+    });
+  }
+  function flashKeys(list, hold, tok, gap) {
+    showKeysSeq(list, gap, tok).then(function (gen) {
+      setTimeout(function () { if (gen === keysGen && !stopped(tok)) clearKeys(); }, hold * LOCAL / SPEED);
+    });
+  }
+  // They fade, then go, so the last of them doesn't vanish mid-fade
+  function clearKeys() { var gen = ++keysGen; pkeys.classList.remove("on"); setTimeout(function () { if (gen === keysGen) pkeys.textContent = ""; }, 200); }
+  // Types the way a person does: unevenly, a beat longer after a space or before a capital, longer still after a full stop
+  async function typeHuman(set, text, tok, base) {
+    var r = rng(text.length * 31 + 7);
+    for (var i = 1; i <= text.length; i++) {
+      set(text.slice(0, i));
+      if (i === text.length) break;
+      var ch = text.charAt(i - 1), nx = text.charAt(i), ms = (base || 110) * (0.72 + r() * 0.56);
+      if (ch === " ") ms += 55;
+      if (ch === "." || ch === ",") ms += 190;
+      if (nx >= "A" && nx <= "Z") ms += 45;
+      await sleep(ms, tok);
+    }
+  }
+  // The same, with one slip on the way, the way hands make one (Noah, October 20: "Can we make it reflect human typing just a
+  // little more? Maybe even a semi-typo, a quick delete, then correction? I'm talking maybe 2 or 3 letters."): at `at` it types
+  // `wrong`, notices after a beat, takes it back a letter at a time, a little quicker than it types, and goes on. It ends on text.
+  async function typeSlip(set, text, at, wrong, tok, base) {
+    var r = rng(text.length * 31 + 7), v = "", b = base || 110;
+    function gap(ch, nx) { var ms = b * (0.72 + r() * 0.56); if (ch === " ") ms += 55; if (ch === "." || ch === ",") ms += 190; if (nx >= "A" && nx <= "Z") ms += 45; return ms; }
+    for (var i = 0; i < at; i++) { v += text.charAt(i); set(v); await sleep(gap(text.charAt(i), i < at - 1 ? text.charAt(i + 1) : wrong.charAt(0)), tok); }
+    for (var j = 0; j < wrong.length; j++) { v += wrong.charAt(j); set(v); await sleep(j < wrong.length - 1 ? b * (0.7 + r() * 0.3) : 430, tok); }   // then it's seen
+    for (j = 0; j < wrong.length; j++) { v = v.slice(0, -1); set(v); await sleep(j < wrong.length - 1 ? 95 : 190, tok); }
+    for (i = at; i < text.length; i++) { v += text.charAt(i); set(v); if (i < text.length - 1) await sleep(gap(text.charAt(i), text.charAt(i + 1)), tok); }
+  }
+  // The cursor comes in softly instead of appearing
+  function curIn(x, y) { setCur(x, y); pcur.classList.add("ghost"); pcur.hidden = false; void pcur.offsetWidth; pcur.classList.remove("ghost"); }
+
+  /* The camera, by intent (Noah, October 20, and the research on product films: move on intent, settle before a click, hold
+     during it, one focal point at a time). The video's player reads body[data-cam] = "x,y,z,ms": where to look, in desk
+     points (1440 by 900); how close, 1 for the whole desk and about 2 for close; and how long the move takes. Round two, the
+     player tweens each move from wherever the camera is, slow in and slow out (Noah: "lets be smooth/elegant when we can,
+     especially when we need quick pans and movements"), so no move may start before the last one has landed. Each move here
+     has the time it needs, with a hold before and after the quick ones, and the timing log says "cam overlap" if one ever
+     cuts in. With no data-cam the player follows the cursor itself; cam(null) lets go. follow(z, ms) keeps the camera with
+     the cursor at a zoom: each of the cursor's moves takes the camera along with it, one move for one move, setting off and
+     landing a beat behind it (90ms); given an anchor, it leans only w of the way from the anchor toward the cursor, framing
+     the work instead of chasing it. */
+  var camF = null, camLast = "", camGen = 0, camBusy = 0;
+  function camPut(x, y, z, ms) {
+    var real = Math.round(Math.max(0, ms || 0) * LOCAL / SPEED), v = (Math.round(x * 10) / 10) + "," + (Math.round(y * 10) / 10) + "," + (Math.round(z * 100) / 100) + "," + real;
+    if (v === camLast) return;
+    var now = performance.now();
+    if (now < camBusy - 20) stamp("cam overlap, " + Math.round(camBusy - now) + "ms short");
+    camLast = v; camBusy = now + real; document.body.dataset.cam = v;
+  }
+  function cam(x, y, z, ms) {
+    camF = null; camGen++;
+    if (x === null || x === undefined) { camLast = ""; camBusy = 0; delete document.body.dataset.cam; return; }
+    camPut(x, y, z, ms); stamp("cam " + camLast);
+  }
+  function framed(f, x, y) { return f.a ? { x: f.a.x + (x - f.a.x) * f.w, y: f.a.y + (y - f.a.y) * f.w } : { x: x, y: y }; }
+  function follow(z, ms, anchor, w) {
+    camGen++;
+    camF = z ? { z: z, a: anchor || null, w: anchor ? (w === undefined ? 0.4 : w) : 1, lag: 90 } : null;
+    if (camF) { var p = framed(camF, play.pos.x, play.pos.y); camPut(p.x, p.y, z, ms || 600); stamp("follow " + z + (anchor ? ", leaning " + camF.w + " from " + anchor.x + "," + anchor.y : "") + ": cam " + camLast); }
+  }
+  // One of the cursor's moves, with the camera along
+  function followTo(x, y, ms, tok) {
+    var f = camF, gen = camGen, p = framed(f, x, y);
+    setTimeout(function () { if (!stopped(tok) && camF === f && camGen === gen) { camPut(p.x, p.y, f.z, ms); stamp("cam (along) " + camLast); } }, f.lag * LOCAL / SPEED);
+  }
+  /* Kept, at the edge: the new color comes into the top of the desktop palette as the oldest goes out at the bottom, so the
+     palette keeps its height, and the palette bumps (Noah: "the side chip reacts as the color lands"). Round two (Noah: "Can
+     we make it more elegant, with a smoother animation?"): the new strip opens into place over 700ms on a long ease-out,
+     fading in a little behind its opening, and the oldest closes the same way; the ring that marks the new one comes and
+     goes instead of snapping on; and the palette swells as the color settles into it, a beat after it starts coming in. */
+  function landInChip(n) {
+    var styles = function () { return Array.prototype.map.call(strips.querySelectorAll("button"), function (b) { return b.getAttribute("style"); }); };
+    var before = styles();
+    deskHold.strips = false; drawStrips(n);
+    var now = styles(), K = LOCAL / SPEED, ms = 700 * K, ease = "cubic-bezier(.22, 1, .36, 1)", nb = strips.querySelector("button.landed");
+    if (nb && nb.animate) {
+      nb.classList.remove("landed");
+      nb.animate([{ height: "0px", marginBottom: "-3px" }, { height: "26px", marginBottom: "0px" }], { duration: ms, easing: ease });
+      nb.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms * 0.8, delay: ms * 0.12, easing: "ease-out", fill: "backwards" });
+      nb.animate([{ boxShadow: "0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(29, 29, 31, 0)" }, { boxShadow: "0 0 0 2px rgba(255, 255, 255, 1), 0 0 0 3px rgba(29, 29, 31, 1)", offset: 0.32 }, { boxShadow: "0 0 0 2px rgba(255, 255, 255, 0), 0 0 0 3px rgba(29, 29, 31, 0)" }], { duration: 1400 * K, delay: 120 * K, easing: "ease-in-out" });
+    }
+    var gone = before.filter(function (s) { return now.indexOf(s) < 0; })[0];
+    if (gone && strips.animate) {
+      var gb = el("button", { type: "button", tabindex: "-1", "aria-hidden": "true", style: gone });
+      strips.appendChild(gb);
+      gb.animate([{ height: "26px", marginTop: "0px", opacity: 1 }, { height: "0px", marginTop: "-3px", opacity: 0 }], { duration: ms, easing: ease, fill: "forwards" }).onfinish = function () { gb.remove(); };
+    }
+    setTimeout(function () { if (play.on) bump(strips, 820); }, 140 * K);
+  }
+  // Then the menu bar's square takes the color, with a bump of its own, the same care, the new color coming in over the swell
+  function bumpMark() {
+    var mk = $("mark"), K = LOCAL / SPEED;
+    mk.style.transitionDuration = Math.round(520 * K) + "ms";
+    deskHold.mark = deskHold.ink = false; drawMark(); bump(mk, 820);
+    setTimeout(function () { mk.style.transitionDuration = ""; }, 900 * K);
+  }
+  function bump(node, ms) {
+    node.classList.remove("bump"); void node.offsetWidth;
+    node.style.animationDuration = Math.round(ms * LOCAL / SPEED) + "ms"; node.classList.add("bump");
+    clearTimeout(node._bumpT); node._bumpT = setTimeout(function () { node.classList.remove("bump"); node.style.animationDuration = ""; }, (ms + 80) * LOCAL / SPEED);
+  }
+  // Drags the desktop palette off the edge with the drawn cursor, as a pointer would (A105): it takes hold, then travels on a
+  // slight arc and eases into place, calm (Noah, October 20)
+  async function dragStrips(x, y, ms, tok) {
+    var r0 = rectIn(strips), from = { x: play.pos.x, y: play.pos.y }, dx = from.x - r0.x, dy = from.y - r0.y;
+    press(); strips.classList.add("dragging");
+    await sleep(180, tok);
+    var ddx = x - from.x, ddy = y - from.y, cx = from.x + ddx / 2 + ddy * 0.12, cy = from.y + ddy / 2 - ddx * 0.12;
+    var t0 = performance.now(), total = Math.max(1, ms * LOCAL / SPEED);
+    await new Promise(function (res, rej) {
+      function step(now) {
+        if (stopped(tok)) { rej("stopped"); return; }
+        var k = SPEED > 1 ? 1 : Math.min(1, (now - t0) / total), s = cruise(k, 0.3, 0.6), u = 1 - s;
+        var px = u * u * from.x + 2 * u * s * cx + s * s * x, py = u * u * from.y + 2 * u * s * cy + s * s * y;
+        setCur(px, py);
+        deskAt = { x: Math.round(px - dx), y: Math.round(py - dy) }; placeStrips();
+        if (k < 1) requestAnimationFrame(step); else res();
+      }
+      requestAnimationFrame(step);
+    });
+    strips.classList.remove("dragging");
+  }
+  // When each beat starts and ends, in the demo's own seconds (PalitV3.timing(), or the console with ?timing)
+  var TIMING = q.has("timing");
+  function stamp(name) {
+    if (!play.on || !play.t0) return;
+    var t = ((performance.now() - play.t0) * SPEED / 1000).toFixed(2);
+    play.log.push(name + " " + t); if (TIMING) console.log("palit-beat: " + name + " " + t);
+  }
   function stopPlay() {
     if (!play.on) return;
-    play.token++; play.on = false;
-    document.body.classList.remove("playing"); showKeys([]); showLabel(null); $("mbi").classList.remove("phover"); pcur.hidden = true;
-    stage.querySelectorAll(".t.phover").forEach(function (t) { t.classList.remove("phover"); hoverGrow(t, false); });
+    play.token++; play.on = false; play.demo = false; play.users = false;
+    hoverTick();   // with the playback off the cursor points at nothing, so whatever it was on lets go
+    stage.querySelectorAll(".phover").forEach(function (n) { n.classList.remove("phover"); if (n.classList.contains("t")) hoverGrow(n, false); });
+    document.body.classList.remove("playing"); if (!q.has("play")) document.body.classList.remove("mbclock-on");
+    showKeys([]); showLabel(null); pcur.hidden = true;
+    keysGen++; pkeys.classList.remove("seq"); pcur.classList.remove("ghost"); cam(null);
+    LOCAL = 1; paceCss();
+    if (deskHold.strips || deskHold.mark || deskHold.ink) { deskHold.strips = deskHold.mark = deskHold.ink = false; drawStrips(); }
+    strips.classList.remove("bump"); $("mark").classList.remove("bump");
     $("c-play").firstChild.textContent = "Play";
   }
+  // The demo opens on the menu bar's square, close enough that the mark nearly fills the screen (Noah, October 20)
+  function camOnMark() { var c = centerOf($("mark")); cam(c.x, c.y, 14, 0); }
   async function runPlay() {
     if (play.on) return;
     var tok = ++play.token;
-    play.on = true; document.body.classList.add("playing"); $("c-play").firstChild.textContent = "Stop";
+    play.on = true; play.demo = true; play.log = []; play.t0 = 0; arcRng = rng(2026); LOCAL = 1; paceCss();
+    document.body.classList.add("playing", "mbclock-on"); $("c-play").firstChild.textContent = "Stop";
+    deskHold.ink = true; drawMark();
+    var mb = $("mbi");
+    camOnMark(); hoverStart(tok);
     try {
       if (st.screen !== 0) showScreen(0);
       await new Promise(function (res) { start(res); });
       if (stopped(tok)) return;
-      setCur(1190, 720); pcur.hidden = false;
+      // Nothing over the square or tinting it while the camera is on it
+      pcur.hidden = true; mb.classList.remove("phover", "picking"); setCur(1180, 640); camOnMark();
       play.t0 = performance.now();
       var croc = byNo(tn(1));   // Hyacinth red, the first color kept from the crocoite photo today
-      var mb = $("mbi");
-      // The demo follows the video script's 90 seconds (design/video/script.js, entry 173): each beat starts on its line's time
+      var WIN = { x: 710, y: 450, z: 1.08 };   // Palit's window, filling the frame
+      // The demo follows the video script's 86 seconds (design/video/script.js): each beat starts on its line's time
 
-      // 1. Palit lives in the menu bar, as a square of the last color you kept (0:00)
-      await sleep(600, tok); await goTo(mb, 2000, tok); mb.classList.add("phover");
-      await sleep(1800, tok); mb.classList.remove("phover"); await glide(1000, 560, 1300, tok);
+      // 1. The menu bar (0:00). "Why do we hover/click the icon at first? Why don't we start with the full screen zoomed into
+      // the icon at the icon at the top, then we zoom out into the desktop?" No hover and no click: the square of the last
+      // color you kept, a hold, then the camera pulls back to the whole desk and the cursor comes in. Round two: "The zoom out is
+      // so janky. Lets make it smooth, and not too sudden. Buffer it just slightly, you know?" So a longer hold on the square,
+      // about 1.4 seconds, a slower pull back, 3.4 seconds, and the cursor only as the camera settles. The clock beside the
+      // square is drawn now (drawClock), so this close it's as sharp as the square.
+      stamp("menu bar");
+      await sleep(1400, tok);
+      cam(720, 450, 1, 3400);
+      await sleep(3150, tok);
+      curIn(1180, 640);
+      await arc(1150, 610, tok, { ms: 1000, bow: 0.12 });   // it drifts toward the photo
+      stamp("menu bar, done");
 
-      // 2. One shortcut, and the loupe reads the color under it (0:06)
-      await until(6, tok);
-      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
-      await sleep(800, tok); showKeys([]);
-      await glide(900, 380, 1600, tok); await glide(840, 470, 1400, tok); await glide(819, 452, 1000, tok);
+      // 2. The loupe (0:06): one shortcut, the keys in the order they're pressed, and the loupe reads the color under it.
+      // "loving the following of the mouse - could we actually even zoom in a little more?" The camera follows it at 2. Round
+      // two: "This looks great ... Lets keep this as we rebuild this demo section". It stays as it was; now that the player
+      // tweens each move, the camera goes along with each of the loupe's moves, a beat behind (follow).
+      await until(6, tok); stamp("loupe");
+      flashKeys(["⌥", "⇧", "C"], 1600, tok);
+      await sleep(280, tok);   // on the C, the loupe comes up where the pointer is
+      pointer = { x: play.pos.x, y: play.pos.y }; startPicking(); pcur.hidden = true;
+      follow(2.0, 900);
+      await sleep(950, tok);
+      await arc(1000, 560, tok, { ms: 1600, bow: 0.12 });   // onto the rock
+      await sleep(400, tok);
+      await arc(905, 378, tok, { ms: 1500, bow: 0.14 });   // up into the crystals
+      await sleep(320, tok);
+      await arc(840, 470, tok, { ms: 1250, bow: 0.12 });
+      await sleep(200, tok);
+      await arc(819, 452, tok, { ms: 750, bow: 0.08 });    // and onto the hyacinth red
+      stamp("loupe, done");
 
-      // 3. Click to keep it: it lands at the edge, and the menu bar's square takes its color (0:13)
-      await until(13, tok);
-      showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
-      await sleep(600, tok); showKeys([]);
-      await goTo(mb, 900, tok); mb.classList.add("phover"); await sleep(900, tok); mb.classList.remove("phover");
-      await glide(1424, 450, 1000, tok); strips.classList.add("open");
-      await sleep(1500, tok); strips.classList.remove("open"); await glide(1120, 560, 900, tok);
+      // 3. Kept, at the edge (0:14). "After the user clicks the color that they want to keep, I think it would be nice if we
+      // had a very short pause and a beat. The camera quickly switches to the side chip, and then the side chip reacts as the
+      // color lands. ... The chip bumps, and the mouse follows, to show that it was recorded, then, the we pan to the top
+      // bar, where we see that the icon bumps too, adopting the chosen color." Nothing else moves while the camera is there.
+      // Round two: "the initial bump for the color coming into the side chip feels a little off? Can we make it more elegant,
+      // with a smoother animation? Feel free to take slightly more time animating the bumps." So the palette and the square
+      // swell and settle softly (landInChip, bumpMark), and each pan takes its time, with a hold before and after it.
+      await until(14, tok); stamp("kept");
+      deskHold.strips = deskHold.mark = true;
+      flashKeys(["Click"], 850, tok);   // gone before the camera reaches the palette
+      var kept = pick(819, 452, {}); stopPicking(); setCur(819, 452); pcur.hidden = false;
+      await sleep(520, tok);   // the beat, the camera still on the keep
+      var sh = strips.offsetHeight, sTop = strips.offsetTop - sh / 2;   // docked, it sits centered on its top
+      cam(W - strips.offsetWidth / 2, sTop + sh / 2, 2.2, 950);   // over to the desktop palette
+      await sleep(950 + 180, tok);   // it lands, and holds
+      landInChip(kept.number);
+      await sleep(240, tok);
+      await arc(W - 12, sTop + 27, tok, { ms: 1050 });   // the mouse follows, to the new color at the top, and the palette opens under it
+      strips.classList.add("open");
+      await sleep(620, tok);
+      var mc = centerOf($("mark"));
+      cam(mc.x, mc.y, 2.6, 1150);   // then up to the menu bar
+      await sleep(1150 + 160, tok);
+      bumpMark();   // and the square swells as it takes the color
+      await sleep(1250, tok);
+      cam(720, 450, 1, 1500);   // back out to the desk
+      strips.classList.remove("open");
+      await arc(1110, 575, tok, { ms: 1250 });
+      stamp("kept, done");
 
-      // 4. Right-click to name it as you keep it, or hold Shift to keep a whole palette (0:19)
-      await until(19, tok);
-      showKeys(["⌥", "⇧", "C"]); startPicking(); pcur.hidden = true;
-      await glide(1040, 548, 700, tok);
-      showKeys(["Right-click"]);
+      // 4. Naming (0:22): right-click to name it as you keep it, then hold Shift to keep a whole palette. "This demo happens a
+      // little bit faster than I'd like it to ... More intentional framing of what we're following ... Maybe a little bit
+      // zoomed in, just a little bit more, and kind of more timing as we see what the features are and how they're using it".
+      // Round two: "great, just refer to prior notes about movement, keybinds, bumps, and whatnot". The camera's lean toward
+      // the palette lands before the loupe moves, then goes along with each pick.
+      await until(22, tok); stamp("naming");
+      cam(1170, 585, 1.8, 1000);   // in on the work: the loupe, and the name beside it
+      flashKeys(["⌥", "⇧", "C"], 1600, tok);
+      await sleep(280, tok);
+      pointer = { x: play.pos.x, y: play.pos.y }; startPicking(); pcur.hidden = true;
+      await sleep(420, tok);
+      await arc(1040, 548, tok, { ms: 900 });
+      await sleep(250, tok);
+      flashKeys(["Right-click"], 1100, tok);
       var named = pick(1040, 548, {}); stopPicking(); nameBeside(named, 1040, 548, true);
       var input = namer.querySelector("input");
-      await sleep(300, tok); showKeys([]);
-      await typeInto(function (v) { input.value = v; }, "Crocoite", tok);
-      await sleep(200, tok); showKeys(["Return"]);
+      await sleep(550, tok);   // the right-click, then a pause
+      await typeHuman(function (v) { input.value = v; }, "Crocoite", tok, 125);
+      await sleep(380, tok);
+      flashKeys(["Return"], 1100, tok);
       input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
-      await sleep(500, tok);
-      showKeys(["⌥", "⇧", "C"]); startPicking();
-      await glide(880, 360, 500, tok); showKeys(["⇧", "Click"]); pick(880, 360, { more: true });
-      await glide(980, 610, 500, tok); pick(980, 610, { more: true });
-      await glide(700, 300, 500, tok); showKeys(["Click"]); pick(700, 300, {}); stopPicking();
-      await sleep(400, tok); showKeys([]); pcur.hidden = false;
+      await sleep(650, tok);   // and a hold
+      // ⌥⇧C again, and ⇧-click three colors with a beat between them: a whole palette. The camera leans with the loupe.
+      follow(1.8, 800, { x: 850, y: 462 }, 0.35);
+      flashKeys(["⌥", "⇧", "C"], 1600, tok);
+      await sleep(280, tok);
+      pointer = { x: play.pos.x, y: play.pos.y }; startPicking();
+      await sleep(560, tok);   // the lean lands before the loupe moves
+      async function keepAt(x, y, more, o) {
+        await arc(x, y, tok, o);
+        if (more) { flashKeys(["⇧", "Click"], 1100, tok, 220); await sleep(220, tok); }
+        else { await sleep(220, tok); flashKeys(["Click"], 1100, tok); }
+        pick(x, y, { more: more });
+      }
+      await keepAt(880, 360, true, { ms: 760 });
+      await sleep(460, tok);
+      await keepAt(980, 610, true, { ms: 760 });
+      await sleep(460, tok);
+      // a plain click keeps the last, and the palette with it: the crystal's golden tip, so the menu bar's mark ends on a color
+      // you can see (the photo's light gray background, the old last pick, all but vanished on the menu bar)
+      await keepAt(888, 310, false, { ms: 820 });
+      stopPicking();
+      await sleep(420, tok); pcur.hidden = false;
+      stamp("naming, done");
 
       if (SPEED > 1) console.log("palit-play: shot 5");
-      // 5. Open Palit: Days starts with today, every place you looked and what you kept there (0:26)
-      await until(26, tok);
-      await clickOn(mb, 1000, tok);
-      await sleep(1300, tok);
+      // 5. Days (0:32): open Palit, wide for the window, then the window fills the frame. "Honestly, I think just making
+      // things a little slower, even if they're not that slow, in the actual app itself could be helpful. For example, when
+      // you click today, things fade into what it would look like in the hunt of that day." Round two: "The demo doesn't act
+      // like the app - the blocks should be reactive whenever you hover over them, even slightly, which should be reflected.
+      // Make it subtle, but true to how our app works now. The transition to opening the today page looks pretty good, but I
+      // feel as though the animation could be just a little bit more fancy and slower". The colors answer the cursor on their
+      // own now (hoverTick), so it rests on the color just named, drifts on to the one beside it, and Today opens out place by
+      // place (dayEntrance).
+      await until(32, tok); stamp("days");
+      cam(720, 450, 1, 1100);
+      await tap(mb, tok, { ms: 900 });   // the window opens, and what's in it comes in
+      await sleep(650, tok);
+      cam(WIN.x, WIN.y, WIN.z, 1400);
+      await sleep(450, tok);
       var tile = byLabel("#body .t", no(named.number));
-      await goTo(tile, 900, tok); if (tile) { tile.classList.add("phover"); hoverGrow(tile, true); }
-      await sleep(1400, tok); if (tile) { tile.classList.remove("phover"); hoverGrow(tile, false); }
-      await clickOn(q1("#body .dh"), 800, tok);   // Today opens out: each place, what it looked like, the colors kept there
-      await sleep(1500, tok);
+      await arcTo(tile, tok, { ms: 900 });   // it widens, and shows its number
+      await sleep(950, tok);
+      var beside = tile && (tile.nextElementSibling || tile.previousElementSibling);
+      if (beside) { await arcTo(beside, tok, { ms: 520, bow: 0.06 }); await sleep(520, tok); }   // and the one beside it takes over
+      var dh = q1("#body .dh");
+      await tap(dh, tok, { at: dh && dh.querySelector("b"), ms: 700 });   // Today opens out, and fades into the day's hunt
+      await sleep(1500 + 600, tok);   // it comes in, place by place, then a hold
+      await arc(1060, 90, tok, { ms: 800 });   // out of the way for the zoom, in the empty middle of the bar
+      stamp("days, done");
 
-      // 6. Zoom out for only color; zoom in, and the story comes back (0:35)
-      await until(35, tok);
+      // 6. The zoom (0:42): only color, then the story comes back a stop at a time, each stop in sight before the next. Round
+      // two: "So good, just refer to prior notes about keybind bumps and the slowing down/decorating of the appear animations -
+      // just slightly to make it feel more elevated and timed". Each stop settles and comes in a little slower (entrance).
+      await until(42, tok); stamp("zoom");
       st.open = {};
-      await glide(1150, 170, 600, tok);
-      showKeys(["⌘", "−"]); zoomKey(-1); await sleep(1500, tok);
-      showKeys(["⌘", "+"]); zoomKey(1); await sleep(1100, tok);
-      zoomKey(1); await sleep(1200, tok);
-      zoomKey(1); await sleep(1200, tok); showKeys([]);
+      async function zoomStep(d, hold) { flashKeys(["⌘", d < 0 ? "−" : "+"], 1150, tok); await sleep(140, tok); zoomKey(d); await sleep(hold, tok); }
+      await zoomStep(-1, 1360); await zoomStep(1, 1220); await zoomStep(1, 1260); await zoomStep(1, 1260);
+      var spTab = CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel");
+      await arcTo(spTab, tok);   // toward Spectrum, as the last stop sits
+      stamp("zoom, done");
 
-      // 7. Spectrum fans out everything you've found, by hue; click a name to change it (0:42)
-      await until(42, tok);
+      // 7. Spectrum (0:49). "We could make the Spectrum's scroll a little bit more human. It still looks like a bot did it, or
+      // it's very linear in how it scrolls. ... Our beats and timing matter so much." Round two: "specturm scroll still doesn't
+      // feel very human scroll like, lets make it more smooth, but authentic. The zoom for naming is awesome. The appear
+      // animation could again, be slightly more elevated, slowed, and decorated/timed." So the fan opens out from the middle
+      // (fanEntrance), and the scroll is two pushes and their momentum (fling): a flick that coasts nearly to rest, then a
+      // smaller one that carries it the last two cards and settles onto the color to rename. Then its name is changed right
+      // there, with the naming zoom as it was.
+      await until(49, tok); stamp("spectrum");
       var byHue = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
-      var renameMe = byNo(tn(2)) || croc;   // Red from the crocoite photo, still unnamed
-      fanPos = Math.max(0, byHue.indexOf(renameMe) - 4);
-      await clickOn(CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel"), 800, tok);
-      await sleep(700, tok);
-      var fanEl = q1(".fan"), list = shown().slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
-      var steps = list.indexOf(renameMe) - (fanPos || 0);
-      await glide(720, 620, 500, tok); showKeys(["Scroll"]);
-      await fanTurn(steps, 1300 * LOCAL / SPEED, tok, 0.3, 0.5);   // one smooth turn, the way a hand scrolls (Noah, October 19)
-      showKeys([]);
+      var renameMe = byNo(tn(2)) || croc, R = byHue.indexOf(renameMe), nH = byHue.length;   // Red from the crocoite photo, still unnamed
+      var loops = nH * 12 >= 360, back = loops ? 9 : Math.min(9, R);
+      fanPos = loops ? ((R - back) % nH + nH) % nH : R - back;
+      await sleep(220, tok); press();   // it settled on the tab
+      spTab = CFG.spectrum === "tab" ? byText(".tabs button", "Spectrum") : $("wheel"); if (spTab) spTab.click();
+      await sleep(950, tok);   // the fan opens out, and a look at it
+      await arc(720, 640, tok, { ms: 650 });
+      var pushes = back >= 4 ? [{ at: 0, len: 0.24, k: 1 }, { at: 1.05, len: 0.18, k: 0.28 }] : [{ at: 0, len: 0.24, k: 1 }];
+      flashKeys(["Scroll"], Math.max(600, flingMs(back, pushes, 0.3) - 350), tok);
+      await fling(back, pushes, tok, 0.3);
+      await sleep(450, tok);   // it rests on the color
+      cam(640, 360, 1.45, 1000);   // in on its name, and the card under it, with the top of the window in
       var cap = q1(".fan-cap .nm");
-      await clickOn(cap, 700, tok); cap.focus();
-      await typeInto(function (v) { cap.textContent = v; cap.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", tok);
-      showKeys(["Return"]); cap.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await sleep(400, tok); showKeys([]);
-
-      // 8. Open one: a specimen, where it came from, your name for it, and a scratch pad (0:49)
-      await until(49, tok);
-      await clickOn(stage.querySelectorAll(".fan-card")[fanPos], 900, tok);
-      await sleep(2000, tok);
-      var padEl = q1(".pad textarea");
-      await goTo(padEl, 900, tok); await sleep(200, tok);
-      await typeInto(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, "Straight from the crystal. Brighter than any paint chip.", tok);
-      await sleep(500, tok);
-      await goTo(q1(".sim button") || padEl, 900, tok);
-
-      // 9. Bring colors to the table, try them together, keep what works as a palette (0:58)
-      await until(58, tok);
-      await clickOn(q1(".sp-x"), 500, tok);
+      await tap(cap, tok); cap.focus();
+      await sleep(200, tok);
+      await typeHuman(function (v) { cap.textContent = v; cap.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", tok, 105);
       await sleep(300, tok);
-      showKeys(["⇧", "Click"]);
-      await shiftClickOn(stage.querySelectorAll(".fan-card")[fanPos], 400, tok);
-      await shiftClickOn(stage.querySelectorAll(".fan-card")[(fanPos + 1) % stage.querySelectorAll(".fan-card").length], 400, tok);
-      showKeys(["Right-click"]);
-      await rightClickOn(stage.querySelectorAll(".fan-card")[fanPos], 400, tok);
-      await menuPick(q1(".menu .mi"), 400, tok);   // Take 2 to table
-      showKeys([]);
+      flashKeys(["Return"], 1100, tok); cap.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
       await sleep(600, tok);
-      await clickOn(byText(".table .acts .tbtn", "Show names"), 500, tok);
+      stamp("spectrum, done");
+
+      // 8. The specimen card (0:58): "this is good, just refer to prior notes regarding timing". It opens, holds, takes a note
+      // at a person's pace, pauses, and closes. Round two: "I think the color card could slightly slide up when it fades in,
+      // just to give it a more elevated look. Loving the zoom for the scratchpad, looks good. Can we make it reflect human typing
+      // just a little more? Maybe even a semi-typo, a quick delete, then correction? I'm talking maybe 2 or 3 letters." The card
+      // rises as it comes in (cardIn), and the note slips once, "paitn", takes the two letters back and goes on (typeSlip).
+      await until(58, tok); stamp("card");
+      await tap(stage.querySelectorAll(".fan-card")[fanPos], tok, { ms: 720 });
+      cam(WIN.x, WIN.y, 1.22, 900);   // the card
+      await sleep(900, tok);
+      var padEl = q1(".pad textarea");
+      cam(900, 610, 1.6, 900);   // in on the scratch pad
+      await tap(padEl, tok, { ms: 700 });
+      await sleep(200, tok);
+      var NOTE = "Straight from the crystal. Brighter than any paint chip.";
+      await typeSlip(function (v) { padEl.value = v; padEl.dispatchEvent(new Event("input", { bubbles: true })); }, NOTE, NOTE.indexOf("paint") + 3, "tn", tok, 72);
+      await sleep(400, tok);   // a pause before closing
+      cam(WIN.x, WIN.y, 1.22, 850);
+      await tap(q1(".sp-x"), tok, { ms: 720 });
+      stamp("card, done");
+
+      // 9. The table (1:08): "refer to prior notes regarding timing - seems to be a bit of a pain point in this section".
+      // Slower ⇧-clicks, then a hold once the colors are on the table, after Show names and after Keep as a palette. Round
+      // two: "looks good, lets just be mindful of smoothing the camera movement and zooms, which goes for all sections of this
+      // video - lets be smooth/elegant when we can, especially when we need quick pans and movements." Each move takes a
+      // little longer, with a beat before the pan out to the table.
+      await until(68, tok); stamp("table");
+      cam(780, 560, 1.45, 1000);   // the fan, close
+      var cards = stage.querySelectorAll(".fan-card"), chosen = cards[fanPos], beside2 = cards[(fanPos + 1) % cards.length];
+      await shiftTap(beside2, tok, { ms: 760 });
       await sleep(400, tok);
-      await clickOn(byText(".table .acts .tbtn", "Keep as a palette"), 500, tok);
+      await shiftTap(chosen, tok, { ms: 600 });
+      await sleep(400, tok);
+      flashKeys(["Right-click"], 1100, tok);
+      rightClick(chosen);   // the two of them, in one menu
+      await sleep(320, tok);
+      var take = q1(".menu .mi");
+      await arcTo(take, tok, { ms: 480 });   // its row lights up under the pointer
+      await sleep(220, tok); press(); if (take) take.click();   // Take 2 to table
+      await sleep(160, tok);   // a beat before the pan
+      cam(WIN.x, WIN.y, WIN.z, 1150);   // the table: the whole window
+      await sleep(1150 + 150, tok);   // they come in, then a hold
+      await tap(byText(".table .acts .tbtn", "Show names"), tok, { ms: 740 });
+      await sleep(500, tok);
+      await tap(byText(".table .acts .tbtn", "Keep as a palette"), tok, { ms: 480 });
+      await sleep(450, tok);
+      stamp("table, done");
 
       if (SPEED > 1) console.log("palit-play: shot 10, " + palettes.length + " palettes, " + placed.length + " on the table");
-      // 10. Share it with its codes, or float your palette right beside your work (1:05)
-      await until(65, tok);
-      await clickOn(byText(".tabs button", "Palettes"), 600, tok);
-      await sleep(400, tok);
-      await clickOn(q1(".pal.open-able"), 600, tok);
-      await sleep(900, tok);
-      await clickOn(byText(".study-h .acts .tbtn", "Share"), 700, tok);
-      await sleep(1600, tok);
-      await clickOn(byText(".share .acts .tbtn", "Close") || q1(".share .acts .tbtn"), 500, tok);
-      await clickOn(mb, 600, tok);   // the window closes, back to the desk
-      await sleep(300, tok);
-      var sr = rectIn(strips);
-      await glide(sr.x + sr.w / 2, sr.y + 30, 700, tok);
-      await dragStrips(1180, 330, 1200, tok);
-      await sleep(300, tok);
+      // 10. Sharing (1:16): share the palette with its codes, held long enough to read, then close the window and float the
+      // palette beside the work, calmly. Round two: "Not sure what the animation is in the background when we close the palette
+      // window, something weird happens with the colors when you go to close the palette window. Good camera zooms that make the
+      // feature feel coherent we could even zoom in slightly more, before zooming out." The share card goes with the window
+      // now (closeWindow), so nothing behind it changes as it closes, and the camera goes in closer on the card first.
+      await until(76, tok); stamp("sharing");
+      await tap(byText(".tabs button", "Palettes"), tok, { ms: 800 });
+      await sleep(760 + 300, tok);   // Palettes comes in, then a hold
+      var pRow = q1(".pal.open-able"), shareB = pRow && pRow.querySelector(".acts .tbtn");
+      await tap(shareB, tok, { ms: 760 });
+      cam(WIN.x, WIN.y, 1.65, 1000);   // in on the share card, which sits in the middle of the window
+      await sleep(1000 + 1300, tok);   // it lands, then about 1.3 seconds on it
+      cam(720, 450, 1, 1250);   // wide, for the desk
+      await tap(mb, tok, { ms: 1030 });   // the window and the card fade out together, back to the desk
+      await sleep(250, tok);
+      var grip = strips.querySelector(".grip");
+      await arcTo(grip || strips, tok, { ms: 700, dy: 2 });
+      strips.classList.add("open");   // the palette opens under the pointer
+      await sleep(250, tok);
+      await dragStrips(1180, 330, 1300, tok);
+      strips.classList.remove("open");
+      await sleep(350, tok);
+      stamp("sharing, done");
 
       if (SPEED > 1) console.log("palit-play: done, the palette beside the work");
-      await until(75, tok);
+      await until(86, tok);
     } catch (err) {
       if (err !== "stopped") throw err;
       return;
     }
     stopPlay();
   }
-  /* Deep dive 2, “From day one to year four” (entry 176): ?play=users plays it hands-free, timed to its lines in the video
-     script (0, 14, 34 and 62 seconds into its 95). */
+  /* Deep dive 2, “From day one to year four” (entry 176), rebuilt October 21 in its own session. ?play=users plays it
+     hands-free, timed to its lines in the video script (design/video/script.js, dive2). Noah, October 19: “I want to make it
+     clear that our day 1 user, midweek user, and year 4 user are personas”; October 21, that the block “kind of stayed the
+     same”. Each persona comes in on an insert of its own (viz.html's users1, users2 and users3): its card on black, then what we
+     tried first for it, and the insert ends on this window exactly where the camera has it, so the desk dissolves in around
+     it. While an insert covers the desk, the archive changes to that persona's (underInsert): nothing yet, then a few weeks of
+     colors (the 111), then years of them (1,802). Then the demo's hand: rounder paths, the keys one at a time, typing with a
+     slip, the colors answering the cursor, the camera on intent, scrolls with momentum. There's no persona label on the desk
+     any more; each persona's card says who it is. */
+  // The cameras the inserts hand over on (viz.html, D2.win): the window, and the window with a card open, a little closer
+  var UWIN = { x: 710, y: 450, z: 1.08 }, UCARD = { x: 710, y: 450, z: 1.22 };
+  // The page waits, and the playback starts, on the first open with the camera close on its white, so the section's first
+  // frames after its statement are white under the first insert as it comes in
+  function usersOpen() { goFresh(); pcur.hidden = true; cam(710, 712, 4, 0); }
+  // Once an insert has come in over the desk (until its at, and a beat for its fade), set up what the desk shows when it goes
+  async function underInsert(at, tok, fn) {
+    await until(at - 0.001, tok);
+    await new Promise(function (res) { setTimeout(res, 520); });
+    if (stopped(tok)) throw "stopped";
+    await fn();
+  }
   async function runUsers() {
     if (play.on) return;
     var tok = ++play.token;
-    play.on = true; document.body.classList.add("playing"); $("c-play").firstChild.textContent = "Stop";
+    play.on = true; play.users = true; play.log = []; play.t0 = 0; arcRng = rng(2027); LOCAL = 1; paceCss();
+    document.body.classList.add("playing", "mbclock-on"); $("c-play").firstChild.textContent = "Stop";
+    // Day one's mark opens black, like the demo's (A129), until the first keep, then takes the color as it bumps (Noah,
+    // October 21, asked whether it should: “yes, it should”)
+    deskHold.ink = true; drawMark();
+    hoverStart(tok);
     try {
       if (st.screen !== 0) showScreen(0);
       await new Promise(function (res) { start(res); });
       if (stopped(tok)) return;
       var mb = $("mbi");
-      setCur(1190, 720);
+      usersOpen(); setCur(1130, 760);
       play.t0 = performance.now();
 
-      // Three people (0:00): the first of them, opening Palit for the first time
-      goFresh(); showLabel("Persona: day one"); pcur.hidden = true;
-      await sleep(2500, tok);
+      // Three personas: users1 plays over the desk (the three cards, then persona 1's before: v2's first open, and the one line
+      // that replaced it). Under it, the camera goes to the window it ends on.
+      stamp("three personas");
+      await underInsert(0.1, tok, function () { cam(UWIN.x, UWIN.y, UWIN.z, 0); });
 
-      // Day one (0:14): one keystroke starts the first hunt, and the first color becomes No. 001
-      await until(14, tok);
-      showKeys(["⌥", "⇧", "C"]); startPicking();
-      await sleep(900, tok); showKeys([]);
-      await glide(900, 380, 1800, tok); await glide(840, 470, 1500, tok); await glide(819, 452, 1100, tok);
-      await sleep(600, tok);
-      showKeys(["Click"]); pick(819, 452, {}); stopPicking(); pcur.hidden = false;
-      await sleep(900, tok); showKeys([]);
-      await goTo(mb, 1100, tok); mb.classList.add("phover");
-      await sleep(1600, tok); mb.classList.remove("phover");
-      await glide(900, 520, 1000, tok);
+      // Day one (users-2): “New users skip the manual and start working. So day one is an empty window that says why, and one
+      // keystroke starts the first hunt. Your first color becomes number one.” In on the one line and the keys it names; the
+      // keys one at a time; the loupe over the photo under the line that says what to do; the first color kept, and the window
+      // opens on it, close on No. 001.
+      await until(0.1, tok); stamp("day one");
+      await sleep(250, tok);
+      cam(710, 486, 1.5, 1300);   // in on the line and its keys
+      curIn(1130, 760);
+      var keys = q1(".first .keys");
+      await arcTo(keys, tok, { ms: 1400, dx: 44, dy: 16 });   // it drifts toward the keys the window names
+      await sleep(1600, tok);
+      await arcTo(keys, tok, { ms: 650, dx: 26, dy: 8, bow: 0.06 });
+      await sleep(2000, tok);
+      flashKeys(["⌥", "⇧", "C"], 1500, tok);
+      await sleep(280, tok);   // on the C, the window goes and the loupe comes up where the pointer is
+      pointer = { x: play.pos.x, y: play.pos.y }; startPicking(); pcur.hidden = true;
+      // the camera takes in the line that says what to do and the photo, then leans with the loupe, the line still in sight
+      follow(1.3, 700, { x: 880, y: 330 }, 0.3);
+      await sleep(700, tok);
+      await arc(930, 372, tok, { ms: 700, bow: 0.12 });
+      await sleep(100, tok);
+      await arc(832, 466, tok, { ms: 550, bow: 0.12 });
+      await sleep(80, tok);
+      await arc(819, 452, tok, { ms: 300, bow: 0.08 });
+      await sleep(180, tok);
+      flashKeys(["Click"], 900, tok); pick(819, 452, {}); stopPicking(); setCur(819, 452); pcur.hidden = false;   // No. 001
+      bumpMark();   // the mark, in sight at the top, takes No. 001 with a bump as the camera comes back out
+      cam(UWIN.x, UWIN.y, UWIN.z, 800);
+      await sleep(800, tok);   // the window comes in on it
+      var t1 = q1("#body .t"), tc = t1 ? centerOf(t1) : { x: 345, y: 280 };
+      await arcTo(t1, tok, { ms: 600, dy: 18 });   // it widens a little and shows its number
+      cam(tc.x, tc.y - 6, 2.5, 800);   // close on No. 001
+      await sleep(800 + 300, tok);
+      cam(tc.x, tc.y - 6, 2.3, 750);   // easing back a touch as the next persona comes in
+      stamp("day one, done");
 
       if (SPEED > 1) console.log("palit-users: a few weeks in");
-      // A few weeks in (0:34): a color gets your name, and a palette is pinned to the desktop
-      await until(34, tok);
-      await new Promise(function (res) { start(res); });
-      showLabel("Persona: a few weeks in"); pcur.hidden = false;
-      st.view = "days"; openWindow();
-      await sleep(900, tok);
-      var t2 = byLabel("#body .t", no(tn(2)));   // Red from the crocoite photo, still unnamed
-      await clickOn(t2, 1000, tok);
-      await sleep(1200, tok);
-      var nm = q1(".sp-nm");
-      await clickOn(nm, 700, tok); nm.focus();
-      await typeInto(function (v) { nm.textContent = v; nm.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", tok);
-      showKeys(["Return"]); nm.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await sleep(700, tok); showKeys([]);
-      await clickOn(q1(".sp-x"), 700, tok);
+      // A few weeks in (users-3): under users2, the archive changes to its 111 colors, and the red from the crocoite photo, still
+      // unnamed, opens as its card, the one users2 ends on
+      await underInsert(11.7, tok, async function () {
+        await new Promise(function (res) { start(res); });
+        pcur.hidden = true; st.view = "days"; openWindow();
+        // its name as it waits to be named, on one line, so the card doesn't snap smaller when the first letter is typed (Noah,
+        // dive2/09: “Could we perhaps remove "photo" so that its already the same size? Less friction.”); the still users2 ends
+        // on is taken the same way (users-stills.mjs, d2-v3-card)
+        var c2 = byNo(tn(2)); c2.placeholder = c2.placeholder.replace(/ photo$/, ""); openCard(c2, defaultTrail(c2));
+        cam(UCARD.x, UCARD.y, UCARD.z, 0);
+      });
+      // “A few weeks in, the colors become yours. You name them, and in three studies, people who named something valued it
+      // more; what you come up with yourself, you remember better. Pin a palette to your desktop, and a project stays
+      // consistent.” The name, typed with a slip; the card closes and the name is on its color in Days; then a palette pinned to
+      // the desktop, there beside the photo when the window goes.
+      await until(11.7, tok); stamp("a few weeks in");
+      var nm = q1(".sp-nm"), nc = nm ? centerOf(nm) : { x: 900, y: 260 };
+      curIn(1060, 720);
+      cam(nc.x + 40, nc.y + 34, 1.7, 1100);   // in on the name: yours, the hero of the card
+      await arcTo(nm, tok, { ms: 1100, dx: -110, dy: 8 });
+      await sleep(240, tok); press(); nm.focus();
+      await sleep(220, tok);
+      await typeSlip(function (v) { nm.textContent = v; nm.dispatchEvent(new Event("input", { bubbles: true })); }, "Mineral red", 3, "re", tok, 105);
       await sleep(300, tok);
-      await clickOn(byText(".tabs button", "Palettes"), 700, tok);
-      await sleep(500, tok);
-      await clickOn(q1(".pal.open-able"), 700, tok);
-      await sleep(900, tok);
-      await clickOn(byText(".study-h .acts .tbtn", "Pin to the desktop"), 800, tok);
-      await sleep(600, tok);
-      await clickOn(mb, 800, tok);   // the window closes: the desktop palette now holds the pinned palette
+      flashKeys(["Return"], 1000, tok); nm.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      await sleep(950, tok);
+      cam(UCARD.x, UCARD.y, UCARD.z, 1000);   // back out to the card
+      await tap(q1(".sp-x"), tok, { ms: 800 });
+      render(true);   // Days, under the card as it goes, with the color by its new name (the card doesn't redraw the view behind it)
+      await sleep(250, tok);
+      cam(UWIN.x, UWIN.y, UWIN.z, 1000);   // the window, and the color by its name in Days
+      var t3 = byLabel("#body .t", no(tn(2)));
+      await arcTo(t3, tok, { ms: 800, dy: 10 });
+      await sleep(1100, tok);
+      await tap(byText(".tabs button", "Palettes"), tok, { ms: 800 });
+      await sleep(1000, tok);   // Palettes comes in
+      await tap(byText(".pal .acts .tbtn", "Pin to the desktop"), tok, { ms: 760 });
+      await sleep(420, tok);
+      cam(720, 450, 1, 1000);   // wide, for the desk
+      await tap(mb, tok, { ms: 900 });   // the window goes: the pinned palette is at the edge
       await sleep(300, tok);
-      await glide(1424, 450, 1000, tok); strips.classList.add("open");
-      await sleep(2200, tok); strips.classList.remove("open");
-      await glide(1100, 560, 900, tok);
+      var sh2 = strips.offsetHeight, sc2 = strips.offsetTop;   // docked, its top is its middle
+      cam(W - 220, sc2, 2.0, 1000);   // close on it, beside the photo
+      await arc(W - 14, sc2, tok, { ms: 1000 });   // and it opens under the pointer
+      await sleep(700, tok);
+      cam(W - 300, sc2, 1.75, 1200);   // and a slow lean back as the next persona comes in, so nothing is still when it does
+      stamp("a few weeks in, done");
 
       if (SPEED > 1) console.log("palit-users: years in");
-      // Years in (1:02): 1,802 colors over four years, found again by search, and a spectrum that never ends
-      await until(62, tok);
-      useLongArchive(); showLabel("Persona: years in");
-      st.view = "days"; st.zoom = 0; st.all = false; openWindow();
-      // In the video a chart of the four years plays over the start of this beat (script.js, dive2's inserts); ?hold=7 waits under it
-      var HOLD = Number(q.get("hold")) || 0; if (HOLD) await until(62 + HOLD, tok);
-      await sleep(1500, tok);
-      await scrollBody(840, 1540, tok);   // down the compact days, the way a hand scrolls (Noah, October 19)
-      showKeys(["⌘", "F"]); openSearch(); await sleep(500, tok); showKeys([]);
-      await typeInto(function (v) { $("q").value = v; st.q = v; render(); }, "harbor", tok);
-      await sleep(2600, tok);
-      await clickOn(byText(".tabs button", "Spectrum"), 900, tok);
+      // Years in (users-4): under users3, years of colors (1,802 over four years, made up on purpose), in Days at only color,
+      // the view users3 ends on
+      await underInsert(27.2, tok, function () {
+        strips.classList.remove("open");
+        useLongArchive(); closeSheet(); st.view = "days"; st.all = false; st.zoom = 0; st.open = {}; st.q = ""; st.band = null; $("q").value = ""; $("q").parentNode.classList.remove("open"); fanPos = null;
+        pcur.hidden = true; openWindow(); cam(UWIN.x, UWIN.y, UWIN.z, 0);
+      });
+      // “Years in, it's about finding them again. People find things by searching and by time, not folders, so Palit keeps
+      // days, and searches by name, place or code. And once your colors fill a full circle, Spectrum never ends.” Down the days
+      // with a hand's scroll, closer on the days, a search by name, then Spectrum, coming to rest on a card as the line ends.
+      await until(27.2, tok); stamp("years in");
+      curIn(900, 680);
+      await sleep(250, tok);
+      await flingBody(1500, [{ at: 0, len: 0.28, k: 1 }, { at: 0.85, len: 0.22, k: 0.5 }], tok, 0.34);
+      cam(520, 470, 1.45, 1100);   // closer on the days, each with its date
+      await arc(600, 600, tok, { ms: 900 });
+      await flingBody(900, [{ at: 0, len: 0.26, k: 1 }], tok, 0.32);
+      await sleep(900, tok);
+      cam(960, 330, 1.35, 900);   // the search, and what it finds
+      flashKeys(["⌘", "F"], 1100, tok); await sleep(300, tok); openSearch();
+      await sleep(450, tok);
+      await typeHuman(function (v) { $("q").value = v; st.q = v; render(); }, "harbor", tok, 115);
+      await sleep(250, tok);
+      var r1 = q1(".res li");
+      await arcTo(r1, tok, { ms: 800, dx: -40 });
       await sleep(600, tok);
-      await glide(720, 640, 700, tok); showKeys(["Scroll"]);
-      // One long, steady turn, about seven cards a second, that gets going over a second and comes to rest on a card as the
-      // line ends (93.5): it loops (A103), so it never runs out
-      var left = play.t0 + beatAt(93.5) * 1000 / SPEED - performance.now(), real = left * SPEED;
-      if (left > 0) await fanTurn(Math.max(1, Math.round(7 * Math.max(real - 1300, real * 0.4) / 1000)), left, tok, Math.min(0.33, 1000 / real), Math.min(0.5, 1600 / real));
-      showKeys([]); showLabel(null);
+      cam(UWIN.x, UWIN.y, UWIN.z, 900);
+      var spT = byText(".tabs button", "Spectrum");
+      await arcTo(spT, tok, { ms: 800 });
+      // the fan opens out among the oranges, and the scroll carries on through the yellows into the greens: years of colors,
+      // and it loops once they fill a full circle (A103), so it never runs out
+      var byHue = colors.slice().sort(function (a, b) { return hueKey(a) - hueKey(b); });
+      fanPos = Math.max(0, byHue.findIndex(function (c) { return bandOf(c) === "Y"; }) - 14);
+      await sleep(220, tok); press(); if (spT) spT.click();
+      await sleep(900, tok);   // the fan opens out from the middle
+      await arc(720, 640, tok, { ms: 600 });
+      var left = play.t0 + beatAt(41.15) * 1000 / SPEED - performance.now();
+      if (left > 900) {
+        var push2 = [{ at: 0, len: 0.26, k: 1 }, { at: 0.62, len: 0.24, k: 0.8 }, { at: 1.2, len: 0.2, k: 0.45 }];
+        flashKeys(["Scroll"], Math.max(600, left - 700), tok);
+        await fling(38, push2, tok, 0.4, left);
+      }
+      stamp("years in, done");
       if (SPEED > 1) console.log("palit-users: done, " + colors.length + " colors");
-      await until(95, tok);
+      await until(44, tok);
     } catch (err) {
       if (err !== "stopped") throw err;
       return;
@@ -2593,11 +3230,14 @@
   }
   showScreen(Math.max(0, SCREENS.map(function (s) { return s.id; }).indexOf(q.get("screen") || "crocoite")));
   fit();
+  // The demo opens close on the menu bar's square (Noah, October 20), so a page that waits for the player waits right there
+  if (q.has("play") && q.get("play") !== "users") camOnMark();
   // ?wait loads the desk without starting the playback, so the video's player can start it on its own clock (PalitV3.play)
-  if (q.has("play") && !q.has("wait")) setTimeout(q.get("play") === "users" ? runUsers : runPlay, 900); else start();
+  // (deep dive 2's waits on its first open, the camera close on its white: usersOpen)
+  if (q.has("play") && !q.has("wait")) setTimeout(q.get("play") === "users" ? runUsers : runPlay, 900); else start(q.get("play") === "users" ? usersOpen : undefined);
   // clock(): when the playback's clock started, in milliseconds since 1970, or null before it starts. The dashboard's moving
   // previews (design/history/shots/video/previews.mjs, entry 214) line their frames up with it.
-  window.PalitV3 = { play: function () { if (!play.on) (q.get("play") === "users" ? runUsers : runPlay)(); }, clock: function () { return play.on && play.t0 ? performance.timeOrigin + play.t0 : null; }, set: function (o) { setCfg(o); if (!$("pw").hidden) render(true); else applyCfg(); return CFG; }, get: function () { return JSON.parse(JSON.stringify(CFG)); }, keys: CFG_KEYS, scene: function (n) { closeSheet(); hideHuntPill(); if (st.fresh || !colors.length) { start(function () { scene(n); }); return; } st.all = false; st.study = null; st.q = ""; $("q").value = ""; st.open = {}; st.selected = []; $("q").parentNode.classList.remove("open"); scene(n); } };
+  window.PalitV3 = { play: function () { if (!play.on) (q.get("play") === "users" ? runUsers : runPlay)(); }, clock: function () { return play.on && play.t0 ? performance.timeOrigin + play.t0 : null; }, timing: function () { return (play.log || []).slice(); }, set: function (o) { setCfg(o); if (!$("pw").hidden) render(true); else applyCfg(); return CFG; }, get: function () { return JSON.parse(JSON.stringify(CFG)); }, keys: CFG_KEYS, scene: function (n) { closeSheet(); hideHuntPill(); if (st.fresh || !colors.length) { start(function () { scene(n); }); return; } st.all = false; st.study = null; st.q = ""; $("q").value = ""; st.open = {}; st.selected = []; $("q").parentNode.classList.remove("open"); scene(n); } };
   window.PalitV2 = { play: runPlay, stop: stopPlay, playing: function () { return play.on; }, colors: function () { return colors; }, palettes: function () { return palettes; }, open: openWindow, pick: function (x, y, more) { return pick(x, y, { more: !!more }); }, card: function (n) { openCard(byNo(n)); }, state: st };
 })();
 </script>

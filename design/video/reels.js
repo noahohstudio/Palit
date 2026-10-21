@@ -12,7 +12,8 @@
 (function () {
   var V3WIN = [0.104, 0.069, 0.882, 0.929], V1WIN = [0.065, 0.062, 0.94, 0.9], P = "../history/shots/process/", H = "../history/shots/";
   window.PALIT_REELS = {
-    // Deep dive 1 opens from the ground up (Noah's statement: “From the ground Up?”)
+    // Deep dive 1 opened from the ground up (Noah's statement: “From the ground Up?”). Since October 21 deep dive 1 is one scene
+    // (viz.html's look) and plays neither this reel nor cut; both stay as they were for the log's links (entries 206 and 216)
     ground: { seconds: 25, items: [
       { at: 0, kind: "strip", entry: 11, date: "October 16", title: "Twelve lo-fi sheets in Rivet", note: "None caught Noah's eye. What he liked: cards that let the color take the room.",
         shots: [[H + "lofi-04.jpg", "Round 2"], [H + "lofi-06.jpg", "Read like a magazine"], [H + "lofi-11.jpg", "The expressive pass"]],
@@ -38,7 +39,8 @@
       ] }
     ] },
     // Deep dive 2: each persona, then what we tried for them first (Noah: “our day 1 user, midweek user, and year 4 user are
-    // personas ... actual personas we studied and designed for”)
+    // personas ... actual personas we studied and designed for”). Out of the cut since October 21 (entry 255): deep dive 2's
+    // inserts are its own scenes now (viz.html's users1, users2 and users3); these three stay for the record.
     day1: { seconds: 12, items: [
       { at: 0, kind: "title", bg: "#000", title: "Persona 1: day one", sub: "Opening Palit for the first time" },
       { at: 1.8, kind: "shot", entry: 120, date: "October 18", title: "v2, the first time it opens", note: "“Why does the dashboard feel so empty?” Noah", src: P + "v2a-empty.jpg", focus: [0.035, 0.22, 1.9] },

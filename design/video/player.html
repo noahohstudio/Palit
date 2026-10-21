@@ -20,6 +20,10 @@
   /* The scene */
   #scene { position: absolute; inset: 0; }
   .desk { position: absolute; left: 96px; top: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; transform: scale(1.2); background: #1c1c1e; }
+  /* Round two (Noah, October 20, m024: “the desktop is like a square. Can it be rounded a little, and be windowed by the white
+     background slightly? Just so it looks equal when we zoom out of the window.”): at its widest the desktop is a window on the
+     white page, rounded, 44px clear above and below; zoomed in, it fills the frame */
+  .desk.win { border-radius: 16px; box-shadow: 0 0 0 1px rgba(29, 29, 31, 0.08), 0 24px 64px rgba(29, 29, 31, 0.16); }
   .stand { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 180px 120px; }
   .stand .kind { position: absolute; right: 64px; top: 48px; font-size: 20px; color: #9c9ca1; }
   .stand h2 { font-size: 96px; line-height: 1; letter-spacing: -0.04em; font-weight: 400; max-width: 1400px; }
@@ -42,7 +46,40 @@
 
   /* Headers over a filmed shot, one after another, white on the film, in the statement's type (the walk-in, entry 213) */
   #heads { position: absolute; inset: 0; z-index: 25; pointer-events: none; }
+  /* Our names as we say them, on the intro (October 21): bottom left and right, each in its speaker's color, big enough to
+     read and quiet enough to stay under the shot; each rises from behind its own baseline, the kit's one entrance */
+  #names { position: absolute; inset: 0; z-index: 24; pointer-events: none; }
+  #names .nm { position: absolute; bottom: 128px; overflow: hidden; padding: 0.06em 0.08em 0.18em; margin: 0 -0.08em -0.18em; font-size: 60px; line-height: 1; letter-spacing: -0.02em; white-space: nowrap; }
+  #names .nm.left { left: 84px; }
+  #names .nm.right { right: 84px; text-align: right; }
+  #names .nm span { display: block; opacity: 0; text-shadow: 0 2px 22px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25); will-change: transform, opacity; }
   #heads p { position: absolute; left: 160px; right: 160px; top: 50%; margin: 0; transform: translateY(-50%); font-size: 128px; line-height: 1.04; letter-spacing: -0.045em; font-weight: 400; color: #fff; opacity: 0; }
+  /* The walk-in titles (m001, entry 225): the same type and spacing, huge, each in its person's color, cut on with the beat and
+     no fade. Positions are set per title in renderTitles. */
+  #heads.titles p { left: 84px; right: auto; top: 0; transform: none; white-space: nowrap; letter-spacing: -0.045em; transform-origin: 0 50%; will-change: transform; }
+
+  /* The rough cut's footage (entry 225): the shot plays full frame in time with the player's clock, over the stand-in, which
+     shows only if the footage can't load (the public site doesn't carry it) */
+  .film { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; background: #000; }
+  #tails { display: none; }
+  /* Above the desk, when the camera goes higher than the menu bar (the opening shot, close on the icon): the desk's own top row
+     of pixels, stretched up, so the menu bar's color runs on past the top of the screen with nothing in it (entry 230) */
+  .deskmirror { position: absolute; left: 96px; top: 0; width: 1440px; height: 901px; transform-origin: 0 0; pointer-events: none; display: none; overflow: hidden; z-index: 1; }
+  .deskmirror.on { display: block; }
+  .deskmirror i { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-size: 1440px 900px; background-position: 0 0; background-repeat: no-repeat; transform-origin: 50% 100%; transform: scaleY(900); }
+
+  /* The keys, as keycaps (entry 230; Noah, October 20: “the keybinds showing could be prettier. Like they appear in the order you
+     click them in, and show for just a little longer”): each key comes up the moment it's pressed, beside the ones before it */
+  #keys.caps { gap: 14px; bottom: 140px; align-items: flex-end; transition: opacity 220ms cubic-bezier(.2, .8, .2, 1); }
+  #keys.caps.out { opacity: 0; }
+  #keys.caps kbd, .keysout kbd { box-sizing: border-box; min-width: 76px; height: 76px; padding: 0 22px; display: grid; place-items: center; border-radius: 14px; background: #fff; color: #1d1d1f; font: 400 34px/1 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: -0.01em; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 5px 0 -1px #d5d5da, 0 6px 0 -1px rgba(0, 0, 0, 0.1), 0 18px 34px rgba(0, 0, 0, 0.22); animation: capIn 460ms cubic-bezier(.22, 1, .36, 1) both; transition: opacity 300ms cubic-bezier(.4, 0, .2, 1), transform 300ms cubic-bezier(.4, 0, .2, 1); }
+  /* Out in the order they were pressed (Noah, round two, m023: “the keybinds could fade out a little smoother, in the order you
+     click them in. They should bump slightly also in the order you use them in, not too harshly though”) */
+  #keys.caps kbd.word, .keysout kbd.word { font-size: 28px; }
+  /* The keys that were up, when new ones replace them: they leave from where they were, one after another (round three, m027) */
+  .keysout { position: absolute; z-index: 23; display: flex; gap: 14px; align-items: flex-end; pointer-events: none; }
+  .keysout kbd.held { animation: none; }
+  @keyframes capIn { 0% { opacity: 0; transform: translateY(16px) scale(0.94); } 55% { opacity: 1; transform: translateY(-2px) scale(1.03); } 80% { transform: translateY(1px) scale(0.995); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 3px 0 -1px #d5d5da, 0 4px 0 -1px rgba(0, 0, 0, 0.1), 0 12px 24px rgba(0, 0, 0, 0.2); } 100% { opacity: 1; transform: none; } }
 
   /* The statement: a white screen, our header type, one word in one of our colors (Noah, October 19) */
   #stmt { position: absolute; inset: 0; z-index: 30; background: #fff; display: none; }
@@ -51,6 +88,23 @@
   /* The word in color is a box of its color now, not colored type (Noah, October 19, entry 215) */
   #stmt span.hit { padding: 0 0.12em; margin: 0 -0.02em; }
   #stmt span { display: inline-block; white-space: pre; will-change: transform, opacity; }
+  /* The statement, in the motion kit (entry 225; Noah, October 20: “something with slightly more movement and speed may be the
+     move. Keep this in mind for all future overlays”): each word rises from behind its own baseline, fast, one after another;
+     then the color lands on the one word, a square of it dropping in the way a kept color lands in the palette, and spreading
+     into the box. .w holds a word, .m is its mask, .sw the color. */
+  #stmt.kit p { text-align: center; font-size: 156px; line-height: 1.02; text-wrap: balance; }
+  #stmt.kit span.w { position: relative; display: inline-block; vertical-align: top; isolation: isolate; }
+  #stmt.kit span.m { display: inline-block; overflow: hidden; padding: 0.02em 0.02em 0.1em; margin: -0.02em -0.02em -0.1em; vertical-align: top; }
+  #stmt.kit span.wi { display: inline-block; will-change: transform; }
+  #stmt.kit span.w.hit span.m { padding-left: 0.12em; padding-right: 0.12em; margin-left: -0.02em; margin-right: -0.02em; }
+  #stmt.kit i.sw { position: absolute; z-index: -1; left: 0; top: 0; width: 0; height: 0; background: var(--hc); will-change: width, opacity; }
+  /* Round two (Noah, October 20, m009: “lets instead of the droplet, adopt the cursor quickly dragging a box around the highlighted
+     word - feels more on-theme and professional. can we have a subtle fade with the slide up? Both in and out”): the word's ink
+     copy shows only where the selection has passed, so the word turns as it's dragged over */
+  #stmt.kit span.m { position: relative; }
+  #stmt.kit span.wi2 { position: absolute; left: 0; top: 0; white-space: pre; pointer-events: none; will-change: transform, clip-path; }
+  #stmt.kit .scur { position: absolute; left: 0; top: 0; width: 44px; height: 60px; z-index: 3; pointer-events: none; opacity: 0; will-change: transform, opacity; }
+  #stmt.kit span.sp { display: inline-block; white-space: pre; }
   /* A deep dive's caption, just above the statement's text, on its left edge (Noah, October 19: “Deep dive number one”) */
   #stmt small { position: absolute; left: 0; right: 0; bottom: 100%; margin-bottom: 26px; font-size: 35px; line-height: 1.2; letter-spacing: -0.01em; color: #6b6b70; white-space: nowrap; text-align: center; will-change: transform, opacity; }
 
@@ -76,6 +130,26 @@
   #subs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 22; min-height: 104px; display: grid; place-items: center; padding: 18px 200px 22px; box-sizing: border-box; background: rgba(255, 255, 255, 0.95); border-top: 1px solid rgba(0, 0, 0, 0.08); font-size: 34px; line-height: 1.3; letter-spacing: -0.01em; text-align: center; color: #1d1d1f; transition: opacity 200ms; }
   #subs.dark { background: rgba(17, 17, 19, 0.88); border-top: 0; color: #fff; }
   #subs.off, #subs.quiet { opacity: 0; }
+  /* The voiceover guide (?prompter, October 21): the picture with the line being said, who says it and the file to save it as,
+     the next one counting down, and the film's time, for recording the voiceover over the screens */
+  /* The voiceover guide (?prompter, October 21): the picture on top, as it plays, and the lines under it, silent */
+  body.prompting { background: #fff; }
+  body.prompting #frame { overflow: visible; clip-path: inset(0 0 calc(-1 * var(--pp)) 0); }
+  #prompter { position: absolute; left: 0; right: 0; top: 1080px; height: var(--pp); box-sizing: border-box; z-index: 27; background: #fff; border-top: 1px solid rgba(0, 0, 0, 0.12); padding: 26px 64px 22px; display: grid; gap: 14px; align-content: start; color: #1d1d1f; }
+  #prompter .meter { position: absolute; left: 0; top: -1px; height: 8px; width: 0; }
+  #prompter .row { display: grid; grid-template-columns: 200px minmax(0, 1fr) 210px; gap: 24px; align-items: baseline; }
+  #prompter .now { font-size: 40px; line-height: 1.22; letter-spacing: -0.01em; }
+  #prompter .next { font-size: 25px; line-height: 1.3; color: #6e6e73; }
+  #prompter .next .txt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  #prompter .who { display: flex; align-items: center; gap: 12px; font-size: 28px; white-space: nowrap; }
+  #prompter .next .who { font-size: 22px; }
+  #prompter .who i { width: 18px; height: 18px; flex: none; }
+  #prompter .who b { font-weight: 500; }
+  #prompter .id { font-size: 22px; color: #6e6e73; text-align: right; white-space: nowrap; }
+  #prompter .now.waiting .txt { color: #8e8e93; }
+  #prompter .now.soon .txt { color: #1d1d1f; }
+  #prompter .filmed .txt { color: #8e8e93; }
+  #tc { position: absolute; top: 22px; right: 28px; z-index: 31; padding: 4px 10px; background: rgba(17, 17, 19, 0.6); color: #fff; font-size: 22px; letter-spacing: 0.02em; }
   #subs .who { color: var(--sc); }
 
   /* The controls under the frame */
@@ -84,6 +158,7 @@
   .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .cbtn { border: 0; background: #2c2c2e; color: #e5e5ea; padding: 4px 11px; border-radius: 6px; cursor: pointer; }
   .cbtn:hover { background: #3a3a3c; }
+  a.cbtn { text-decoration: none; font: 13.333px system-ui, -apple-system, sans-serif; }
   .cbtn[aria-pressed="true"] { background: #e5e5ea; color: #1c1c1e; }
   #scrub { flex: 1; min-width: 200px; accent-color: #e5e5ea; }
   #time { min-width: 92px; color: #a1a1a6; }
@@ -112,12 +187,16 @@
 <body>
 <div id="view"><div id="frame" aria-label="The video frame">
   <div id="scene"></div>
+  <div id="tails" aria-hidden="true"></div>
   <div id="heads" aria-live="polite"></div>
+  <div id="names" aria-hidden="true"></div>
   <div id="keys" aria-hidden="true"></div>
   <div id="stmt" aria-live="polite"><p></p></div>
   <div id="card" aria-hidden="true"><span class="mk" id="card-mk"></span><div><div class="over" id="card-over"></div><div class="ttl" id="card-ttl"></div></div></div>
   <div id="chip" aria-hidden="true"><i></i><span></span></div>
-  <div id="subs" aria-live="polite"></div>
+  <div id="subs" class="quiet" aria-live="polite"></div>
+  <div id="prompter" hidden><div class="meter"></div><div class="row now"><span class="who"><i></i><b></b></span><span class="txt"></span><span class="id num"></span></div><div class="row next"><span class="who"><i></i><b></b></span><span class="txt"></span><span class="id num"></span></div></div>
+  <div id="tc" class="num" hidden></div>
 </div></div>
 
 <div id="controls" aria-label="Player">
@@ -126,7 +205,7 @@
     <span id="time" class="num">0:00 / 7:00</span>
     <input type="range" id="scrub" min="0" max="420" step="0.1" value="0" aria-label="Time">
     <button type="button" class="cbtn" id="t-subs" aria-pressed="true" title="S">Subtitles</button>
-    <button type="button" class="cbtn" id="t-chips" aria-pressed="true" title="C">Speakers</button>
+    <button type="button" class="cbtn" id="t-chips" aria-pressed="true" title="C" hidden>Speakers</button>
     <button type="button" class="cbtn" id="t-cards" aria-pressed="true" title="T">Section cards</button>
     <button type="button" class="cbtn" id="t-music" aria-pressed="true" title="M">Music</button>
     <button type="button" class="cbtn" id="t-edit" aria-pressed="false" title="E">Edit</button>
@@ -166,6 +245,9 @@
 
 <audio id="music" preload="auto"></audio>
 <audio id="calm" preload="auto"></audio>
+<audio id="audition" preload="auto"></audio>
+<audio id="lift" preload="auto"></audio>
+<audio id="after" preload="auto"></audio>
 <script src="../brand/brand.js"></script>
 <script src="script.js"></script>
 <script>
@@ -179,7 +261,8 @@
   // Noah, October 19: “The text and how things appear is too janky - lets go back to smooth fades. I just want them to be
   // sequential” (entry 219, after the clunk of entry 215): fade is the default, each word fading in after the last on v3's
   // ease. ?motion=clunk, spring, snap, cut or step switch it, as in the workshop
-  var MOTION = /^(spring|snap|cut|step|clunk|fade)$/.test(q.get("motion") || "") ? q.get("motion") : "fade";
+  // Round two: the kit is the whole video's motion now (one way things come in, everywhere); the others still switch it
+  var MOTION = /^(kit|spring|snap|cut|step|clunk|fade)$/.test(q.get("motion") || "") ? q.get("motion") : "kit";
   var W = 1920, H = 1080, TOTAL = S.total || S.sections.reduce(function (a, x) { return Math.max(a, x.start + x.seconds); }, 0);
   var COLORS = ["#d14808", "#2e6b6f", "#f0c23b", "#5e4b8b", "#a9b9a0", "#c25a35", "#1e4d8c", "#e5989b"];
   function mmss(t) { t = Math.max(0, Math.floor(t)); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
@@ -191,7 +274,7 @@
   try { var saved = JSON.parse(localStorage.getItem(KIT) || "null"); if (saved) Object.keys(saved).forEach(function (k) { kit[k] = saved[k]; }); } catch (e) {}
   function saveKit() { try { localStorage.setItem(KIT, JSON.stringify(kit)); } catch (e) {} }
   // ?music=0 plays without music, for the workshop's demos, without changing your saved setting
-  if (q.get("music") === "0") kit.musicOn = false;
+  if (q.get("music") === "0" || q.has("prompter")) kit.musicOn = false;   // the voiceover guide plays no sound at all (entry 278)
   function speakerColor(w) { return kit.colors[w] || (B.speakers || {})[w] || "#1d1d1f"; }
   function speakerName(w) { return kit.names[w] || w; }
   function markUrl() { return kit.logo || B.markUrl || null; }
@@ -206,6 +289,7 @@
   /* ---------- The script's lines, with Noah's edits from the script page, timed by their words ---------- */
   var edits = { text: {}, who: {}, statements: {}, music: {}, calm: {}, musicStatements: undefined };
   try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) edits = { text: se.text || {}, who: se.who || {}, statements: se.statements || {}, music: se.music || {}, calm: se.calm || {}, musicStatements: se.musicStatements, headers: se.headers || {} }; } catch (e) {}
+  if (window.palitFresh) window.palitFresh(S, edits);   // an edit with a line's old text gives way to its redraft (entry 225)
   function statementOf(x) { var b = x.statement, e = edits.statements[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds, caption: e.caption !== undefined ? e.caption : b.caption } : null; }
   // Each line is up while it's said: script.js times every line from its words (entry 205), so the picture waits for the voice
   var cues = [];
@@ -226,10 +310,28 @@
     if (cfg && cfg.src) fetch(cfg.src).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.blob(); }).then(function (b) { el.src = URL.createObjectURL(b); }).catch(function () { el.src = cfg.src; });
     return L;
   }
+  // Auditioning a track for a slot (the music workshop, October 21): ?audition=<file or link>&slot=demo plays it from the demo's
+  // statement to deep dive 1's, where the house track has ended; &slot=dives plays it in place of the calm track, from deep dive
+  // 1's statement to the outro, going round again as it needs to. &level= sets its level (0.3 by default). &slot=after (entry
+  // 274) keeps Jungle Voices under deep dive 1 and plays the track from deep dive 2's statement to the outro, after it.
+  var AUD = q.get("audition"), SLOT = q.get("slot") || "dives", AUDLEVEL = Number(q.get("level")) || 0.3;
+  if (AUD && SLOT === "dives" && S.calm) S.calm = { src: AUD, title: "Audition", by: "", license: "", level: AUDLEVEL, duck: S.calm.duck, loop: true, plan: [{ from: "dive1", to: "outro" }] };
+  if (AUD && SLOT === "demo") S.audition = { src: AUD, title: "Audition", by: "", level: AUDLEVEL, duck: 0.3, plan: [{ from: "demo", to: "dive1" }] };
+  if (AUD && SLOT === "after") S.after = { src: AUD, title: "Audition", by: "", level: AUDLEVEL, duck: S.calm ? S.calm.duck : 0.5, plan: [{ from: "dive2", to: "outro" }] };
   var HOUSE = makeLayer("music", S.music, $("music"), 0.4, 1.5), CALM = makeLayer("calm", S.calm, $("calm"), 1.5, 2);
+  var TRY = makeLayer("audition", S.audition, $("audition"), 0.8, 1.5);
+  // The demo's track (script.js lift); an audition for the demo plays in its place
+  var LIFT = makeLayer("lift", AUD && SLOT === "demo" ? null : S.lift, $("lift"), 0.8, 1.5);
+  // The track after Jungle Voices, from deep dive 2's statement (script.js after)
+  var AFTER = makeLayer("after", S.after, $("after"), 1.5, 2);
   var MU = S.music || null, music = HOUSE.el, WINDOWS = HOUSE.windows;
-  function levelOf(L) { var k = L.key === "music" ? kit.musicLevel : kit.calmLevel; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.level : 0.3); }
-  function duckOf(L) { var k = L.key === "music" ? kit.musicDuck : kit.calmDuck; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.duck : 0.3); }
+  // A level or dip Noah sets here holds for the track it was set on (kit.calmFor), so a new track starts at its own (entry 274)
+  function mine(L) { return L.key === "music" || (L.key === "calm" && S.calm && kit.calmFor === S.calm.src); }
+  function levelOf(L) {
+    if (AUD && (L.key === "audition" || (L.key === "calm" && SLOT === "dives") || (L.key === "after" && SLOT === "after"))) return AUDLEVEL;
+    var k = !mine(L) ? null : L.key === "music" ? kit.musicLevel : kit.calmLevel; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.level : 0.3);
+  }
+  function duckOf(L) { var k = !mine(L) ? null : L.key === "music" ? kit.musicDuck : kit.calmDuck; return k !== null && k !== undefined ? k : (L.cfg ? L.cfg.duck : 0.3); }
   function musicLevel() { return levelOf(HOUSE); }
   function musicDuck() { return duckOf(HOUSE); }
   // A run comes up over its attack and fades over its release once it ends (entry 197)
@@ -264,7 +366,7 @@
     if (Math.abs(a.currentTime - want) > 0.3) { try { a.currentTime = want; } catch (e) {} }
     if (a.paused) { var p = a.play(); if (p && p.catch) p.catch(function () {}); }
   }
-  function syncMusic(t) { syncLayer(HOUSE, t); syncLayer(CALM, t); }
+  function syncMusic(t) { syncLayer(HOUSE, t); syncLayer(CALM, t); syncLayer(TRY, t); syncLayer(LIFT, t); syncLayer(AFTER, t); }
 
   /* ---------- The scenes ---------- */
   var cur = null, deskLoaded = false;
@@ -285,10 +387,12 @@
     el.appendChild(h); el.appendChild(on); el.appendChild(ul);
     return el;
   }
-  function vizFrame(name, cls, set) {
+  var STMTS = S.sections.filter(function (x) { return x.statement && !x.cut; });
+  function hlDir(x, k) { var i = STMTS.indexOf(x); return i < 0 ? (1 + k) % 4 : (2 * i + k) % 4; }
+  function vizFrame(name, cls, set, hl) {
     var f = document.createElement("iframe");
     f.className = "vizf" + cls; f.title = "Visualization: " + name + (set ? ", " + set : ""); f.setAttribute("tabindex", "-1");
-    f.src = "viz.html?scene=" + encodeURIComponent(name) + (set ? "&set=" + encodeURIComponent(set) : "") + (MOTION !== "spring" ? "&motion=" + MOTION : "");
+    f.src = "viz.html?scene=" + encodeURIComponent(name) + (set ? "&set=" + encodeURIComponent(set) : "") + (MOTION !== "spring" ? "&motion=" + MOTION : "") + (hl !== undefined ? "&hl=" + hl : "");
     f.addEventListener("load", function () { render(T); });   // so a paused frame shows the right moment too
     return f;
   }
@@ -346,8 +450,118 @@
     });
     box.style.opacity = MOTION === "clunk" ? (u >= st.seconds - 0.1 ? "0" : "1") : String(1 - clamp01((u - (st.seconds - 0.2)) / 0.2));
   }
-  function enter(x, t) {
-    var sc = $("scene"); sc.textContent = ""; deskLoaded = false;
+  // The rough cut's footage (entry 225): ?footage=0 shows the stand-ins instead
+  var FOOT = q.get("footage") !== "0";
+  function filmFor(x) {
+    var v = document.createElement("video");
+    v.className = "film"; v.preload = "auto"; v.playsInline = true; v.setAttribute("playsinline", ""); v.setAttribute("aria-hidden", "true");
+    if (q.has("prompter")) v.muted = true;
+    v._from = x.footage.from || 0; v._tail = x.footage.tail || 0;
+    v.addEventListener("loadeddata", function () { render(T); });
+    // Loaded whole, like the music, so it can jump to any frame even from a local server that can't send part of a file; no
+    // footage here (the public site doesn't carry it) and the stand-in shows
+    filmUrl(x.footage.src).then(function (u) { v.src = u; }, function () { v.remove(); });
+    return v;
+  }
+  var FILMS = {};
+  function filmUrl(src) {
+    if (!FILMS[src]) FILMS[src] = fetch(src).then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.blob(); }).then(function (b) { return URL.createObjectURL(b); });
+    return FILMS[src];
+  }
+  // Fetch every shot up front, so a cut never waits on the network
+  if (FOOT) S.sections.forEach(function (x) { if (x.footage) filmUrl(x.footage.src).catch(function () {}); });
+  /* ---------- The statement in the motion kit (entries 225 and 234). Round two: every word rises from behind its baseline and
+     fades in at once, one after another, and leaves the same way, up and out (Noah: “a subtle fade with the slide up? Both in and
+     out”); then the Mac's cursor, the one the demo uses, comes in on an arc, waits a beat, and quickly drags a box around the one
+     word, in the section's color, the word turning as the box passes over it. ---------- */
+  function expo(k) { return k >= 1 ? 1 : 1 - Math.pow(2, -10 * k); }
+  function easeIn(k) { return k * k * k; }
+  function easeIO3(k) { k = clamp01(k); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+  function soft(k) { k = clamp01(k); return k * k * (3 - 2 * k); }
+  var CURSOR_SVG = '<svg width="44" height="60" viewBox="0 0 22 30"><path d="M3 3 L3 24 L8.4 18.6 L12.2 27.2 L15.9 25.6 L12.2 17.2 L19.4 17.2 Z" fill="#111" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+  function arcPt(a, b, u, bow) { var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1], cx = mx - dy * bow, cy = my + dx * bow, v = 1 - u; return [v * v * a[0] + 2 * v * u * cx + u * u * b[0], v * v * a[1] + 2 * v * u * cy + u * u * b[1]]; }
+  var kitKey = "";
+  function renderStatementKit(x, u) {
+    var st = statementOf(x), box = $("stmt"), p = box.querySelector("p");
+    box.classList.add("in"); box.classList.add("kit");
+    var key = "kit2|" + x.id + "|" + st.text + "|" + st.word + "|" + st.color + "|" + (st.caption || "");
+    if (key !== kitKey) {
+      kitKey = key; stmtKey = ""; p.textContent = "";
+      Array.prototype.forEach.call(box.querySelectorAll(".scur"), function (n) { n.remove(); });
+      if (st.caption) { var cap = document.createElement("small"); cap.textContent = st.caption; p.appendChild(cap); }
+      var parts = st.text.split(/(\s+)/), hit = -1, want = (st.word || "").trim().toLowerCase();
+      parts.forEach(function (w, i) { if (hit < 0 && want && w.toLowerCase().replace(/[^a-z0-9'’-]/g, "") === want.replace(/[^a-z0-9'’-]/g, "")) hit = i; });
+      parts.forEach(function (w, i) {
+        if (!w.trim()) { var g = document.createElement("span"); g.className = "sp"; g.textContent = w; p.appendChild(g); return; }
+        var o = document.createElement("span"), m = document.createElement("span"), wi = document.createElement("span");
+        o.className = "w" + (i === hit ? " hit" : ""); m.className = "m"; wi.className = "wi"; wi.textContent = w;
+        m.appendChild(wi); o.appendChild(m);
+        if (i === hit) {
+          var sw = document.createElement("i"); sw.className = "sw"; o.style.setProperty("--hc", st.color); o.insertBefore(sw, m);
+          var w2 = document.createElement("span"); w2.className = "wi2"; w2.textContent = w; w2.style.color = inkOn(st.color); m.appendChild(w2);
+        }
+        p.appendChild(o);
+      });
+      if (hit >= 0) { var cur = document.createElement("div"); cur.className = "scur"; cur.innerHTML = CURSOR_SVG; box.appendChild(cur); }
+    }
+    var ws = p.querySelectorAll("span.w"), out = u - (st.seconds - 0.4), n = ws.length;
+    ws.forEach(function (o, i) {
+      var wi = o.querySelector(".wi"), t0 = 0.06 + i * 0.065, kin = expo(clamp01((u - t0) / 0.62)), fin = soft((u - t0) / 0.42);
+      var kout = out > 0 ? easeIn(clamp01((out - i * 0.025) / 0.32)) : 0, ty = ((1 - kin) * 100 - kout * 60).toFixed(2) + "%";
+      wi.style.transform = "translateY(" + ty + ")"; wi.style.opacity = String(fin * (1 - kout));
+      if (!o.classList.contains("hit")) return;
+      var w2 = o.querySelector(".wi2"), sw = o.querySelector(".sw"), m = o.querySelector(".m");
+      w2.style.transform = wi.style.transform; w2.style.opacity = wi.style.opacity;
+      w2.style.left = wi.offsetLeft + "px"; w2.style.top = wi.offsetTop + "px";
+      // The cursor: in on an arc, a beat, a quick drag from the word's left edge to its right, away
+      var fr = $("frame").getBoundingClientRect(), k = fr.width / W, mr = m.getBoundingClientRect();
+      var L = (mr.left - fr.left) / k, T = (mr.top - fr.top) / k, Wd = mr.width / k, Hd = mr.height / k;
+      // Round three (Noah, m009: “the cursor could come from different directions to the highlighted word ... just different
+      // directions so we keep it new every single time”): in turn bottom right, top left, bottom left, top right, counting the
+      // highlights in the charts between the statements (hlDir)
+      var dir = hlDir(x, 0), up = dir === 1 || dir === 3, left = dir === 1 || dir === 2;
+      var C0 = 0.08 + n * 0.065 + 0.32, A0 = [left ? L - 300 : L + Wd + 260, up ? T - 230 : T + Hd + 190], B0 = [L - 2, T + Hd * 0.55], D0 = [L + Wd - 4, T + Hd * 0.55], E0 = [L + Wd + 200, up ? T - 170 : T + Hd + 150];
+      var pos = A0, op = 0, drag = 0;
+      if (u < C0) { pos = A0; op = 0; }
+      else if (u < C0 + 0.42) { pos = arcPt(A0, B0, easeIO3((u - C0) / 0.42), 0.14); op = soft((u - C0) / 0.18); }
+      else if (u < C0 + 0.54) { pos = B0; op = 1; }   // a beat before the press
+      else if (u < C0 + 0.92) { drag = easeIO3((u - C0 - 0.54) / 0.38); pos = [B0[0] + (D0[0] - B0[0]) * drag, B0[1]]; op = 1; }
+      else { drag = 1; var lv = clamp01((u - C0 - 1.0) / 0.4); pos = u < C0 + 1.0 ? D0 : arcPt(D0, E0, easeIO3(lv), -0.18); op = 1 - soft(lv); }
+      var cur = box.querySelector(".scur");
+      if (cur) { cur.style.opacity = String(op * (1 - (out > 0 ? soft(out / 0.2) : 0))); cur.style.transform = "translate(" + pos[0].toFixed(1) + "px," + pos[1].toFixed(1) + "px)"; }
+      // The box covers the whole word, its breathing room too, growing with the drag
+      var bx = m.offsetLeft - 2, by = m.offsetTop + 2, bw = m.offsetWidth + 4, bh = m.offsetHeight - 4, pct = clamp01(drag);
+      sw.style.left = bx + "px"; sw.style.top = by + "px"; sw.style.height = bh + "px"; sw.style.width = (bw * pct).toFixed(1) + "px";
+      sw.style.opacity = String(pct > 0 ? 1 - kout : 0);
+      // and it leaves with the word, sliding up as the text fades (round three, m009: “have the box slide up with the text”)
+      // On the way out the word and its box leave as one: the word's mask lets go of it, so neither is cut at the mask's edge, and
+      // they travel up together and fade together (round three, Noah, on the horizon's statement: “the highlighted box should
+      // fade with the word its highlighting, at the same time”, then “the box should still move with the word as well”)
+      var shift = kout > 0 ? kout * 0.6 * wi.offsetHeight : 0;
+      m.style.overflow = shift > 0 ? "visible" : "";
+      sw.style.transform = shift > 0 ? "translateY(" + (-shift).toFixed(1) + "px)" : "";
+      // The ink copy shows over the part of the word the box has reached, and the word itself only past it, both cut exactly at
+      // the box's moving edge (E, in the word's own pixels; the box starts 2px left of the mask, the word at its padding), and
+      // nowhere else: a descender or an overhang hangs outside the word's own box, and an inset of 0 there cut the copy's tail
+      // off, so the dark word showed under it (round three, Noah, on deep dive 3's statement: “the "y" in story gets slightly
+      // cut by the box”). With the dark word hidden under the copy, the word fades as one color when it leaves.
+      var E = bw * pct - 2 - wi.offsetLeft;
+      w2.style.clipPath = "inset(-0.3em " + (wi.offsetWidth - E).toFixed(1) + "px -0.3em -0.3em)";
+      wi.style.clipPath = pct > 0 ? "inset(-0.3em -0.3em -0.3em " + E.toFixed(1) + "px)" : "";
+    });
+    var capEl = p.querySelector("small");
+    if (capEl) { var kc = expo(clamp01((u - 0.02) / 0.6)), fc = soft((u - 0.02) / 0.42), ko = out > 0 ? easeIn(clamp01(out / 0.32)) : 0; capEl.style.opacity = String(fc * (1 - ko)); capEl.style.transform = "translateY(" + ((1 - kc) * 24 - ko * 16).toFixed(1) + "px)"; }
+    box.style.opacity = String(1 - clamp01((u - (st.seconds - 0.05)) / 0.05));
+  }
+  function enter(x, t, prev) {
+    var sc = $("scene");
+    // A shot whose voice runs on past its cut (the intro's “Palit”) keeps playing, unseen, until its tail is out
+    sc.querySelectorAll(".film").forEach(function (v) {
+      if (v._tail > 0 && playing && !v.paused && prev && t >= prev.start + prev.seconds - 0.1 && t < prev.start + prev.seconds + v._tail) {
+        v._t0 = prev.start - v._from; v._end = prev.start + prev.seconds + v._tail; $("tails").appendChild(v);
+      }
+    });
+    sc.textContent = ""; deskLoaded = false;
     if (x.part === "desktop" && x.scene && x.scene.href) {
       var f = document.createElement("iframe");
       f.className = "desk"; f.title = x.title; f.setAttribute("tabindex", "-1");
@@ -358,11 +572,12 @@
         (x.inserts || []).forEach(function (n) { if (sa >= n.start - 1e-6 && sa < n.end - 1e-6) m = n.holdAt - 0.001; });
         return [Math.round(m * 1000) / 1000, Math.round(w[0] * 100) / 100];
       }).filter(function (b) { return b[0] > 0; }).map(function (b) { return b[0] + ":" + b[1]; }).join(",");
-      f.src = x.scene.href + (x.scene.href.indexOf("?") >= 0 ? "&" : "?") + "keys=0&wait" + (beats ? "&beats=" + beats : "");
+      f.src = x.scene.href + (x.scene.href.indexOf("?") >= 0 ? "&" : "?") + "keys=0&wait" + (beats ? "&beats=" + beats : "") + (q.has("prompter") ? "&sound=0" : "");
       f.addEventListener("load", function () { render(T); });
       sc.appendChild(f); deskLoaded = true;
-    } else if (x.viz) sc.appendChild(vizFrame(x.viz, ""));
-    else sc.appendChild(standIn(x));
+    } else if (x.viz) sc.appendChild(vizFrame(x.viz, "", null, hlDir(x, 1)));
+    else { sc.appendChild(standIn(x)); if (x.footage && FOOT) sc.appendChild(filmFor(x)); }
+    if (x.part === "desktop") { var mir = document.createElement("div"); mir.className = "deskmirror"; mir.appendChild(document.createElement("i")); sc.appendChild(mir); }
     (x.inserts || []).forEach(function (n, i) { var f2 = n.reel ? vizFrame("reel", " insert", n.reel) : vizFrame(n.viz, " insert"); f2.setAttribute("data-i", String(i)); sc.appendChild(f2); });
     $("chip").classList.toggle("dark", !!kit.chipDark || x.part === "filmed");
   }
@@ -370,7 +585,65 @@
   // and comes in and goes out on v3's 240ms fade
   function headersOf(x) { var e = (edits.headers || {})[x.id]; return (e !== undefined ? e : x.headers || []).filter(function (h) { return h && h.trim(); }); }
   var headKey = "";
+  // The walk-in titles (m001, entry 225): titles.at says when each state cuts on (seconds into the shot), titles.show which titles
+  // are up together, and titles.colors each one's color (a speaker's name means that speaker's chip color). They cut on and off
+  // with no fade, and drift a touch while they're up, so the type lives with the moving shot.
+  function titleColor(c) { return /^#/.test(c || "") ? c : c ? speakerColor(c) : "#ffffff"; }
+  function renderTitles(x, into) {
+    var box = $("heads"), hs = headersOf(x), T0 = x.titles, key = "titles|" + x.id + "|" + hs.join("|");
+    box.classList.add("titles");
+    if (key !== headKey) {
+      headKey = key; box.textContent = "";
+      // A longer title breaks once, where its two lines come out most even (Cooper Union / School of Art)
+      hs.forEach(function (h, i) {
+        var p = document.createElement("p"), ws = h.trim().split(/\s+/), best = h, gap = 1e9;
+        if (h.length > 8 && ws.length > 1) for (var j = 1; j < ws.length; j++) { var a = ws.slice(0, j).join(" "), b = ws.slice(j).join(" "), d = Math.abs(a.length - b.length); if (d < gap) { gap = d; best = a + "\n" + b; } }
+        p.textContent = best; p.style.color = titleColor((T0.colors || [])[i]); box.appendChild(p);
+      });
+    }
+    var ps = box.querySelectorAll("p"), state = -1;
+    T0.at.forEach(function (a, i) { if (into >= a - 1e-6) state = i; });
+    if (into >= x.seconds) state = -1;
+    var up = state >= 0 ? T0.show[state] : [];
+    // Two names stack into the frame, one per line; a longer title runs on two lines across it
+    var big = up.length && up.every(function (i) { return (hs[i] || "").length <= 8; });
+    // the school a little bigger (Noah, round two: “Make Cooper Union a little bigger”)
+    var fs = big ? 600 : 362, lh = big ? 0.8 : 0.86, lines = big ? up.length : 2, top = (1080 - fs * lh * (big ? 2 : lines)) / 2 - fs * 0.04;
+    ps.forEach(function (p, i) {
+      var k = up.indexOf(i), on = k >= 0;
+      p.style.opacity = on ? "1" : "0";
+      if (!on) return;
+      var row = big ? i : 0, since = into - T0.at[Math.max(0, T0.show.findIndex(function (s) { return s.indexOf(i) >= 0; }))];
+      p.style.fontSize = fs + "px"; p.style.lineHeight = String(lh);
+      p.style.whiteSpace = "pre"; p.style.width = "auto";
+      // as big as it can be and still fit across the frame, inside the same 84px edge on both sides
+      if (!big && p._fs !== fs) { p._fs = fs; var wpx = p.offsetWidth; if (wpx > 1920 - 168) { p._fit = fs * (1920 - 168) / wpx; } else p._fit = fs; }
+      if (!big && p._fit) { p.style.fontSize = p._fit + "px"; p.style.top = (top + (fs - p._fit) * lh) + "px"; }
+      p.style.top = (top + row * fs * lh) + "px";
+      p.style.transform = "scale(" + (1 + 0.012 * Math.min(1.6, Math.max(0, since))) + ")";
+    });
+  }
+  // Our names as we say them (names on a section: show [{ who, at, side }], out): each rises in from behind its baseline at its
+  // moment, and they leave together, up and quicker, at out
+  var namesKey = "";
+  function renderNames(x, into) {
+    var box = $("names"), N = x.names;
+    if (!N) { if (namesKey) { box.textContent = ""; namesKey = ""; } return; }
+    var key = x.id + "|" + N.show.map(function (n) { return n.who + n.at; }).join("|");
+    if (key !== namesKey) {
+      namesKey = key; box.textContent = "";
+      N.show.forEach(function (n) { var m = document.createElement("div"), sp = document.createElement("span"); m.className = "nm " + (n.side || "left"); sp.textContent = speakerName(n.who); sp.style.color = speakerColor(n.who); m.appendChild(sp); box.appendChild(m); });
+    }
+    var kout = N.out !== undefined ? easeIn(clamp01((into - N.out) / 0.34)) : 0;
+    Array.prototype.forEach.call(box.querySelectorAll(".nm span"), function (sp, i) {
+      var at = N.show[i].at, kin = expo(clamp01((into - at) / 0.62)), fin = soft((into - at) / 0.42);
+      sp.style.transform = "translateY(" + ((1 - kin) * 100 - kout * 60).toFixed(2) + "%)";
+      sp.style.opacity = String(into >= at ? fin * (1 - kout) : 0);
+    });
+  }
   function renderHeaders(x, into) {
+    if (x.titles) { renderTitles(x, into); return; }
+    $("heads").classList.remove("titles");
     var box = $("heads"), hs = headersOf(x), key = x.id + "|" + hs.join("|");
     if (key !== headKey) { headKey = key; box.textContent = ""; hs.forEach(function (h) { var p = document.createElement("p"); p.textContent = h; box.appendChild(p); }); }
     var ps = box.querySelectorAll("p"), n = ps.length, d = n ? x.seconds / n : 0, f = 0.24;
@@ -394,40 +667,183 @@
     try { var pc = f.contentDocument.querySelector(".pcursor"), m = /translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(pc ? pc.style.transform : ""); if (m) return { x: Number(m[1]), y: Number(m[2]) }; } catch (e) {}
     return null;
   }
+  // v3 names where the camera should be (entry 230): data-cam="x,y,zoom,ms" on its body, in stage points. Round two (Noah, October
+  // 20, m022: “The zoom out is so janky. Lets make it smooth, and not too sudden. Buffer it just slightly”; m030: “lets be
+  // smooth/elegant when we can, especially when we need quick pans and movements”): each named move is a tween over its ms on a
+  // smootherstep ease (it starts and stops with no jolt), the zoom in log space, anchored so what you're looking at stays on
+  // screen while the frame opens or closes around it (zooming out, it's where you were; zooming in, where you're going), instead
+  // of sweeping across the desk. With nothing named, the camera follows the cursor on a no-bounce spring, as before.
+  function camIntent(f) {
+    try { var d = f.contentDocument && f.contentDocument.body && f.contentDocument.body.getAttribute("data-cam"); if (!d) return null; var v = d.split(",").map(Number); if (v.length >= 3 && v.every(isFinite)) return { x: v[0], y: v[1], z: v[2], ms: v.length > 3 ? v[3] : 900, key: d }; } catch (e) {}
+    return null;
+  }
+  function spring(s, target, w, dt) {   // one axis of a critically damped spring: s = { p, v }
+    var steps = Math.ceil(dt / 0.008), h = dt / steps;
+    for (var i = 0; i < steps; i++) { var a = -2 * w * s.v - w * w * (s.p - target); s.v += a * h; s.p += s.v * h; }
+  }
+  function smoother(u) { u = clamp01(u); return u * u * u * (u * (u * 6 - 15) + 10); }
+  // The desktop at its widest is a window on the white page, 44px clear above and below (round two, m024)
+  var BASE = 992 / 900;
+  var cs = { x: { p: 720, v: 0 }, y: { p: 450, v: 0 }, l: { p: 0, v: 0 } }, view = { x: 720, y: 450, z: 1 }, tween = null, lastKey = "";
+  function tweenAt(tw, u) {
+    var S0 = BASE * tw.z0, S1 = BASE * tw.z1, A = tw.z1 < tw.z0 ? { x: tw.x0, y: tw.y0 } : { x: tw.x1, y: tw.y1 };
+    var z = Math.exp(Math.log(tw.z0) + (Math.log(tw.z1) - Math.log(tw.z0)) * u), S = BASE * z;
+    var q0x = (A.x - tw.x0) * S0, q0y = (A.y - tw.y0) * S0, q1x = (A.x - tw.x1) * S1, q1y = (A.y - tw.y1) * S1;
+    return { x: A.x - (q0x + (q1x - q0x) * u) / S, y: A.y - (q0y + (q1y - q0y) * u) / S, z: z };
+  }
+  // Where the desk sits for a view: the frame's center on the view's point, unless that would show past the desk's edge (the
+  // window, when it's smaller than the frame; close on the menu bar, a little room above its top edge, which the mirror fills)
+  function rawPos(v) { var s2 = BASE * v.z; return { x: 960 - 96 - v.x * s2, y: 540 - v.y * s2 }; }
+  function clampPos(v) {
+    var s2 = BASE * v.z, wd = 1440 * s2, ht = 900 * s2, r = rawPos(v);
+    var wTop = smoother((60 - v.y) / 40) * smoother((v.z - 1.6) / 1.6), over = 20 * s2 * wTop;
+    return { x: wd <= 1920 ? (1920 - wd) / 2 - 96 : Math.min(-96, Math.max(1824 - wd, r.x)), y: ht <= 1080 ? (1080 - ht) / 2 : Math.min(over, Math.max(1080 - ht, r.y)) };
+  }
   function camera(x, f, m, t) {
-    if (!CAM || !x.camera) { f.style.transform = "scale(1.2)"; return; }
-    var z = zoomAt(x, m), c = cursorOf(f) || { x: 720, y: 450 }, dt = cam.t === null ? 1 : Math.abs(t - cam.t);
-    var a = dt > 0.5 ? 1 : 1 - Math.exp(-dt * 4.5);   // follow quickly, but never jitter; a seek snaps straight there
-    cam.x += (c.x - cam.x) * a; cam.y += (c.y - cam.y) * a; cam.t = t;
-    var s2 = 1.2 * z, w = 1440 * s2, h = 900 * s2, tx, ty;
-    if (w <= 1920) tx = (1920 - w) / 2 - 96; else tx = Math.min(-96, Math.max(1824 - w, 960 - 96 - cam.x * s2));
-    ty = h <= 1080 ? (1080 - h) / 2 : Math.min(0, Math.max(1080 - h, 540 - cam.y * s2));
-    f.style.transform = "translate(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px) scale(" + s2.toFixed(4) + ")";
+    if (!CAM || !x.camera) { f.classList.add("win"); f.style.transform = "translate(" + ((1920 - 1440 * BASE) / 2 - 96).toFixed(1) + "px," + ((1080 - 900 * BASE) / 2).toFixed(1) + "px) scale(" + BASE.toFixed(4) + ")"; return; }
+    var I = camIntent(f), dt = cam.t === null ? 1 : Math.abs(t - cam.t), jump = dt > 0.5 || !playing, pos = null;
+    if (I) {
+      if (I.key !== lastKey) {   // a new move: from wherever the camera is now
+        lastKey = I.key;
+        var to = { x: I.x, y: I.y, z: I.z };
+        tween = jump || I.ms <= 0 ? null : { x0: view.x, y0: view.y, z0: view.z, x1: I.x, y1: I.y, z1: I.z, t0: t, d: Math.max(0.12, I.ms / 1000) };
+        if (tween) {
+          // Round three (Noah, m024: “There's this weird jitter with the top kind of bar”): the edges are met at both ends of the
+          // move and eased between, so the picture never stops dead at the desk's top edge and then hops into the room above it
+          var r0 = rawPos(view), p0 = cam.pos || clampPos(view), r1 = rawPos(to), p1 = clampPos(to);
+          tween.c0 = { x: p0.x - r0.x, y: p0.y - r0.y }; tween.c1 = { x: p1.x - r1.x, y: p1.y - r1.y };
+        } else view = to;
+      }
+      if (jump) { tween = null; view = { x: I.x, y: I.y, z: I.z }; }
+      else if (tween) {
+        var u = smoother((t - tween.t0) / tween.d), rr;
+        view = tweenAt(tween, u); rr = rawPos(view);
+        pos = { x: rr.x + tween.c0.x + (tween.c1.x - tween.c0.x) * u, y: rr.y + tween.c0.y + (tween.c1.y - tween.c0.y) * u };
+        if (u >= 1) { tween = null; pos = null; }
+      }
+      cs.x = { p: view.x, v: 0 }; cs.y = { p: view.y, v: 0 }; cs.l = { p: Math.log(view.z), v: 0 };   // the follow picks up from here
+    } else {
+      lastKey = ""; tween = null;
+      var c = cursorOf(f) || { x: 720, y: 450 }, zf = zoomAt(x, m), w = 5.8 / 0.7;
+      if (jump) { cs.x = { p: c.x, v: 0 }; cs.y = { p: c.y, v: 0 }; cs.l = { p: Math.log(zf), v: 0 }; }
+      else { spring(cs.x, c.x, w, dt); spring(cs.y, c.y, w, dt); spring(cs.l, Math.log(zf), w, dt); }
+      view = { x: cs.x.p, y: cs.y.p, z: Math.exp(cs.l.p) };
+    }
+    if (!pos) pos = clampPos(view);
+    cam.t = t; cam.x = view.x; cam.y = view.y; cam.pos = pos;
+    var s2 = BASE * view.z, wd = 1440 * s2, tx = pos.x, ty = pos.y;
+    // The rounded window's corners only show near the widest view; zoomed in, they're off the frame, and keeping the rounding
+    // there makes the browser build a layer too big to draw (the screen recording froze on it at the 14x close-up)
+    f.classList.toggle("win", view.z < 1.35);
+    var tf = "translate(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px) scale(" + s2.toFixed(4) + ")";
+    f.style.transform = tf;
+    var mir = $("scene").querySelector(".deskmirror");
+    if (mir) {
+      // it fades as the desk narrows to a window, instead of switching off in a frame
+      var on = ty > 0.05 && wd > 1920;
+      mir.classList.toggle("on", on);
+      mir.style.opacity = on ? String(smoother((wd - 1920) / 260)) : "";
+      if (on) {
+        if (!mir._src) { try { var d0 = f.contentDocument.getElementById("desk"); if (d0 && d0.src) { mir._src = d0.src; mir.firstChild.style.backgroundImage = "url(\"" + d0.src + "\")"; } } catch (e) {} }
+        mir.style.transform = tf + " translateY(-900px)";   // one point over the desk's top row (the same color), so no seam shows
+      }
+    }
   }
   // The keys v3 is pressing, read from its own keystroke chips (which the player keeps hidden inside it)
-  var keysKey = "";
-  function keysFrom(f) {
+  var keysKey = "", keysOut = null;
+  // A key leaving: down a touch and out, after the ones pressed before it. A Web Animation, so it plays over the key's entrance
+  // (a CSS transition can't: taking the entrance away in the same change cancels it, and the keys used to vanish in a frame)
+  function capOut(kb, i) { kb.classList.add("gone"); if (kb.animate) kb.animate({ opacity: 0, transform: "translateY(10px) scale(0.97)" }, { duration: 300, delay: i * 80, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "both" }); else kb.style.opacity = "0"; }
+  function keysFrom(f, caps) {
     var list = [];
     try { var pk = f && f.contentDocument.querySelector(".pkeys"); if (pk && pk.classList.contains("on")) list = Array.prototype.map.call(pk.querySelectorAll("kbd"), function (k) { return k.textContent; }); } catch (e) {}
-    var key = list.join("|");
+    var key = list.join("|"), box = $("keys");
+    box.classList.toggle("caps", !!caps);
     if (key === keysKey) return;
-    keysKey = key; var box = $("keys"); box.textContent = "";
+    var prev = keysKey ? keysKey.split("|") : [];
+    keysKey = key;
+    if (caps) {
+      // Pressed one after another: the keys already up stay, and the new one comes up beside them
+      var grows = list.length > prev.length && prev.every(function (k, i) { return list[i] === k; }) && prev.length > 0 && !box.classList.contains("out");
+      clearTimeout(keysOut);
+      if (!list.length) {   // each key goes after the one pressed before it
+        var ks = box.querySelectorAll("kbd:not(.gone)");
+        Array.prototype.forEach.call(ks, capOut);
+        keysOut = setTimeout(function () { if (!keysKey) box.textContent = ""; }, ks.length * 80 + 340); return;
+      }
+      box.classList.remove("out");
+      // New keys in place of the ones up (⌘− to ⌘+), or while the last ones are still leaving: those carry on leaving on a
+      // layer of their own, from where they are, one after another, and the new ones come up just after (round three, Noah,
+      // m027: “The keybines don't seem to fade out subtly, like we discussed”)
+      var swap = !grows && box.querySelector("kbd");
+      if (swap) {
+        var old = document.createElement("div"), fr = $("frame").getBoundingClientRect(), r = box.getBoundingClientRect(), kk = fr.width / W, n = 0;
+        old.className = "keysout"; old.setAttribute("aria-hidden", "true");
+        old.style.left = ((r.left - fr.left) / kk).toFixed(1) + "px"; old.style.top = ((r.top - fr.top) / kk).toFixed(1) + "px"; old.style.height = (r.height / kk).toFixed(1) + "px";
+        Array.prototype.forEach.call(box.querySelectorAll("kbd"), function (kb) {
+          var cs = getComputedStyle(kb), c = kb.cloneNode(true), leaving = kb.classList.contains("gone");
+          c.className = "held" + (kb.classList.contains("word") ? " word" : "");
+          c.style.opacity = cs.opacity; c.style.transform = cs.transform === "none" ? "" : cs.transform;
+          old.appendChild(c);
+          if (leaving) { if (c.animate) c.animate({ opacity: 0, transform: "translateY(10px) scale(0.97)" }, { duration: 220, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "both" }); }
+          else capOut(c, n++);
+        });
+        $("frame").appendChild(old);
+        setTimeout(function () { old.remove(); }, n * 80 + 380);
+      }
+      if (!grows) box.textContent = "";
+      list.slice(grows ? prev.length : 0).forEach(function (k) { var kb = document.createElement("kbd"); kb.textContent = k; if (k.length > 2) kb.className = "word"; if (swap) kb.style.animationDelay = "140ms"; box.appendChild(kb); });
+      return;
+    }
+    box.textContent = "";
     list.forEach(function (k) { var kb = document.createElement("kbd"); kb.textContent = k; box.appendChild(kb); });
+  }
+  // The footage keeps time with the player: it plays along while the player plays, and shows the right frame when paused.
+  // Recorded frame by frame (design/workshop/blocks/vclock.js), time stands still between frames, so it's held and put on
+  // the exact frame every time
+  var FRAMES = !!(window.__VT && window.__VT.frames);
+  function syncFilm(v, want) {
+    if (!v || v.readyState < 1) return;
+    want = Math.max(0, Math.min((v.duration || 1e9) - 0.04, want));
+    if (FRAMES) { if (!v.paused) v.pause(); if (Math.abs(v.currentTime - want) > 0.0005) { try { v.currentTime = want; } catch (e) {} } return; }
+    if (playing) {
+      if (Math.abs(v.currentTime - want) > 0.25) { try { v.currentTime = want; } catch (e) {} }
+      if (v.paused) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+    } else {
+      if (!v.paused) v.pause();
+      if (Math.abs(v.currentTime - want) > 0.03) { try { v.currentTime = want; } catch (e) {} }
+    }
   }
   function render(t) {
     var x = sectionAt(t);
-    if (!cur || cur.id !== x.id) { cur = x; enter(x, t); }
+    if (!cur || cur.id !== x.id) { var prev = cur; cur = x; enter(x, t, prev); }
     var into = t - x.start;
-    if (x.statement && into < 0) renderStatement(x, t - x.statementAt); else { $("stmt").classList.remove("in"); $("stmt").style.opacity = ""; }
+    if (x.statement && into < 0) { if (x.motion === "kit") renderStatementKit(x, t - x.statementAt); else { $("stmt").classList.remove("kit"); kitKey = ""; renderStatement(x, t - x.statementAt); } }
+    else { $("stmt").classList.remove("in"); $("stmt").style.opacity = ""; }
     if (x.headers) renderHeaders(x, into); else if ($("heads").firstChild) { $("heads").textContent = ""; headKey = ""; }
+    renderNames(x, into);
     var sc = $("scene");
     sc.querySelectorAll(".desk").forEach(function (f) { if (into >= 0 && !f._started) { try { var V3 = f.contentWindow && f.contentWindow.PalitV3; if (V3 && V3.play) { V3.play(); f._started = true; } } catch (e) {} } });
     // Section time, from the warp; the main chart holds under an insert, and the insert runs on its own time (entry 206)
     var scene = window.palitSceneTime ? window.palitSceneTime(x, Math.max(0, into)) : Math.max(0, into);
     var main = window.palitMainTime ? window.palitMainTime(x, scene) : scene;
-    sc.querySelectorAll(".desk").forEach(function (f) { camera(x, f, main, t); keysFrom(f); });
-    if (!sc.querySelector(".desk")) keysFrom(null);
+    sc.querySelectorAll(".desk").forEach(function (f) { camera(x, f, main, t); keysFrom(f, x.motion === "kit"); });
+    if (!sc.querySelector(".desk")) keysFrom(null, false);
+    sc.querySelectorAll(".film").forEach(function (v) { syncFilm(v, v._from + Math.max(0, into)); });
+    $("tails").querySelectorAll("video").forEach(function (v) { if (t >= v._end || t < v._t0) { v.pause(); v.remove(); } else syncFilm(v, t - v._t0); });
     sc.querySelectorAll(".vizf:not(.insert)").forEach(function (f) { drive(f, main); });
+    // Every section leaves with motion: in its last 0.42 s the whole scene slides up, faster and faster, fading as it goes (round
+    // three, rule 11; Noah, m008: “things that kind of lead to other things, should always end with some sort of fleeting motion,
+    // even if it's subtle and it fades out quickly, it should lead with motion”). After its statement a section rises into place
+    // the way everything comes in (rule 1), so the next section never flashes on (m021). Filmed sections cut on the beat
+    // instead, and a section can say exit: false or enter: false.
+    if (x.part === "filmed") { sc.style.opacity = ""; sc.style.transform = ""; }
+    else {
+      var EXIT = 0.42, lv = x.exit === false || x === LAST ? 0 : clamp01((into - (x.seconds - EXIT)) / EXIT), kl = lv * lv * lv, ent = x.statement && x.enter !== false;
+      var cin = ent ? (into < 0 ? 0 : soft(into / 0.42)) : 1, rin = ent ? (1 - expo(clamp01(into / 0.62))) * 22 : 0;
+      sc.style.opacity = String(cin * (1 - soft(lv * 1.15)));
+      sc.style.transform = rin > 0.05 || kl > 0 ? "translateY(" + (rin - 64 * kl).toFixed(1) + "px)" : "";
+    }
     sc.querySelectorAll(".vizf.insert").forEach(function (f) {
       var n = (x.inserts || [])[Number(f.getAttribute("data-i"))], u = scene - (n.start !== undefined ? n.start : n.at), on = into >= 0 && u >= 0 && u < n.seconds;
       f.style.opacity = on ? String(Math.min(1, u / 0.3, (n.seconds - u) / 0.3)) : "0";
@@ -443,20 +859,23 @@
     $("card-ttl").textContent = m ? m[2] : x.title;
     paintMark($("card-mk"), COLORS[S.sections.indexOf(x) % COLORS.length]);
     $("card").classList.toggle("in", showCard);
-    // The line being said, and who's saying it
+    // The line being said, and who's saying it. The speaker chips are out of the film (Noah, October 21: “I'm now thinking that
+    // we just lose the speaker chips at the bottom left, and we add subtitles in our colors later, after the final video is
+    // pretty much complete, and our audio files are all in”); CHIPS brings them back. The plain subtitles stay until then.
     var c = cues.filter(function (k) { return t >= k.start && t < k.end; })[0];
     var chip = $("chip");
-    if (c && kit.showChips) {
+    if (c && CHIPS && kit.showChips) {
       chip.querySelector("i").style.setProperty("--sc", speakerColor(c.who));
       chip.querySelector("span").textContent = speakerName(c.who);
       chip.classList.add("in");
     } else chip.classList.remove("in");
     var subs = $("subs");
-    subs.classList.toggle("off", !kit.showSubs);
+    subs.classList.toggle("off", PROMPTER || !kit.showSubs);
     subs.classList.toggle("dark", kit.subs === "dark");
     subs.classList.toggle("quiet", !c);
     if (c && subs.textContent !== c.text) subs.textContent = c.text;
     $("frame").style.setProperty("--bg", kit.bg);
+    if (PROMPTER) prompter(t, c);
     syncMusic(t);
     // The controls
     $("time").textContent = mmss(t) + " / " + mmss(TOTAL);
@@ -464,6 +883,44 @@
     $("secs").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-id") === x.id); });
   }
 
+  var LAST = S.sections.filter(function (x) { return !x.cut; }).slice(-1)[0];
+  // The voiceover guide: the line being said, or the next one counting down, who says it and its file name; then the one after
+  var PROMPTER = q.has("prompter"), FILMED = {};
+  S.sections.forEach(function (x) { if (x.part === "filmed") FILMED[x.id] = true; });
+  cues.forEach(function (k) { S.sections.forEach(function (x) { (x.lines || []).forEach(function (l) { if (x.id === k.sec && x.start + l.start === k.start) k.id = l.id; }); }); });
+  // PP: the panel's height under the picture, in the frame's pixels (the guide exports at 1280 by 920: the film at 720p on top)
+  var PP = 300;
+  if (PROMPTER) { $("prompter").hidden = false; $("tc").hidden = false; $("subs").classList.add("off"); document.body.classList.add("prompting"); document.documentElement.style.setProperty("--pp", PP + "px"); }
+  function fillRow(row, k, label) {
+    var who = row.querySelector(".who"), txt = row.querySelector(".txt"), id = row.querySelector(".id");
+    if (!k) { who.querySelector("b").textContent = ""; who.querySelector("i").style.background = "transparent"; txt.textContent = label || ""; id.textContent = ""; row.classList.remove("filmed"); return; }
+    who.querySelector("i").style.background = speakerColor(k.who); who.querySelector("b").textContent = speakerName(k.who);
+    txt.textContent = (label ? label + "  " : "") + k.text; id.textContent = FILMED[k.sec] ? "filmed, recorded" : k.id;
+    if (row.classList.contains("now")) { var n = txt.textContent.length; row.style.fontSize = (n <= 110 ? 40 : n <= 180 ? 34 : n <= 250 ? 29 : 25) + "px"; }
+    row.classList.toggle("filmed", !!FILMED[k.sec]);
+  }
+  function prompter(t, c) {
+    var now = $("prompter").querySelector(".now"), nx = $("prompter").querySelector(".next");
+    var ahead = cues.filter(function (k) { return k.start > t; }), n1 = ahead[0];
+    // A filmed line is already recorded, so it gets no countdown
+    function lead(k, w) { return FILMED[k.sec] ? "Then:" : "In " + Math.max(0, w).toFixed(1) + " s:"; }
+    if (c) { now.classList.remove("waiting", "soon"); fillRow(now, c); fillRow(nx, n1, n1 ? lead(n1, n1.start - t) : "The end of the lines."); }
+    else { var w = n1 ? n1.start - t : 0, film = n1 && FILMED[n1.sec]; now.classList.add("waiting"); now.classList.toggle("soon", w <= 3 && !film); fillRow(now, n1, n1 ? (film ? "" : lead(n1, w)) : "No more lines."); fillRow(nx, ahead[1], ahead[1] ? "Then:" : ""); }
+    var mt = $("prompter").querySelector(".meter");
+    if (c) { mt.style.background = speakerColor(c.who); mt.style.width = Math.min(100, Math.max(0, (t - c.start) / Math.max(0.1, c.end - c.start) * 100)) + "%"; }
+    else if (n1 && n1.start - t <= 3 && !FILMED[n1.sec]) { mt.style.background = "#c7c7cc"; mt.style.width = (3 - (n1.start - t)) / 3 * 100 + "%"; }
+    else mt.style.width = "0";
+    var m = Math.floor(t / 60), sec = t - m * 60; $("tc").textContent = m + ":" + (sec < 10 ? "0" : "") + sec.toFixed(1);
+  }
+  // The line before or after (the guide's buttons, and ↑ and ↓): one second before it starts; ?who=Daeun goes between hers
+  var WHO = q.get("who");
+  function jumpLine(dir) {
+    var at = cues.filter(function (k) { return !FILMED[k.sec] && (!WHO || k.who === WHO); }).map(function (k) { return Math.max(0, k.start - 1); }), i;
+    if (dir > 0) { for (i = 0; i < at.length && at[i] <= T + 0.05; i++); }
+    else { for (i = at.length - 1; i >= 0 && at[i] >= T - 0.5; i--); }
+    if (i >= 0 && i < at.length) { cur = null; seek(at[i]); }
+  }
+  var CHIPS = false;
   /* ---------- The clock ---------- */
   var T = 0, playing = false, last = 0;
   function seek(t) { T = Math.max(0, Math.min(TOTAL - 0.01, t)); var x = sectionAt(T); if (cur && cur.id === x.id && x.part === "desktop") { cur = null; } render(T); }
@@ -493,8 +950,21 @@
   $("t-music").addEventListener("click", function () { toggle("t-music", "musicOn"); paintEdit(); });
   $("t-edit").addEventListener("click", function () { var e = $("edit"); e.hidden = !e.hidden; $("t-edit").setAttribute("aria-pressed", String(!e.hidden)); });
   ["t-subs", "t-chips", "t-cards", "t-music"].forEach(function (id) { var k = { "t-subs": "showSubs", "t-chips": "showChips", "t-cards": "showCards", "t-music": "musicOn" }[id]; $(id).setAttribute("aria-pressed", String(kit[k])); });
+  // The voiceover guide's bar (?prompter without ?clean, entry 278): nothing to switch on or off, so only the picture's
+  // controls, the line before or after, and the script
+  if (PROMPTER) {
+    ["t-subs", "t-cards", "t-music", "t-edit"].forEach(function (id) { $(id).hidden = true; });
+    var bPrev = document.createElement("button"), bNext = document.createElement("button"), aScript = document.createElement("a");
+    bPrev.type = bNext.type = "button"; bPrev.className = bNext.className = aScript.className = "cbtn";
+    bPrev.textContent = WHO ? WHO + "'s line before" : "Line before"; bNext.textContent = WHO ? WHO + "'s next line" : "Next line";
+    aScript.textContent = WHO ? WHO + "'s script" : "The script"; aScript.href = "voiceover.html" + (WHO ? "?who=" + encodeURIComponent(WHO) : ""); aScript.target = "_blank"; aScript.rel = "noopener";
+    bPrev.addEventListener("click", function () { jumpLine(-1); }); bNext.addEventListener("click", function () { jumpLine(1); });
+    $("scrub").after(bPrev, bNext, aScript);
+    document.querySelector("#controls .hint").textContent = "Space plays, ← and → move 5 seconds, ↑ and ↓ go to " + (WHO ? WHO + "'s" : "the") + " line before or after. No sound plays.";
+  }
   addEventListener("keydown", function (e) {
     if (e.target.closest && e.target.closest("input, textarea, select")) return;
+    if (PROMPTER && (e.key === "ArrowUp" || e.key === "ArrowDown")) { e.preventDefault(); jumpLine(e.key === "ArrowDown" ? 1 : -1); return; }
     if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
     else if (e.key === "ArrowRight") seek(T + 5);
     else if (e.key === "ArrowLeft") { cur = null; seek(T - 5); }
@@ -543,8 +1013,8 @@
   $("ed-music").addEventListener("change", function () { kit.musicOn = $("ed-music").checked; saveKit(); $("t-music").setAttribute("aria-pressed", String(kit.musicOn)); render(T); });
   $("ed-music-level").addEventListener("input", function () { kit.musicLevel = Number($("ed-music-level").value) / 100; saveKit(); render(T); });
   $("ed-music-duck").addEventListener("input", function () { kit.musicDuck = Number($("ed-music-duck").value) / 100; saveKit(); render(T); });
-  $("ed-calm-level").addEventListener("input", function () { kit.calmLevel = Number($("ed-calm-level").value) / 100; saveKit(); render(T); });
-  $("ed-calm-duck").addEventListener("input", function () { kit.calmDuck = Number($("ed-calm-duck").value) / 100; saveKit(); render(T); });
+  $("ed-calm-level").addEventListener("input", function () { if (kit.calmFor !== S.calm.src) kit.calmDuck = null; kit.calmFor = S.calm.src; kit.calmLevel = Number($("ed-calm-level").value) / 100; saveKit(); render(T); });
+  $("ed-calm-duck").addEventListener("input", function () { if (kit.calmFor !== S.calm.src) kit.calmLevel = null; kit.calmFor = S.calm.src; kit.calmDuck = Number($("ed-calm-duck").value) / 100; saveKit(); render(T); });
   $("ed-reset").addEventListener("click", function () { localStorage.removeItem(KIT); location.reload(); });
 
   /* ---------- Fit the frame, and start ---------- */
@@ -552,8 +1022,8 @@
   function fit() {
     var c = $("controls"), h = document.body.classList.contains("clean") ? 0 : Math.ceil(c.getBoundingClientRect().height);
     document.documentElement.style.setProperty("--ctl", h + "px");
-    var v = $("view").getBoundingClientRect(), k = Math.min(v.width / W, v.height / H);
-    $("frame").style.transform = "translate(-50%, -50%) scale(" + k + ")";
+    var P = PROMPTER ? PP : 0, v = $("view").getBoundingClientRect(), k = Math.min(v.width / W, v.height / (H + P));
+    $("frame").style.transform = "translate(-50%, calc(-50% - " + (P * k / 2) + "px)) scale(" + k + ")";
   }
   addEventListener("resize", fit); fit();
   if (window.ResizeObserver) new ResizeObserver(fit).observe($("controls"));
@@ -562,7 +1032,21 @@
   if (hash) { var hx = S.sections.filter(function (x) { return x.id === hash; })[0]; if (hx) startAt = openAt(hx); }
   seek(startAt);
   if (q.has("play")) setPlaying(true);
-  window.PalitPlayer = { seek: seek, play: function () { setPlaying(true); }, pause: function () { setPlaying(false); }, time: function () { return T; }, cues: cues, kit: kit, music: { windows: WINDOWS, volume: musicVolume, el: music, calm: { windows: CALM.windows, volume: function (t) { return layerVolume(CALM, t); }, el: CALM.el } } };
+  // For the frame-by-frame recorder: true once everything on screen has loaded and every video is on its frame
+  function ready() {
+    var ok = true, sc = $("scene");
+    sc.querySelectorAll(".film").forEach(function (v) { if (!v.src || v.readyState < 2 || v.seeking) ok = false; });
+    sc.querySelectorAll("iframe").forEach(function (f) {
+      try {
+        var d = f.contentDocument, w = f.contentWindow;
+        if (!d || d.readyState !== "complete" || !(f.classList.contains("desk") ? w.PalitV3 : w.PalitViz)) { ok = false; return; }
+        // images still on their way (a lazy one off screen, or one with no source, never arrives, so it doesn't count)
+        Array.prototype.forEach.call(d.images, function (im) { if (!im.complete && im.getAttribute("src") && im.loading !== "lazy") ok = false; });
+      } catch (e) { ok = false; }
+    });
+    return ok;
+  }
+  window.PalitPlayer = { seek: seek, play: function () { setPlaying(true); }, pause: function () { setPlaying(false); }, time: function () { return T; }, ready: ready, cues: cues, kit: kit, music:{ windows: WINDOWS, volume: musicVolume, el: music, calm: { windows: CALM.windows, volume: function (t) { return layerVolume(CALM, t); }, el: CALM.el }, lift: { windows: LIFT.windows, volume: function (t) { return layerVolume(LIFT, t); } }, after: { windows: AFTER.windows, volume: function (t) { return layerVolume(AFTER, t); } } } };
 })();
 </script>
 </body>

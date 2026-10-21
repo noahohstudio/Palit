@@ -262,6 +262,19 @@
   .vbar a:hover { opacity: 0.85; }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
   .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--rule); }
+  /* The screening (entry 267): the whole cut as one film, before the voiceover is recorded */
+  .scr-film { position: relative; aspect-ratio: 16 / 9; background: #111113; border: 1px solid var(--rule); }
+  .scr-film video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #111113; }
+  .scr-gate { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 10px; color: #f5f5f7; text-align: center; padding: 24px; }
+  .scr-gate .btn { background: #f5f5f7; color: var(--ink); border-color: #f5f5f7; }
+  .scr-gate p { font-size: 13px; color: #c7c7cc; max-width: 46ch; }
+  .scr-chapters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .scr-chapters button { font: 12px/1.3 var(--font); padding: 5px 9px; border: 1px solid var(--rule-soft); background: var(--paper); color: var(--ink); cursor: pointer; display: flex; gap: 6px; align-items: baseline; }
+  .scr-chapters button:hover, .scr-chapters button[aria-current="true"] { border-color: var(--ink); }
+  .scr-chapters .num { color: #6e6e73; }
+  .scr-what { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 24px; margin-top: 16px; font-size: 13px; }
+  .scr-what ul { list-style: none; margin-top: 4px; display: grid; gap: 4px; }
+  .scr-ok { color: #1f7a3a; }
   /* The cut, clip by clip (entry 192): the video as it is, from design/video/script.js */
   .cl-bar { display: flex; height: 34px; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
   .cl-bar a, .cl-bar i { flex-basis: 0; min-width: 2px; }
@@ -293,6 +306,7 @@
   .clip-stills a:hover span { color: var(--ink); }
   .clip-stills img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
   .cl-media { position: relative; }
+  .cl-off { aspect-ratio: 16 / 9; margin: 0; display: grid; place-items: center; padding: 12px; box-sizing: border-box; background: #f5f5f5; color: #6b6b70; font-size: 12px; text-align: center; }
   .cl-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 240ms cubic-bezier(.2, .8, .2, 1); }
   .cl-media.moving video { opacity: 1; }
   .clip ul, .clip ol { list-style: none; margin: 0; padding: 0; }
@@ -410,6 +424,7 @@
 <script src="../brand/brand.js"></script>
 <script src="../video/script.js"></script>
 <script src="data/clips.js"></script>
+<script src="data/screening.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1312,6 +1327,7 @@
     var B = window.PALIT_BRAND || { speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
     var ed = { text: {}, who: {}, statements: {}, music: {}, calm: {} };
     try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) Object.keys(ed).concat(["musicStatements"]).forEach(function (k) { if (se[k] !== undefined) ed[k] = se[k]; }); } catch (e) {}
+    if (window.palitFresh) window.palitFresh(window.PALIT_SCRIPT, ed);   // a redrafted line shows its draft (entry 225)
     function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
     function textOf(l) { return ed.text[l.id] !== undefined ? ed.text[l.id] : l.text; }
     function whoOf(l) { return ed.who[l.id] || l.who; }
@@ -1390,6 +1406,8 @@
       var stills = SHOTS[x.id] || [];
       var stillRow = el("div", { class: "clip-stills" }, stills.length ? stills.map(function (s2) {
         var img = el("img", { src: s2.file, alt: s2.label, loading: "lazy", width: "960", height: "540" }), media = el("div", { class: "cl-media" }, [img]);
+        // A still that shows our filmed footage stays off the public site (publish.sh, entry 278): say so in its place
+        img.addEventListener("error", function () { img.replaceWith(el("p", { class: "cl-off", text: "This moment shows our filmed footage, which stays off the public site." })); });
         var a = el("a", { href: s2.href.indexOf("video/") === 0 ? "../" + s2.href.replace(/&t=[0-9.]+/, "&play") : "../" + s2.href, target: "_blank", rel: "noopener", title: "Open: " + s2.label }, [media, el("span", { text: s2.label })]);
         // A moving preview plays while you point at the still, or while it has the keyboard's focus (entry 214)
         if (s2.preview) {
@@ -1460,15 +1478,96 @@
     ], [openLink("Notes, screen by screen", "../workshop/video.html#moments", "btn"), openLink("The script", "../video/index.html", "btn"), openLink("The player", "../video/player.html", "btn")]));
   }
 
+  /* ---------- The screening (entry 267): the whole cut as one film, made by design/video/export.mjs, for Noah and Daeun to watch
+     end to end and confirm before they record the voiceover (Noah, October 21: “Could we first have it available in the
+     dashboard, video section for a final screening and confirmation, before I get to filming the voiceovers with daeun?”). The
+     film holds our footage and the music, so it stays off the public site and plays only on the local dashboard. It's loaded
+     whole before it plays, so it can jump to any moment even from the local server, which can't send part of a file. ---------- */
+  var filmBlob = null;
+  function renderScreening(view) {
+    var F = (window.PALIT || {}).screening, S = window.PALIT_SCRIPT;
+    if (!F || !S) return;
+    function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+    var made = new Date(F.made), when = made.toLocaleDateString([], { month: "long", day: "numeric" }) + " at " + made.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    var video = el("video", { controls: "", playsinline: "", preload: "none", "aria-label": "The whole cut, " + ms(F.seconds) });
+    var gateMsg = el("p", { text: "The whole film, " + Math.round(F.size / 1e6) + " MB. It loads in full first, so you can jump anywhere in it." });
+    var playB = el("button", { type: "button", class: "btn primary", text: "Play the film" });
+    var gate = el("div", { class: "scr-gate" }, [playB, gateMsg]);
+    var frame = el("div", { class: "scr-film" }, [video, gate]);
+    function ready(url) { video.src = url; gate.remove(); var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+    playB.addEventListener("click", function () {
+      if (filmBlob) { ready(filmBlob); return; }
+      playB.disabled = true; playB.textContent = "Loading…";
+      fetch(F.file).then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        var total = Number(r.headers.get("Content-Length")) || F.size, got = 0, parts = [], rd = r.body && r.body.getReader();
+        if (!rd) return r.blob();
+        return (function pump() { return rd.read().then(function (c) { if (c.done) return new Blob(parts, { type: "video/mp4" }); parts.push(c.value); got += c.value.length; playB.textContent = "Loading… " + Math.min(100, Math.round(got / total * 100)) + "%"; return pump(); }); })();
+      }).then(function (b) { filmBlob = URL.createObjectURL(b); ready(filmBlob); }, function () {
+        playB.remove();
+        gateMsg.textContent = "The film plays on the local dashboard only: it holds our footage and the music, which stay off the public site. Open the dashboard from Claude's local server to watch it.";
+      });
+    });
+    // Chapters: every section, where it opens (its statement, when it has one)
+    var chapters = el("div", { class: "scr-chapters", role: "list", "aria-label": "Jump to a section" });
+    S.sections.filter(function (x) { return !x.cut; }).forEach(function (x) {
+      var at = x.statement ? x.statementAt : x.start, b = el("button", { type: "button", role: "listitem" }, [el("span", { class: "num", text: ms(at) }), x.title.replace(/:.*$/, "").replace(/^Intro, in the archive room$/, "Intro")]);
+      b.addEventListener("click", function () { if (!video.src) { playB.click(); var wait = setInterval(function () { if (video.src) { clearInterval(wait); video.currentTime = at; } }, 100); } else { video.currentTime = at; var p = video.play(); if (p && p.catch) p.catch(function () {}); } });
+      chapters.appendChild(b);
+    });
+    video.addEventListener("timeupdate", function () {
+      var t = video.currentTime;
+      Array.prototype.forEach.call(chapters.children, function (b, i, all) {
+        var xs = S.sections.filter(function (x) { return !x.cut; }), x = xs[i], a = x.statement ? x.statementAt : x.start, z = i + 1 < xs.length ? (xs[i + 1].statement ? xs[i + 1].statementAt : xs[i + 1].start) : F.seconds;
+        b.setAttribute("aria-current", t >= a && t < z ? "true" : "false");
+      });
+    });
+    var what = el("div", { class: "scr-what" }, [
+      el("div", null, [el("span", { class: "k", text: "In it" }), el("ul", null, [
+        el("li", { text: "Every block as you signed it off, joined with nothing between them, recorded a frame at a time." }),
+        el("li", { text: "The house track, from the start to its own end and again for the outro, and the calm track from deep dive 1 to the outro, both dipping under every line, at your player's levels (house " + F.levels.house + ", calm " + F.levels.calm + ")." }),
+        el("li", { text: "The intro's and the outro's own voice takes." })
+      ])]),
+      el("div", null, [el("span", { class: "k", text: "Not in it yet" }), el("ul", null, [
+        el("li", { text: "The voiceover, which you and Daeun record next." }),
+        el("li", { text: "The subtitles, redone in our colors once the voiceover is in." }),
+        el("li", { text: "v3's own sounds, like the keep's wood." })
+      ])])
+    ]);
+    // Notes and the confirmation, kept in this browser and handed to Claude like the other notes ("screening")
+    var NK = "palit-screening", st = { notes: "", confirmed: null };
+    try { var sv = JSON.parse(localStorage.getItem(NK) || "null"); if (sv) st = sv; } catch (e) {}
+    var ta = el("textarea", { class: "fbta", placeholder: "Anything to change before you record the voiceover?", "aria-label": "Notes on the whole cut" });
+    ta.value = st.notes || "";
+    var status = el("span", { class: "s", "aria-live": "polite" });
+    function text() { return "Screening the whole cut (" + F.file.split("/").pop() + ")" + (st.confirmed ? ": confirmed, " + new Date(st.confirmed).toLocaleString() : "") + (st.notes.trim() ? "\nNotes: " + st.notes.trim() : ""); }
+    function persist() { try { localStorage.setItem(NK, JSON.stringify(st)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put("screening", { title: "Screening the whole cut", text: text(), confirmed: !!st.confirmed, film: F.file }); }
+    ta.addEventListener("input", function () { st.notes = ta.value; if (st.confirmed) { st.confirmed = null; paint(); } persist(); });
+    var sendB = el("button", { type: "button", class: "btn", text: "Send notes" });
+    var okB = el("button", { type: "button", class: "btn primary", text: "Confirm the cut" });
+    var copyB = el("button", { type: "button", class: "btn", text: "Copy" });
+    function paint() { okB.textContent = st.confirmed ? "Confirmed" : "Confirm the cut"; okB.setAttribute("aria-pressed", String(!!st.confirmed)); status.textContent = st.confirmed ? "Confirmed. Tell Claude in chat, and Claude reads it from this page." : ""; status.classList.toggle("scr-ok", !!st.confirmed); }
+    sendB.addEventListener("click", function () { if (!st.notes.trim()) { status.textContent = "No notes yet."; return; } persist(); PalitHandoff.done("screening"); status.textContent = "Sent. Tell Claude in chat, and Claude reads it from this page."; });
+    okB.addEventListener("click", function () { st.confirmed = st.confirmed ? null : new Date().toISOString(); persist(); if (st.confirmed) PalitHandoff.done("screening"); paint(); });
+    copyB.addEventListener("click", function () { copyText(text(), function (ok) { status.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select the notes and copy them yourself."; }); });
+    paint();
+    view.appendChild(sec("video-screening", "Screening: the whole cut", ms(F.seconds) + ", " + F.width + " by " + F.height + " at " + F.fps + " frames a second, made " + when + ". Watch it end to end and confirm it before you and Daeun record the voiceover. Notes go to Claude like the others.", [
+      frame, chapters, what,
+      el("div", { style: "margin-top:16px" }, [el("span", { class: "k", text: "Notes on the cut" }), ta]),
+      el("div", { class: "fbbar", style: "margin-top:10px" }, [status, el("span", { class: "grow" }), copyB, sendB, okB])
+    ], [openLink("The player", "../video/player.html", "btn"), openLink("Block by block", "../workshop/blocks.html", "btn")]));
+  }
+
   function renderVideo(view) {
     var blocks = V.blocks || [];
     var total = blocks.reduce(function (s, b) { return s + b.seconds; }, 0);
     var product = blocks.filter(function (b) { return b.part === "product"; }).reduce(function (s, b) { return s + b.seconds; }, 0);
     var pct = function (x) { return total ? Math.round(x / total * 100) : 0; };
     view.appendChild(head("Video", mmss(total) + " planned against a " + mmss(V.target || 420) + " target: " + pct(product) + "% problem, product and demo, " + pct(total - product) + "% process.", [
-      ["The cut", "#video/clips"], ["The story", "#video/story"], ["Storyboards", "#video/storyboards"], ["Deep dives", "#video/dives"], ["Speaker chips", "#video/speakers"], ["Blocks", "#video/blocks"], ["From Naheel", "#video/naheel"], ["From the brief", "#video/rules"]
+      ["Screening", "#video/screening"], ["The cut", "#video/clips"], ["The story", "#video/story"], ["Storyboards", "#video/storyboards"], ["Deep dives", "#video/dives"], ["Speaker chips", "#video/speakers"], ["Blocks", "#video/blocks"], ["From Naheel", "#video/naheel"], ["From the brief", "#video/rules"]
     ]));
 
+    renderScreening(view);
     renderClips(view);
 
     var bar = el("div", { class: "vbar", role: "list", "aria-label": "Video timeline" });

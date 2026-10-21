@@ -311,25 +311,25 @@ window.PALIT.video = {
       part: "process",
       title: "Deep dive 2: from day one to year four",
       rock: null,
-      seconds: 95,
+      seconds: 90,
       purpose: "Noah's pick (entry 176), the user-centric deep dive: Palit for a first-time user, someone a few weeks in, and someone with years of colors (D25). v3 plays it (?play=users), with the research's numbers on screen.",
       line: "",
-      needs: ["The camera in the player"], reels: "Before each user, a reel of what we tried first (entry 206): v2's first open; naming as a stack and three specimen cards; the archive as a list and v2's half fan. The four-year chart is out, the day one screen and Spectrum years in stay",
+      needs: ["The camera in the player"], reels: "Rebuilt October 21 in its own session: the three personas as cards first, then each persona's moment on black, what we tried first for it with a hand marking what was wrong (v2's first open; naming as a form, then three specimen cards; a list and a wall that only get longer), and v3 picking up on the same window (viz.html's users1, users2 and users3). The reels of entry 206 are out of it",
       tags: [],
       status: "working",
-      links: [{ label: "Its script", href: "../video/index.html#dive2" }, { label: "Played by v3", href: "../v3/index.html?clean&play=users" }]
+      links: [{ label: "Its script", href: "../video/index.html#dive2" }, { label: "Played by v3", href: "../v3/index.html?clean&play=users" }, { label: "Its workshop", href: "../workshop/blocks.html?block=dive2" }, { label: "The personas", href: "../video/viz.html?scene=users1&play" }]
     },
     {
       id: "rock3",
       part: "process",
       title: "Deep dive 3: where the story lives",
       rock: null,
-      seconds: 95,
+      seconds: 68,
       purpose: "Noah's pick (entry 176), the deep dive on the tool and the brief: memory drifts, the story was one click deep, three ways to bring it forward, days with their places, and the zoom as a dial.",
       line: "",
-      needs: ["Noah's paper sketches, for the reel (design/video/sketches/)", "When the designer friend saw it (entry 209)"], reels: "After the audit, a designer friend's feedback and our prototyping from the lowest fidelity up: paper, the lo-fi sheets, the story workshop, the preview, then v3's zoom stop by stop (entry 206)",
+      needs: ["The statement's line, in Noah's words (“Where does the story live?” is Claude's draft)", "When the designer friend saw it, and which version (entry 209, Q27)"], reels: "Rebuilt in the kit as one continuous scene (entry 254): v2's real Days and its card one click away, a designer friend's feedback on black, our roughest lo-fi sheets and the diary by day, the story workshop's three ways growing into the preview, then v3 alone on black, its colors moving from stop to stop, and a card's trail. Paper first was dropped for the redesign from the ground up (entry 216).",
       tags: [],
-      status: "working",
+      status: "done",
       links: [{ label: "Its script", href: "../video/index.html#dive3" }]
     },
     {

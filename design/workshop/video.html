@@ -244,6 +244,7 @@
   function secById(id) { return S.sections.filter(function (x) { return x.id === id; })[0]; }
   var ed = { text: {}, who: {}, statements: {} };
   try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) ["text", "who", "statements"].forEach(function (k) { if (se[k]) ed[k] = se[k]; }); } catch (e) {}
+  if (window.palitFresh) window.palitFresh(S, ed);   // a line Claude redrafted shows its draft, not an old saved copy (entry 225)
   function textOf(l) { return ed.text[l.id] !== undefined ? ed.text[l.id] : l.text; }
   function whoOf(l) { return ed.who[l.id] || l.who; }
   function stmtOf(x) { var b = x.statement, e = ed.statements[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds } : null; }

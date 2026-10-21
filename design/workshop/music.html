@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palit music</title>
+<link rel="stylesheet" href="../system/components.css">
+<style>
+  /* The music workshop (October 21): two slots, a shortlist for each, every track playable on its own and under its section in
+     the player (?audition=), a pick and a note per track, and Noah's own finds. Hands off as "music-workshop". */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; padding-bottom: 84px; }
+  p, h1, h2, h3, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
+  a:hover { text-decoration-color: currentColor; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .intro { padding: 28px 0 18px; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: end; }
+  .intro h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+  .intro p { color: var(--ink-2); max-width: 70ch; font-size: 14px; }
+  blockquote { margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--ink); font-size: 14px; line-height: 1.45; }
+  blockquote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 4px; }
+  .slot { margin-top: 28px; }
+  .slot-head { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: baseline; padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
+  .slot-head h2 { font-size: 26px; font-weight: 400; letter-spacing: -0.02em; }
+  .slot-head p { font-size: 13px; color: var(--ink-2); max-width: 72ch; }
+  .tracks { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); border-left: 1px solid var(--rule); }
+  .track { background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 14px 16px 16px; display: grid; gap: 8px; align-content: start; }
+  .track.picked { box-shadow: inset 0 0 0 2px var(--ink); }
+  .track h3 { font-size: 17px; font-weight: 400; letter-spacing: -0.01em; }
+  .track .by { font-size: 12px; color: var(--ink-2); }
+  .track .tags { font-size: 11px; color: var(--ink-2); }
+  .track audio { width: 100%; height: 34px; }
+  .track .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .track textarea { width: 100%; min-height: 44px; resize: vertical; padding: 6px 8px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.4 var(--font); box-sizing: border-box; }
+  .track textarea:focus, .finds textarea:focus { outline: none; border-color: var(--ink); }
+  .track .note { font-size: 12px; color: var(--ink-2); }
+  .ref { background: #f2f2f4; }
+  .finds { margin-top: 12px; }
+  .finds textarea { width: 100%; min-height: 56px; padding: 7px 9px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.45 var(--font); box-sizing: border-box; }
+  .k { display: block; font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule); padding: 12px 0; z-index: 5; }
+  .bar .wrap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .bar .grow { flex: 1; }
+  .status { font-size: 13px; color: var(--ink-2); }
+  .lic { font-size: 12px; color: var(--ink-2); margin-top: 18px; max-width: 90ch; }
+  @media (max-width: 760px) { .intro, .slot-head { grid-template-columns: 1fr; gap: 10px; } .wrap { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="intro">
+    <h1>Music</h1>
+    <div>
+      <blockquote>It seems that the 1st track kind of ends, uh, right before what does palette look like? I think this is when we could bring in another track. ... I've really been liking Idol, I-D-Y-L-L by A.G. Cook. ... It's kind of like futuristic fun, but also a little bit contemporary.<cite>Noah, October 21</cite></blockquote>
+      <blockquote>For the current track for our deep dives, I honestly am not enjoying them that much. I want them to be engaging and reflective, but not, you know, sad and boring. They need to be a little bit more uplifting, if that makes sense. And they don't have to be ambient. They can have sort of a beat to it, a tempo to them.<cite>Noah, October 21</cite></blockquote>
+      <p>Two places for music, with a shortlist for each. Play a track here, or hear it under its section in the player with "Under the demo" or "Under the deep dives". Pick one per place (or none), write a note on any track, and add your own finds. Then press I'm done and tell Claude. Every shortlisted track is free to use in a video, with no credit needed, though we'll credit it anyway. The picks are Claude's, made from each track's genre and mood tags. Claude can't listen to them, so they're yours to judge.</p>
+    </div>
+  </section>
+  <section class="slot" id="demo">
+    <div class="slot-head"><h2>The demo</h2><p>From “What does Palit look like?” (2:11) through How we worked, to deep dive 1's statement (4:01). The house track ends right before it. Futuristic, fun and contemporary, like A.G. Cook's “Idyll”: bright, glossy, about 120 to 140 BPM, no vocals.</p></div>
+    <ul class="tracks" id="t-demo"></ul>
+    <div class="finds"><label class="k" for="f-demo">Your finds for the demo (links, or file names in design/video/audio/)</label><textarea id="f-demo" placeholder="A link to a track, and why"></textarea></div>
+  </section>
+  <section class="slot" id="dives">
+    <div class="slot-head"><h2>The deep dives</h2><p>From deep dive 1's statement (4:01) to the outro (9:02), about five minutes, under the voiceover. Engaging and reflective, uplifting, with a gentle beat: warm chords, a steady groove around 95 to 115 BPM, never sad or sleepy. A two-minute track goes round about two and a half times, so one track per deep dive is also an option. Say so in a note.</p></div>
+    <ul class="tracks" id="t-dives"></ul>
+    <div class="finds"><label class="k" for="f-dives">Your finds for the deep dives</label><textarea id="f-dives" placeholder="A link to a track, and why"></textarea></div>
+  </section>
+  <section class="slot" id="after">
+    <div class="slot-head"><h2>After Jungle Voices</h2><div>
+      <blockquote>I hope that Jungle Voices can kind of stretch that far. If it can't, please let me know, and then we can find another track to continue after it ends<cite>Noah, October 21</cite></blockquote>
+      <p>Jungle Voices is 1:38, so it covers deep dive 1 only: four of its bars play twice (1:15 to 1:23), so it lasts until 5:47, just before deep dive 2's statement. This slot runs from that statement (5:49) to the outro (9:02), 3:13 under deep dives 2 and 3 and the horizon. Each of these runs longer than that and plays as loud as Jungle Voices. “Under deep dives 2 and 3” starts the player at 5:36, so you hear Jungle Voices end and this one come in.</p>
+    </div></div>
+    <ul class="tracks" id="t-after"></ul>
+    <div class="finds"><label class="k" for="f-after">Your finds for after Jungle Voices</label><textarea id="f-after" placeholder="A link to a track, and why"></textarea></div>
+  </section>
+  <p class="lic">The shortlisted tracks are from Mixkit, under its Stock Music Free License (mixkit.co/license): use in commercial and personal projects, YouTube videos included, with no attribution required. They play here straight from Mixkit. Only the track you pick gets downloaded into design/video/audio/, which stays off the public site. “Idyll” is a commercial release: to use it, add your own copy at <code>design/video/audio/idyll.mp3</code> and it plays here and under the demo.</p>
+</main>
+<div class="bar"><div class="wrap"><span class="status num" id="count"></span><span class="status" id="status" aria-live="polite"></span><span class="grow"></span><button type="button" class="btn" id="copy">Copy</button><button type="button" class="btn primary" id="done">I'm done</button></div></div>
+<script src="../system/components.js"></script>
+<script src="../system/handoff.js"></script>
+<script>
+(function () {
+  "use strict";
+  var el = window.PalitUI.el;
+  function $(id) { return document.getElementById(id); }
+  var PICKS = {"demo": [{"id": "1168", "title": "Coffee or Tea", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/1168/1168.mp3", "seconds": 124.8, "tags": ["electronica", "positive", "futuristic", "technology"]}, {"id": "1210", "title": "Can't Get You Off My Mind", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/1210/1210.mp3", "seconds": 90.6, "tags": ["future bass", "positive", "city", "house"]}, {"id": "131", "title": "Sun in Your Eyes", "by": "Alejandro Magaña (A. M.)", "url": "https://assets.mixkit.co/music/131/131.mp3", "seconds": 105.7, "tags": ["synthwave", "confident", "technology", "fashion"]}, {"id": "173", "title": "Better Times are Coming", "by": "Alejandro Magaña (A. M.)", "url": "https://assets.mixkit.co/music/173/173.mp3", "seconds": 100.1, "tags": ["synthpop", "synthwave", "positive", "technology"]}, {"id": "931", "title": "On a Breezy Day", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/931/931.mp3", "seconds": 101.0, "tags": ["edm", "confident", "positive", "pop"]}, {"id": "288", "title": "One More Dance", "by": "Arulo", "url": "https://assets.mixkit.co/music/288/288.mp3", "seconds": 100.3, "tags": ["pop", "carefree", "confident", "house"]}],
+    "dives": [{"id": "1040", "title": "Scripted Life", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/1040/1040.mp3", "seconds": 114.4, "tags": ["reflective", "warm", "uplifting", "drums"]}, {"id": "988", "title": "Day Dreamin' with U", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/988/988.mp3", "seconds": 118.0, "tags": ["downtempo", "uplifting", "hopeful", "keys"]}, {"id": "92", "title": "Time Out", "by": "Ahjay Stelino", "url": "https://assets.mixkit.co/music/92/92.mp3", "seconds": 112.2, "tags": ["reflective", "hopeful", "drums", "electric guitar"]}, {"id": "582", "title": "All Our Life", "by": "Eugenio Mininni", "url": "https://assets.mixkit.co/music/582/582.mp3", "seconds": 252.7, "tags": ["hopeful", "atmospheric", "synth", "drums"]}, {"id": "662", "title": "House One", "by": "Francisco Alvear", "url": "https://assets.mixkit.co/music/662/662.mp3", "seconds": 116.0, "tags": ["nu jazz", "carefree", "relaxed", "house"]}, {"id": "517", "title": "Jungle Voices", "by": "Diego Nava", "url": "https://assets.mixkit.co/music/517/517.mp3", "seconds": 97.7, "tags": ["electronica", "relaxed", "technology", "drums"]}, {"id": "1006", "title": "Loving You Is Easy", "by": "Michael Ramir C.", "url": "https://assets.mixkit.co/music/1006/1006.mp3", "seconds": 115.9, "tags": ["hopeful", "reflective", "synth", "electric guitar"]}]};
+  // After Jungle Voices (entry 274): longer than the 3:13 from deep dive 2's statement to the outro, each at Jungle Voices'
+  // loudness (its level is 0.3 at -12.3 LUFS; each level is matched from the track's own, measured October 21)
+  PICKS.after = [
+    { id: "187", title: "Mountains", by: "Andrew Ev", url: "https://assets.mixkit.co/music/187/187.mp3", seconds: 277.3, level: 0.25, tags: ["uplifting", "hopeful", "drums", "about 123 BPM"], note: "Builds for 45 seconds, then a steady beat from deep dive 2 to the horizon." },
+    { id: "582", title: "All Our Life", by: "Eugenio Mininni", url: "https://assets.mixkit.co/music/582/582.mp3", seconds: 252.7, level: 0.3, tags: ["hopeful", "atmospheric", "documentary", "drums"], note: "A soft first minute, under most of deep dive 2; the beat comes in near its end and stays through deep dive 3 and the horizon. It was on the first shortlist." },
+    { id: "183", title: "Roses", by: "Andrew Ev", url: "https://assets.mixkit.co/music/183/183.mp3", seconds: 266.9, level: 0.21, tags: ["relaxed", "positive", "reflective", "about 114 BPM"], note: "A minute's intro, then a beat, a short break in deep dive 3 (2:05 into the track), and the beat again under the horizon." },
+    { id: "593", title: "Opalescent", by: "Eugenio Mininni", url: "https://assets.mixkit.co/music/593/593.mp3", seconds: 284.1, level: 0.27, tags: ["ambient", "atmospheric", "melodic", "drums"], note: "A soft minute, then a beat; from 2:05 into the track it goes quiet for over a minute, under the end of deep dive 3 and the horizon." },
+    { id: "107", title: "Atoms in Peace", by: "Alejandro Magaña (A. M.)", url: "https://assets.mixkit.co/music/107/107.mp3", seconds: 226.8, level: 0.26, tags: ["electronica", "atmospheric", "technology", "about 96 BPM"], note: "In from the first bar and steady all the way, electronic like Jungle Voices." }
+  ];
+  // The tracks to compare against: Noah's reference for the demo (his own copy, once it's in) and the calm track as it is now
+  var REF = { demo: { id: "idyll", title: "Idyll", by: "A. G. Cook", url: "../video/audio/idyll.mp3", seconds: 0, tags: ["your reference"], local: true, note: "A commercial release. Add your own copy at design/video/audio/idyll.mp3 to hear it here and under the demo, and we credit it at the end." },
+              dives: { id: "calm", title: "Morning Garden - Acoustic Chill", by: "folk_acoustic", url: "../video/audio/calm.mp3", seconds: 233.1, tags: ["what plays now"], local: true, note: "The calm track as it is now, for comparison." } };
+  REF.after = { id: "jv", title: "Jungle Voices", by: "Diego Nava", url: "../video/audio/jungle-voices-extended.mp3", seconds: 105.2, tags: ["what plays before it"], local: true, nopick: true, note: "Your pick for the deep dives, as it plays under deep dive 1, with bars 40 to 43 twice." };
+  var SLOTS = ["demo", "dives", "after"], NAMES = { demo: "The demo", dives: "The deep dives", after: "After Jungle Voices" },
+      FOR = { demo: "the demo", dives: "the deep dives", after: "after Jungle Voices" }, UNDER = { demo: "Under the demo", dives: "Under the deep dives", after: "Under deep dives 2 and 3" };
+  var KEY = "palit-music-workshop", st = { pick: {}, notes: {}, finds: { demo: "", dives: "", after: "" } };
+  try { var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if (sv) Object.keys(st).forEach(function (k) { if (sv[k]) st[k] = sv[k]; }); } catch (e) {}
+  function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+  function under(slot, url, level) { return "../video/player.html?audition=" + encodeURIComponent(url) + "&slot=" + slot + "&level=" + (level || 0.3) + (slot === "after" ? "&t=336" : "#" + (slot === "demo" ? "demo" : "dive1")); }
+  function text() {
+    var out = ["Music: the demo, the deep dives, and after Jungle Voices"];
+    SLOTS.forEach(function (slot) {
+      var all = [REF[slot]].concat(PICKS[slot]), p = all.filter(function (t) { return st.pick[slot] === t.id; })[0];
+      out.push("", NAMES[slot], "Pick: " + (p ? "“" + p.title + "” by " + p.by + (p.local ? "" : " (" + p.url + ")") : "none yet"));
+      all.forEach(function (t) { var n = (st.notes[t.id] || "").trim(); if (n) out.push("Note on “" + t.title + "”: " + n); });
+      if ((st.finds[slot] || "").trim()) out.push("Your finds: " + st.finds[slot].trim());
+    });
+    return out.join("\n");
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put("music-workshop", { title: "Music", text: text(), pick: st.pick }); count(); }
+  function count() { var n = Object.keys(st.pick).length, w = Object.keys(st.notes).filter(function (k) { return (st.notes[k] || "").trim(); }).length; $("count").textContent = n + " of 3 picked, " + w + " notes."; }
+  function card(slot, t, ref) {
+    var a = el("audio", { controls: "", preload: "none", src: t.url, "aria-label": "Play " + t.title });
+    var pickB = el("button", { type: "button", class: "btn", "aria-pressed": String(st.pick[slot] === t.id), text: st.pick[slot] === t.id ? "Picked" : "Pick for " + FOR[slot] });
+    var li = el("li", { class: "track" + (ref ? " ref" : "") + (st.pick[slot] === t.id ? " picked" : "") }, [
+      el("h3", { text: t.title }), el("span", { class: "by", text: "by " + t.by + (t.seconds ? ", " + ms(t.seconds) : "") }),
+      el("span", { class: "tags", text: t.tags.join(", ") }), a,
+      t.note ? el("p", { class: "note", text: t.note }) : null,
+      t.nopick ? null : el("div", { class: "row" }, [el("a", { class: "btn", href: under(slot, t.url, t.level), target: "_blank", rel: "noopener", text: UNDER[slot] }), pickB])
+    ]);
+    var ta = el("textarea", { placeholder: "A note on this track", "aria-label": "A note on " + t.title }); ta.value = st.notes[t.id] || "";
+    ta.addEventListener("input", function () { if (ta.value.trim()) st.notes[t.id] = ta.value; else delete st.notes[t.id]; save(); });
+    li.appendChild(ta);
+    pickB.addEventListener("click", function () { if (st.pick[slot] === t.id) delete st.pick[slot]; else st.pick[slot] = t.id; save(); paint(); });
+    a.addEventListener("play", function () { Array.prototype.forEach.call(document.querySelectorAll("audio"), function (o) { if (o !== a) o.pause(); }); });
+    return li;
+  }
+  function paint() { SLOTS.forEach(function (slot) { var ul = $("t-" + slot); ul.textContent = ""; ul.appendChild(card(slot, REF[slot], true)); PICKS[slot].forEach(function (t) { ul.appendChild(card(slot, t, false)); }); }); }
+  SLOTS.forEach(function (slot) { var f = $("f-" + slot); f.value = (st.finds || {})[slot] || ""; f.addEventListener("input", function () { st.finds[slot] = f.value; save(); }); });
+  $("copy").addEventListener("click", function () { var t = text(); try { navigator.clipboard.writeText(t).then(function () { $("status").textContent = "Copied. Paste it to Claude in chat."; }); } catch (e) { $("status").textContent = "Couldn't copy."; } });
+  $("done").addEventListener("click", function () { save(); if (window.PalitHandoff) PalitHandoff.done("music-workshop"); $("status").textContent = "Marked done. Tell Claude in chat, and Claude reads it from this page."; });
+  paint(); count();
+  window.PalitMusic = { state: st, text: text };
+})();
+</script>
+</body>
+</html>
