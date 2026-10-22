@@ -4638,6 +4638,38 @@ window.PALIT.decisions = {
       refs: [270, 280, 281, 283, 285],
       links: [{ label: "The screening", href: "#video/screening" }],
       by: "Noah"
+    },
+    {
+      date: "2026-10-21",
+      kind: "process",
+      area: "video",
+      title: "The video is submitted",
+      video: ["credits"],
+      from: "The film was being made: the voiceover, the mix, the sound effects and the splash's last pass.",
+      to: "Noah submitted Palit's video to the SVSD competition on October 21: the final cut, palit-cut-20261021-1712.mp4 (9:18, 1080p at 60 fps), with Noah's and Daeun's voices, subtitles in their hues, the mix and the sound effects, and the splash as the wall. The dashboard is published through entry 289 (commit 444bb39). It took five days from the brief (October 16).",
+      why: "wow. we did it! the video has been submitted",
+      whyStatus: "noah",
+      whySource: "Noah, in chat, October 21",
+      status: "submitted",
+      refs: [289, 288, 266],
+      links: [{ label: "The screening", href: "#video/screening" }],
+      by: "Noah"
+    },
+    {
+      date: "2026-10-21",
+      kind: "process",
+      area: "process",
+      title: "Everything filed for the case study",
+      video: [],
+      from: "The material was everywhere it was made: docs, the dashboard's data, the workshops, the prototypes, the film's files and the footage.",
+      to: "docs/13-case-study.md indexes all of it for the case study Noah writes after the competition and his mentors' critique. It covers where each thing lives, the steps in order with their entry numbers, the numbers we measured and where each comes from, the three deep dives, what stays private and why, how to make each thing again, where the critique goes (docs/14-critique.md, word for word), and a draft outline for the case study (Claude's, for Noah to rework). Nothing was moved or deleted. The footage, the voices and the final cut exist only on this Mac, so the index says to keep a copy of the folder elsewhere.",
+      why: "I also want to turn this project into a case study after I receive some critique from some of my mentors from the heel after the competition ends. So, yeah, just keep everything filed well in a good place, all the research, all of our steps. Um, yeah, just keep everything at hand for a case study material. Yeah, you can update the dashboard one last time, but we don't actually need it anymore. So, up to you.",
+      whyStatus: "noah",
+      whySource: "Noah, in chat, October 21 (dictated)",
+      status: "filed",
+      refs: [290],
+      links: [{ label: "The case study index", href: "../../docs/13-case-study.md" }],
+      by: "Noah"
     }
   ]
 };
