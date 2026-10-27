@@ -3,12 +3,174 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>Palit dashboard</title>
-<link rel="stylesheet" href="../system/components.css">
 <style>
-  /* The Palit dashboard, built in the design system's own language (A26, A30–A36): white paper,
-     ink rules, square corners and unbolded SF Pro. Three pages, grouped the way Noah asked:
-     the plan, the work, and the video. Screens come first; reasoning and research sit under them. */
+:root {
+  --paper: #FFFFFF;
+  --chrome: #F5F5F5;
+  --ink: #1D1D1F;
+  --ink-2: #6B6B70;
+  --ink-3: #9C9CA1;
+  --rule: #1D1D1F;
+  --rule-soft: #E2E2E4;
+  --swatch-edge: rgba(0, 0, 0, 0.08);
+  --material: rgba(246, 246, 246, 0.78);
+  --desk: #CBCBCE;
+  --shell-radius: 12px;
+  --heart-radius: 0;
+  --dur-press: 120ms;
+  --dur-appear: 200ms;
+  --dur-capture: 360ms;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ts-display { font-size: 72px; line-height: 1; letter-spacing: -0.035em; font-weight: 400; }
+.ts-title { font-size: 34px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 400; }
+.ts-heading { font-size: 20px; letter-spacing: -0.015em; font-weight: 400; }
+.ts-body { font-size: 15px; }
+.ts-caption { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ts-small { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.keycap { display: inline-flex; gap: 4px; }
+.keycap kbd { font: 13px/1 var(--font); min-width: 26px; height: 26px; padding: 0 6px; display: inline-grid; place-items: center; background: linear-gradient(#FFFFFF, #F1F1F3); border: 0.5px solid rgba(0, 0, 0, 0.18); border-radius: 6px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12); }
+.menubar { position: absolute; inset: 0 0 auto 0; height: 28px; background: rgba(255, 255, 255, 0.58); backdrop-filter: blur(20px) saturate(1.5); -webkit-backdrop-filter: blur(20px) saturate(1.5); display: flex; align-items: center; gap: 18px; padding: 0 14px; font-size: 13px; z-index: 3; }
+.menubar .app { font-weight: 700; }
+.menubar .right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+.toolbar { display: flex; align-items: center; gap: 16px; padding: 10px 14px; background: var(--material); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+.toolbar .tt { font-size: 13px; font-weight: 600; }
+.toolbar .tc { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.win { position: absolute; background: var(--paper); border-radius: 10px; overflow: hidden; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.25); }
+.titlebar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--material); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 0.5px solid rgba(0, 0, 0, 0.14); font-size: 13px; }
+.lights { display: flex; gap: 8px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; background: #DADADC; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.18); }
+.titlebar .tt { flex: 1; text-align: center; color: var(--ink-2); font-weight: 600; margin-right: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.popover { width: 300px; background: var(--material); backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); border-radius: var(--shell-radius); border: 0.5px solid rgba(0, 0, 0, 0.18); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18); padding: 12px; }
+.popover .ph { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; font-weight: 600; padding: 2px 4px 10px; }
+.popover .ph span { font-weight: 400; color: var(--ink-2); font-size: 11px; }
+.popover .pr { display: grid; gap: 6px; }
+.popover .pa { display: flex; gap: 8px; margin-top: 12px; }
+.popover .pbtn { flex: 1; font-size: 13px; padding: 5px 8px; border-radius: 6px; border: 0.5px solid rgba(0, 0, 0, 0.16); background: rgba(255, 255, 255, 0.85); cursor: pointer; display: inline-flex; justify-content: center; gap: 6px; align-items: center; }
+.popover .pf { margin-top: 10px; font-size: 11px; color: var(--ink-2); text-align: center; }
+.source p, .story p, .popover p, .nameblock p { margin: 0; }
+.sw { width: 96px; height: 96px; box-shadow: inset 0 0 0 1px var(--swatch-edge); border-radius: var(--heart-radius); }
+.sw.sm { width: 40px; height: 40px; }
+.descriptor { display: inline-block; font-size: 13px; padding: 2px 8px; border: 1px solid var(--rule); }
+.nameblock .nm { font-size: 28px; line-height: 1.05; letter-spacing: -0.02em; font-weight: 400; }
+.nameblock .nm.placeholder { color: var(--ink-2); font-weight: 400; }
+.nameblock .tc { margin-top: 6px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; gap: 14px; flex-wrap: wrap; }
+.reads { display: flex; flex-wrap: wrap; gap: 4px; }
+.tech { margin: 0; }
+.tech dt { font-size: 11px; color: var(--ink-2); }
+.tech dd { margin: 0 0 8px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.source .k { font-size: 11px; color: var(--ink-2); }
+.source .p { font-size: 15px; font-weight: 400; }
+.source .ti { font-size: 13px; }
+.source .tm { font-size: 11px; color: var(--ink-2); margin-top: 2px; }
+.source .url { display: inline; background: none; border: 0; padding: 0; font-size: 13px; text-align: left; color: var(--ink); text-decoration: underline; text-decoration-color: rgba(29, 29, 31, 0.35); text-underline-offset: 2px; overflow-wrap: anywhere; }
+.source button.url { cursor: pointer; }
+.source button.url:hover { text-decoration-color: currentColor; }
+.neighbors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); width: 132px; }
+.neighbors div { aspect-ratio: 1; }
+.neighbors .center { box-shadow: inset 0 0 0 3px var(--paper); }
+.kept { display: grid; gap: 0; border-top: 1px solid var(--rule-soft); }
+.kept button { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--rule-soft); padding: 8px 0; cursor: pointer; }
+.kept button:hover .kn { text-decoration: underline; }
+.kept .ks { width: 28px; height: 28px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.kept .kn { font-size: 13px; font-weight: 400; }
+.kept .kn.placeholder { font-weight: 400; color: var(--ink-2); }
+.kept .kw { display: block; font-size: 11px; color: var(--ink-2); margin-top: 1px; }
+.chip-raw { display: inline-grid; grid-template-columns: 16px auto; gap: 8px; align-items: center; background: var(--paper); border: 1px solid var(--rule); padding: 6px 10px 6px 6px; font-size: 13px; }
+.chip-raw .cs { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.chip-raw .cn { font-weight: 400; white-space: nowrap; }
+.chip-raw .cn.placeholder { font-weight: 400; color: var(--ink-2); }
+.chip-raw .cno { color: var(--ink-2); font-size: 11px; margin-left: 6px; font-weight: 400; }
+.pal-strip { display: flex; gap: 1px; height: 28px; background: var(--rule); }
+.pal-strip > * { flex: 1 1 0; min-width: 0; border: 0; padding: 0; border-radius: var(--heart-radius); }
+.pal-strip > .in { animation: pal-in var(--dur-appear) ease-out; }
+@keyframes pal-in { from { flex-grow: 0.0001; } }
+.pal-strip button { cursor: pointer; }
+.pal-strip [aria-current="true"] { box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 4px var(--paper); }
+.pal .pal-strip { height: 40px; border: 1px solid var(--rule); }
+.pal .pal-n { margin-top: 8px; font-size: 15px; outline: none; overflow-wrap: anywhere; }
+.pal .pal-n[contenteditable="true"] { cursor: text; }
+.pal .pal-n:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+.pal .pal-n:focus-visible { box-shadow: inset 0 -1px 0 var(--ink); }
+.pal .pal-m { margin: 2px 0 0; font-size: 11px; color: var(--ink-2); }
+.filters { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; }
+.filters .group { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--rule); }
+.filters button { background: var(--paper); border: 0; border-right: 1px solid var(--rule); padding: 5px 10px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.filters .group button:last-child { border-right: 0; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.filters .fs { width: 10px; height: 10px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.filters .label { font-size: 11px; color: var(--ink-2); }
+.btn { background: var(--paper); border: 1px solid var(--rule); padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.btn:hover { background: var(--chrome); }
+.btn:active { transform: translateY(1px); }
+.empty { padding: 24px; border: 1px dashed var(--ink-3); color: var(--ink-2); font-size: 13px; }
+.tile { display: block; width: 100%; text-align: left; background: var(--paper); border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 0; cursor: pointer; }
+.tile .ts { aspect-ratio: 1; box-shadow: inset 0 -1px 0 var(--rule); }
+.tile .tb { padding: 8px 10px 10px; }
+.tile .tn { font-size: 13px; font-weight: 400; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .tn.placeholder { font-weight: 400; color: var(--ink-2); }
+.tile .tm { margin-top: 2px; display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.tile .tm span:first-child { flex: none; white-space: nowrap; }
+.tile .tm span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile[aria-current="true"] { outline: 2px solid var(--ink); outline-offset: -2px; position: relative; z-index: 1; }
+.tile.fresh .ts { animation: fresh 1.2s ease-out; }
+@keyframes fresh { 0% { box-shadow: inset 0 0 0 6px var(--paper), inset 0 -1px 0 var(--rule); } 100% { box-shadow: inset 0 0 0 0 var(--paper), inset 0 -1px 0 var(--rule); } }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.story { background: var(--paper); }
+.story .sn { font-size: 34px; line-height: 1.02; letter-spacing: -0.025em; font-weight: 400; outline: none; overflow-wrap: anywhere; cursor: text; }
+.story .sn:empty::before { content: attr(data-placeholder); color: var(--ink-2); font-weight: 400; }
+.story .sn:focus-visible { box-shadow: inset 0 -2px 0 var(--ink); }
+.story .shint { font-size: 11px; color: var(--ink-2); margin-top: 6px; }
+.story section { padding: 16px 0; border-top: 1px solid var(--rule-soft); }
+.story section:first-of-type { border-top: 0; padding-top: 12px; }
+.story h4 { margin: 0 0 8px; font-size: 11px; font-weight: 400; color: var(--ink-2); }
+.story .two { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; }
+.loupe { position: absolute; width: 22px; height: 22px; border-radius: 50%; box-shadow: 0 0 0 1.5px #FFFFFF, 0 0 0 2.5px rgba(29, 29, 31, 0.7); pointer-events: none; z-index: 4; opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+.loupe.on { animation: loupe var(--dur-capture) ease-out forwards; }
+@keyframes loupe { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.4); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+.story .cnote { font-size: 14px; line-height: 1.45; outline: none; min-height: 1.45em; overflow-wrap: anywhere; white-space: pre-wrap; }
+.story .cnote[contenteditable="true"] { cursor: text; }
+.story .cnote:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+.story .cnote:focus-visible { box-shadow: inset 0 -1px 0 var(--ink); }
+.pal .pal-pin { margin-top: 8px; font: 12px var(--font); background: var(--paper); border: 1px solid var(--rule); padding: 3px 10px; cursor: pointer; }
+.pal .pal-pin[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.dpal { position: absolute; z-index: 15; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 6px; background: var(--material); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.22); touch-action: none; }
+.dpal.docked { right: 0; top: 50%; transform: translateY(-50%); border-radius: 10px 0 0 10px; }
+.dpal.floating { border-radius: 10px; }
+.dpal.near-edge { box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16), 0 0 0 2px var(--ink); }
+.dp-grip { width: 18px; height: 7px; cursor: grab; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 1px, transparent 1px 3px); }
+.dp-list { display: flex; flex-direction: column; gap: 3px; }
+.dp-list button { width: 8px; height: 26px; border: 0; padding: 0; cursor: pointer; border-radius: var(--heart-radius); box-shadow: inset 0 0 0 1px var(--swatch-edge); transition: width var(--dur-appear) ease-out; }
+.dpal.floating .dp-list button, .dpal.docked:hover .dp-list button, .dpal.docked:focus-within .dp-list button, .dpal.open .dp-list button { width: 30px; }
+.dpal.docked:not(:hover):not(:focus-within):not(.open) .dp-grip { width: 8px; }
+.dpal.docked:not(:hover):not(:focus-within):not(.open) .dp-foot { display: none; }
+.dp-list button.landed { animation: dp-land 900ms ease-out; }
+@keyframes dp-land { 0% { box-shadow: 0 0 0 3px var(--paper), 0 0 0 4.5px var(--ink); } 100% { box-shadow: 0 0 0 0 var(--paper), inset 0 0 0 1px var(--swatch-edge); } }
+.dp-empty { width: 30px; height: 26px; border: 1px dashed var(--ink-3); }
+.dp-foot { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--ink-2); }
+.dp-foot:empty { display: none; }
+.dp-unpin { font: 10px var(--font); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: var(--ink); }
+.dp-note { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); white-space: nowrap; background: var(--paper); border: 1px solid var(--rule); padding: 3px 8px; font-size: 12px; font-variant-numeric: tabular-nums; opacity: 0; pointer-events: none; transition: opacity var(--dur-appear) ease-out; }
+.dpal.saying .dp-note { opacity: 1; }
+.name-over { position: absolute; z-index: 44; width: 260px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); font-size: 13px; line-height: 1.3; }
+.name-over .no-top { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px 0 8px; }
+.name-over .cs { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px var(--swatch-edge); }
+.name-over .no-in { width: 100%; min-width: 0; border: 0; padding: 0; margin: 0; background: none; outline: none; font: inherit; color: var(--ink); box-shadow: inset 0 -1px 0 var(--ink); }
+.name-over .no-in::placeholder { color: var(--ink-2); }
+.name-over .cno { font-size: 11px; color: var(--ink-2); }
+.name-over .no-hint { margin: 0; padding: 3px 10px 8px 32px; font-size: 11px; color: var(--ink-2); }
+</style>
+<style>
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--chrome); color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-underline-offset: 2px; text-decoration-color: rgba(29, 29, 31, 0.3); }
@@ -17,8 +179,6 @@
   ul, ol { margin: 0; padding: 0; }
   [id] { scroll-margin-top: 72px; }
   .wrap { max-width: 1320px; margin: 0 auto; padding-left: 32px; padding-right: 32px; }
-
-  /* Header */
   .top { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--rule); }
   .top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-top: 10px; padding-bottom: 10px; }
   .brand { text-decoration: none; }
@@ -29,14 +189,10 @@
   .nav a:hover { background: var(--chrome); }
   .nav a[aria-current="page"] { background: var(--ink); color: var(--paper); }
   .when { margin-left: auto; font-size: 13px; color: var(--ink-2); }
-
-  /* Page head */
   .phead { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; align-items: end; padding: 36px 0 14px; border-bottom: 1px solid var(--rule); }
   .phead h1 { font-size: clamp(52px, 7vw, 88px); line-height: 0.92; letter-spacing: -0.04em; font-weight: 400; }
   .phead p { color: var(--ink-2); max-width: 60ch; }
   .jump { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 8px; font-size: 13px; }
-
-  /* Sections */
   .sec { padding-top: 36px; }
   .sh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 12px; }
   .sh h2 { font-size: 30px; letter-spacing: -0.025em; font-weight: 400; line-height: 1.05; }
@@ -67,8 +223,6 @@
   .empty { padding: 16px; border: 1px dashed var(--ink-3); color: var(--ink-2); font-size: 13px; background: var(--paper); }
   .quote { border-left: 2px solid var(--ink); padding-left: 10px; font-size: 13px; }
   .quote cite { display: block; font-style: normal; font-size: 11px; color: var(--ink-2); margin-top: 2px; }
-
-  /* Folds: everything secondary opens on demand */
   details.fold { background: var(--paper); border: 1px solid var(--rule); }
   details.fold + details.fold { border-top: 0; }
   details.fold > summary { list-style: none; cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 11px 16px; }
@@ -80,8 +234,6 @@
   details.fold > summary:hover .ft { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(29, 29, 31, 0.3); }
   .fb { padding: 2px 16px 18px 40px; }
   .fb > * + * { margin-top: 12px; }
-
-  /* The older renderers' pieces, in the same language */
   .card { background: var(--paper); border-top: 1px solid var(--rule-soft); padding: 12px 0 0; }
   .fb > .card:first-child { border-top: 0; padding-top: 0; }
   .card > h2, .card h2 { font-size: 15px; font-weight: 400; margin: 0 0 6px; }
@@ -135,8 +287,6 @@
   .shots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; list-style: none; }
   .shots a { display: block; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--rule-soft); }
   .shots img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-  /* Plan: the four days */
   .days { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .days > div { padding: 12px 14px 14px; border-right: 1px solid var(--rule); }
   .days > div:last-child { border-right: 0; }
@@ -152,8 +302,6 @@
   .composer textarea { width: 100%; min-height: 110px; resize: vertical; padding: 8px 10px; border: 1px solid var(--rule-soft); background: var(--paper); font: 13px/1.45 var(--font); margin: 8px 0; }
   .composer textarea:focus, .notes textarea:focus { border-color: var(--ink); outline: none; }
   .composer select, .notes select { font: 13px var(--font); padding: 3px 6px; border: 1px solid var(--rule); background: var(--paper); border-radius: 0; max-width: 100%; }
-
-  /* Plan: the timeline */
   .tl-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 10px; font-size: 13px; }
   .tl-ctl label { display: inline-flex; gap: 6px; align-items: center; color: var(--ink-2); }
   .tl-ctl input { accent-color: var(--ink); }
@@ -173,8 +321,6 @@
   details.entry .rt { display: flex; gap: 4px; align-items: baseline; flex-wrap: wrap; justify-content: flex-end; }
   .eb { padding: 4px 16px 16px 152px; }
   .eb > * + * { margin-top: 10px; }
-
-  /* Work: previews of real pages */
   .pv { position: relative; overflow: hidden; background: var(--chrome); border-bottom: 1px solid var(--rule); }
   .pv.wide { aspect-ratio: 16 / 9; }
   .pv.tall { aspect-ratio: 16 / 10; }
@@ -183,7 +329,6 @@
   .pv-open { position: absolute; inset: 0; font-size: 0; }
   .pv-open:hover { box-shadow: inset 0 0 0 2px var(--ink); }
   .pv-note { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: var(--ink-2); padding: 12px; text-align: center; }
-
   .work { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
   .protos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
   .proto { background: var(--paper); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
@@ -191,7 +336,6 @@
   .proto h3 { font-size: 17px; font-weight: 400; letter-spacing: -0.01em; }
   .proto p { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
   .proto .links { margin-top: 6px; }
-
   .grp + .grp { margin-top: 20px; }
   .grp > h3 { font-size: 13px; font-weight: 400; color: var(--ink-2); margin-bottom: 8px; }
   .scrs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); list-style: none; }
@@ -214,7 +358,6 @@
   ul.research li { padding: 6px 0; border-top: 1px solid var(--rule-soft); }
   ul.research .rl { display: block; font-size: 11px; color: var(--ink-2); }
   ul.research .rs { display: block; font-size: 11px; color: var(--ink-2); }
-
   .v2-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; padding: 18px 20px; margin-bottom: 18px; background: var(--paper); border: 1px solid var(--rule-soft); }
   .v2-q .quote + .quote { margin-top: 14px; }
   .fbbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; margin: 0 0 16px; background: var(--paper); border: 1px solid var(--rule-soft); }
@@ -240,8 +383,6 @@
   .thumbs .pv { border: 1px solid var(--rule); }
   .thumbs .s { font-size: 11px; margin-top: 3px; }
   .thumbs li.hide { display: none; }
-
-  /* Work: the notes panel */
   .notes { position: sticky; top: 64px; max-height: calc(100vh - 80px); overflow: auto; background: var(--paper); border: 1px solid var(--rule); }
   .notes .nh { padding: 12px 14px 10px; border-bottom: 1px solid var(--rule); }
   .notes .nh h2 { font-size: 22px; font-weight: 400; letter-spacing: -0.02em; }
@@ -253,8 +394,6 @@
   .notes li .ab { display: block; font-size: 11px; color: var(--ink-2); }
   .notes li .x { float: right; }
   .notes .nf { padding: 10px 14px 14px; border-top: 1px solid var(--rule); }
-
-  /* Video */
   .vbar { display: flex; gap: 0; height: 40px; border: 1px solid var(--rule); background: var(--paper); }
   .vbar a { flex-basis: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; text-decoration: none; border-right: 1px solid var(--rule); min-width: 0; overflow: hidden; }
   .vbar a:last-child { border-right: 0; }
@@ -262,7 +401,6 @@
   .vbar a:hover { opacity: 0.85; }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
   .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--rule); }
-  /* The screening (entry 267): the whole cut as one film, before the voiceover is recorded */
   .scr-film { position: relative; aspect-ratio: 16 / 9; background: #111113; border: 1px solid var(--rule); }
   .scr-film video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #111113; }
   .scr-gate { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 10px; color: #f5f5f7; text-align: center; padding: 24px; }
@@ -275,7 +413,6 @@
   .scr-what { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 24px; margin-top: 16px; font-size: 13px; }
   .scr-what ul { list-style: none; margin-top: 4px; display: grid; gap: 4px; }
   .scr-ok { color: #1f7a3a; }
-  /* The cut, clip by clip (entry 192): the video as it is, from design/video/script.js */
   .cl-bar { display: flex; height: 34px; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
   .cl-bar a, .cl-bar i { flex-basis: 0; min-width: 2px; }
   .cl-bar a { display: flex; align-items: flex-end; padding: 0 6px 4px; font-size: 11px; color: var(--paper); text-decoration: none; overflow: hidden; white-space: nowrap; }
@@ -329,8 +466,6 @@
   .clip-stmt { max-width: 340px; }
   .clip-notes { padding: 0 14px 14px; }
   @media (max-width: 860px) { .clip-body { grid-template-columns: 1fr; } .clip-body > div + div { border-left: 0; border-top: 1px solid var(--rule-soft); } }
-
-  /* Storyboards: frames in reading order, square and ruled like the archive */
   .sb-block + .sb-block { margin-top: 32px; }
   .sb-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
   .sb-head h3 { font-size: 17px; font-weight: 400; }
@@ -366,7 +501,51 @@
   .arc li::before { content: ""; position: absolute; left: -16px; top: 9px; width: 7px; height: 7px; background: var(--paper); border: 1px solid var(--ink); }
   .arc a { font-size: 11px; color: var(--ink-2); margin-right: 6px; text-decoration: none; }
   .arc a:hover { color: var(--ink); text-decoration: underline; }
-
+  body.previewing { background: var(--paper); }
+  body.previewing .top { border-bottom-color: var(--rule-soft); }
+  body.previewing .wrap { max-width: 1184px; }
+  .top [hidden], #foot[hidden] { display: none !important; }
+  .admin { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .admin form { display: flex; align-items: center; gap: 8px; }
+  .when:not([hidden]) + .admin { margin-left: 0; }
+  .admin button.quiet { font: inherit; border: 0; padding: 4px 0; background: none; color: var(--ink-2); cursor: pointer; }
+  .admin button.quiet:hover { color: var(--ink); }
+  .admin input, .pr-gate input { font: 13px/1.3 var(--font); color: var(--ink); width: 150px; padding: 4px 8px; border: 1px solid var(--rule); border-radius: 0; background: var(--paper); }
+  .admin button.go, .pr-gate button.go { font: 13px/1.3 var(--font); padding: 4px 12px; border: 1px solid var(--ink); border-radius: 0; background: var(--ink); color: var(--paper); cursor: pointer; }
+  .admin .err, .pr-gate .err { font-size: 11px; color: var(--ink-2); }
+  .pr { padding-bottom: 24px; }
+  .pr-open { display: block; width: 100%; aspect-ratio: 21 / 9; object-fit: cover; background: var(--paper); margin-top: 24px; cursor: pointer; }
+  .pr-hero { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 40px; padding: 4px 0 40px; border-bottom: 1px solid var(--rule-soft); }
+  .pr-hero h1 { flex: 1 1 420px; font-size: 26px; font-weight: 400; line-height: 1.2; letter-spacing: -0.015em; max-width: 26ch; }
+  .pr-try { display: flex; align-items: baseline; gap: 18px; font-size: 13px; }
+  .pr-try .btn.primary { padding: 7px 14px; }
+  .pr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 40px 0 20px; }
+  .pr-head h2 { font-size: 17px; font-weight: 400; }
+  .pr-head p { font-size: 13px; color: var(--ink-2); }
+  .pr-list { list-style: none; }
+  .pr-list > li + li { margin-top: 56px; }
+  .pr-film { display: block; position: relative; width: 100%; padding: 0; border: 1px solid var(--rule-soft); border-radius: 0; background: var(--paper); cursor: pointer; }
+  .pr-film video { display: block; width: 100%; aspect-ratio: 16 / 9; }
+  .pr-open, .pr-film video { filter: brightness(1.03); }
+  .pr-state { display: none; position: absolute; left: 12px; top: 12px; font-size: 11px; line-height: 16px; padding: 0 6px; background: var(--ink); color: var(--paper); }
+  .pr-film.held .pr-state { display: block; }
+  .pr-track { position: relative; height: 3px; margin-top: 10px; background: var(--rule-soft); }
+  .pr-track span { position: absolute; top: 0; bottom: 0; background: var(--ink-3); }
+  .pr-track i { position: absolute; top: 0; bottom: 0; left: 0; width: 0; background: var(--ink); }
+  .pr-cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 10px; }
+  .pr-cap h3 { font-size: 17px; font-weight: 400; letter-spacing: -0.01em; }
+  .pr-cap p { font-size: 13px; color: var(--ink-2); }
+  .pr-foot { margin-top: 72px; padding-top: 14px; border-top: 1px solid var(--rule-soft); font-size: 13px; color: var(--ink-2); }
+  .pr-gate { max-width: 560px; padding: 96px 0 120px; }
+  .pr-gate h1 { font-size: 26px; font-weight: 400; letter-spacing: -0.015em; line-height: 1.2; }
+  .pr-gate form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 12px; }
+  .pr-gate p { font-size: 13px; color: var(--ink-2); }
+  @media (max-width: 600px) {
+    .pr-open { aspect-ratio: 16 / 9; margin-top: 12px; }
+    .pr-hero h1 { font-size: 20px; }
+    .pr-list > li + li { margin-top: 40px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pr-open { cursor: default; } }
   @media (max-width: 1100px) {
     .work, .speak { grid-template-columns: 1fr; }
     .notes { position: static; max-height: none; }
@@ -400,1351 +579,19 @@
 <body>
   <header class="top">
     <div class="wrap">
-      <a class="brand" href="#plan">Palit<span>Dashboard</span></a>
-      <nav class="nav" aria-label="Pages" id="nav"></nav>
-      <span class="when num" id="when"></span>
+      <a class="brand" href="#" id="brand">Palit<span hidden>Dashboard</span></a>
+      <nav class="nav" aria-label="Pages" id="nav" hidden></nav>
+      <span class="when num" id="when" hidden></span>
+      <div class="admin" id="admin"></div>
     </div>
   </header>
 
   <main class="wrap" id="view" tabindex="-1"></main>
 
-  <footer class="wrap" style="padding:40px 0 64px;font-size:12px;color:var(--ink-2)">
-    <p>The data lives in design/history/data/, one file per kind of thing. Last updated <span id="updated" class="num"></span>.</p>
-  </footer>
+  <footer class="wrap" id="foot" hidden style="padding:40px 0 64px;font-size:12px;color:var(--ink-2)"></footer>
 
-<script src="../system/handoff.js"></script>
-<script src="data/compass.js"></script>
-<script src="data/video.js"></script>
-<script src="data/screens.js"></script>
-<script src="data/research.js"></script>
-<script src="data/testing.js"></script>
-<script src="data/sessions.js"></script>
-<script src="data/inspiration.js"></script>
-<script src="data/decisions.js"></script>
-<script src="../brand/brand.js"></script>
-<script src="../video/script.js"></script>
-<script src="data/clips.js"></script>
-<script src="data/screening.js"></script>
-<script>
-(function () {
-  "use strict";
-  var P = window.PALIT || {};
-  var C = P.compass || {}, V = P.video || {}, R = P.research || {}, T = P.testing || {},
-      S = P.sessions || {}, I = P.inspiration || {}, D = P.decisions || {}, SC = P.screens || {};
-
-  /* ---------- Helpers ---------- */
-
-  function el(tag, attrs, kids) {
-    var node = document.createElement(tag);
-    if (attrs) Object.keys(attrs).forEach(function (k) {
-      var v = attrs[k];
-      if (v === null || v === undefined || v === false) return;
-      if (k === "text") node.textContent = v;
-      else if (k === "class") node.className = v;
-      else node.setAttribute(k, v);
-    });
-    (kids || []).forEach(function (c) {
-      if (c === null || c === undefined || c === false) return;
-      node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-    });
-    return node;
-  }
-  function pad(n) { return (n < 10 ? "0" : "") + n; }
-  function parseISO(iso) { var p = iso.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); }
-  function localISO(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
-  function fmtLong(iso) { return parseISO(iso).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }); }
-  function fmtShort(iso) { return parseISO(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
-  function weekday(iso) { return parseISO(iso).toLocaleDateString("en-US", { weekday: "long" }); }
-  function mmss(s) { return Math.floor(s / 60) + ":" + pad(s % 60); }
-  function load(k, f) {
-    try { var v = localStorage.getItem("palit-process-" + k); return v === null ? f : JSON.parse(v); }
-    catch (e) { return f; }
-  }
-  function save(k, v) { try { localStorage.setItem("palit-process-" + k, JSON.stringify(v)); } catch (e) {} }
-  function isExternal(h) { return /^https?:/.test(h); }
-  function link(label, href, cls) {
-    var a = el("a", { href: href, text: label, class: cls || null });
-    if (isExternal(href)) { a.target = "_blank"; a.rel = "noopener"; }
-    return a;
-  }
-  function openLink(label, href, cls) { var a = link(label, href, cls); a.target = "_blank"; a.rel = "noopener"; return a; }
-  function domain(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } }
-  function bullets(items, cls) { return el("ul", { class: cls || "bullets" }, (items || []).map(function (i) { return el("li", null, [i]); })); }
-  function paras(text) { return String(text).split(/\n\s*\n/).map(function (p) { return el("p", { text: p.trim(), style: "margin-top:8px;font-size:14px" }); }); }
-  function card(kids, cls, id) { return el("div", { class: "card" + (cls ? " " + cls : ""), id: id || null }, kids); }
-  function facts(pairs) {
-    var dl = el("dl", { class: "facts" });
-    pairs.forEach(function (p) {
-      if (!p[1]) return;
-      dl.appendChild(el("div", null, [el("dt", { text: p[0] }), el("dd", null, [p[1]])]));
-    });
-    return dl;
-  }
-  function empty(text) { return el("div", { class: "empty", text: text }); }
-  // A main section: open, with a heading.
-  function sec(id, title, hint, kids, end) {
-    return el("section", { class: "sec", id: id }, [el("div", { class: "sh" }, [el("h2", { text: title }), hint ? el("p", { text: hint }) : null, end ? el("span", { class: "end" }, end) : null])].concat(kids || []));
-  }
-  // A secondary section: folded until you open it. The older renderers call this.
-  function section(id, title, hint, kids) {
-    return el("details", { class: "fold", id: id }, [
-      el("summary", null, [el("span", { class: "ft", text: title }), hint ? el("span", { class: "fs", text: hint }) : null]),
-      el("div", { class: "fb" }, kids || [])
-    ]);
-  }
-
-  var STATUS = {
-    approved: ["Approved", "solid"], working: ["Working pick", ""], proposed: ["Proposed", "dashed"],
-    done: ["Done", "quiet"], open: ["Open", "dashed"], replaced: ["Replaced", "quiet"], "set-aside": ["Set aside", "quiet"],
-    hypothesis: ["Hypothesis", "dashed"], draft: ["Draft", ""], candidates: ["Candidates", "dashed"],
-    candidate: ["Candidate", "dashed"], chosen: ["Chosen", "solid"], dropped: ["Dropped", "quiet"], locked: ["Locked", "solid"],
-    planned: ["Planned", "dashed"], running: ["Running", ""], upcoming: ["Upcoming", "dashed"], idea: ["Idea", "dashed"],
-    blocked: ["Waiting", "dashed"], research: ["Needs research", "dashed"], ready: ["Ready", "solid"],
-    unverified: ["Unverified", "dashed"], "partly supported": ["Partly supported", ""], supported: ["Supported", "solid"],
-    disproved: ["Disproved", "quiet"], "Noah's direction": ["Noah's direction", ""],
-    high: ["High", "solid"], medium: ["Medium", ""], low: ["Low", "dashed"]
-  };
-  function statusPill(s) { var m = STATUS[s] || [s, ""]; return el("span", { class: "pill" + (m[1] ? " " + m[1] : ""), text: m[0] }); }
-
-  function copyText(s, done) {
-    function fallback() {
-      var t = el("textarea", { readonly: "" });
-      t.value = s; t.style.position = "fixed"; t.style.opacity = "0";
-      document.body.appendChild(t); t.select();
-      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
-      t.remove(); done(ok);
-    }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(s).then(function () { done(true); }, fallback);
-    else fallback();
-  }
-
-  /* ---------- Shared data ---------- */
-
-  var entries = (D.entries || []).map(function (e, i) { return Object.assign({ no: i + 1 }, e); });
-  var byNo = {};
-  entries.forEach(function (e) { byNo[e.no] = e; });
-  var revisedBy = {};
-  entries.forEach(function (e) { if (e.revises) revisedBy[e.revises] = e.no; });
-  function waitingOnWhy(e) { return !revisedBy[e.no] && (e.whyStatus === "missing" || e.whyStatus === "agent"); }
-  var waiting = entries.filter(waitingOnWhy);
-
-  var rockById = {};
-  (C.rocks || []).forEach(function (r) { rockById[r.id] = r; });
-  function tagLabel(t) {
-    if (t.indexOf("rock:") === 0) { var r = rockById[t.slice(5)]; return "Big rock " + t.slice(5) + (r ? ": " + r.title : ""); }
-    var b = (V.blocks || []).filter(function (x) { return (x.tags || []).indexOf(t) >= 0; })[0];
-    return b ? b.title : t;
-  }
-  function tagHref(t) {
-    if (t.indexOf("rock:") === 0) return "#compass/rocks";
-    var b = (V.blocks || []).filter(function (x) { return (x.tags || []).indexOf(t) >= 0; })[0];
-    return b ? "#video/" + b.id : "#video";
-  }
-  function entriesTagged(tags) { return entries.filter(function (e) { return (e.video || []).some(function (t) { return tags.indexOf(t) >= 0; }); }); }
-  function entryLinks(list) {
-    if (!list.length) return null;
-    return el("ul", { class: "plain" }, list.map(function (e) { return el("li", null, [link("Entry " + pad(e.no), "#e" + pad(e.no)), ": " + e.title]); }));
-  }
-  function entryChips(nos) {
-    return el("span", { class: "chips" }, (nos || []).map(function (n) {
-      var e = byNo[n];
-      return e ? el("a", { class: "chip num", href: "#e" + pad(n), title: e.title, text: "Entry " + pad(n) }) : null;
-    }));
-  }
-  function hrefLabel(h) {
-    if (/^#e\d+$/.test(h)) return "Entry " + h.slice(2);
-    var map = { "#screens/journey": "The journey, on the Work page", "#video": "Video plan", "#research/audience": "Audience", "#research/interviews": "Interview kit", "#compass/rocks": "Big rocks", "#inspiration": "Inspiration" };
-    return map[h] || "Open";
-  }
-  function latestUpdate() { return [C, V, SC, R, T, S, I, D].map(function (x) { return x.updated || ""; }).sort().pop(); }
-
-  function countdown() {
-    var tl = C.timeline || [];
-    if (!tl.length) return "";
-    var iso = localISO(new Date());
-    var deadline = C.deadline || tl[tl.length - 1].date;
-    var daysLeft = Math.round((parseISO(deadline) - parseISO(iso)) / 86400000);
-    var idx = tl.map(function (d) { return d.date; }).indexOf(iso);
-    if (idx >= 0) {
-      var tail = daysLeft > 0 ? daysLeft + (daysLeft === 1 ? " day" : " days") + " to " + weekday(deadline) : "Deadline day";
-      return weekday(iso) + ", day " + (idx + 1) + " of " + tl.length + ": " + tl[idx].focus + ". " + tail + ".";
-    }
-    if (iso < tl[0].date) return "Starts " + fmtLong(tl[0].date) + ".";
-    return "Past the deadline.";
-  }
-
-  /* ---------- Decisions, as rows that open ---------- */
-
-  var KINDS = [["all", "All"], ["pivot", "Pivots"], ["decision", "Decisions"], ["exploration", "Explorations"], ["feedback", "Feedback"], ["process", "Process"], ["question", "Questions"]];
-  var KIND_ONE = { pivot: "Pivot", decision: "Decision", exploration: "Exploration", feedback: "Feedback", process: "Process", question: "Question" };
-  var AREAS = { product: "Product", foundations: "Foundations", capture: "Capture", card: "Card", archive: "Archive", collect: "Collect", flows: "All flows", references: "References", process: "Process", name: "Name" };
-  var WHY_LABEL = { noah: "Why", rule: "Why", agent: "Agent's reasoning", missing: "Why: not recorded yet" };
-  var dstate = { kind: load("kind", "all"), onlyWhy: load("onlyWhy", false), newestFirst: load("newestFirst", true) };
-  function saveD() { save("kind", dstate.kind); save("onlyWhy", dstate.onlyWhy); save("newestFirst", dstate.newestFirst); }
-  function passes(e) {
-    if (dstate.kind !== "all" && e.kind !== dstate.kind) return false;
-    if (dstate.onlyWhy && !waitingOnWhy(e)) return false;
-    return true;
-  }
-  function renderWhy(e) {
-    var st = e.whyStatus || "missing";
-    if (st === "na") return null;
-    var box = el("div", { class: "why " + st }, [el("span", { class: "label", text: WHY_LABEL[st] })]);
-    if (e.why && st !== "missing") box.appendChild(el("span", { class: "said", text: e.why }));
-    if (st === "noah" && e.whySource) box.appendChild(el("span", { class: "src", text: e.whySource + (e.whyAdded && e.whyAdded !== e.date ? ", added " + e.whyAdded : "") }));
-    if (st === "rule") box.appendChild(el("span", { class: "src", text: "From the project rules" + (e.whySource ? ": " + e.whySource : "") }));
-    if (st === "agent") box.appendChild(el("span", { class: "src", text: "Noah's reason isn't recorded yet." }));
-    if (e.ask) box.appendChild(el("span", { class: "ask" }, [el("b", { style: "font-weight:400;color:var(--ink-2)", text: st === "missing" || st === "agent" ? "Ask: " : "Still to ask: " }), e.ask]));
-    return box;
-  }
-  function entryRow(e) {
-    var d = el("details", { class: "entry", id: "e" + pad(e.no) });
-    d.appendChild(el("summary", null, [
-      el("span", { class: "no num", text: pad(e.no) }),
-      el("span", { class: "kd", text: (KIND_ONE[e.kind] || e.kind) + (AREAS[e.area] ? ", " + AREAS[e.area].toLowerCase() : "") }),
-      el("span", { class: "ti", text: e.title }),
-      el("span", { class: "rt" }, [waitingOnWhy(e) ? el("span", { class: "tag dash", text: "Why?" }) : null, e.status ? statusPill(e.status) : null])
-    ]));
-    var b = el("div", { class: "eb" });
-    var notes = [];
-    if (revisedBy[e.no]) notes.push(["Updated by ", revisedBy[e.no]]);
-    if (e.revises) notes.push(["Updates ", e.revises]);
-    if (notes.length) b.appendChild(el("p", { class: "revision" }, notes.reduce(function (acc, n, i) {
-      if (i) acc.push(". ");
-      acc.push(n[0]); acc.push(el("a", { href: "#e" + pad(n[1]), class: "num", text: "entry " + pad(n[1]) }));
-      return acc;
-    }, [])));
-    if (e.from || e.to) b.appendChild(el("div", { class: "shift" }, [
-      el("div", null, [el("span", { class: "label", text: "Before" }), e.from || "—"]),
-      el("span", { class: "arrow", "aria-hidden": "true", text: "→" }),
-      el("div", null, [el("span", { class: "label", text: "After" }), e.to || "—"])
-    ]));
-    if (e.summary) b.appendChild(el("p", { style: "font-size:14px", text: e.summary }));
-    var why = renderWhy(e);
-    if (why) b.appendChild(why);
-    if ((e.images || []).length) b.appendChild(el("ul", { class: "shots" }, e.images.map(function (img) {
-      return el("li", null, [el("a", { href: img.src, title: img.alt }, [el("img", { src: img.src, alt: img.alt, loading: "lazy" })])]);
-    })));
-    var foot = el("div", { class: "foot" });
-    if ((e.refs || []).length) foot.appendChild(el("span", { class: "chips" }, e.refs.map(function (r) { return el("span", { class: "chip num", text: r }); })));
-    if (e.by) foot.appendChild(el("span", { text: e.by }));
-    if ((e.links || []).length) foot.appendChild(el("span", { class: "links" }, e.links.map(function (l) { return link(l.label, l.href); })));
-    if ((e.video || []).length) foot.appendChild(el("span", { class: "chips" }, ["Could feed: "].concat(e.video.map(function (t) { return link(tagLabel(t), tagHref(t), "chip"); }))));
-    b.appendChild(foot);
-    d.appendChild(b);
-    return d;
-  }
-
-  /* ---------- Previews of real pages ---------- */
-
-  var ro = null;
-  function fitPreviews(list) {
-    list.forEach(function (en) {
-      var f = en.target.querySelector("iframe");
-      if (!f) return;
-      var fx = Number(f.dataset.fx || 0), fy = Number(f.dataset.fy || 0), fw = Number(f.dataset.fw || f.getAttribute("width"));
-      f.style.transform = "scale(" + (en.contentRect.width / fw) + ") translate(" + -fx + "px," + -fy + "px)";
-    });
-  }
-  function preview(href, label, wide, focus) {
-    var box = el("div", { class: "pv " + (wide ? "wide" : "tall") });
-    if (isExternal(href)) box.appendChild(el("span", { class: "pv-note", text: "Opens on claude.ai" }));
-    else {
-      var f = el("iframe", { src: href, title: "Preview: " + label, width: "1440", height: wide ? "810" : "900", loading: "lazy", tabindex: "-1", "aria-hidden": "true",
-        "data-fx": focus ? focus[0] : null, "data-fy": focus ? focus[1] : null, "data-fw": focus ? focus[2] : null });
-      box.appendChild(f);
-      if (ro) ro.observe(box); else f.style.transform = "scale(0.2)";
-    }
-    box.appendChild(el("a", { class: "pv-open", href: href, target: "_blank", rel: "noopener", text: "Open " + label }));
-    return box;
-  }
-  // A screenshot of an archived page. Older explorations take focus and scroll the page when they
-  // load, so they're shown as images; click one to open the real page.
-  function shot(img, href, label) {
-    return el("div", { class: "pv tall" }, [
-      el("img", { class: "pv-img", src: img, alt: "Screenshot: " + label, loading: "lazy" }),
-      el("a", { class: "pv-open", href: href, target: "_blank", rel: "noopener", text: "Open " + label })
-    ]);
-  }
-  // A storyboard frame: a prototype scene, a screenshot, four screenshots, or a title card.
-  function sbFrame(s) {
-    var f = s.frame || {};
-    var open = f.href ? el("a", { class: "pv-open", href: f.href, target: f.href.charAt(0) === "#" ? null : "_blank", rel: "noopener", text: "Open " + (f.label || s.title) }) : null;
-    if (f.scene) return preview("../journey/index.html?clean&keys=0&sound=0#/" + f.scene, s.title, true, f.focus);
-    if (f.page) return preview(f.page, f.label || s.title, true, f.focus);
-    if (f.img) return el("div", { class: "pv wide" }, [el("img", { class: "pv-img", src: f.img, alt: "Frame: " + (f.label || s.title), loading: "lazy" }), open]);
-    if (f.imgs) return el("div", { class: "pv wide" }, [el("div", { class: "sb-grid4" }, f.imgs.map(function (src) { return el("img", { src: src, alt: "", loading: "lazy" }); })), open]);
-    if (f.card) return el("div", { class: "pv wide" }, [el("p", { class: "sb-card", text: f.card })]);
-    return el("div", { class: "pv wide" });
-  }
-  function findIn(list, keys, needle) {
-    return (list || []).filter(function (x) { return keys.some(function (k) { return String(x[k] || "").indexOf(needle) >= 0; }); })[0];
-  }
-  // Research behind a screen, quoted from research.js and inspiration.js, never rewritten here.
-  function researchItem(r) {
-    var label = null, text = null, src = null;
-    if (r.from === "sip") {
-      text = ((I.competitor || {}).contend || []).filter(function (t) { return t.indexOf(r.find) >= 0; })[0];
-      label = ["Against Sip"];
-      src = link("Sip", "#inspiration/sip");
-    } else if (r.from === "precedent") {
-      var p = findIn(R.precedents, ["title", "text", "lesson"], r.find);
-      if (p) { label = ["Precedent: " + p.title]; text = p.lesson || p.text; src = link("Precedents", "#research/precedents"); }
-    } else {
-      var e = findIn(R.evidence, ["text"], r.find);
-      if (e) {
-        label = ["Evidence, " + e.theme.toLowerCase() + (e.cred ? ", " + e.cred + " credibility" : "")];
-        text = e.text;
-        var s0 = (e.sources || [])[0];
-        src = s0 ? link(s0.label, s0.url) : link("Evidence", "#research/evidence");
-      }
-    }
-    if (!text) return null;
-    return el("li", null, [el("span", { class: "rl" }, label), el("span", { text: text }), el("span", { class: "rs" }, [src])]);
-  }
-
-  /* ---------- Pages ---------- */
-
-  var PAGES = [
-    { id: "plan", label: "Plan", render: renderPlan },
-    { id: "work", label: "Work", render: renderWork },
-    { id: "video", label: "Video", render: renderVideo }
-  ];
-  function head(title, text, jumps) {
-    return el("div", { class: "phead" }, [
-      el("h1", { text: title }),
-      el("div", null, [el("p", { text: text }), jumps ? el("nav", { class: "jump", "aria-label": "On this page" }, jumps.map(function (j) { return link(j[0], j[1]); })) : null])
-    ]);
-  }
-
-  /* Plan: the timeline, the to-do, the process and the deadlines */
-  function renderPlan(view, anchor) {
-    view.appendChild(head("Plan", "Where we are, what's waiting on you, and every move so far. The video is due " + fmtLong(C.deadline || "2026-10-19") + ".", [
-      ["Deadlines", "#plan/days"], ["To do", "#plan/todo"], ["North star", "#plan/north"], ["The brief", "#compass/brief"], ["Timeline", "#plan/timeline"], ["More", "#plan/more"]
-    ]));
-
-    // Deadlines
-    var iso = localISO(new Date());
-    var days = el("div", { class: "days well" }, (C.timeline || []).map(function (d) {
-      var state = d.date < iso ? "past" : d.date === iso ? "now" : "next";
-      return el("div", { class: state }, [
-        el("div", { class: "d" }, [el("span", { class: "k", style: "margin:0", text: weekday(d.date) + ", " + fmtShort(d.date) }), el("span", { class: "k", style: "margin:0", text: state === "now" ? "Today" : state === "past" ? "Done" : "" })]),
-        el("p", { class: "f", text: d.focus }),
-        state !== "past" ? el("ul", null, (d.items || []).map(function (i) { return el("li", { text: i }); })) : null
-      ]);
-    }));
-    view.appendChild(sec("plan-days", "Deadlines", "The four days, and what each one is for.", [days]));
-
-    // To do
-    var todo = el("ol", { class: "rows" });
-    (C.todo || []).forEach(function (t) {
-      todo.appendChild(el("li", null, [el("span", { class: "t" }, [t.link ? link(t.text, t.link) : t.text]), t.note ? el("span", { class: "s", text: t.note }) : null]));
-    });
-    (C.questions || []).forEach(function (q) {
-      todo.appendChild(el("li", null, [el("span", { class: "t" }, [el("span", { class: "num", style: "color:var(--ink-2)", text: q.id + " " }), q.link ? link(q.q, q.link) : q.q]), q.note ? el("span", { class: "s", text: q.note }) : null]));
-    });
-    var whyList = el("details", { class: "more", style: "margin-top:10px" }, [
-      el("summary", { text: waiting.length + " reasons still to record" }),
-      el("div", null, [el("ul", { class: "rows" }, waiting.filter(function (e) { return e.ask; }).map(function (e) {
-        return el("li", null, [el("a", { href: "#e" + pad(e.no), style: "text-decoration:none" }, [el("span", { class: "t", text: e.ask }), el("span", { class: "s num", text: "Entry " + pad(e.no) + ": " + e.title })])]);
-      }))])
-    ]);
-    var next = el("ol", { class: "rows" }, (C.upcoming || []).map(function (u) { return el("li", { text: u }); }));
-    var hand = window.PalitHandoff ? PalitHandoff.all() : {};
-    var handIds = Object.keys(hand).filter(function (k) { return hand[k].text; });
-    var handBox = el("div", { style: "margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)" }, [
-      el("span", { class: "k", text: "For Claude to read" }),
-      handIds.length ? el("ol", { class: "rows" }, handIds.map(function (k) {
-        var h = hand[k];
-        return el("li", null, [el("span", { class: "t" }, [h.page ? link(h.title, h.page.replace(/^.*\/design\//, "../")) : h.title, " ", el("span", { class: "tag" + (h.done ? " solid" : " dash"), text: h.done ? "Done" : "In progress" })]),
-          el("span", { class: "s", text: "Saved " + new Date(h.updatedAt).toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" }) })]);
-      })) : el("p", { class: "s", text: "Nothing yet. Workshops and notes save here as you write." }),
-      el("p", { class: "s", style: "margin-top:6px", text: "Press “I'm done” where you wrote it, then tell Claude in chat. Claude reads it from this browser, so nothing needs copying." })
-    ]);
-    view.appendChild(sec("plan-todo", "To do", "What needs you, then what's next.", [el("div", { class: "split well" }, [
-      el("div", { class: "pad" }, [el("span", { class: "k", text: "Waiting on you" }), todo, whyList, handBox]),
-      el("div", { class: "pad" }, [el("span", { class: "k", text: "Next" }), next])
-    ])]));
-
-    // North star, and writing things down
-    var ns = C.northStar || [], cur = ns[ns.length - 1];
-    var nsBox = el("div", { class: "pad ns" });
-    if (cur) {
-      nsBox.appendChild(el("span", { class: "k", text: "Version " + ns.length + ", " + cur.by + ", " + fmtShort(cur.date) }));
-      (Array.isArray(cur.text) ? cur.text : [cur.text]).forEach(function (t) { nsBox.appendChild(el("p", { text: t })); });
-      if (ns.length > 1) {
-        var older = el("details", { class: "more", style: "margin-top:12px" }, [el("summary", { text: "Earlier versions" })]);
-        var od = el("div");
-        ns.slice(0, -1).reverse().forEach(function (v, i) {
-          od.appendChild(el("p", { class: "k", style: "margin-top:8px", text: "Version " + (ns.length - 1 - i) + ", " + v.by + ", " + fmtShort(v.date) }));
-          (Array.isArray(v.text) ? v.text : [v.text]).forEach(function (t) { od.appendChild(el("p", { style: "font-size:13px", text: t })); });
-        });
-        older.appendChild(od);
-        nsBox.appendChild(older);
-      }
-    }
-    view.appendChild(sec("plan-north", "North star", "When you feel lost, start here.", [el("div", { class: "split well" }, [nsBox, composer()])]));
-
-    // The brief, answered
-    var brief = el("div", { class: "well" }, (C.brief || []).map(function (b, i) {
-      var nx = b.next ? el("p", { class: "s" }, ["Next: " + b.next + " ", b.link ? link(hrefLabel(b.link), b.link) : null]) : null;
-      return el("details", { class: "entry", id: "compass-" + b.id }, [
-        el("summary", null, [el("span", { class: "no num", text: String(i + 1) }), el("span", { class: "kd" }, [statusPill(b.status)]), el("span", { class: "ti", text: b.q }), el("span")]),
-        el("div", { class: "eb" }, [b.hint ? el("p", { class: "s", text: b.hint }) : null, el("p", { style: "font-size:14px", text: b.now }), b.known && b.known.length ? bullets(b.known) : null, nx])
-      ]);
-    }));
-    view.appendChild(sec("compass-brief", "The brief, answered", "The seven questions from the SVSD brief. Open one for what we know.", [brief]));
-
-    // Timeline: every move, as rows that open
-    var tl = el("div", { "aria-live": "polite" });
-    var ctl = el("div", { class: "tl-ctl" });
-    function drawTimeline() {
-      ctl.textContent = "";
-      var seg = el("div", { class: "seg-ctl", role: "group", "aria-label": "Kind of entry" });
-      KINDS.forEach(function (k) {
-        var b = el("button", { type: "button", "aria-pressed": String(dstate.kind === k[0]), text: k[1] });
-        b.addEventListener("click", function () { dstate.kind = k[0]; saveD(); drawTimeline(); });
-        seg.appendChild(b);
-      });
-      var only = el("input", { type: "checkbox" });
-      only.checked = !!dstate.onlyWhy;
-      only.addEventListener("change", function () { dstate.onlyWhy = only.checked; saveD(); drawTimeline(); });
-      var sort = el("button", { type: "button", class: "btn", style: "padding:3px 10px;font-size:12px", text: dstate.newestFirst ? "Newest first" : "Oldest first", "aria-label": "Change the sort order" });
-      sort.addEventListener("click", function () { dstate.newestFirst = !dstate.newestFirst; saveD(); drawTimeline(); });
-      ctl.appendChild(seg);
-      ctl.appendChild(el("label", null, [only, "Only waiting on a why"]));
-      ctl.appendChild(sort);
-      tl.textContent = "";
-      var list = entries.filter(passes).sort(function (a, b) {
-        var c = a.date < b.date ? -1 : a.date > b.date ? 1 : a.no - b.no;
-        return dstate.newestFirst ? -c : c;
-      });
-      if (!list.length) { tl.appendChild(empty("No entries match. Try another kind.")); return; }
-      var day = null, box = null;
-      list.forEach(function (e) {
-        if (e.date !== day) { day = e.date; box = el("section", { class: "tl-day", "aria-label": fmtLong(e.date) }, [el("h3", { text: fmtLong(e.date) })]); tl.appendChild(box); }
-        box.appendChild(entryRow(e));
-      });
-    }
-    if (anchor === "why") { dstate.onlyWhy = true; dstate.kind = "all"; saveD(); }
-    if (anchor && /^e\d+$/.test(anchor)) {
-      var target = byNo[parseInt(anchor.slice(1), 10)];
-      if (target && !passes(target)) { dstate.kind = "all"; dstate.onlyWhy = false; saveD(); }
-    }
-    drawTimeline();
-    view.appendChild(sec("plan-timeline", "Timeline", entries.length + " entries: every pivot, decision, exploration and question, with the reason behind it. Open a row for the detail.", [ctl, tl]));
-
-    // More: big rocks, the quality check, Noah's notes, answered questions
-    var more = el("div");
-    var rockGrid = el("div", { class: "grid" }, (C.rocks || []).map(function (r) {
-      var tagged = entriesTagged(["rock:" + r.id]);
-      return card([
-        el("div", { class: "head" }, [el("span", { class: "letter", text: r.id }), el("h3", { text: r.title }), statusPill(r.status)]),
-        el("p", { style: "font-size:13px", text: r.q }),
-        facts([["Why it's here", r.grounding], ["The wider field", r.field], ["Approaches to explore", bullets(r.approaches)], ["How we'll choose", r.choose], ["Related entries", tagged.length ? entryLinks(tagged) : null]])
-      ], null, "rock-" + r.id);
-    }));
-    more.appendChild(section("compass-rocks", "Big rocks", "Five candidate challenges. Noah chose to work holistically instead (A28).", [C.rocksLean ? el("div", { class: "callout", text: C.rocksLean }) : null, rockGrid]));
-    more.appendChild(section("compass-quality", "Quality check", "From the brief: can someone explain these three things after watching?", [el("ul", { class: "plain" }, (C.quality || []).map(function (q) {
-      return el("li", { class: "row" }, [el("span", { class: "grow" }, [q.q, q.note ? el("span", { class: "s", text: q.note }) : null]), statusPill(q.status)]);
-    }))]));
-    var notes = (C.notes || []).slice().reverse();
-    more.appendChild(section("compass-notes", "Noah's notes", notes.length + " notes, kept word for word.", notes.map(function (n) {
-      return el("details", { class: "more", style: "padding:6px 0;border-top:1px solid var(--rule-soft)" }, [el("summary", { text: n.title + ", " + fmtShort(n.date) }), el("div", null, paras(n.text))]);
-    })));
-    if ((C.earlierQuestions || []).length) more.appendChild(section("compass-earlier", "Answered, and from before the reset", null, [el("ul", { class: "plain" }, C.earlierQuestions.map(function (q) {
-      return el("li", null, [el("span", { class: "t" }, [el("span", { class: "num", style: "color:var(--ink-2)", text: q.id + " " }), q.q]), q.note ? el("span", { class: "s", text: q.note }) : null]);
-    }))]));
-    view.appendChild(sec("plan-more", "More", "Folded away until you need it.", [more]));
-  }
-
-  function composer() {
-    var types = ["Note", "North star rewrite", "Goal", "Question", "Feedback", "Test result"];
-    var draft = load("draft", { type: "Note", text: "" });
-    var sel = el("select", { "aria-label": "Kind of note" }, types.map(function (t) { return el("option", { value: t, text: t }); }));
-    sel.value = types.indexOf(draft.type) >= 0 ? draft.type : "Note";
-    var ta = el("textarea", { rows: "4", placeholder: "Loose is fine.", "aria-label": "Your note" });
-    ta.value = draft.text || "";
-    var status = el("p", { class: "s", "aria-live": "polite", text: draft.text ? "Draft saved in this browser." : "Drafts stay in this browser until you copy them to Claude." });
-    function persist() {
-      save("draft", { type: sel.value, text: ta.value });
-      if (window.PalitHandoff) PalitHandoff.put("dashboard-draft", { title: "Write it down", text: ta.value.trim() ? sel.value + ": " + ta.value.trim() : "" });
-      status.textContent = "Draft saved in this browser.";
-    }
-    sel.addEventListener("change", persist);
-    ta.addEventListener("input", persist);
-    var copyBtn = el("button", { type: "button", class: "btn primary", text: "Copy for Claude" });
-    var clearBtn = el("button", { type: "button", class: "btn", text: "Clear" });
-    var doneBtn = el("button", { type: "button", class: "btn", text: "I'm done" });
-    doneBtn.addEventListener("click", function () {
-      if (!ta.value.trim()) { status.textContent = "Write something first."; ta.focus(); return; }
-      persist(); PalitHandoff.done("dashboard-draft");
-      status.textContent = "Marked done. Tell Claude in chat, and Claude reads it from this page.";
-    });
-    copyBtn.addEventListener("click", function () {
-      if (!ta.value.trim()) { status.textContent = "Write something first."; ta.focus(); return; }
-      var out = "For the Palit dashboard (" + sel.value.toLowerCase() + ", " + fmtShort(localISO(new Date())) + "):\n\n" + ta.value.trim();
-      copyText(out, function (ok) { status.textContent = ok ? "Copied. Paste it to Claude in chat to log it." : "Couldn't copy. Select the text and copy it yourself."; });
-    });
-    clearBtn.addEventListener("click", function () { ta.value = ""; persist(); status.textContent = "Cleared."; ta.focus(); });
-    return el("div", { class: "pad composer", id: "compass-write" }, [
-      el("span", { class: "k", text: "Write it down" }),
-      el("p", { class: "s", text: "A goal, a doubt, a rewrite of the north star. Copy it to Claude and it gets logged." }),
-      el("label", { class: "s", style: "margin-top:8px" }, ["Kind ", sel]), ta, el("div", { class: "row" }, [doneBtn, copyBtn, clearBtn]), status
-    ]);
-  }
-
-  /* Work: screens, prototypes, research and feedback */
-  var GROUPS = [["Capture", ["desktop", "picking", "captured", "naming", "palette"]], ["The desktop palette", ["copy", "floating", "pinned"]], ["The archive", ["popover", "archive", "note", "trace", "spectrum", "source"]]];
-  var notesKey = "palit-dashboard-notes";
-  function loadNotes() { try { return JSON.parse(localStorage.getItem(notesKey) || "[]"); } catch (e) { return []; } }
-  function saveNotes(list) { try { localStorage.setItem(notesKey, JSON.stringify(list)); } catch (e) {} }
-
-  function renderWork(view) {
-    view.appendChild(head("Work", "Prototype v3 first, then v2, everything you can open, the first prototype, and every round that led here. The reasoning and research sit one click under each screen.", [
-      ["Prototype v3", "#work/v3"], ["Prototype v2", "#work/v2"], ["Prototypes", "#work/protos"], ["Prototype v1", "#screens/journey"], ["How we got here", "#screens/rounds"], ["Feedback", "#work/feedback"], ["Research", "#work/research"]
-    ]));
-    var J = SC.journey || {}, steps = J.steps || [], rounds = SC.rounds || [];
-    var main = el("div"), notes = notesPanel(steps, rounds);
-    view.appendChild(el("div", { class: "work" }, [main, notes.panel]));
-
-    // A prototype's section (v3 first, then v2): each step live, with Noah's reason and the research under it, and feedback on any screen
-    function protoSection(V, o) {
-      if (!V) return;
-        var top = el("div", { class: "v2-top" }, [
-          el("div", { class: "v2-q" }, [
-            el("blockquote", { class: "quote" }, [V.before[0], el("cite", { text: V.before[1] })]),
-            el("blockquote", { class: "quote" }, [V.after[0], el("cite", { text: V.after[1] })])
-          ]),
-          el("div", null, [el("span", { class: "k", text: o.changesLabel }), el("ul", { class: "bullets" }, V.changes.map(function (c) { return el("li", null, [c[0] + " ", entryChips(c[1])]); }))])
-        ]);
-        // Feedback on each screen (entry 114): kept in this browser, handed to Claude with “I'm done”, or copied into chat
-        var FBKEY = o.fbKey, fb = { from: "Noah", notes: {} };
-        try { var fbSaved = JSON.parse(localStorage.getItem(FBKEY) || "null"); if (fbSaved) fb = { from: fbSaved.from || "Noah", notes: fbSaved.notes || {} }; } catch (e) {}
-        function fbText() {
-          var lines = ["Feedback on " + o.label.toLowerCase() + ", from " + fb.from + ":"];
-          V.steps.forEach(function (st, i) { var t = (fb.notes[st.scene] || "").trim(); if (t) lines.push((i + 1) + ". " + st.title + ": " + t); });
-          return lines.length > 1 ? lines.join("\n") : "";
-        }
-        var fbCountEl = el("span", { class: "s num" }), fbStatus = el("span", { class: "s", "aria-live": "polite" });
-        function fbCount() { var n = Object.keys(fb.notes).filter(function (k) { return (fb.notes[k] || "").trim(); }).length; fbCountEl.textContent = n ? n + (n === 1 ? " screen has feedback" : " screens have feedback") : "No feedback yet"; }
-        function fbSave() {
-          try { localStorage.setItem(FBKEY, JSON.stringify(fb)); } catch (e) {}
-          if (window.PalitHandoff) PalitHandoff.put(o.handoff, { title: "Feedback on " + o.label.toLowerCase(), text: fbText() });
-          fbCount();
-        }
-        var who = el("select", { "aria-label": "Who's writing" }, ["Noah", "Daeun"].map(function (n) { return el("option", { value: n, text: n }); }));
-        who.value = fb.from;
-        who.addEventListener("change", function () { fb.from = who.value; fbSave(); });
-        var fbCopy = el("button", { type: "button", class: "btn", text: "Copy all feedback" });
-        fbCopy.addEventListener("click", function () { var t = fbText(); if (!t) { fbStatus.textContent = "No feedback to copy yet."; return; } copyText(t, function (ok) { fbStatus.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select it and copy it yourself."; }); });
-        var fbDone = el("button", { type: "button", class: "btn primary", text: "I'm done" });
-        fbDone.addEventListener("click", function () { if (!fbText()) { fbStatus.textContent = "No feedback yet."; return; } fbSave(); PalitHandoff.done(o.handoff); fbStatus.textContent = "Marked done. Tell Claude in chat, and Claude reads it from this page."; });
-        fbCount();
-        var fbBar = el("div", { class: "fbbar" }, [el("span", { class: "k", style: "margin:0", text: "Feedback on " + o.short }), el("label", { class: "s" }, ["From ", who]), fbCountEl, el("span", { class: "grow" }), fbStatus, fbCopy, fbDone]);
-        function fbBox(st) {
-          var ta = el("textarea", { class: "fbta", placeholder: "What could be better on this screen?", "aria-label": "Feedback on " + st.title });
-          ta.value = fb.notes[st.scene] || "";
-          var has = !!ta.value.trim(), sum = el("summary", { text: has ? "Feedback, written" : "Feedback" });
-          var d = el("details", { class: "more fb" + (has ? " has" : ""), open: has ? "" : null }, [sum, ta]);
-          ta.addEventListener("input", function () { fb.notes[st.scene] = ta.value; fbSave(); var h = !!ta.value.trim(); sum.textContent = h ? "Feedback, written" : "Feedback"; d.classList.toggle("has", h); });
-          return d;
-        }
-
-        var vgroups = [];
-        V.steps.forEach(function (st) { var g = vgroups[vgroups.length - 1]; if (g && g.name === st.group) g.list.push(st); else vgroups.push({ name: st.group, list: [st] }); });
-        var vwrap = el("div"), vn = 0;
-        vgroups.forEach(function (g) {
-          vwrap.appendChild(el("div", { class: "grp" }, [el("h3", { text: g.name }), el("ol", { class: "scrs" }, g.list.map(function (st) {
-            vn++;
-            var w = (st.entries || []).map(function (k) { return byNo[k]; }).filter(function (e) { return e && e.whyStatus === "noah"; })[0];
-            var more = el("details", { class: "more" }, [el("summary", { text: "Why and research" }), el("div", null, [
-              w ? el("p", { class: "quote" }, [w.why, el("cite", { text: "Entry " + pad(w.no) + ", " + (w.whySource || "Noah") })]) : el("p", { class: "s", text: "Your reason isn't recorded yet." }),
-              (st.research || []).length ? el("ul", { class: "research" }, st.research.map(researchItem)) : el("p", { class: "s", style: "margin-top:6px", text: "No research behind this one yet." })
-            ])]);
-            return el("li", { class: "scr", id: o.short + "-" + st.scene }, [
-              preview(V.href + "?clean&scene=" + st.scene, st.title, false, st.focus),
-              el("div", { class: "sb" }, [el("span", { class: "sn num", text: "Step " + vn }), el("h4", { text: st.title }), el("p", { class: "sd", text: st.does }), el("div", { class: "sf" }, [entryChips(st.entries)]), more, fbBox(st)])
-            ]);
-          }))]));
-        });
-        main.appendChild(sec(o.id, o.label, o.lead, [top, fbBar, vwrap], [openLink("Open " + o.short, V.href, "btn")]));
-    }
-    protoSection(SC.v3, { id: "work-v3", label: "Prototype v3", short: "v3", fbKey: "palit-v3-feedback", handoff: "v3-feedback", changesLabel: "What changed from v2",
-      lead: "The final prototype, from the v3 workshop: v2 taken away, then polished. Days, Palettes and Spectrum in a bar of Palit's own, ROYGBIV in its own row, each day by its date, and nothing on the colors but their names. Every frame is live; open “Why and research” under any of them, and leave feedback on any screen." });
-    protoSection(SC.v2, { id: "work-v2", label: "Prototype v2", short: "v2", fbKey: "palit-v2-feedback", handoff: "v2-feedback", changesLabel: "What changed from v1",
-      lead: "v2 as merged on October 18 (entry 155), before the v3 workshop took pieces away: the days of the week down the left, the ring, the table as a tab, search and the zoom's dots in the bar. Kept for the process story; every frame is live." });
-
-    // Prototypes you can open
-    var protos = [
-      { title: "Prototype v3", text: "The final prototype (entries 156 to 159): v2 taken away, then polished, from Noah's picks in the v3 workshop. Days, Palettes and Spectrum in a bar of Palit's own; rename a color right in Spectrum. P plays the demo.", href: "../v3/index.html", preview: "../v3/index.html?clean&scene=days", links: [["Open", "../v3/index.html"], ["Clean, for recording", "../v3/index.html?clean"], ["Play", "../v3/index.html?clean&play"]] },
-      { title: "v3 workshop", text: "Done October 18, late evening: Claude's recommendations, with a bar of Palit's own (entry 157). The real prototype live beside twelve switches, with live counts, then eight polish moves, all ticked.", href: "../workshop/v3.html", links: [["Open", "../workshop/v3.html"], ["Prototype v3", "../v3/index.html"]] },
-      { title: "Prototype v2, merged", text: "v2 rebuilt after the story workshop (entry 155), before the v3 workshop took pieces away: the days of the week, the ring, the table as a tab, search and the zoom's dots in the bar. Kept for the process story.", href: "../v2/index.html", preview: "../v2/index.html?clean&scene=days", links: [["Open", "../v2/index.html"], ["Clean, for recording", "../v2/index.html?clean"]] },
-      { title: "Prototype v1", text: "The core journey on a drawn desk, before the look workshop. P plays it for recording.", href: "../journey/index.html", preview: "../journey/index.html?clean&keys=0#/archive", wide: true, links: [["Open", "../journey/index.html"], ["Play", "../journey/index.html?play"], ["Clean, for recording", "../journey/index.html?clean"]] },
-      { title: "Prototype v2, as it was", text: "Frozen October 18, before the story workshop: Days as a wall, Collections and Spectrum. The before for the video.", href: "../v2/frozen-oct18.html", preview: "../v2/frozen-oct18.html?clean&scene=days", links: [["Open", "../v2/frozen-oct18.html"]] },
-      { title: "Palit, next", text: "The preview Noah's notes were tuned on before it went into v2 (entries 134 to 154). Kept as it was.", href: "../next/index.html", links: [["Open", "../next/index.html"], ["First open", "../next/index.html?screen=first"], ["The table", "../next/index.html?screen=table"]] },
-      { title: "Story and look workshop", text: "Done October 18, evening: found, never made; Days with their places; the zoom tells the story; a palette as a study; one line for a new user; search; Palit's own top bar (entries 120 to 133).", href: "../workshop/story.html", links: [["Open", "../workshop/story.html"], ["The audit", "../workshop/story.html#now"]] },
-      { title: "Look and flow workshop", text: "Done October 18: the wall, today first, the specimen card, your name as the hero, motion that answers you, the ring and slim strips (entries 94 to 102).", href: "../workshop/look.html", links: [["Open", "../workshop/look.html"]] },
-      { title: "Feature workshop", text: "Done October 18: the desktop palette, no chip, Similar and the surface (entries 81–88).", href: "../workshop/features.html", links: [["Open", "../workshop/features.html"]] },
-      { title: "Design system", text: "Atoms to templates, each with the decision behind it.", href: "../system/index.html", links: [["Open", "../system/index.html"], ["Calls", "../system/index.html#calls"]] },
-      { title: "v0 prototype", text: "The first canvas, October 4. Reference now.", href: "https://claude.ai/artifact/B6hBpSpGPZenBxRx6iYZYY", noPreview: true, links: [["Open on claude.ai", "https://claude.ai/artifact/B6hBpSpGPZenBxRx6iYZYY"]] }
-    ];
-    main.appendChild(sec("work-protos", "Prototypes", "Everything you can open and click.", [el("div", { class: "protos" }, protos.map(function (p) {
-      return el("div", { class: "proto" }, [p.noPreview ? null : preview(p.preview || p.href, p.title, !!p.wide), el("div", { class: "pb" }, [el("h3", { text: p.title }), el("p", { text: p.text }), el("div", { class: "links" }, p.links.map(function (l) { return openLink(l[0], l[1]); }))])]);
-    }))]));
-
-    // The journey, related screens side by side
-    var byScene = {};
-    steps.forEach(function (st, i) { byScene[st.scene] = { st: st, n: i + 1 }; });
-    var placed = {};
-    var groups = GROUPS.map(function (g) {
-      var list = g[1].filter(function (s) { if (byScene[s]) { placed[s] = true; return true; } return false; });
-      return [g[0], list];
-    });
-    var rest = steps.filter(function (st) { return !placed[st.scene]; }).map(function (st) { return st.scene; });
-    if (rest.length) groups[groups.length - 1][1] = groups[groups.length - 1][1].concat(rest);
-    var gwrap = el("div");
-    groups.forEach(function (g) {
-      if (!g[1].length) return;
-      gwrap.appendChild(el("div", { class: "grp" }, [el("h3", { text: g[0] }), el("ol", { class: "scrs" }, g[1].map(function (scene) {
-        var x = byScene[scene], st = x.st;
-        var noteBtn = el("button", { type: "button", class: "mini", text: "Note" });
-        noteBtn.addEventListener("click", function () { notes.about("Step " + x.n + ": " + st.title); });
-        var more = el("details", { class: "more" }, [el("summary", { text: "Why and research" }), el("div", null, [
-          (st.drafts || []).length ? el("div", { class: "dr" }, [el("span", { class: "k", style: "margin-bottom:2px", text: "Calls and drafts" }), bullets(st.drafts)]) : null,
-          el("ul", { class: "research" }, (st.research || []).map(researchItem))
-        ])]);
-        return el("li", { class: "scr", id: "screens-" + st.scene }, [
-          preview(J.href + "?clean&keys=0#/" + st.scene, st.title, true, st.focus),
-          el("div", { class: "sb" }, [
-            el("span", { class: "sn num", text: "Step " + x.n }),
-            el("h4", { text: st.title }),
-            el("p", { class: "sd", text: st.does }),
-            el("div", { class: "sf" }, [entryChips(st.entries), noteBtn]),
-            more
-          ])
-        ]);
-      }))]));
-    });
-    main.appendChild(sec("screens-journey", "Prototype v1, before the look workshop", "The first prototype on a drawn desk, paused at each step: the before for the video. Open “Why and research” under any of them.", [gwrap], [openLink("Play the journey", "../journey/index.html?play", "btn")]));
-
-    // How we got here
-    var rl = el("ol", { class: "rounds" }, rounds.map(function (r) {
-      var w = byNo[r.why], shots = r.screens || [];
-      var quote = w && w.whyStatus === "noah" ? el("p", { class: "quote" }, [w.why, el("cite", { text: "Entry " + pad(r.why) + ", " + (w.whySource || "Noah") })]) : (w && w.ask && !revisedBy[w.no] ? el("p", { class: "s", style: "margin-top:6px" }, ["Still to ask: " + w.ask + " ", link("Entry " + pad(r.why), "#e" + pad(r.why))]) : null);
-      var LIMIT = 6;
-      var ul = el("ul", { class: "thumbs" }, shots.map(function (sh, i) {
-        return el("li", { class: i >= LIMIT ? "hide" : null }, [sh.img ? shot(sh.img, sh.href, sh.title) : preview(sh.href, sh.title, /journey/.test(sh.href)), el("span", { class: "s", text: sh.title }), sh.note ? el("span", { class: "s", text: sh.note }) : null]);
-      }));
-      var showAll = null;
-      if (shots.length > LIMIT) {
-        showAll = el("button", { type: "button", class: "mini", style: "margin-top:8px", text: "Show all " + shots.length });
-        showAll.addEventListener("click", function () { ul.querySelectorAll("li.hide").forEach(function (li) { li.classList.remove("hide"); }); showAll.remove(); });
-      }
-      var noteBtn = el("button", { type: "button", class: "mini", text: "Note" });
-      noteBtn.addEventListener("click", function () { notes.about("Round: " + r.title); });
-      return el("li", { class: "round" + (shots.length ? "" : " slim"), id: "screens-" + r.id }, [
-        el("div", { class: "rh" }, [el("span", { class: "s num", text: fmtShort(r.date) }), el("h3", { text: r.title }), el("span", { class: "s", text: r.by }), el("span", { class: "end num", text: shots.length > 1 ? shots.length + " screens" : "" })]),
-        el("p", { class: "rt", text: r.tried }),
-        quote,
-        r.kept ? el("p", { class: "s", style: "margin-top:6px", text: r.kept }) : null,
-        r.changed ? el("p", { class: "s", text: r.changed }) : null,
-        shots.length ? ul : null,
-        showAll,
-        el("div", { class: "foot" }, [entryChips(r.entries), noteBtn])
-      ]);
-    }));
-    main.appendChild(sec("screens-rounds", "How we got here", "Every round of screens, oldest first, with what you said about it.", [rl]));
-
-    // Feedback and tests
-    var sess = el("div", { class: "pad" }, [el("span", { class: "k", text: "Workshops and crits" }), el("ol", { class: "rows" }, (S.sessions || []).slice().reverse().map(function (s) {
-      return el("li", null, [el("details", { class: "more" }, [el("summary", null, [s.title + " "]), el("div", null, [
-        el("p", { class: "s", text: s.kind + ", " + fmtLong(s.date) }),
-        s.summary ? el("p", { text: s.summary }) : null,
-        (s.takeaways || []).length ? bullets(s.takeaways) : null,
-        s.reflection ? el("p", { class: "s", text: s.reflection }) : null,
-        (s.links || []).length ? el("div", { class: "links" }, s.links.map(function (l) { return link(l.label, l.href); })) : null
-      ])]), el("span", { class: "s" }, [statusPill(s.status)])]);
-    }))]);
-    var fb = el("div", { class: "pad" }, [el("span", { class: "k", text: "Feedback" }), (S.feedback || []).length ? el("ol", { class: "rows" }, S.feedback.slice().reverse().map(function (f) {
-      return el("li", null, [el("span", { class: "t", style: "font-size:14px", text: f.text }), el("span", { class: "s" }, [f.from + " on " + f.on + ", " + fmtShort(f.date) + ". ", f.entry ? link("Entry " + pad(f.entry), "#e" + pad(f.entry)) : null])]);
-    })) : empty("No feedback yet.")]);
-    var tests = el("div", { class: "pad", id: "testing-tests" }, [el("span", { class: "k", text: "Tests with friends" }), el("ol", { class: "rows" }, (T.tests || []).map(function (t) {
-      return el("li", { id: "test-" + t.id }, [el("details", { class: "more" }, [el("summary", { text: t.id + ": " + t.title }), el("div", null, [
-        el("p", { text: t.question }),
-        facts([
-          ["Hypothesis", t.hypothesis],
-          ["Variants", bullets((t.variants || []).map(function (v) { return v.name + ": " + v.text; }))],
-          ["Method", t.method], ["How we'll decide", t.decide], ["Needs", t.needs],
-          ["Results", (t.results || []).length ? bullets(t.results.map(function (x) { return (x.date ? fmtShort(x.date) + ": " : "") + x.text; })) : "No results yet."]
-        ])
-      ])]), el("span", { class: "s" }, [statusPill(t.status)])]);
-    })), el("details", { class: "more", style: "margin-top:8px" }, [el("summary", { text: "How we test" }), el("div", null, [bullets(T.protocol)])])]);
-    main.appendChild(sec("work-feedback", "Feedback and tests", "Sessions, what people said, and the tests we'll run.", [el("div", { class: "well", style: "display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))" }, [sess, fb, tests])]));
-
-    // Research, secondary
-    var res = el("div", { id: "work-research-folds" });
-    res.appendChild(section("research-questions", "What we needed to learn", (R.questions || []).length + " questions, in order", [el("ol", { class: "bullets" }, (R.questions || []).map(function (q) { return el("li", null, [q.q, el("span", { class: "s", text: "Feeds: " + q.feeds })]); }))]));
-    if (R.headline && (R.headline.claims || []).length) res.appendChild(headlineSection(R.headline));
-    res.appendChild(audienceSection());
-    if (I.competitor) res.appendChild(competitorSection(I.competitor));
-    res.appendChild(landscape());
-    res.appendChild(evidenceSection());
-    res.appendChild(precedentsSection());
-    res.appendChild(refsSection());
-    res.appendChild(interviews());
-    var per = R.personas || {};
-    res.appendChild(section("research-personas", "Personas", per.status || "Not built yet", [el("p", { style: "font-size:13px", text: per.note || "" })]));
-    res.appendChild(section("research-assumptions", "Assumptions", (R.assumptions || []).length + " stated, as the brief asks", [el("div", { class: "tablewrap" }, [el("table", null, [
-      el("thead", null, [el("tr", null, [el("th", { text: "Assumption" }), el("th", { text: "Status" }), el("th", { text: "How we'll check" })])]),
-      el("tbody", null, (R.assumptions || []).map(function (a) {
-        return el("tr", null, [el("td", null, [a.a, a.time ? el("span", { class: "s", text: "Made because of the deadline" }) : null]), el("td", { class: "tight" }, [statusPill(a.status)]), el("td", { text: a.check })]);
-      }))
-    ])])]));
-    main.appendChild(sec("work-research", "Research", "Everything behind the screens, with sources. Open what you need.", [res]));
-  }
-
-  function notesPanel(steps, rounds) {
-    var list = loadNotes();
-    var sel = el("select", { "aria-label": "What the note is about" }, [el("option", { value: "General", text: "General" })]
-      .concat(steps.map(function (st, i) { var v = "Step " + (i + 1) + ": " + st.title; return el("option", { value: v, text: v }); }))
-      .concat(rounds.map(function (r) { var v = "Round: " + r.title; return el("option", { value: v, text: v }); })));
-    var ta = el("textarea", { placeholder: "What you'd change, keep or ask about", "aria-label": "Your note" });
-    var add = el("button", { type: "submit", class: "btn primary", text: "Add note" });
-    var form = el("form", null, [el("label", { class: "s" }, ["About ", sel]), ta, el("div", { class: "row" }, [add])]);
-    var ol = el("ol", { "aria-live": "polite" });
-    var status = el("p", { class: "s", "aria-live": "polite" });
-    var copy = el("button", { type: "button", class: "btn", text: "Copy notes for Claude" });
-    var doneB = el("button", { type: "button", class: "btn primary", text: "I'm done" });
-    function notesText() { return "Notes from the Palit dashboard:\n\n" + list.map(function (n) { return "- " + n.about + ": " + n.text; }).join("\n"); }
-    function handoff() { if (window.PalitHandoff) PalitHandoff.put("dashboard-notes", { title: "Notes on the Work page", text: list.length ? notesText() : "" }); }
-    doneB.addEventListener("click", function () {
-      if (!list.length) { status.textContent = "No notes yet."; return; }
-      handoff(); PalitHandoff.done("dashboard-notes");
-      status.textContent = "Marked done. Tell Claude in chat, and Claude reads them from this page.";
-    });
-    function draw() {
-      ol.textContent = "";
-      if (!list.length) { ol.appendChild(el("li", { class: "s", text: "No notes yet. Pick a screen with its Note button, or write a general one." })); return; }
-      list.slice().reverse().forEach(function (n, i) {
-        var x = el("button", { type: "button", class: "mini x", text: "Remove", "aria-label": "Remove this note" });
-        x.addEventListener("click", function () { list.splice(list.length - 1 - i, 1); saveNotes(list); handoff(); draw(); });
-        ol.appendChild(el("li", null, [x, el("span", { class: "ab", text: n.about + ", " + n.when }), el("span", { text: n.text })]));
-      });
-    }
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var t = ta.value.trim();
-      if (!t) { ta.focus(); return; }
-      list.push({ about: sel.value, text: t, when: new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) });
-      saveNotes(list); handoff(); ta.value = ""; draw(); status.textContent = "Saved in this browser.";
-    });
-    copy.addEventListener("click", function () {
-      if (!list.length) { status.textContent = "No notes to copy yet."; return; }
-      var out = notesText();
-      copyText(out, function (ok) { status.textContent = ok ? "Copied. Paste them to Claude in chat." : "Couldn't copy. Select them and copy them yourself."; });
-    });
-    draw();
-    var panel = el("aside", { class: "notes", id: "work-notes", "aria-label": "Notes" }, [
-      el("div", { class: "nh" }, [el("h2", { text: "Notes" }), el("p", { class: "s", text: "Jot what you notice as you look. They stay in this browser until you copy them to Claude." })]),
-      form, ol, el("div", { class: "nf" }, [el("div", { class: "row" }, [doneB, copy]), status])
-    ]);
-    return { panel: panel, about: function (v) { sel.value = v; ta.focus(); } };
-  }
-
-  /* The older research pieces, folded */
-  function headlineSection(h) {
-    var kids = h.claims.map(function (c, i) {
-      return card([
-        el("div", { class: "head" }, [el("span", { class: "letter num", text: String(i + 1) }), el("h3", { text: c.claim })]),
-        el("ol", { class: "plain" }, c.stats.map(function (s) {
-          return el("li", null, [el("span", { class: "t", text: s.text }), el("span", { class: "s" }, [s.url ? link(s.cite, s.url) : s.cite, s.cred ? ", " + s.cred + " credibility" : ""])]);
-        })),
-        c.say ? el("div", { class: "line", style: "margin-top:10px" }, [el("span", { class: "label", text: "Say it like this" }), c.say]) : null,
-        facts([["Supporting", (c.supporting || []).length ? bullets(c.supporting) : null], ["Caveats", (c.caveats || []).length ? bullets(c.caveats) : null], ["Don't say", (c.dont || []).length ? bullets(c.dont) : null]])
-      ], null, "headline-" + (i + 1));
-    });
-    return section("research-headline", "Headline stats for the video", h.claims.length + " claims, each with its sources and what not to say", kids);
-  }
-  function audienceSection() {
-    var ch = R.chosen;
-    var kids = [];
-    if (ch) kids.push(card([
-      el("div", { class: "meta" }, [el("span", { class: "kind", text: "Noah's pick" }), el("span", { text: fmtShort(ch.date) }), statusPill(ch.status), ch.entry ? link("Entry " + pad(ch.entry), "#e" + pad(ch.entry)) : null]),
-      el("h3", { text: ch.name, style: "font-size:17px;font-weight:400" }),
-      el("p", { style: "font-size:13px", text: ch.who }),
-      facts([["Where it came from", ch.from], ["What it includes", ch.includes], ["What it changes", bullets(ch.changes)], ["Persona hypothesis", ch.persona], ["Who it leaves out", ch.leavesOut]])
-    ], null, "audience-chosen"));
-    kids.push(el("div", { class: "grid" }, (R.audiences || []).map(function (a) {
-      return card([
-        el("div", { class: "head" }, [el("span", { class: "letter", text: a.id }), el("h3", { text: a.name }), statusPill(a.kind)]),
-        el("p", { style: "font-size:13px", text: a.who }),
-        facts([["Unmet need (hypothesis)", a.need], ["The opinion it points to", a.opinion], ["Who it leaves out", a.alienates], ["Why it fits", a.fits]])
-      ], null, "audience-" + a.id);
-    })));
-    return section("research-audience", "Who it's for", ch ? "Visual designers in the ideation phase, and the three candidates it came from" : "Three candidates", kids);
-  }
-  function landscape() {
-    var list = R.competitors || [];
-    if (!list.length) return section("research-landscape", "Landscape", "No competitor research yet", []);
-    var state = { group: load("group", "all") };
-    var groups = [["all", "All"], ["picker", "Pickers"], ["collection", "Collections"], ["ai", "AI tools"]];
-    var ctl = el("div", { class: "seg-ctl", role: "group", "aria-label": "Filter tools" });
-    var host = el("div");
-    function draw() {
-      ctl.textContent = "";
-      groups.forEach(function (g) {
-        var b = el("button", { type: "button", "aria-pressed": String(state.group === g[0]), text: g[1] });
-        b.addEventListener("click", function () { state.group = g[0]; save("group", g[0]); draw(); });
-        ctl.appendChild(b);
-      });
-      host.textContent = "";
-      var shown = list.filter(function (c) { return state.group === "all" || c.group === state.group; });
-      host.appendChild(el("div", { class: "tablewrap", style: "margin-top:10px" }, [el("table", null, [
-        el("thead", null, [el("tr", null, ["Tool", "What it is", "History", "Keeps the source", "Organized by", "Stance", "AI", "Sources"].map(function (h) { return el("th", { text: h }); }))]),
-        el("tbody", null, shown.map(function (c) {
-          return el("tr", null, [
-            el("td", null, [c.url ? link(c.name, c.url) : c.name, el("span", { class: "s", text: c.platform || "" })]),
-            el("td", null, [c.what, c.price ? el("span", { class: "s", text: c.price }) : null]),
-            el("td", { class: "tight", text: c.history || "unknown" }),
-            el("td", { text: c.provenance }), el("td", { text: c.organization }), el("td", { text: c.stance || "—" }), el("td", { text: c.ai || "none" }),
-            el("td", null, [sourceChips(c.sources)])
-          ]);
-        }))
-      ])]));
-    }
-    draw();
-    var kids = [ctl, host];
-    if (R.competitorsNote) kids.push(el("p", { class: "s", text: R.competitorsNote }));
-    if ((R.gaps || []).length || (R.risks || []).length) kids.push(el("div", { class: "two" }, [
-      (R.gaps || []).length ? card([el("h2", { text: "Gaps: what nobody does yet" }), bullets(R.gaps)]) : null,
-      (R.risks || []).length ? card([el("h2", { text: "Where Palit is weaker" }), bullets(R.risks)]) : null
-    ]));
-    return section("research-landscape", "Landscape", list.length + " tools: what they keep, and what they believe", kids);
-  }
-  function groupBy(list, key) {
-    var order = [], map = {};
-    list.forEach(function (x) { var k = x[key] || "Other"; if (!map[k]) { map[k] = []; order.push(k); } map[k].push(x); });
-    return order.map(function (k) { return [k, map[k]]; });
-  }
-  function sourceChips(sources) {
-    return el("span", { class: "chips" }, (sources || []).map(function (s) {
-      var u = typeof s === "string" ? s : s.url;
-      var label = typeof s === "string" ? domain(s) : (s.label || domain(s.url)) + (s.date ? ", " + s.date : "");
-      return link(label, u, "chip");
-    }));
-  }
-  function evidenceSection() {
-    var list = R.evidence || [];
-    var kids = groupBy(list, "theme").map(function (g) {
-      return card([el("h2", { text: g[0] }), el("ul", { class: "plain" }, g[1].map(function (f) {
-        return el("li", null, [
-          el("span", { class: "t", text: f.text }),
-          f.bears ? el("span", { class: "s", text: f.bears + "." }) : null,
-          el("div", { class: "row", style: "margin-top:4px" }, [f.cred ? el("span", { class: "s", style: "display:inline" }, [f.cred + " credibility"]) : null, sourceChips(f.sources)]),
-          f.note ? el("span", { class: "s", text: f.note }) : null
-        ]);
-      }))]);
-    });
-    if ((R.storyLines || []).length || (R.dontSay || []).length) kids.unshift(el("div", { class: "two" }, [
-      (R.storyLines || []).length ? card([el("h2", { text: "Safe to say in the video" }), el("ul", { class: "plain" }, R.storyLines.map(function (s) { return el("li", null, [el("span", { class: "t", text: s.text }), el("span", { class: "s", text: s.cites })]); }))]) : null,
-      (R.dontSay || []).length ? card([el("h2", { text: "Don't say" }), bullets(R.dontSay)]) : null
-    ]));
-    if ((R.audienceTakeaways || []).length) kids.unshift(card([el("h2", { text: "What the evidence says about the audience" }), bullets(R.audienceTakeaways)]));
-    if ((R.evidenceGaps || []).length) kids.push(card([el("h2", { text: "What we couldn't find" }), bullets(R.evidenceGaps)]));
-    return section("research-evidence", "Evidence", list.length + " findings, each with its sources and credibility", kids);
-  }
-  function precedentsSection() {
-    var list = R.precedents || [];
-    var kids = groupBy(list, "theme").map(function (g) {
-      return card([el("h2", { text: g[0] }), el("ul", { class: "plain" }, g[1].map(function (p) {
-        return el("li", null, [el("span", { class: "t", text: p.title }), el("span", { class: "s", text: p.text }), p.lesson ? el("span", { class: "t", style: "margin-top:4px" }, ["Lesson for Palit: " + p.lesson]) : null, el("div", { style: "margin-top:4px" }, [sourceChips(p.sources)])]);
-      }))]);
-    });
-    return section("research-precedents", "Precedents from other fields", list.length + " cases: privacy, resurfacing, and the manual-to-AI spectrum", kids);
-  }
-  function competitorSection(c) {
-    var kids = [];
-    if ((c.images || []).length) kids.push(el("div", { class: "refs" }, c.images.map(function (img) {
-      return el("figure", { class: "ref" }, [el("a", { class: "img", href: img.src, title: "Open the full image", style: "aspect-ratio:16/10" }, [el("img", { src: img.src, alt: img.alt || img.caption, loading: "lazy", style: "object-position:top" })]), el("figcaption", { class: "body s", text: img.caption })]);
-    })));
-    if ((c.glance || []).length) kids.push(card([el("h2", { text: "At a glance" }), facts(c.glance)]));
-    kids.push(el("div", { class: "two" }, [
-      (c.flow || []).length ? card([el("h2", { text: "The flow" }), el("ol", { class: "bullets" }, c.flow.map(function (s) { return el("li", { text: s }); }))]) : null,
-      (c.contend || []).length ? card([el("h2", { text: "Where Palit can contend" }), bullets(c.contend)]) : null
-    ]));
-    var keeps = [];
-    if ((c.keeps || []).length) keeps.push(["What it keeps for each color", bullets(c.keeps)]);
-    if (c.naming) keeps.push(["Naming", c.naming]);
-    if ((c.organization || []).length) keeps.push(["Organization", bullets(c.organization)]);
-    if (c.formats) keeps.push(["Formats", c.formats]);
-    if ((c.tools || []).length) keeps.push(["Other tools", bullets(c.tools)]);
-    kids.push(el("div", { class: "two" }, [
-      keeps.length ? card([el("h2", { text: "What it keeps, and how it's organized" }), facts(keeps)]) : null,
-      (c.strong || []).length ? card([el("h2", { text: "Where Sip is strong" }), el("p", { class: "s", text: "Don't try to beat it here." }), bullets(c.strong)]) : null
-    ]));
-    if ((c.visual || []).length) kids.push(card([el("h2", { text: "Design system and visual language" }), bullets(c.visual), c.visualNote ? el("p", { class: "s", text: c.visualNote }) : null]));
-    if ((c.reception || []).length) kids.push(card([el("h2", { text: "What people say" }), bullets(c.reception)]));
-    if ((c.verify || []).length) kids.push(card([el("h2", { text: "Check by hand" }), bullets(c.verify)]));
-    if ((c.sources || []).length) kids.push(el("div", null, [el("span", { class: "k", text: "Sources" }), sourceChips(c.sources)]));
-    return section("inspiration-" + c.id, c.title || ("Main competitor: " + c.name), "How it works, what it keeps, and where Palit differs", kids);
-  }
-  function refsSection() {
-    var kids = [];
-    var d = I.dilemma;
-    if (d) kids.push(card([el("h2", { text: d.title }), d.note ? el("p", { class: "s", text: d.note }) : null, el("div", { class: "two" }, (d.options || []).map(function (o) {
-      return el("div", null, [el("h3", { text: o.name, style: "font-size:15px;font-weight:400;margin-top:8px" }), facts([["What it says", o.says], ["Who it draws in", o.attracts], ["The risk", o.risk]])]);
-    }))], null, "inspiration-dilemma"));
-    kids.push(el("div", { class: "refs" }, (I.refs || []).map(function (r) {
-      return el("article", { class: "ref" }, [
-        el("a", { class: "img", href: r.image, title: "Open the full image" }, [el("img", { src: r.image, alt: r.shows, loading: "lazy" })]),
-        el("div", { class: "body" }, [el("span", { class: "s" }, [r.url ? link(r.board, r.url) : r.board]), el("h3", { text: r.title }), el("details", { class: "more" }, [el("summary", { text: "Take and leave" }), el("div", null, [el("p", { text: r.shows }), facts([["Take", r.take], ["Leave", r.leave], ["Where it came from", r.origin ? (r.originUrl ? link(r.origin, r.originUrl) : r.origin) : null]])])])])
-      ]);
-    })));
-    if ((I.earlier || []).length) kids.push(card([el("h2", { text: "Products we learn from" }), el("ul", { class: "plain" }, I.earlier.map(function (e) { return el("li", null, [link(e.title, e.url), el("span", { class: "s", text: e.note })]); }))], null, "inspiration-earlier"));
-    return section("inspiration-refs", "References: the palit ideation boards", (I.refs || []).length + " references from Are.na and Cosmos", kids);
-  }
-  function interviews() {
-    var u = R.uxr || {};
-    var total = (u.guide || []).reduce(function (s, g) { return s + g.minutes; }, 0);
-    return section("research-interviews", "Interview kit", "About " + total + " minutes per person, with friends", [
-      el("div", { class: "two" }, [
-        card([el("h2", { text: "Interview guide" }), el("ol", { class: "bullets" }, (u.guide || []).map(function (g) { return el("li", null, [g.part + ", " + g.minutes + " min", bullets(g.questions)]); }))]),
-        el("div", null, [card([el("h2", { text: "Screener" }), bullets(u.screener)]), card([el("h2", { text: "Good habits" }), bullets(u.tips)]), card([el("h2", { text: "After each interview" }), bullets(u.synthesis)])])
-      ]),
-      card([el("h2", { text: "Five-question survey" }), el("ol", { class: "bullets" }, (u.survey || []).map(function (q) { return el("li", { text: q }); }))]),
-      (R.interviews || []).length ? card([el("h2", { text: "Interview log" }), el("ul", { class: "plain" }, R.interviews.map(function (iv) { return el("li", null, [el("span", { class: "t", text: iv.who + ", " + fmtShort(iv.date) }), bullets(iv.notes || [])]); }))]) : empty("No interviews yet.")
-    ]);
-  }
-
-  /* Video: the plan, the story, and the speaker chips */
-  /* ---------- The cut, clip by clip (entry 192): the video as it is now, from design/video/script.js ---------- */
-  // Each clip: stills, the statement that opens it, what's said, the cards on screen, the research it brings in, the music
-  // under it, and what's still to edit, with a notes box that hands off like the others ("video-clips").
-  function renderClips(view) {
-    var S = window.PALIT_SCRIPT, SHOTS = ((window.PALIT || {}).clips || {}).shots || {};
-    if (!S) return;
-    var B = window.PALIT_BRAND || { speakers: { Noah: "#d23c2a", Daeun: "#2fb3ad" } };
-    var ed = { text: {}, who: {}, statements: {}, music: {}, calm: {} };
-    try { var se = JSON.parse(localStorage.getItem("palit-video-script") || "null"); if (se) Object.keys(ed).concat(["musicStatements"]).forEach(function (k) { if (se[k] !== undefined) ed[k] = se[k]; }); } catch (e) {}
-    if (window.palitFresh) window.palitFresh(window.PALIT_SCRIPT, ed);   // a redrafted line shows its draft (entry 225)
-    function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
-    function textOf(l) { return ed.text[l.id] !== undefined ? ed.text[l.id] : l.text; }
-    function whoOf(l) { return ed.who[l.id] || l.who; }
-    function stmtOf(x) { var b = x.statement, e = (ed.statements || {})[x.id] || {}; return b ? { text: e.text !== undefined ? e.text : b.text, word: e.word !== undefined ? e.word : b.word, color: e.color || b.color, seconds: b.seconds } : null; }
-    function stmtNode(x) {
-      var st = stmtOf(x), p = el("div", { class: "cl-stmt" }), hit = false, want = (st.word || "").toLowerCase().replace(/[^a-z0-9'’-]/g, "");
-      st.text.split(/(\s+)/).forEach(function (w) {
-        var on = !hit && want && w.toLowerCase().replace(/[^a-z0-9'’-]/g, "") === want;
-        if (on) { hit = true; p.appendChild(el("span", { style: "color:" + st.color, text: w })); } else p.appendChild(document.createTextNode(w));
-      });
-      return el("div", { class: "cl-frame clip-stmt", role: "img", "aria-label": "Statement: " + st.text }, [p]);
-    }
-    // The music under a clip: where its track's runs overlap the clip, timed from the clip's start (entry 197)
-    function musicText(x, layer) {
-      var a0 = x.statement ? x.statementAt : x.start, b0 = x.start + x.seconds, parts = [];
-      (window.palitMusicWindows ? window.palitMusicWindows(S, {}, layer) : []).forEach(function (w) {
-        var a = Math.max(a0, w[0]), b = Math.min(b0, w[1]);
-        if (b - a > 0.5) parts.push(a <= a0 + 0.5 && b >= b0 - 0.5 ? "the whole clip" : ms(Math.max(0, a - x.start)) + " to " + ms(b - x.start) + " in");
-      });
-      return parts.length ? parts.join(", ") : null;
-    }
-    var KIND = { study: "Study", ours: "Ours", tools: "Tools", precedent: "Precedent", brief: "The brief" };
-    var PART = { filmed: "Filmed", desktop: "Animated desktop", motion: "Motion graphic" };
-
-    // How the video is organized: every clip in order, the statements between them in their colors, and the music under it
-    var total = S.total || 0, bar = el("div", { class: "cl-bar", role: "list", "aria-label": "The video, clip by clip" });
-    S.sections.forEach(function (x, i) {
-      if (x.statement) bar.appendChild(el("i", { role: "listitem", "aria-label": "Statement before " + x.title, title: "Statement: " + stmtOf(x).text, style: "flex-grow:" + x.statement.seconds + ";background:" + stmtOf(x).color }));
-      var a = el("a", { class: x.part, role: "listitem", href: "#clip-" + x.id, title: x.title + ", " + ms(x.start) + " to " + ms(x.start + x.seconds), text: String(i + 1) });
-      a.style.flexGrow = String(x.seconds);
-      a.addEventListener("click", function (e) { e.preventDefault(); var t = document.getElementById("clip-" + x.id); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); });
-      bar.appendChild(a);
-    });
-    function line(layer, cls) {
-      var d = el("div", { class: "cl-line" + (cls ? " " + cls : ""), "aria-hidden": "true" });
-      (window.palitMusicWindows ? window.palitMusicWindows(S, ed, layer) : []).forEach(function (w) { d.appendChild(el("i", { style: "left:" + (100 * w[0] / total) + "%;width:" + (100 * (w[1] - w[0]) / total) + "%" })); });
-      return d;
-    }
-    var legend = el("div", { class: "legend" }, [
-      el("span", null, [el("i", { style: "background:#6b6b70" }), "Filmed"]), el("span", null, [el("i", { style: "background:var(--ink)" }), "Animated desktop"]), el("span", null, [el("i", { style: "background:#3a3a3e" }), "Motion graphic"]),
-      el("span", null, [el("i", { style: "background:#d14808" }), "A statement, in its color"]),
-      S.music ? el("span", null, [el("i", { style: "background:var(--ink);height:3px" }), "House: “" + S.music.title + "” by " + S.music.by]) : null,
-      S.calm ? el("span", null, [el("i", { style: "background:#8e8e93;height:3px" }), "Calm: " + (S.calm.src ? "“" + S.calm.title + "” by " + S.calm.by : "not picked yet")]) : null
-    ]);
-
-    // The overlays that cut the video into sections, and sit on top of it
-    var firstStmt = S.sections.filter(function (x) { return x.statement; })[0], firstLine = (S.sections.filter(function (x) { return x.id === "demo"; })[0] || S.sections[0]).lines[0];
-    var spk = function (w) { return el("div", { class: "cl-chip" }, [el("i", { style: "background:" + ((B.speakers || {})[w] || "#1d1d1f") }), w]); };
-    var overlays = el("div", { class: "cl-ov" }, [
-      el("div", null, [el("h4", { text: "Statements" }), firstStmt ? stmtNode(firstStmt) : null, el("p", { class: "s", text: "Three seconds of white before each section, one word in one of our colors. Placeholders for Noah to write." })]),
-      el("div", null, [el("h4", { text: "Speaker chips" }), el("div", { class: "cl-frame", style: "background:#f2f2f4" }, [spk("Daeun"), el("div", { class: "cl-chip", style: "bottom:14cqw" }, [el("i", { style: "background:" + ((B.speakers || {}).Noah || "#d23c2a") }), "Noah"])]), el("p", { class: "s", text: "Only the square and the name, bottom left, while someone speaks. The colors are drafts." })]),
-      el("div", null, [el("h4", { text: "The subtitle bar" }), el("div", { class: "cl-frame", style: "background:#f2f2f4" }, [el("div", { class: "cl-subs", text: firstLine ? textOf(firstLine) : "" })]), el("p", { class: "s", text: "Until the voiceover is in; Download subtitles on the script page gives a first .srt." })]),
-      el("div", null, [el("h4", { text: "Thanks and credits" }), el("div", { class: "cl-frame" }, [el("div", { class: "cl-stmt", style: "font-size:6cqw", text: S.thanks || "" })]), el("p", { class: "s", text: "Noah's thanks on white, then the credits roll: JVD, the pictures, the research, friends and supporters." })])
-    ]);
-
-    // Notes on each clip, kept in this browser and handed to Claude like the other notes
-    var NK = "palit-video-clip-notes", notes = {};
-    try { notes = JSON.parse(localStorage.getItem(NK) || "{}") || {}; } catch (e) {}
-    function notesText() { var out = []; S.sections.forEach(function (x, i) { var t = (notes[x.id] || "").trim(); if (t) out.push((i + 1) + ". " + x.title + ": " + t); }); return out.length ? "Notes on the video's clips:\n" + out.join("\n") : ""; }
-    var countEl = el("span", { class: "s num" }), status = el("span", { class: "s", "aria-live": "polite" });
-    function count() { var n = Object.keys(notes).filter(function (k) { return (notes[k] || "").trim(); }).length; countEl.textContent = n ? n + (n === 1 ? " clip has notes" : " clips have notes") : "No notes yet"; }
-    function persist() { try { localStorage.setItem(NK, JSON.stringify(notes)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put("video-clips", { title: "Notes on the video's clips", text: notesText() }); count(); }
-    var copyB = el("button", { type: "button", class: "btn", text: "Copy all notes" });
-    copyB.addEventListener("click", function () { var t = notesText(); if (!t) { status.textContent = "No notes to copy yet."; return; } copyText(t, function (ok) { status.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select the notes and copy them yourself."; }); });
-    var doneB = el("button", { type: "button", class: "btn primary", text: "I'm done" });
-    doneB.addEventListener("click", function () { if (!notesText()) { status.textContent = "No notes yet."; return; } persist(); PalitHandoff.done("video-clips"); status.textContent = "Marked done. Tell Claude in chat, and Claude reads them from this page."; });
-    count();
-    var notesBar = el("div", { class: "fbbar", style: "margin-top:16px" }, [el("span", { class: "k", style: "margin:0", text: "Notes on the clips" }), countEl, el("span", { class: "grow" }), status, copyB, doneB]);
-
-    // Every clip
-    var list = el("ol", { class: "clips" });
-    S.sections.forEach(function (x, i) {
-      var lines = x.lines || [], asks = lines.filter(function (l) { return /^\[/.test(textOf(l).trim()); });
-      var stmt = x.statement ? stmtOf(x) : null, stmtOpen = stmt && /^Your line about/.test(stmt.text);
-      var state = x.part === "filmed" ? ["To film", false] : (asks.length || stmtOpen) ? ["Lines to write", false] : ["Ready to record", true];
-      var stills = SHOTS[x.id] || [];
-      var stillRow = el("div", { class: "clip-stills" }, stills.length ? stills.map(function (s2) {
-        var img = el("img", { src: s2.file, alt: s2.label, loading: "lazy", width: "960", height: "540" }), media = el("div", { class: "cl-media" }, [img]);
-        // A still that shows our filmed footage stays off the public site (publish.sh, entry 278): say so in its place
-        img.addEventListener("error", function () { img.replaceWith(el("p", { class: "cl-off", text: "This moment shows our filmed footage, which stays off the public site." })); });
-        var a = el("a", { href: s2.href.indexOf("video/") === 0 ? "../" + s2.href.replace(/&t=[0-9.]+/, "&play") : "../" + s2.href, target: "_blank", rel: "noopener", title: "Open: " + s2.label }, [media, el("span", { text: s2.label })]);
-        // A moving preview plays while you point at the still, or while it has the keyboard's focus (entry 214)
-        if (s2.preview) {
-          var vid = null;
-          var playIt = function () {
-            if (!vid) { vid = document.createElement("video"); vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("aria-hidden", "true"); vid.src = s2.preview; media.appendChild(vid); }
-            try { vid.currentTime = 0; } catch (e) {}
-            var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {});
-            media.classList.add("moving");
-          };
-          var stopIt = function () { if (vid) vid.pause(); media.classList.remove("moving"); };
-          a.addEventListener("mouseenter", playIt); a.addEventListener("focus", playIt);
-          a.addEventListener("mouseleave", stopIt); a.addEventListener("blur", stopIt);
-        }
-        return a;
-      }) : [el("div", null, [el("div", { class: "tofilm", text: x.part === "filmed" ? "To film, October 19" : "No stills yet" }), el("span", { text: x.scene && x.scene.label ? x.scene.label : x.title })])]);
-      var said = lines.length ? el("ol", { class: "clip-said" }, lines.map(function (l) {
-        var w = whoOf(l), t = textOf(l);
-        return el("li", null, [el("span", { class: "who" }, [el("i", { style: "background:" + ((B.speakers || {})[w] || "#1d1d1f") }), w]), el("span", { class: "at num", text: typeof l.start === "number" ? ms(l.start) : typeof l.at === "number" ? ms(l.at) : "" }), el("span", { class: /^\[/.test(t.trim()) ? "ask" : null, text: t })]);
-      })) : el("p", { class: "s", text: "No voiceover: the picture and the music carry it." });
-      var house = S.music ? musicText(x, "music") : null, calm = S.calm ? musicText(x, "calm") : null;
-      var edits = [];
-      if (x.statement) edits.push(el("li", null, [link(stmtOpen ? "Write the statement and color its word" : "The statement and its word", "../video/index.html#" + x.id)]));
-      if (lines.length) edits.push(el("li", null, [link("The lines, and who says each", "../video/index.html#" + x.id)]));
-      asks.forEach(function (l) { edits.push(el("li", null, ["Waiting for you: " + textOf(l)])); });
-      if (S.music) edits.push(el("li", null, [openLink("The music's runs (the video workshop)", "../workshop/video.html#music")]));
-      if (x.viz) edits.push(el("li", null, [openLink("The chart's words and timing (viz.html; Claude edits)", "../video/viz.html?scene=" + x.viz + "&play")]));
-      if (x.part === "desktop" && x.scene && x.scene.href) edits.push(el("li", null, [openLink("What v3 does, step by step (Claude edits)", "../video/" + x.scene.href)]));
-      if (x.part === "filmed") edits.push(el("li", null, ["Film it in the archive room (you and Daeun)"]));
-      if (x.id === "credits") edits.push(el("li", null, ["Name your friends and supporters (tell Claude, or edit credits in script.js)"]));
-      var nta = el("textarea", { class: "fbta", placeholder: "What should change in this clip?", "aria-label": "Notes on " + x.title });
-      nta.value = notes[x.id] || "";
-      var has = !!nta.value.trim(), nsum = el("summary", { text: has ? "Notes, written" : "Notes" });
-      var nd = el("details", { class: "more fb" + (has ? " has" : ""), open: has ? "" : null }, [nsum, nta]);
-      nta.addEventListener("input", function () { if (nta.value.trim()) notes[x.id] = nta.value; else delete notes[x.id]; persist(); var h = !!nta.value.trim(); nsum.textContent = h ? "Notes, written" : "Notes"; nd.classList.toggle("has", h); });
-      list.appendChild(el("li", { class: "clip", id: "clip-" + x.id }, [
-        el("div", { class: "clip-head" }, [
-          el("span", { class: "n num", text: ("0" + (i + 1)).slice(-2) + "  " + ms(x.start) + " to " + ms(x.start + x.seconds) + ", " + x.seconds + " seconds" }),
-          el("h3", { text: x.title }),
-          el("span", { class: "chip", text: PART[x.part] || x.part }),
-          el("span", { class: "grow" }),
-          el("span", { class: "st" + (state[1] ? " ready" : ""), text: state[0] }),
-          openLink("Play it", "../video/player.html#" + x.id, "chip")
-        ]),
-        stillRow,
-        el("div", { class: "clip-body" }, [
-          el("div", null, [
-            stmt ? el("div", null, [el("span", { class: "k", text: "Opens on, for " + stmt.seconds + " seconds" + (stmtOpen ? " (a placeholder)" : "") }), stmtNode(x)]) : null,
-            el("div", null, [el("span", { class: "k", text: "On screen" }), el("p", { class: "t", text: x.screen })]),
-            (x.text || []).length ? el("div", null, [el("span", { class: "k", text: "Cards and words on screen" }), el("ul", { class: "clip-cards" }, x.text.map(function (t) { return el("li", { text: t }); }))]) : null,
-            (x.suggestions || []).length ? el("div", null, [el("span", { class: "k", text: "Claude's suggestions, for you to pick" }), el("ul", { class: "clip-cards" }, x.suggestions.map(function (g) { return el("li", null, [g.title + ". ", el("span", { class: "s", text: g.how })]); }))]) : null,
-            x.note ? el("p", { class: "s", text: x.note }) : null
-          ]),
-          el("div", null, [
-            el("div", null, [el("span", { class: "k", text: "Said" }), said]),
-            (x.research || []).length ? el("div", null, [el("span", { class: "k", text: "Research it brings in" }), el("ul", { class: "clip-res" }, x.research.map(function (r) { return el("li", null, [el("span", { class: "kind", text: KIND[r.kind] || r.kind }), r.label]); }))]) : null,
-            el("div", null, [el("span", { class: "k", text: "Music" }), el("p", { class: "t", text: [house ? "House: " + house : null, calm ? "Calm: " + calm : null].filter(Boolean).join(". ") || "None" })]),
-            el("div", null, [el("span", { class: "k", text: "To edit" }), el("ul", { class: "clip-edit" }, edits)]),
-            (x.refs || []).length ? entryChips(x.refs) : null
-          ])
-        ]),
-        el("div", { class: "clip-notes" }, [nd])
-      ]));
-    });
-    view.appendChild(sec("video-clips", "The cut, clip by clip", "The video as it stands, " + ms(total) + " in " + S.sections.length + " clips: what each shows, the statement that opens it, what's said, the cards on screen, the research it brings in, the music under it, and what's left to edit. Click a still to open it; point at one to see it move. Play it starts the player there. Lines and statements are edited on the script page.", [
-      el("div", { class: "well pad" }, [bar, line("music"), line("calm", "calm"), legend]),
-      overlays, notesBar, list
-    ], [openLink("Notes, screen by screen", "../workshop/video.html#moments", "btn"), openLink("The script", "../video/index.html", "btn"), openLink("The player", "../video/player.html", "btn")]));
-  }
-
-  /* ---------- The screening (entry 267): the whole cut as one film, made by design/video/export.mjs, for Noah and Daeun to watch
-     end to end and confirm before they record the voiceover (Noah, October 21: “Could we first have it available in the
-     dashboard, video section for a final screening and confirmation, before I get to filming the voiceovers with daeun?”). The
-     film holds our footage and the music, so it stays off the public site and plays only on the local dashboard. It's loaded
-     whole before it plays, so it can jump to any moment even from the local server, which can't send part of a file. ---------- */
-  var filmBlob = null;
-  function renderScreening(view) {
-    var F = (window.PALIT || {}).screening, S = window.PALIT_SCRIPT;
-    if (!F || !S) return;
-    function ms(t) { t = Math.round(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
-    var made = new Date(F.made), when = made.toLocaleDateString([], { month: "long", day: "numeric" }) + " at " + made.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    var video = el("video", { controls: "", playsinline: "", preload: "none", "aria-label": "The whole cut, " + ms(F.seconds) });
-    var gateMsg = el("p", { text: "The whole film, " + Math.round(F.size / 1e6) + " MB. It loads in full first, so you can jump anywhere in it." });
-    var playB = el("button", { type: "button", class: "btn primary", text: "Play the film" });
-    var gate = el("div", { class: "scr-gate" }, [playB, gateMsg]);
-    var frame = el("div", { class: "scr-film" }, [video, gate]);
-    function ready(url) { video.src = url; gate.remove(); var p = video.play(); if (p && p.catch) p.catch(function () {}); }
-    playB.addEventListener("click", function () {
-      if (filmBlob) { ready(filmBlob); return; }
-      playB.disabled = true; playB.textContent = "Loading…";
-      fetch(F.file).then(function (r) {
-        if (!r.ok) throw new Error(String(r.status));
-        var total = Number(r.headers.get("Content-Length")) || F.size, got = 0, parts = [], rd = r.body && r.body.getReader();
-        if (!rd) return r.blob();
-        return (function pump() { return rd.read().then(function (c) { if (c.done) return new Blob(parts, { type: "video/mp4" }); parts.push(c.value); got += c.value.length; playB.textContent = "Loading… " + Math.min(100, Math.round(got / total * 100)) + "%"; return pump(); }); })();
-      }).then(function (b) { filmBlob = URL.createObjectURL(b); ready(filmBlob); }, function () {
-        playB.remove();
-        gateMsg.textContent = "The film plays on the local dashboard only: it holds our footage and the music, which stay off the public site. Open the dashboard from Claude's local server to watch it.";
-      });
-    });
-    // Chapters: every section, where it opens (its statement, when it has one)
-    var chapters = el("div", { class: "scr-chapters", role: "list", "aria-label": "Jump to a section" });
-    S.sections.filter(function (x) { return !x.cut; }).forEach(function (x) {
-      var at = x.statement ? x.statementAt : x.start, b = el("button", { type: "button", role: "listitem" }, [el("span", { class: "num", text: ms(at) }), x.title.replace(/:.*$/, "").replace(/^Intro, in the archive room$/, "Intro")]);
-      b.addEventListener("click", function () { if (!video.src) { playB.click(); var wait = setInterval(function () { if (video.src) { clearInterval(wait); video.currentTime = at; } }, 100); } else { video.currentTime = at; var p = video.play(); if (p && p.catch) p.catch(function () {}); } });
-      chapters.appendChild(b);
-    });
-    video.addEventListener("timeupdate", function () {
-      var t = video.currentTime;
-      Array.prototype.forEach.call(chapters.children, function (b, i, all) {
-        var xs = S.sections.filter(function (x) { return !x.cut; }), x = xs[i], a = x.statement ? x.statementAt : x.start, z = i + 1 < xs.length ? (xs[i + 1].statement ? xs[i + 1].statementAt : xs[i + 1].start) : F.seconds;
-        b.setAttribute("aria-current", t >= a && t < z ? "true" : "false");
-      });
-    });
-    var what = el("div", { class: "scr-what" }, [
-      el("div", null, [el("span", { class: "k", text: "In it" }), el("ul", null, [
-        el("li", { text: "Every block as you signed it off, joined with nothing between them, recorded a frame at a time." }),
-        el("li", { text: "The house track, from the start to its own end and again for the outro, and the calm track from deep dive 1 to the outro, both dipping under every line, at your player's levels (house " + F.levels.house + ", calm " + F.levels.calm + ")." }),
-        el("li", { text: "The intro's and the outro's own voice takes." })
-      ])]),
-      el("div", null, [el("span", { class: "k", text: "Not in it yet" }), el("ul", null, [
-        el("li", { text: "The voiceover, which you and Daeun record next." }),
-        el("li", { text: "The subtitles, redone in our colors once the voiceover is in." }),
-        el("li", { text: "v3's own sounds, like the keep's wood." })
-      ])])
-    ]);
-    // Notes and the confirmation, kept in this browser and handed to Claude like the other notes ("screening")
-    var NK = "palit-screening", st = { notes: "", confirmed: null };
-    try { var sv = JSON.parse(localStorage.getItem(NK) || "null"); if (sv) st = sv; } catch (e) {}
-    var ta = el("textarea", { class: "fbta", placeholder: "Anything to change before you record the voiceover?", "aria-label": "Notes on the whole cut" });
-    ta.value = st.notes || "";
-    var status = el("span", { class: "s", "aria-live": "polite" });
-    function text() { return "Screening the whole cut (" + F.file.split("/").pop() + ")" + (st.confirmed ? ": confirmed, " + new Date(st.confirmed).toLocaleString() : "") + (st.notes.trim() ? "\nNotes: " + st.notes.trim() : ""); }
-    function persist() { try { localStorage.setItem(NK, JSON.stringify(st)); } catch (e) {} if (window.PalitHandoff) PalitHandoff.put("screening", { title: "Screening the whole cut", text: text(), confirmed: !!st.confirmed, film: F.file }); }
-    ta.addEventListener("input", function () { st.notes = ta.value; if (st.confirmed) { st.confirmed = null; paint(); } persist(); });
-    var sendB = el("button", { type: "button", class: "btn", text: "Send notes" });
-    var okB = el("button", { type: "button", class: "btn primary", text: "Confirm the cut" });
-    var copyB = el("button", { type: "button", class: "btn", text: "Copy" });
-    function paint() { okB.textContent = st.confirmed ? "Confirmed" : "Confirm the cut"; okB.setAttribute("aria-pressed", String(!!st.confirmed)); status.textContent = st.confirmed ? "Confirmed. Tell Claude in chat, and Claude reads it from this page." : ""; status.classList.toggle("scr-ok", !!st.confirmed); }
-    sendB.addEventListener("click", function () { if (!st.notes.trim()) { status.textContent = "No notes yet."; return; } persist(); PalitHandoff.done("screening"); status.textContent = "Sent. Tell Claude in chat, and Claude reads it from this page."; });
-    okB.addEventListener("click", function () { st.confirmed = st.confirmed ? null : new Date().toISOString(); persist(); if (st.confirmed) PalitHandoff.done("screening"); paint(); });
-    copyB.addEventListener("click", function () { copyText(text(), function (ok) { status.textContent = ok ? "Copied. Paste it to Claude in chat." : "Couldn't copy. Select the notes and copy them yourself."; }); });
-    paint();
-    view.appendChild(sec("video-screening", "Screening: the whole cut", ms(F.seconds) + ", " + F.width + " by " + F.height + " at " + F.fps + " frames a second, made " + when + ". Watch it end to end and confirm it before you and Daeun record the voiceover. Notes go to Claude like the others.", [
-      frame, chapters, what,
-      el("div", { style: "margin-top:16px" }, [el("span", { class: "k", text: "Notes on the cut" }), ta]),
-      el("div", { class: "fbbar", style: "margin-top:10px" }, [status, el("span", { class: "grow" }), copyB, sendB, okB])
-    ], [openLink("The player", "../video/player.html", "btn"), openLink("Block by block", "../workshop/blocks.html", "btn")]));
-  }
-
-  function renderVideo(view) {
-    var blocks = V.blocks || [];
-    var total = blocks.reduce(function (s, b) { return s + b.seconds; }, 0);
-    var product = blocks.filter(function (b) { return b.part === "product"; }).reduce(function (s, b) { return s + b.seconds; }, 0);
-    var pct = function (x) { return total ? Math.round(x / total * 100) : 0; };
-    view.appendChild(head("Video", mmss(total) + " planned against a " + mmss(V.target || 420) + " target: " + pct(product) + "% problem, product and demo, " + pct(total - product) + "% process.", [
-      ["Screening", "#video/screening"], ["The cut", "#video/clips"], ["The story", "#video/story"], ["Storyboards", "#video/storyboards"], ["Deep dives", "#video/dives"], ["Speaker chips", "#video/speakers"], ["Blocks", "#video/blocks"], ["From Naheel", "#video/naheel"], ["From the brief", "#video/rules"]
-    ]));
-
-    renderScreening(view);
-    renderClips(view);
-
-    var bar = el("div", { class: "vbar", role: "list", "aria-label": "Video timeline" });
-    var t = 0;
-    blocks.forEach(function (b, i) {
-      var a = el("a", { class: "num " + b.part, role: "listitem", href: "#video/" + b.id, title: b.title + ", " + mmss(t) + " to " + mmss(t + b.seconds), text: String(i + 1) });
-      a.style.flexGrow = String(b.seconds);
-      bar.appendChild(a);
-      t += b.seconds;
-    });
-    var story = [];
-    if (V.focus) story.push(el("blockquote", { class: "quote", style: "font-size:17px;padding:4px 0 4px 14px" }, [V.focus.text, el("cite", { text: V.focus.by + ", " + fmtShort(V.focus.date) })]));
-    if (V.show) story.push(el("blockquote", { class: "quote", style: "font-size:15px;margin-top:12px" }, [V.show.text, el("cite", { text: V.show.by + ", " + fmtShort(V.show.date) })]));
-    // The three archives the video shows (D25, entry 166)
-    if (V.users) story.push(el("blockquote", { class: "quote", style: "font-size:15px;margin-top:12px;white-space:pre-line" }, [V.users.text, el("cite", { text: V.users.by + ", " + fmtShort(V.users.date) })]));
-    view.appendChild(sec("video-story", "The story", "Noah's framing, word for word.", [el("div", { class: "well pad" }, story.concat([el("div", { style: "margin-top:16px" }, [bar, el("div", { class: "legend" }, [el("span", null, [el("i", { style: "background:var(--ink)" }), "Problem, product and demo"]), el("span", null, [el("i", { style: "background:var(--paper)" }), "Process"])])])]))]));
-
-    // Storyboards: blocks drawn shot by shot (A56, entry 92)
-    var starts = {}, clock = 0;
-    blocks.forEach(function (b) { starts[b.id] = clock; clock += b.seconds; });
-    var boarded = blocks.filter(function (b) { return b.storyboard && (b.storyboard.shots || []).length; });
-    if (boarded.length) view.appendChild(sec("video-storyboards", "Storyboards", "Shot by shot, from the prototype and the work. Every line is Claude's draft for you to rewrite, and who speaks each shot is yours and Daeun's to pick.", boarded.map(function (b) {
-      var board = b.storyboard;
-      return el("div", { class: "sb-block", id: "board-" + b.id }, [
-        el("div", { class: "sb-head" }, [el("h3", { text: b.title }), el("span", { class: "s num", text: mmss(b.seconds) + " long, " + mmss(starts[b.id]) + " to " + mmss(starts[b.id] + b.seconds) + " in the video, " + board.shots.length + " shots" })]),
-        board.note ? el("p", { class: "s", style: "margin-top:4px;max-width:80ch", text: board.note }) : null,
-        el("ol", { class: "sb" }, board.shots.map(function (s) {
-          return el("li", { class: "sb-shot" }, [sbFrame(s), el("div", { class: "sb-meta" }, [
-            el("p", { class: "sb-t num", text: mmss(s.at) + " to " + mmss(s.to) }),
-            el("p", { class: "sb-title", text: s.title }),
-            el("p", { class: "s", text: s.shows }),
-            s.keys ? el("p", { class: "s", text: "Keys: " + s.keys }) : null,
-            s.framing ? el("p", { class: "s", text: "Framing: " + s.framing }) : null,
-            el("p", { class: "sb-said" }, [el("span", { class: "k", text: "Said, a draft" }), "“" + s.says + "”"]),
-            s.source ? el("p", { class: "s", text: s.source }) : null,
-            s.needs ? el("p", { class: "sb-needs", text: "Needs: " + s.needs }) : null,
-            (s.refs || []).length ? entryChips(s.refs) : null
-          ])]);
-        }))
-      ]);
-    })));
-
-    // Deep dive candidates, noticed as the work goes
-    var DD = V.deepDives;
-    if (DD && (DD.candidates || []).length) {
-      var dives = el("div", { class: "dives" }, DD.candidates.map(function (c, i) {
-        var arc = el("ol", { class: "arc" }, c.arc.map(function (a) {
-          return el("li", null, [el("a", { class: "num", href: "#e" + pad(a[0]), title: byNo[a[0]] ? byNo[a[0]].title : null, text: pad(a[0]) }), el("span", { text: a[1] })]);
-        }));
-        var rest = [
-          (c.beats || []).length ? el("div", null, [el("span", { class: "k", text: "The story, in beats (Claude's draft)" }), el("ol", { class: "beats" }, c.beats.map(function (b) { return el("li", { text: b }); }))]) : null,
-          el("p", { class: "s", text: "What we'd show: " + c.show }),
-          (c.research || []).length ? el("details", { class: "more" }, [el("summary", { text: "Research" }), el("div", null, [el("ul", { class: "research" }, c.research.map(researchItem))])]) : null,
-          c.open ? el("p", { class: "s", text: "Still open: " + c.open }) : null
-        ];
-        var headBits = [
-          el("span", { class: "k num" }, [c.pick ? el("span", { class: "tag solid", text: c.pick }) : "Candidate " + (i + 1)]),
-          el("h3", { text: c.title }),
-          el("p", { class: "s", text: c.q }),
-          c.noah ? el("blockquote", { class: "quote" }, ["“" + c.noah.text + "” " + c.noah.why, el("cite", { text: "Noah" })]) : null,
-          c.crux ? el("blockquote", { class: "quote", style: "font-size:15px" }, [c.crux.text, el("cite", { text: "Noah, " + c.crux.where })]) : null
-        ].concat((c.also || []).map(function (q) { return el("blockquote", { class: "quote", style: "font-size:15px" }, [q.text, el("cite", { text: "Noah, " + q.where })]); }));
-        if (c.pick) return el("article", { class: "dive picked", id: "dive-" + c.id }, [el("div", { class: "dive-l" }, headBits.concat([arc])), el("div", { class: "dive-r" }, rest)]);
-        return el("article", { class: "dive", id: "dive-" + c.id }, headBits.concat([arc]).concat(rest));
-      }));
-      view.appendChild(sec("video-dives", "Deep dive candidates", DD.candidates.length + " so far, noticed as the work goes. Pick 2–3 together once the final prototype works.", [
-        DD.note ? el("blockquote", { class: "quote", style: "margin-bottom:12px" }, [DD.note.text, el("cite", { text: DD.note.by + ", " + fmtShort(DD.note.date) })]) : null,
-        dives
-      ]));
-    }
-
-    // Speaker chips
-    var sp = V.speakers || { people: ["Noah", "Daeun"] };
-    var st = { who: sp.people[0], corner: "bl" };
-    var stage = el("div", { class: "stage16", "aria-label": "A video frame with a speaker chip" });
-    var frame = el("iframe", { src: "../v3/index.html?clean&scene=days", title: "Preview: the prototype", width: "1440", height: "810", loading: "lazy", tabindex: "-1", "aria-hidden": "true" });
-    stage.appendChild(frame);
-    if (window.ResizeObserver) new ResizeObserver(function (l) { frame.style.transform = "scale(" + (l[0].contentRect.width / 1440) + ")"; }).observe(stage);
-    var chip = el("span", { class: "spk bl", role: "img" });
-    stage.appendChild(chip);
-    function drawChip() {
-      chip.className = "spk " + st.corner;
-      chip.textContent = "";
-      var tint = (sp.colors || {})[st.who];
-      chip.appendChild(tint ? el("i", { style: "background:" + tint }) : el("i"));
-      chip.appendChild(el("span", { text: st.who }));
-      chip.setAttribute("aria-label", st.who + " is speaking");
-    }
-    function group(label, items, key) {
-      var g = el("div", { class: "seg-ctl", role: "group", "aria-label": label });
-      items.forEach(function (it) {
-        var b = el("button", { type: "button", "aria-pressed": String(st[key] === it[0]), text: it[1] });
-        b.addEventListener("click", function () { st[key] = it[0]; g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); drawChip(); });
-        g.appendChild(b);
-      });
-      return g;
-    }
-    drawChip();
-    view.appendChild(sec("video-speakers", "Speaker chips", "Your idea for the full-screen moments: a small chip in a corner says who's speaking.", [el("div", { class: "speak" }, [
-      stage,
-      el("div", null, [
-        sp.note ? el("blockquote", { class: "quote" }, [sp.note, el("cite", { text: "Noah, " + fmtShort(sp.date || "2026-10-18") })]) : null,
-        el("p", { class: "k", style: "margin-top:14px", text: "Who's speaking" }), group("Who's speaking", sp.people.map(function (p) { return [p, p]; }), "who"),
-        el("p", { class: "k", style: "margin-top:12px", text: "Corner" }), group("Corner", [["tl", "Top left"], ["tr", "Top right"], ["bl", "Bottom left"], ["br", "Bottom right"]], "corner"),
-        el("p", { class: "s", style: "margin-top:12px", text: sp.colorsNote || "Claude's draft, in the design system's chip: square, an ink rule, white paper. The square could hold a color each of you has kept." }),
-        sp.recording ? el("p", { class: "s", style: "margin-top:8px", text: sp.recording }) : null
-      ])
-    ])]));
-
-    // Blocks
-    var list = el("div", { class: "well" });
-    t = 0;
-    blocks.forEach(function (b, i) {
-      var start = t, end = t + b.seconds; t = end;
-      var tags = (b.tags || []).slice();
-      if (b.rock) tags.push("rock:" + b.rock);
-      var tagged = entriesTagged(tags);
-      list.appendChild(el("details", { class: "entry", id: "video-" + b.id }, [
-        el("summary", null, [el("span", { class: "no num", text: String(i + 1) }), el("span", { class: "kd num", text: mmss(start) + "–" + mmss(end) }), el("span", { class: "ti", text: b.title + (b.optional ? " (optional)" : "") }), el("span", { class: "rt" }, [el("span", { class: "tag soft", text: b.part === "product" ? "Product" : "Process" }), statusPill(b.status)])]),
-        el("div", { class: "eb" }, [
-          el("p", { style: "font-size:14px", text: b.purpose }),
-          b.line ? el("div", { class: "line" }, [el("span", { class: "label", text: "Draft line" }), b.line]) : null,
-          b.blockedBy ? el("p", { class: "s", text: "Waiting on: " + b.blockedBy }) : null,
-          facts([
-            ["Ideas", (b.ideas || []).length ? bullets(b.ideas) : null],
-            ["Needs", bullets(b.needs)],
-            ["Real screens", b.reels || null],
-            ["Open", (b.links || []).length ? el("span", { class: "links" }, b.links.map(function (l) { return link(l.label, l.href); })) : null],
-            ["Could use", tagged.length ? entryLinks(tagged) : null]
-          ])
-        ])
-      ]));
-    });
-    view.appendChild(sec("video-blocks", "Blocks", "Open a block for its ideas, needs and the entries it could use.", [list]));
-    if ((V.naheel || []).length) view.appendChild(sec("video-naheel", "From Naheel's workshop", "How past winning teams shaped their videos, October 18. The blocks follow it since you picked it (A56).", [el("div", { class: "well pad" }, [bullets(V.naheel), el("p", { class: "s links", style: "margin-top:8px" }, [link("Noah's notes, word for word", "../../docs/07-naheel-workshop.md")])])]));
-    view.appendChild(sec("video-rules", "From the brief", null, [el("div", { class: "well pad" }, [bullets(V.rules)])]));
-  }
-
-  /* ---------- Router ---------- */
-
-  var LEGACY = { plan: "plan", work: "work", video: "video", compass: "plan", decisions: "plan", screens: "work", research: "work", testing: "work", sessions: "work", inspiration: "work" };
-  var DEFAULT_ANCHOR = { decisions: "plan-timeline", screens: "screens-journey", research: "work-research", testing: "work-feedback", sessions: "work-feedback", inspiration: "inspiration-sip" };
-  function route() {
-    var h = decodeURIComponent(location.hash.slice(1));
-    var page = "plan", anchor = null;
-    if (/^e\d+$/.test(h)) anchor = h;
-    else if (h) {
-      var parts = h.split("/");
-      page = LEGACY[parts[0]] || "plan";
-      if (parts[0] === "decisions") anchor = parts[1] === "why" ? "why" : "plan-timeline";
-      else if (parts[1]) anchor = parts[0] + "-" + parts[1];
-      else anchor = DEFAULT_ANCHOR[parts[0]] || null;
-    }
-    var nav = document.getElementById("nav");
-    nav.textContent = "";
-    PAGES.forEach(function (p) { nav.appendChild(el("a", { href: "#" + p.id, "aria-current": p.id === page ? "page" : null, text: p.label })); });
-    if (ro) ro.disconnect();
-    ro = window.ResizeObserver ? new ResizeObserver(fitPreviews) : null;
-    var view = document.getElementById("view");
-    view.textContent = "";
-    PAGES.filter(function (p) { return p.id === page; })[0].render(view, anchor);
-    document.title = (page === "plan" ? "" : PAGES.filter(function (p) { return p.id === page; })[0].label + ", ") + "Palit dashboard";
-    var target = anchor && anchor !== "why" ? document.getElementById(anchor) : anchor === "why" ? document.getElementById("plan-timeline") : null;
-    if (target) {
-      for (var n = target; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
-      if (target.tagName === "DETAILS") target.open = true;
-      if (target.classList.contains("entry")) target.classList.add("hit");
-      // A timeout rather than requestAnimationFrame: background tabs don't run animation frames.
-      setTimeout(function () { target.scrollIntoView({ block: "start" }); }, 0);
-    } else window.scrollTo(0, 0);
-  }
-
-  document.getElementById("when").textContent = countdown();
-  document.getElementById("updated").textContent = latestUpdate();
-  window.addEventListener("hashchange", route);
-  route();
-})();
-</script>
+<script src="data/preview.js"></script>
+<script>window.PALIT_GATE = { locked: { file: "locked.json" } };</script>
+<script src="front.js"></script>
 </body>
 </html>

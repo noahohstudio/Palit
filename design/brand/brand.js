@@ -18,5 +18,6 @@ window.PALIT_BRAND = {
 (function () {
   // Paths here are from design/brand/, so pages elsewhere get the mark resolved from this script's own address
   var s = document.currentScript, B = window.PALIT_BRAND;
-  if (s && B.mark && !/^(data:|https?:|\/)/.test(B.mark)) B.markUrl = new URL(B.mark, s.src).href; else B.markUrl = B.mark;
+  // (a script the dashboard decrypts runs inline, so it carries its file's address in data-src)
+  if (s && B.mark && !/^(data:|https?:|\/)/.test(B.mark)) B.markUrl = new URL(B.mark, s.src || s.getAttribute("data-src")).href; else B.markUrl = B.mark;
 })();
