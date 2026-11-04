@@ -223,6 +223,9 @@ button, input, textarea { font: inherit; color: inherit; }
           list.forEach(function (x) { map[x.p] = URL.createObjectURL(new Blob([new Uint8Array(s, base + x.at, x.n)], { type: x.type })); });
           window.PALIT_DECK_FILES = map;
           html = html.replace("<head>", function () { return "<head>\n<script>window.PALIT_DECK_FILES = " + JSON.stringify(map) + ";<\/script>"; });
+          // An inlined script that finds files from its own address (brand.js, which declares the Display face) gets that
+          // address whole, from this page's (entry 363: relative, it threw and the headers fell back to SF)
+          html = html.replace(/ data-src=["]([^"]+)["]/g, function (m, p) { return " data-src" + '="' + new URL(p, location.href).href + '"'; });
           document.open(); document.write(html); document.close();
         }, function () { fail("The pictures didn't load. Reload the page and try again."); });
       }, function () { fail("That's not the password."); });
